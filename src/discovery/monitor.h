@@ -36,6 +36,8 @@ public:
 
     Monitor();
 
+    void start();
+
 signals:
 
     void interfaceAdded(QString name);

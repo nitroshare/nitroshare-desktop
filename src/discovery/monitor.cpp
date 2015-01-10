@@ -29,7 +29,10 @@
 Monitor::Monitor()
 {
     connect(&timer, &QTimer::timeout, this, &Monitor::refresh);
+}
 
+void Monitor::start()
+{
     refresh();
     timer.start(10000);
 }
