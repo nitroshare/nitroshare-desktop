@@ -15,6 +15,7 @@ configure_file(src/config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
 # Add the source files
 set(SRC
+    src/discovery/device.cpp
     src/main.cpp
     src/nitroshare.cpp)
 
