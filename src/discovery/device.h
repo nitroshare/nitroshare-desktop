@@ -37,7 +37,7 @@ public:
     quint16 port;
 
     QByteArray serialize() const;
-    bool deserialize(QByteArray &data);
+    bool deserialize(const QByteArray &data);
 };
 
 #endif // NS_DEVICE_H

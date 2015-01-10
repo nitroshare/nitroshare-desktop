@@ -38,7 +38,7 @@ QByteArray Device::serialize() const
     return data;
 }
 
-bool Device::deserialize(QByteArray &data)
+bool Device::deserialize(const QByteArray &data)
 {
     QDataStream stream(data);
     stream >> name
