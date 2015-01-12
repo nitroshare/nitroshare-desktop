@@ -17,12 +17,14 @@ configure_file(src/config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 set(SRC
     src/discovery/device.cpp
     src/discovery/interfacemonitor.cpp
+    src/discovery/socketlistener.cpp
     src/main.cpp
     src/nitroshare.cpp)
 
 # Add the files that require MOC
 qt5_wrap_cpp(MOC
     src/discovery/interfacemonitor.h
+    src/discovery/socketlistener.h
     src/nitroshare.h)
 
 # Add resource files
