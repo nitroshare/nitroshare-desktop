@@ -19,7 +19,8 @@ set(SRC
     src/discovery/interfacemonitor.cpp
     src/discovery/socketlistener.cpp
     src/main.cpp
-    src/nitroshare.cpp)
+    src/nitroshare.cpp
+    src/util.cpp)
 
 # Add the files that require MOC
 qt5_wrap_cpp(MOC
