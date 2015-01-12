@@ -22,35 +22,36 @@
  * IN THE SOFTWARE.
  **/
 
-#ifndef NS_MONITOR_H
-#define NS_MONITOR_H
+#include <QNetworkInterface>
 
-#include <QSet>
-#include <QTimer>
+#include "interfacemonitor.h"
 
-class Monitor : public QObject
+InterfaceMonitor::InterfaceMonitor()
 {
-    Q_OBJECT
+    connect(&timer, &QTimer::timeout, this, &InterfaceMonitor::refresh);
+}
 
-public:
+void InterfaceMonitor::start()
+{
+    refresh();
+    timer.start(10000);
+}
 
-    Monitor();
+void InterfaceMonitor::refresh()
+{
+    QSet<QString> newNames;
+    foreach(QNetworkInterface interface, QNetworkInterface::allInterfaces()) {
+        if(interface.flags() && QNetworkInterface::CanMulticast)
+            newNames.insert(interface.name());
+    }
 
-    void start();
+    foreach(QString name, newNames - oldNames) {
+        emit interfaceAdded(name);
+    }
 
-signals:
+    foreach(QString name, oldNames - newNames) {
+        emit interfaceRemoved(name);
+    }
 
-    void interfaceAdded(QString name);
-    void interfaceRemoved(QString name);
-
-private slots:
-
-    void refresh();
-
-private:
-
-    QTimer timer;
-    QSet<QString> oldNames;
-};
-
-#endif // NS_MONITOR_H
+    oldNames = newNames;
+}
