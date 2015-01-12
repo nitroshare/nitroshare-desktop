@@ -38,6 +38,7 @@ class SocketListener : public QObject
 public:
 
     SocketListener();
+    virtual ~SocketListener();
 
     void start();
 

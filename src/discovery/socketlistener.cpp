@@ -35,6 +35,14 @@ SocketListener::SocketListener()
     connect(&monitor, &InterfaceMonitor::interfaceRemoved, this, &SocketListener::removeInterface);
 }
 
+SocketListener::~SocketListener()
+{
+    QMapIterator<QString, QUdpSocket *> i(sockets);
+    while(i.hasNext()) {
+        i.value()->deleteLater();
+    }
+}
+
 void SocketListener::start()
 {
     monitor.start();
