@@ -4,8 +4,8 @@ cmake_minimum_required(VERSION 3.1.0)
 project(nitroshare VERSION 0.3.0 LANGUAGES CXX)
 
 # Ensure that the required Qt libraries are available
-find_package(Qt5Network REQUIRED)
-find_package(Qt5Widgets REQUIRED)
+find_package(Qt5Network 5.1 REQUIRED)
+find_package(Qt5Widgets 5.1 REQUIRED)
 
 # Set a flag needed for building Qt projects
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -20,6 +20,7 @@ set(SRC
     src/discovery/socketlistener.cpp
     src/main.cpp
     src/nitroshare.cpp
+    src/util/settings.cpp
     src/util.cpp)
 
 # Add the files that require MOC
@@ -37,7 +38,7 @@ add_executable(nitroshare WIN32 ${SRC} ${MOC} ${QRC})
 # Specify the required Qt libraries and ensure the
 # correct flags are set to enable C++11 features
 target_link_libraries(nitroshare Qt5::Network Qt5::Widgets)
-target_compile_features(nitroshare PRIVATE cxx_lambdas cxx_nullptr)
+target_compile_features(nitroshare PRIVATE cxx_lambdas cxx_nullptr cxx_uniform_initialization)
 
 # Install the application to the appropriate location
 install(TARGETS nitroshare RUNTIME DESTINATION bin)
