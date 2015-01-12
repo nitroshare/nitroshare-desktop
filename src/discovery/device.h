@@ -31,6 +31,7 @@ class Device
 {
 public:
 
+    QString uuid;
     QString name;
     QString version;
     QString operatingSystem;
