@@ -38,6 +38,7 @@ SocketListener::SocketListener()
 SocketListener::~SocketListener()
 {
     QMapIterator<QString, QUdpSocket *> i(sockets);
+
     while(i.hasNext()) {
         i.value()->deleteLater();
     }
@@ -73,6 +74,7 @@ void SocketListener::removeInterface(const QString &name)
 void SocketListener::processDatagrams()
 {
     QUdpSocket * socket = qobject_cast<QUdpSocket *>(sender());
+
     while(socket->hasPendingDatagrams()) {
         QByteArray data;
         data.resize(socket->pendingDatagramSize());

@@ -29,7 +29,6 @@
 #include "nitroshare.h"
 
 NitroShare::NitroShare()
-    : QSystemTrayIcon(nullptr)
 {
     initMenu();
 

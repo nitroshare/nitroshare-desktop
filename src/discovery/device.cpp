@@ -30,6 +30,7 @@ QByteArray Device::serialize() const
 {
     QByteArray data;
     QDataStream stream(&data, QIODevice::WriteOnly);
+
     stream << uuid
            << name
            << version
@@ -42,6 +43,7 @@ QByteArray Device::serialize() const
 bool Device::deserialize(const QByteArray &data)
 {
     QDataStream stream(data);
+
     stream >> uuid
            >> name
            >> version

@@ -40,9 +40,12 @@ void InterfaceMonitor::start()
 void InterfaceMonitor::refresh()
 {
     QSet<QString> newNames;
+
     foreach(QNetworkInterface interface, QNetworkInterface::allInterfaces()) {
         if(interface.flags() && QNetworkInterface::CanMulticast)
             newNames.insert(interface.name());
+
+        // TODO: verify that IPv6 address exists
     }
 
     foreach(QString name, newNames - oldNames) {
