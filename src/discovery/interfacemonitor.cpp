@@ -23,18 +23,14 @@
  **/
 
 #include <QNetworkInterface>
+#include <QTimer>
 
+#include "../util/settings.h"
 #include "interfacemonitor.h"
-
-InterfaceMonitor::InterfaceMonitor()
-{
-    connect(&timer, &QTimer::timeout, this, &InterfaceMonitor::refresh);
-}
 
 void InterfaceMonitor::start()
 {
     refresh();
-    timer.start(10000);
 }
 
 void InterfaceMonitor::refresh()
@@ -45,7 +41,8 @@ void InterfaceMonitor::refresh()
         if(interface.flags() && QNetworkInterface::CanMulticast)
             newNames.insert(interface.name());
 
-        // TODO: verify that IPv6 address exists
+        // TODO: verify that an IPv6 address is available since the
+        // interface may only provide an IPv4 multicast address
     }
 
     foreach(QString name, newNames - oldNames) {
@@ -57,4 +54,7 @@ void InterfaceMonitor::refresh()
     }
 
     oldNames = newNames;
+
+    QTimer::singleShot(Settings::get(Settings::Discovery::InterfaceMonitorInterval).toInt(),
+                       this, SLOT(refresh()));
 }

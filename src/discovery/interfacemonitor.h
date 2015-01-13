@@ -25,16 +25,14 @@
 #ifndef NS_INTERFACEMONITOR_H
 #define NS_INTERFACEMONITOR_H
 
+#include <QObject>
 #include <QSet>
-#include <QTimer>
 
 class InterfaceMonitor : public QObject
 {
     Q_OBJECT
 
 public:
-
-    InterfaceMonitor();
 
     void start();
 
@@ -49,7 +47,6 @@ private slots:
 
 private:
 
-    QTimer timer;
     QSet<QString> oldNames;
 };
 
