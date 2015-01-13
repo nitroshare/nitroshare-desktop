@@ -22,6 +22,7 @@
  * IN THE SOFTWARE.
  **/
 
+#include <QDateTime>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QVariantMap>
@@ -30,6 +31,22 @@
 #include "../util/settings.h"
 #include "config.h"
 #include "device.h"
+
+Device::Device()
+    : port(0), lastPing(0)
+{
+}
+
+void Device::pingReceived()
+{
+    lastPing = QDateTime::currentMSecsSinceEpoch();
+}
+
+bool Device::hasTimedOut() const
+{
+    return QDateTime::currentMSecsSinceEpoch() - lastPing >=
+            Settings::get<qint64>(Settings::DeviceTimeout);
+}
 
 QByteArray Device::current()
 {

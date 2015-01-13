@@ -31,14 +31,23 @@ class Device
 {
 public:
 
+    Device();
+
+    void pingReceived();
+    bool hasTimedOut() const;
+
+    static QByteArray current();
+    static bool deserialize(const QByteArray &data, Device &device);
+
     QString uuid;
     QString name;
     QString version;
     QString operatingSystem;
     quint16 port;
 
-    static QByteArray current();
-    static bool deserialize(const QByteArray &data, Device &device);
+private:
+
+    qint64 lastPing;
 };
 
 #endif // NS_DEVICE_H
