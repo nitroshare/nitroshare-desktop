@@ -29,51 +29,27 @@
 
 #include "settings.h"
 
-class Setting
+struct Setting
 {
-public:
-
     QString name;
     QVariant (*initialize)();
 };
 
-QMap<Settings::Key, Setting> keys {
-    {
-        Settings::InterfaceMonitorInterval, {
-            "InterfaceMonitorInterval",
-            []() -> QVariant { return 10 * 1000; }
-        }
-    },
-    {
-        Settings::MulticastAddress, {
-            "MulticastAddress",
-            []() -> QVariant { return "ffx8::64"; }
-        }
-    },
-    {
-        Settings::MulticastPort, {
-            "MulticastPort",
-            []() -> QVariant { return 40816; }
-        }
-    },
-    {
-        Settings::Name, {
-            "Name",
-            []() -> QVariant { return QHostInfo::localHostName(); }
-        }
-    },
-    {
-        Settings::TransferPort, {
-            "TransferPort",
-            []() -> QVariant { return 40818; }
-        }
-    },
-    {
-        Settings::UUID, {
-            "UUID",
-            []() -> QVariant { return QUuid::createUuid(); }
-        }
+#define DEFINE_SETTING(x,y) \
+    { \
+        Settings::x, { \
+            #x, \
+            []() -> QVariant y \
+        } \
     }
+
+QMap<Settings::Key, Setting> keys {
+    DEFINE_SETTING(InterfaceMonitorInterval, { return 10 * 1000; }),
+    DEFINE_SETTING(MulticastAddress, { return "ffx8::64"; }),
+    DEFINE_SETTING(MulticastPort, { return 40816; }),
+    DEFINE_SETTING(Name, { return QHostInfo::localHostName(); }),
+    DEFINE_SETTING(TransferPort, { return 40818; }),
+    DEFINE_SETTING(UUID, { return QUuid::createUuid(); })
 };
 
 Q_GLOBAL_STATIC(Settings, settings)
