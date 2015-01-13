@@ -27,7 +27,8 @@ set(SRC
 qt5_wrap_cpp(MOC
     src/discovery/interfacemonitor.h
     src/discovery/socketlistener.h
-    src/nitroshare.h)
+    src/nitroshare.h
+    src/util/settings.h)
 
 # Add resource files
 qt5_add_resources(QRC resources.qrc)

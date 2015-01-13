@@ -37,11 +37,11 @@ QByteArray Device::current()
     // initializer instead of converting a QVariantMap
 
     QVariantMap device {
-        { "uuid", Settings::get(Settings::Discovery::UUID) },
-        { "name", Settings::get(Settings::Discovery::Name) },
+        { "uuid", Settings::get<QString>(Settings::UUID) },
+        { "name", Settings::get<QString>(Settings::Name) },
         { "version", NITROSHARE_VERSION },
         { "operating_system", currentOperatingSystem() },
-        { "port", Settings::get(Settings::Transfer::Port) }
+        { "port", Settings::get<quint16>(Settings::TransferPort) }
     };
 
     return QJsonDocument(QJsonObject::fromVariantMap(device)).toJson(QJsonDocument::Compact);
@@ -55,9 +55,9 @@ bool Device::deserialize(const QByteArray &data, Device &device)
         return false;
     }
 
-    device.uuid    = object.value("uuid").toString();
+    device.uuid = object.value("uuid").toString();
     device.version = object.value("version").toString();
-    device.port    = object.value("port").toInt();
+    device.port = object.value("port").toInt();
 
     if(device.version != NITROSHARE_VERSION) {
         return false;

@@ -29,59 +29,75 @@
 
 #include "settings.h"
 
-#define DEFINE_SETTING(x,y) \
-    const QString Settings::x::y = #x "/" #y;
+class Setting
+{
+public:
 
-DEFINE_SETTING(Discovery, InterfaceMonitorInterval)
-DEFINE_SETTING(Discovery, MulticastAddress)
-DEFINE_SETTING(Discovery, MulticastPort)
-DEFINE_SETTING(Discovery, Name)
-DEFINE_SETTING(Discovery, UUID)
+    QString name;
+    QVariant (*initialize)();
+};
 
-DEFINE_SETTING(Transfer, Port)
-
-QMap<QString, QVariant (*)()> defaults {
+QMap<Settings::Key, Setting> keys {
     {
-        Settings::Discovery::InterfaceMonitorInterval,
-        []() -> QVariant { return 10 * 1000; }
+        Settings::InterfaceMonitorInterval, {
+            "InterfaceMonitorInterval",
+            []() -> QVariant { return 10 * 1000; }
+        }
     },
     {
-        Settings::Discovery::MulticastAddress,
-        []() -> QVariant { return "ffx8::64"; }
+        Settings::MulticastAddress, {
+            "MulticastAddress",
+            []() -> QVariant { return "ffx8::64"; }
+        }
     },
     {
-        Settings::Discovery::MulticastPort,
-        []() -> QVariant { return 40816; }
+        Settings::MulticastPort, {
+            "MulticastPort",
+            []() -> QVariant { return 40816; }
+        }
     },
     {
-        Settings::Discovery::Name,
-        []() -> QVariant { return QHostInfo::localHostName(); }
+        Settings::Name, {
+            "Name",
+            []() -> QVariant { return QHostInfo::localHostName(); }
+        }
     },
     {
-        Settings::Discovery::UUID,
-        []() -> QVariant { return QUuid::createUuid(); }
+        Settings::TransferPort, {
+            "TransferPort",
+            []() -> QVariant { return 40818; }
+        }
     },
     {
-        Settings::Transfer::Port,
-        []() -> QVariant { return 40818; }
+        Settings::UUID, {
+            "UUID",
+            []() -> QVariant { return QUuid::createUuid(); }
+        }
     }
 };
 
-Q_GLOBAL_STATIC(QSettings, settings)
+Q_GLOBAL_STATIC(Settings, settings)
 
-QVariant Settings::get(QString key)
+QVariant Settings::loadValue(Key key)
 {
-    if(!settings->contains(key) && defaults.contains(key))
-        Settings::set(key, defaults.value(key)());
-    return settings->value(key);
+    Setting setting = keys.value(key);
+
+    if(!settings->contains(setting.name))
+        Settings::storeValue(key, setting.initialize(), true);
+
+    return settings->value(setting.name);
 }
 
-void Settings::set(QString key, const QVariant &value)
+void Settings::storeValue(Key key, const QVariant &value, bool initializing)
 {
-    settings->setValue(key, value);
+    settings->setValue(keys.value(key).name, value);
+
+    if(!initializing) {
+        emit settings->settingChanged(key);
+    }
 }
 
-void Settings::sync()
+Settings * Settings::instance()
 {
-    settings->sync();
+    return settings;
 }

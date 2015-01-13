@@ -25,25 +25,37 @@
 #ifndef NS_SETTINGS_H
 #define NS_SETTINGS_H
 
-#include <QVariant>
+#include <QSettings>
 
-namespace Settings
+class Settings : public QSettings
 {
-    namespace Discovery {
-        extern const QString InterfaceMonitorInterval;
-        extern const QString MulticastAddress;
-        extern const QString MulticastPort;
-        extern const QString Name;
-        extern const QString UUID;
-    }
+    Q_OBJECT
 
-    namespace Transfer {
-        extern const QString Port;
-    }
+public:
 
-    QVariant get(QString key);
-    void set(QString key, const QVariant &value);
-    void sync();
-}
+    enum Key {
+        InterfaceMonitorInterval,
+        MulticastAddress,
+        MulticastPort,
+        Name,
+        TransferPort,
+        UUID
+    };
+
+    template <class T>
+    static T get(Key key) { return loadValue(key).value<T>(); }
+    static void set(Key key, const QVariant &value) { storeValue(key, value, false); }
+
+    static Settings * instance();
+
+signals:
+
+    void settingChanged(Key key);
+
+private:
+
+    static QVariant loadValue(Key key);
+    static void storeValue(Key key, const QVariant &value, bool initializing);
+};
 
 #endif // NS_SETTINGS_H

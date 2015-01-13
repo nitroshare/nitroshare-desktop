@@ -25,9 +25,11 @@
 #ifndef NS_SOCKETLISTENER_H
 #define NS_SOCKETLISTENER_H
 
+#include <QHostAddress>
 #include <QMap>
 #include <QUdpSocket>
 
+#include "../util/settings.h"
 #include "device.h"
 #include "interfacemonitor.h"
 
@@ -44,7 +46,11 @@ public:
 
 signals:
 
-    void devicePing(const Device &device);
+    void pingReceived(const Device &device);
+
+public slots:
+
+    void sendPing();
 
 private slots:
 
@@ -52,11 +58,17 @@ private slots:
     void removeInterface(const QString &name);
 
     void processDatagrams();
+    void settingChanged(Settings::Key key);
 
 private:
 
+    void reload();
+
     InterfaceMonitor monitor;
     QMap<QString, QUdpSocket *> sockets;
+
+    QHostAddress multicastAddress;
+    quint16 multicastPort;
 };
 
 #endif // NS_SOCKETLISTENER_H

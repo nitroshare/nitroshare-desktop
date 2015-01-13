@@ -26,13 +26,13 @@
 
 #include "socketlistener.h"
 
-const QHostAddress multicastAddress("ffx8::64");
-const quint16 multicastPort = 40816;
-
 SocketListener::SocketListener()
 {
     connect(&monitor, &InterfaceMonitor::interfaceAdded, this, &SocketListener::addInterface);
     connect(&monitor, &InterfaceMonitor::interfaceRemoved, this, &SocketListener::removeInterface);
+    connect(Settings::instance(), &Settings::settingChanged, this, &SocketListener::settingChanged);
+
+    reload();
 }
 
 SocketListener::~SocketListener()
@@ -47,6 +47,15 @@ SocketListener::~SocketListener()
 void SocketListener::start()
 {
     monitor.start();
+}
+
+void SocketListener::sendPing()
+{
+    QMapIterator<QString, QUdpSocket *> i(sockets);
+
+    while(i.hasNext()) {
+        i.value()->writeDatagram(Device::current(), multicastAddress, multicastPort);
+    }
 }
 
 void SocketListener::addInterface(const QString &name)
@@ -66,8 +75,9 @@ void SocketListener::addInterface(const QString &name)
 void SocketListener::removeInterface(const QString &name)
 {
     QUdpSocket *socket = sockets.take(name);
+    QNetworkInterface interface = QNetworkInterface::interfaceFromName(name);
 
-    socket->leaveMulticastGroup(multicastAddress);
+    socket->leaveMulticastGroup(multicastAddress, interface);
     socket->deleteLater();
 }
 
@@ -81,8 +91,21 @@ void SocketListener::processDatagrams()
         socket->readDatagram(data.data(), data.size());
 
         Device device;
-        if(device.deserialize(data)) {
-            emit devicePing(device);
+        if(Device::deserialize(data, device)) {
+            emit pingReceived(device);
         }
     }
+}
+
+void SocketListener::settingChanged(Settings::Key key)
+{
+    if(key == Settings::MulticastAddress || key == Settings::MulticastPort) {
+        reload();
+    }
+}
+
+void SocketListener::reload()
+{
+    multicastAddress = QHostAddress(Settings::get<QString>(Settings::MulticastAddress));
+    multicastPort = Settings::get<quint16>(Settings::MulticastPort);
 }

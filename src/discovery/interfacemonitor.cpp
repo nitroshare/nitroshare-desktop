@@ -25,8 +25,16 @@
 #include <QNetworkInterface>
 #include <QTimer>
 
-#include "../util/settings.h"
 #include "interfacemonitor.h"
+
+InterfaceMonitor::InterfaceMonitor()
+{
+    connect(&timer, &QTimer::timeout, this, &InterfaceMonitor::refresh);
+    connect(Settings::instance(), &Settings::settingChanged, this, &InterfaceMonitor::settingChanged);
+
+    timer.setSingleShot(true);
+    reload();
+}
 
 void InterfaceMonitor::start()
 {
@@ -55,6 +63,19 @@ void InterfaceMonitor::refresh()
 
     oldNames = newNames;
 
-    QTimer::singleShot(Settings::get(Settings::Discovery::InterfaceMonitorInterval).toInt(),
-                       this, SLOT(refresh()));
+    timer.start();
+}
+
+void InterfaceMonitor::settingChanged(Settings::Key key)
+{
+    if(key == Settings::InterfaceMonitorInterval) {
+        timer.stop();
+        reload();
+        timer.start();
+    }
+}
+
+void InterfaceMonitor::reload()
+{
+    timer.setInterval(Settings::get<int>(Settings::InterfaceMonitorInterval));
 }
