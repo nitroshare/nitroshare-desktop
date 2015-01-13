@@ -44,6 +44,7 @@ struct Setting
     }
 
 QMap<Settings::Key, Setting> keys {
+    DEFINE_SETTING(DeviceTimeout, { return 30 * 1000; }),
     DEFINE_SETTING(InterfaceMonitorInterval, { return 10 * 1000; }),
     DEFINE_SETTING(MulticastAddress, { return "ffx8::64"; }),
     DEFINE_SETTING(MulticastPort, { return 40816; }),
@@ -58,8 +59,9 @@ QVariant Settings::loadValue(Key key)
 {
     Setting setting = keys.value(key);
 
-    if(!settings->contains(setting.name))
+    if(!settings->contains(setting.name)) {
         Settings::storeValue(key, setting.initialize(), true);
+    }
 
     return settings->value(setting.name);
 }

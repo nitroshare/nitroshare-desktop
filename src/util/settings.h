@@ -34,6 +34,7 @@ class Settings : public QSettings
 public:
 
     enum Key {
+        DeviceTimeout,
         InterfaceMonitorInterval,
         MulticastAddress,
         MulticastPort,
