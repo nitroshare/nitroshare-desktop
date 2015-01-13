@@ -38,6 +38,8 @@ DEFINE_SETTING(Discovery, MulticastPort)
 DEFINE_SETTING(Discovery, Name)
 DEFINE_SETTING(Discovery, UUID)
 
+DEFINE_SETTING(Transfer, Port)
+
 QMap<QString, QVariant (*)()> defaults {
     {
         Settings::Discovery::InterfaceMonitorInterval,
@@ -58,6 +60,10 @@ QMap<QString, QVariant (*)()> defaults {
     {
         Settings::Discovery::UUID,
         []() -> QVariant { return QUuid::createUuid(); }
+    },
+    {
+        Settings::Transfer::Port,
+        []() -> QVariant { return 40818; }
     }
 };
 
@@ -73,4 +79,9 @@ QVariant Settings::get(QString key)
 void Settings::set(QString key, const QVariant &value)
 {
     settings->setValue(key, value);
+}
+
+void Settings::sync()
+{
+    settings->sync();
 }

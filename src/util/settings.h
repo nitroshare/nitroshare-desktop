@@ -37,8 +37,13 @@ namespace Settings
         extern const QString UUID;
     }
 
-    static QVariant get(QString key);
-    static void set(QString key, const QVariant &value);
+    namespace Transfer {
+        extern const QString Port;
+    }
+
+    QVariant get(QString key);
+    void set(QString key, const QVariant &value);
+    void sync();
 }
 
 #endif // NS_SETTINGS_H
