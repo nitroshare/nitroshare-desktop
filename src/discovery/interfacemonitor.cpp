@@ -32,13 +32,13 @@ InterfaceMonitor::InterfaceMonitor()
     connect(&timer, &QTimer::timeout, this, &InterfaceMonitor::refresh);
     connect(Settings::instance(), &Settings::settingChanged, this, &InterfaceMonitor::settingChanged);
 
-    timer.setSingleShot(true);
     reload();
 }
 
 void InterfaceMonitor::start()
 {
     refresh();
+    timer.start();
 }
 
 void InterfaceMonitor::refresh()
@@ -62,8 +62,6 @@ void InterfaceMonitor::refresh()
     }
 
     oldNames = newNames;
-
-    timer.start();
 }
 
 void InterfaceMonitor::settingChanged(Settings::Key key)
