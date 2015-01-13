@@ -61,10 +61,8 @@ void SocketListener::sendPing()
 void SocketListener::addInterface(const QString &name)
 {
     QUdpSocket * socket = new QUdpSocket;
-    QNetworkInterface interface = QNetworkInterface::interfaceFromName(name);
 
-    if(socket->bind(multicastPort, QUdpSocket::ShareAddress) &&
-            socket->joinMulticastGroup(multicastAddress, interface)) {
+    if(initialize(socket, name)) {
         sockets.insert(name, socket);
         return;
     }
@@ -75,9 +73,8 @@ void SocketListener::addInterface(const QString &name)
 void SocketListener::removeInterface(const QString &name)
 {
     QUdpSocket *socket = sockets.take(name);
-    QNetworkInterface interface = QNetworkInterface::interfaceFromName(name);
 
-    socket->leaveMulticastGroup(multicastAddress, interface);
+    shutdown(socket);
     socket->deleteLater();
 }
 
@@ -100,7 +97,20 @@ void SocketListener::processDatagrams()
 void SocketListener::settingChanged(Settings::Key key)
 {
     if(key == Settings::MulticastAddress || key == Settings::MulticastPort) {
+
+        QMapIterator<QString, QUdpSocket *> i(sockets);
+
+        while(i.hasNext()) {
+            shutdown(i.value());
+        }
+
         reload();
+
+        while(i.hasNext()) {
+            if(!initialize(i.value(), i.key())) {
+                sockets.remove(i.key());
+            }
+        }
     }
 }
 
@@ -108,4 +118,18 @@ void SocketListener::reload()
 {
     multicastAddress = QHostAddress(Settings::get<QString>(Settings::MulticastAddress));
     multicastPort = Settings::get<quint16>(Settings::MulticastPort);
+}
+
+bool SocketListener::initialize(QUdpSocket *socket, const QString &name)
+{
+    QNetworkInterface interface = QNetworkInterface::interfaceFromName(name);
+
+    return socket->bind(multicastPort, QUdpSocket::ShareAddress) &&
+            socket->joinMulticastGroup(multicastAddress, interface);
+}
+
+void SocketListener::shutdown(QUdpSocket *socket)
+{
+    socket->leaveMulticastGroup(multicastAddress, socket->multicastInterface());
+    socket->close();
 }

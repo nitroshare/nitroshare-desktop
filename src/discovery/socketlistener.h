@@ -64,6 +64,9 @@ private:
 
     void reload();
 
+    bool initialize(QUdpSocket *socket, const QString &name);
+    void shutdown(QUdpSocket *socket);
+
     InterfaceMonitor monitor;
     QMap<QString, QUdpSocket *> sockets;
 
