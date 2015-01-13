@@ -49,6 +49,7 @@ QMap<Settings::Key, Setting> keys {
     DEFINE_SETTING(MulticastAddress, { return "ffx8::64"; }),
     DEFINE_SETTING(MulticastPort, { return 40816; }),
     DEFINE_SETTING(Name, { return QHostInfo::localHostName(); }),
+    DEFINE_SETTING(PingInterval, { return 5 * 1000; }),
     DEFINE_SETTING(TransferPort, { return 40818; }),
     DEFINE_SETTING(UUID, { return QUuid::createUuid(); })
 };

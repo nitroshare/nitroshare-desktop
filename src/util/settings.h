@@ -39,6 +39,7 @@ public:
         MulticastAddress,
         MulticastPort,
         Name,
+        PingInterval,
         TransferPort,
         UUID
     };
