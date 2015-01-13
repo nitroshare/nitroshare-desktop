@@ -22,33 +22,58 @@
  * IN THE SOFTWARE.
  **/
 
-#include <QDataStream>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QVariantMap>
 
+#include "../util/misc.h"
+#include "../util/settings.h"
+#include "config.h"
 #include "device.h"
 
-QByteArray Device::serialize() const
+QByteArray Device::current()
 {
-    QByteArray data;
-    QDataStream stream(&data, QIODevice::WriteOnly);
+    // TODO: when switching to Qt 5.4, switch to using QJsonObject's
+    // initializer instead of converting a QVariantMap
 
-    stream << uuid
-           << name
-           << version
-           << operatingSystem
-           << port;
+    QVariantMap device {
+        { "uuid", Settings::get(Settings::Discovery::UUID) },
+        { "name", Settings::get(Settings::Discovery::Name) },
+        { "version", NITROSHARE_VERSION },
+        { "operating_system", currentOperatingSystem() },
+        { "port", Settings::get(Settings::Transfer::Port) }
+    };
 
-    return data;
+    return QJsonDocument(QJsonObject::fromVariantMap(device)).toJson(QJsonDocument::Compact);
 }
 
-bool Device::deserialize(const QByteArray &data)
+bool Device::deserialize(const QByteArray &data, Device &device)
 {
-    QDataStream stream(data);
+    QJsonObject object = QJsonDocument::fromJson(data).object();
 
-    stream >> uuid
-           >> name
-           >> version
-           >> operatingSystem
-           >> port;
+    if(!object.contains("uuid") || !object.contains("version") || !object.contains("port")) {
+        return false;
+    }
 
-    return stream.status() == QDataStream::Ok;
+    device.uuid    = object.value("uuid").toString();
+    device.version = object.value("version").toString();
+    device.port    = object.value("port").toInt();
+
+    if(device.version != NITROSHARE_VERSION) {
+        return false;
+    }
+
+    if(object.contains("name")) {
+        device.name = object.value("name").toString();
+    } else {
+        device.name = device.uuid;
+    }
+
+    if(object.contains("operating_system")) {
+        device.operatingSystem = object.value("operating_system").toString();
+    } else {
+        device.operatingSystem = "unknown";
+    }
+
+    return true;
 }

@@ -37,8 +37,8 @@ public:
     QString operatingSystem;
     quint16 port;
 
-    QByteArray serialize() const;
-    bool deserialize(const QByteArray &data);
+    static QByteArray current();
+    static bool deserialize(const QByteArray &data, Device &device);
 };
 
 #endif // NS_DEVICE_H
