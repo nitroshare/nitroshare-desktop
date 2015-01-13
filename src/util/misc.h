@@ -22,17 +22,11 @@
  * IN THE SOFTWARE.
  **/
 
-#include "util.h"
+#ifndef NS_MISC_H
+#define NS_MISC_H
 
-QString currentOperatingSystem()
-{
-#if defined(Q_OS_WIN32)
-    return "win32";
-#elif defined(Q_OS_MAC)
-    return "mac";
-#elif defined(Q_OS_LINUX)
-    return "linux";
-#else
-    return "unknown";
-#endif
-}
+#include <QString>
+
+QString currentOperatingSystem();
+
+#endif // NS_MISC_H

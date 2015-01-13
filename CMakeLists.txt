@@ -20,8 +20,8 @@ set(SRC
     src/discovery/socketlistener.cpp
     src/main.cpp
     src/nitroshare.cpp
-    src/util/settings.cpp
-    src/util.cpp)
+    src/util/misc.cpp
+    src/util/settings.cpp)
 
 # Add the files that require MOC
 qt5_wrap_cpp(MOC
