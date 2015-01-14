@@ -33,13 +33,8 @@
 #include "device.h"
 
 Device::Device()
-    : port(0), lastPing(0)
+    : port(0), lastPing(QDateTime::currentMSecsSinceEpoch())
 {
-}
-
-void Device::pingReceived()
-{
-    lastPing = QDateTime::currentMSecsSinceEpoch();
 }
 
 bool Device::hasTimedOut() const

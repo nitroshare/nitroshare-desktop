@@ -33,7 +33,6 @@ public:
 
     Device();
 
-    void pingReceived();
     bool hasTimedOut() const;
 
     static QByteArray current();
