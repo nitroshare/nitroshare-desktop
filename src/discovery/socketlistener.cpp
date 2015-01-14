@@ -38,11 +38,10 @@ SocketListener::SocketListener()
 
 SocketListener::~SocketListener()
 {
-    QMapIterator<QString, QUdpSocket *> i(sockets);
+    QMap<QString, QUdpSocket *>::iterator i;
 
-    while(i.hasNext()) {
-        shutdown(i.value());
-        i.value()->deleteLater();
+    for(i = sockets.begin(); i != sockets.end(); ++i) {
+        shutdown(i.value(), true);
     }
 }
 
@@ -66,17 +65,14 @@ void SocketListener::addInterface(const QString &name)
 
 void SocketListener::removeInterface(const QString &name)
 {
-    QUdpSocket *socket = sockets.take(name);
-
-    shutdown(socket);
-    socket->deleteLater();
+    shutdown(sockets.take(name), true);
 }
 
 void SocketListener::sendPing()
 {
-    QMapIterator<QString, QUdpSocket *> i(sockets);
+    QMap<QString, QUdpSocket *>::iterator i;
 
-    while(i.hasNext()) {
+    for(i = sockets.begin(); i != sockets.end(); ++i) {
         i.value()->writeDatagram(Device::current(), multicastAddress, multicastPort);
     }
 }
@@ -102,19 +98,19 @@ void SocketListener::settingChanged(Settings::Key key)
     if(key == Settings::PingInterval || key == Settings::MulticastAddress ||
             key == Settings::MulticastPort) {
 
-        QMapIterator<QString, QUdpSocket *> i(sockets);
+        QMap<QString, QUdpSocket *>::iterator i;
 
-        while(i.hasNext()) {
-            shutdown(i.value());
+        for(i = sockets.begin(); i != sockets.end(); ++i) {
+            shutdown(i.value(), false);
         }
 
         timer.stop();
         reload();
         timer.start();
 
-        while(i.hasNext()) {
+        for(i = sockets.begin(); i != sockets.end(); ++i) {
             if(!initialize(i.value(), i.key())) {
-                sockets.remove(i.key());
+                shutdown(sockets.take(i.key()), true);
             }
         }
     }
@@ -136,8 +132,12 @@ bool SocketListener::initialize(QUdpSocket *socket, const QString &name)
             socket->joinMulticastGroup(multicastAddress, interface);
 }
 
-void SocketListener::shutdown(QUdpSocket *socket)
+void SocketListener::shutdown(QUdpSocket *socket, bool destroy)
 {
     socket->leaveMulticastGroup(multicastAddress, socket->multicastInterface());
     socket->close();
+
+    if(destroy) {
+        socket->deleteLater();
+    }
 }

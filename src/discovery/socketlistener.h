@@ -64,7 +64,7 @@ private:
     void reload();
 
     bool initialize(QUdpSocket *socket, const QString &name);
-    void shutdown(QUdpSocket *socket);
+    void shutdown(QUdpSocket *socket, bool destroy);
 
     InterfaceMonitor monitor;
 
