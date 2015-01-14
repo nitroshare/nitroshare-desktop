@@ -28,6 +28,8 @@
 #include <QMenu>
 #include <QSystemTrayIcon>
 
+#include "discovery/devicemonitor.h"
+
 class NitroShare : public QSystemTrayIcon
 {
     Q_OBJECT
@@ -36,9 +38,16 @@ public:
 
     NitroShare();
 
+private slots:
+
+    void displayDeviceAdded(const Device& device);
+    void displayDeviceRemoved(const Device& device);
+
 private:
 
     void initMenu();
+
+    DeviceMonitor monitor;
 
     QMenu menu;
 };

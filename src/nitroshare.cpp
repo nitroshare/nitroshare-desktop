@@ -30,12 +30,27 @@
 
 NitroShare::NitroShare()
 {
+    connect(&monitor, &DeviceMonitor::deviceAdded, this, &NitroShare::displayDeviceAdded);
+    connect(&monitor, &DeviceMonitor::deviceRemoved, this, &NitroShare::displayDeviceRemoved);
+
     initMenu();
 
     setIcon(QIcon(":/img/icon.png"));
     setContextMenu(&menu);
 
     show();
+
+    monitor.start();
+}
+
+void NitroShare::displayDeviceAdded(const Device &device)
+{
+    showMessage(tr("Device Added"), device.name);
+}
+
+void NitroShare::displayDeviceRemoved(const Device &device)
+{
+    showMessage(tr("Device Removed"), device.name);
 }
 
 void NitroShare::initMenu()
