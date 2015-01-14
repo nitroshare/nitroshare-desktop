@@ -139,6 +139,8 @@ bool SocketListener::initialize(QUdpSocket *socket, const QString &name)
 {
     QNetworkInterface interface = QNetworkInterface::interfaceFromName(name);
 
+    socket->setMulticastInterface(interface);
+
     return socket->bind(QHostAddress::AnyIPv6, multicastPort, QUdpSocket::ShareAddress) &&
             socket->joinMulticastGroup(multicastAddress, interface);
 }
