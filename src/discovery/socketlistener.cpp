@@ -22,6 +22,7 @@
  * IN THE SOFTWARE.
  **/
 
+#include <QDebug>
 #include <QMapIterator>
 #include <QMutableMapIterator>
 #include <QNetworkInterface>
@@ -60,6 +61,7 @@ void SocketListener::addInterface(const QString &name)
     connect(socket, &QUdpSocket::readyRead, this, &SocketListener::processDatagrams);
 
     if(initialize(socket, name)) {
+        qDebug() << "Initialized new interface" << name;
         sockets.insert(name, socket);
         return;
     }
@@ -69,6 +71,7 @@ void SocketListener::addInterface(const QString &name)
 
 void SocketListener::removeInterface(const QString &name)
 {
+    qDebug() << "Removing interface" << name;
     shutdown(sockets.take(name), true);
 }
 
@@ -139,10 +142,19 @@ bool SocketListener::initialize(QUdpSocket *socket, const QString &name)
 {
     QNetworkInterface interface = QNetworkInterface::interfaceFromName(name);
 
+    if(!socket->bind(QHostAddress::AnyIPv6, multicastPort, QUdpSocket::ShareAddress)) {
+        qDebug() << "Unable to bind" << name;
+        return false;
+    }
+
     socket->setMulticastInterface(interface);
 
-    return socket->bind(QHostAddress::AnyIPv6, multicastPort, QUdpSocket::ShareAddress) &&
-            socket->joinMulticastGroup(multicastAddress, interface);
+    if(!socket->joinMulticastGroup(multicastAddress, interface)) {
+        qDebug() << "Unable to join" << multicastAddress.toString() << "on" << name;
+        return false;
+    }
+
+    return true;
 }
 
 void SocketListener::shutdown(QUdpSocket *socket, bool destroy)
