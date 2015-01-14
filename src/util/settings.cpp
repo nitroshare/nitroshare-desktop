@@ -24,7 +24,6 @@
 
 #include <QHostInfo>
 #include <QMap>
-#include <QSettings>
 #include <QUuid>
 
 #include "settings.h"
@@ -44,14 +43,12 @@ struct Setting
     }
 
 QMap<Settings::Key, Setting> keys {
-    DEFINE_SETTING(DeviceTimeout, { return 30 * 1000; }),
-    DEFINE_SETTING(InterfaceMonitorInterval, { return 10 * 1000; }),
-    DEFINE_SETTING(MulticastAddress, { return "ff02::1"; }),
-    DEFINE_SETTING(MulticastPort, { return 40816; }),
-    DEFINE_SETTING(Name, { return QHostInfo::localHostName(); }),
-    DEFINE_SETTING(PingInterval, { return 5 * 1000; }),
-    DEFINE_SETTING(TransferPort, { return 40818; }),
-    DEFINE_SETTING(UUID, { return QUuid::createUuid(); })
+    DEFINE_SETTING(BroadcastInterval, { return 5 * 1000; }),
+    DEFINE_SETTING(BroadcastPort, { return 40816; }),
+    DEFINE_SETTING(BroadcastTimeout, { return 30 * 1000; }),
+    DEFINE_SETTING(DeviceName, { return QHostInfo::localHostName(); }),
+    DEFINE_SETTING(DeviceUUID, { return QUuid::createUuid(); }),
+    DEFINE_SETTING(TransferPort, { return 40818; })
 };
 
 Q_GLOBAL_STATIC(Settings, settings)

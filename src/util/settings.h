@@ -34,14 +34,12 @@ class Settings : public QSettings
 public:
 
     enum Key {
-        DeviceTimeout,
-        InterfaceMonitorInterval,
-        MulticastAddress,
-        MulticastPort,
-        Name,
-        PingInterval,
-        TransferPort,
-        UUID
+        BroadcastInterval,
+        BroadcastPort,
+        BroadcastTimeout,
+        DeviceName,
+        DeviceUUID,
+        TransferPort
     };
 
     template <class T>
