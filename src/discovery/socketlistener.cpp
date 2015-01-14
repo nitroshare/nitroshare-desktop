@@ -32,7 +32,7 @@ SocketListener::SocketListener()
 {
     connect(&monitor, &InterfaceMonitor::interfaceAdded, this, &SocketListener::addInterface);
     connect(&monitor, &InterfaceMonitor::interfaceRemoved, this, &SocketListener::removeInterface);
-    connect(&timer, &QTimer::interval, this, &SocketListener::sendPing);
+    connect(&timer, &QTimer::timeout, this, &SocketListener::sendPing);
     connect(Settings::instance(), &Settings::settingChanged, this, &SocketListener::settingChanged);
 
     reload();

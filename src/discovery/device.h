@@ -25,7 +25,7 @@
 #ifndef NS_DEVICE_H
 #define NS_DEVICE_H
 
-#include <QString>
+#include <QMap>
 
 class Device
 {
