@@ -57,6 +57,8 @@ void SocketListener::addInterface(const QString &name)
 {
     QUdpSocket * socket = new QUdpSocket;
 
+    connect(socket, &QUdpSocket::readyRead, this, &SocketListener::processDatagrams);
+
     if(initialize(socket, name)) {
         sockets.insert(name, socket);
         return;
@@ -137,7 +139,7 @@ bool SocketListener::initialize(QUdpSocket *socket, const QString &name)
 {
     QNetworkInterface interface = QNetworkInterface::interfaceFromName(name);
 
-    return socket->bind(multicastPort, QUdpSocket::ShareAddress) &&
+    return socket->bind(QHostAddress::AnyIPv6, multicastPort, QUdpSocket::ShareAddress) &&
             socket->joinMulticastGroup(multicastAddress, interface);
 }
 
