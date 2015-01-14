@@ -27,6 +27,7 @@
 
 #include <QHostAddress>
 #include <QMap>
+#include <QTimer>
 #include <QUdpSocket>
 
 #include "../util/settings.h"
@@ -48,14 +49,12 @@ signals:
 
     void pingReceived(const Device &device);
 
-public slots:
-
-    void sendPing();
-
 private slots:
 
     void addInterface(const QString &name);
     void removeInterface(const QString &name);
+
+    void sendPing();
 
     void processDatagrams();
     void settingChanged(Settings::Key key);
@@ -68,6 +67,8 @@ private:
     void shutdown(QUdpSocket *socket);
 
     InterfaceMonitor monitor;
+
+    QTimer timer;
     QMap<QString, QUdpSocket *> sockets;
 
     QHostAddress multicastAddress;

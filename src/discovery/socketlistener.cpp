@@ -30,6 +30,7 @@ SocketListener::SocketListener()
 {
     connect(&monitor, &InterfaceMonitor::interfaceAdded, this, &SocketListener::addInterface);
     connect(&monitor, &InterfaceMonitor::interfaceRemoved, this, &SocketListener::removeInterface);
+    connect(&timer, &QTimer::interval, this, &SocketListener::sendPing);
     connect(Settings::instance(), &Settings::settingChanged, this, &SocketListener::settingChanged);
 
     reload();
@@ -40,6 +41,7 @@ SocketListener::~SocketListener()
     QMapIterator<QString, QUdpSocket *> i(sockets);
 
     while(i.hasNext()) {
+        shutdown(i.value());
         i.value()->deleteLater();
     }
 }
@@ -47,15 +49,7 @@ SocketListener::~SocketListener()
 void SocketListener::start()
 {
     monitor.start();
-}
-
-void SocketListener::sendPing()
-{
-    QMapIterator<QString, QUdpSocket *> i(sockets);
-
-    while(i.hasNext()) {
-        i.value()->writeDatagram(Device::current(), multicastAddress, multicastPort);
-    }
+    timer.start();
 }
 
 void SocketListener::addInterface(const QString &name)
@@ -78,6 +72,15 @@ void SocketListener::removeInterface(const QString &name)
     socket->deleteLater();
 }
 
+void SocketListener::sendPing()
+{
+    QMapIterator<QString, QUdpSocket *> i(sockets);
+
+    while(i.hasNext()) {
+        i.value()->writeDatagram(Device::current(), multicastAddress, multicastPort);
+    }
+}
+
 void SocketListener::processDatagrams()
 {
     QUdpSocket * socket = qobject_cast<QUdpSocket *>(sender());
@@ -96,7 +99,8 @@ void SocketListener::processDatagrams()
 
 void SocketListener::settingChanged(Settings::Key key)
 {
-    if(key == Settings::MulticastAddress || key == Settings::MulticastPort) {
+    if(key == Settings::PingInterval || key == Settings::MulticastAddress ||
+            key == Settings::MulticastPort) {
 
         QMapIterator<QString, QUdpSocket *> i(sockets);
 
@@ -104,7 +108,9 @@ void SocketListener::settingChanged(Settings::Key key)
             shutdown(i.value());
         }
 
+        timer.stop();
         reload();
+        timer.start();
 
         while(i.hasNext()) {
             if(!initialize(i.value(), i.key())) {
@@ -116,6 +122,8 @@ void SocketListener::settingChanged(Settings::Key key)
 
 void SocketListener::reload()
 {
+    timer.setInterval(Settings::get<int>(Settings::PingInterval));
+
     multicastAddress = QHostAddress(Settings::get<QString>(Settings::MulticastAddress));
     multicastPort = Settings::get<quint16>(Settings::MulticastPort);
 }
