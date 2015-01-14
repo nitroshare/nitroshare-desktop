@@ -22,6 +22,8 @@
  * IN THE SOFTWARE.
  **/
 
+#include <QMapIterator>
+#include <QMutableMapIterator>
 #include <QNetworkInterface>
 
 #include "socketlistener.h"
@@ -38,10 +40,10 @@ SocketListener::SocketListener()
 
 SocketListener::~SocketListener()
 {
-    QMap<QString, QUdpSocket *>::iterator i;
+    QMapIterator<QString, QUdpSocket *> i(sockets);
 
-    for(i = sockets.begin(); i != sockets.end(); ++i) {
-        shutdown(i.value(), true);
+    while(i.hasNext()) {
+        shutdown(i.next().value(), true);
     }
 }
 
@@ -70,10 +72,10 @@ void SocketListener::removeInterface(const QString &name)
 
 void SocketListener::sendPing()
 {
-    QMap<QString, QUdpSocket *>::iterator i;
+    QMapIterator<QString, QUdpSocket *> i(sockets);
 
-    for(i = sockets.begin(); i != sockets.end(); ++i) {
-        i.value()->writeDatagram(Device::current(), multicastAddress, multicastPort);
+    while(i.hasNext()) {
+        i.next().value()->writeDatagram(Device::current(), multicastAddress, multicastPort);
     }
 }
 
@@ -97,20 +99,27 @@ void SocketListener::settingChanged(Settings::Key key)
 {
     if(key == Settings::PingInterval || key == Settings::MulticastAddress ||
             key == Settings::MulticastPort) {
+        {
+            QMapIterator<QString, QUdpSocket *> i(sockets);
 
-        QMap<QString, QUdpSocket *>::iterator i;
-
-        for(i = sockets.begin(); i != sockets.end(); ++i) {
-            shutdown(i.value(), false);
+            while(i.hasNext()) {
+                shutdown(i.next().value(), false);
+            }
         }
 
         timer.stop();
         reload();
         timer.start();
 
-        for(i = sockets.begin(); i != sockets.end(); ++i) {
-            if(!initialize(i.value(), i.key())) {
-                shutdown(sockets.take(i.key()), true);
+        {
+            QMutableMapIterator<QString, QUdpSocket *> i(sockets);
+
+            while(i.hasNext()) {
+                i.next();
+                if(!initialize(i.value(), i.key())) {
+                    shutdown(i.value(), true);
+                    i.remove();
+                }
             }
         }
     }
