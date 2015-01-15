@@ -18,6 +18,8 @@ set(SRC
     src/discovery/device.cpp
     src/discovery/listener.cpp
     src/discovery/manager.cpp
+    src/filesystem/bundle.cpp
+    src/filesystem/file.cpp
     src/main.cpp
     src/nitroshare.cpp
     src/transfer/connection.cpp
@@ -32,6 +34,7 @@ set(SRC
 qt5_wrap_cpp(MOC
     src/discovery/listener.h
     src/discovery/manager.h
+    src/filesystem/bundle.h
     src/nitroshare.h
     src/transfer/connection.h
     src/transfer/receiveconnection.h
