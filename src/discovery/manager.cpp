@@ -41,6 +41,16 @@ void Manager::start()
     timer.start();
 }
 
+QSharedPointer<Device> Manager::get(const QString &name) const
+{
+    return devices.value(name);
+}
+
+QList<QSharedPointer<Device>> Manager::list() const
+{
+    return devices.values();
+}
+
 void Manager::checkTimeouts()
 {
     QMutableHashIterator<QString, QSharedPointer<Device>> i(devices);

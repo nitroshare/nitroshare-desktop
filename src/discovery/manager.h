@@ -28,6 +28,7 @@
 #include <QJsonObject>
 #include <QHash>
 #include <QHostAddress>
+#include <QList>
 #include <QSharedPointer>
 #include <QTimer>
 
@@ -44,6 +45,9 @@ public:
     Manager();
 
     void start();
+
+    QSharedPointer<Device> get(const QString &name) const;
+    QList<QSharedPointer<Device>> list() const;
 
 signals:
 
