@@ -22,16 +22,18 @@
  * IN THE SOFTWARE.
  **/
 
-#ifndef NS_POOL_H
-#define NS_POOL_H
+#ifndef NS_SENDCONNECTION_H
+#define NS_SENDCONNECTION_H
 
-#include <QHash>
+#include "connection.h"
 
-class Pool
+class SendConnection : public Connection
 {
+    Q_OBJECT
+
 public:
 
     //...
 };
 
-#endif // NS_POOL_H
+#endif // NS_SENDCONNECTION_H

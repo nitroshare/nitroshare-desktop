@@ -29,6 +29,7 @@
 #include <QSystemTrayIcon>
 
 #include "discovery/manager.h"
+#include "transfer/pool.h"
 
 class NitroShare : public QSystemTrayIcon
 {
@@ -47,9 +48,10 @@ private:
 
     void initMenu();
 
-    Manager manager;
-
     QMenu menu;
+
+    Manager manager;
+    Pool pool;
 };
 
 #endif

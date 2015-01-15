@@ -75,8 +75,8 @@ void Manager::processPing(const QJsonObject &object, const QHostAddress &address
             if(!devices.contains(uuid)) {
                 QSharedPointer<Device> device(new Device(uuid));
                 device->update(object, address);
-
                 devices.insert(uuid, device);
+
                 emit deviceAdded(*device);
             } else {
                 devices.value(uuid)->update(object, address);

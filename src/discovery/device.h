@@ -37,14 +37,13 @@ public:
     void update(const QJsonObject &object, const QHostAddress &address);
     bool timeoutReached() const;
 
+    QString uuid;
     QString version;
     QString name;
     QString operatingSystem;
     quint16 port;
 
 private:
-
-    QString uuid;
 
     QHostAddress lastAddress;
     qint64 lastPing;

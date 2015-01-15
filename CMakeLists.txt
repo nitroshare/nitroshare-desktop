@@ -20,6 +20,11 @@ set(SRC
     src/discovery/manager.cpp
     src/main.cpp
     src/nitroshare.cpp
+    src/transfer/connection.cpp
+    src/transfer/pool.cpp
+    src/transfer/receiveconnection.cpp
+    src/transfer/sendconnection.cpp
+    src/transfer/server.cpp
     src/util/misc.cpp
     src/util/settings.cpp)
 
@@ -28,6 +33,10 @@ qt5_wrap_cpp(MOC
     src/discovery/listener.h
     src/discovery/manager.h
     src/nitroshare.h
+    src/transfer/connection.h
+    src/transfer/receiveconnection.h
+    src/transfer/sendconnection.h
+    src/transfer/server.h
     src/util/settings.h)
 
 # Add resource files
