@@ -22,28 +22,30 @@
  * IN THE SOFTWARE.
  **/
 
-#ifndef NS_DEVICELISTENER_H
-#define NS_DEVICELISTENER_H
+#ifndef NS_LISTENER_H
+#define NS_LISTENER_H
 
+#include <QJsonObject>
 #include <QTimer>
 #include <QUdpSocket>
+#include <QVariantMap>
 
 #include "../util/settings.h"
 
-class DeviceListener : public QObject
+class Listener : public QObject
 {
     Q_OBJECT
 
 public:
 
-    DeviceListener();
-    virtual ~DeviceListener();
+    Listener();
+    virtual ~Listener();
 
     void start();
 
 signals:
 
-    void pingReceived();
+    void pingReceived(const QJsonObject &object);
 
 private slots:
 
@@ -61,4 +63,4 @@ private:
     QUdpSocket socket;
 };
 
-#endif // NS_DEVICELISTENER_H
+#endif // NS_LISTENER_H

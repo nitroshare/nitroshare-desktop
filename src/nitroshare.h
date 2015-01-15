@@ -28,7 +28,7 @@
 #include <QMenu>
 #include <QSystemTrayIcon>
 
-#include "discovery/devicemonitor.h"
+#include "discovery/manager.h"
 
 class NitroShare : public QSystemTrayIcon
 {
@@ -47,7 +47,7 @@ private:
 
     void initMenu();
 
-    DeviceMonitor monitor;
+    Manager manager;
 
     QMenu menu;
 };

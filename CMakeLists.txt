@@ -17,7 +17,7 @@ configure_file(src/config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 set(SRC
     src/discovery/device.cpp
     src/discovery/listener.cpp
-    src/discovery/devicemonitor.cpp
+    src/discovery/manager.cpp
     src/main.cpp
     src/nitroshare.cpp
     src/util/misc.cpp
@@ -26,7 +26,7 @@ set(SRC
 # Add the files that require MOC
 qt5_wrap_cpp(MOC
     src/discovery/listener.h
-    src/discovery/devicemonitor.h
+    src/discovery/manager.h
     src/nitroshare.h
     src/util/settings.h)
 
@@ -39,7 +39,10 @@ add_executable(nitroshare WIN32 ${SRC} ${MOC} ${QRC})
 # Specify the required Qt libraries and ensure the
 # correct flags are set to enable C++11 features
 target_link_libraries(nitroshare Qt5::Network Qt5::Widgets)
-target_compile_features(nitroshare PRIVATE cxx_lambdas cxx_nullptr cxx_uniform_initialization)
+target_compile_features(nitroshare PRIVATE
+    cxx_lambdas
+    cxx_right_angle_brackets
+    cxx_uniform_initialization)
 
 # Install the application to the appropriate location
 install(TARGETS nitroshare RUNTIME DESTINATION bin)

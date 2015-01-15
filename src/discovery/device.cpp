@@ -23,69 +23,37 @@
  **/
 
 #include <QDateTime>
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QVariantMap>
 
-#include "../util/misc.h"
 #include "../util/settings.h"
-#include "config.h"
 #include "device.h"
 
-Device::Device()
-    : port(0), lastPing(QDateTime::currentMSecsSinceEpoch())
+Device::Device(const QString &uuid)
+    : port(0), uuid(uuid), lastPing(0)
 {
 }
 
-bool Device::hasTimedOut() const
+void Device::update(const QJsonObject &object)
 {
-    return QDateTime::currentMSecsSinceEpoch() - lastPing >=
-            Settings::get<qint64>(Settings::DeviceTimeout);
-}
-
-QByteArray Device::current()
-{
-    // TODO: when switching to Qt 5.4, switch to using QJsonObject's
-    // initializer instead of converting a QVariantMap
-
-    QVariantMap device {
-        { "uuid", Settings::get<QString>(Settings::UUID) },
-        { "name", Settings::get<QString>(Settings::Name) },
-        { "version", NITROSHARE_VERSION },
-        { "operating_system", currentOperatingSystem() },
-        { "port", Settings::get<quint16>(Settings::TransferPort) }
-    };
-
-    return QJsonDocument(QJsonObject::fromVariantMap(device)).toJson(QJsonDocument::Compact);
-}
-
-bool Device::deserialize(const QByteArray &data, Device &device)
-{
-    QJsonObject object = QJsonDocument::fromJson(data).object();
-
-    if(!object.contains("uuid") || !object.contains("version") || !object.contains("port")) {
-        return false;
-    }
-
-    device.uuid = object.value("uuid").toString();
-    device.version = object.value("version").toString();
-    device.port = object.value("port").toInt();
-
-    if(device.version != NITROSHARE_VERSION) {
-        return false;
-    }
+    version = object.value("version").toString();
 
     if(object.contains("name")) {
-        device.name = object.value("name").toString();
+        name = object.value("name").toString();
     } else {
-        device.name = device.uuid;
+        name = uuid;
     }
 
     if(object.contains("operating_system")) {
-        device.operatingSystem = object.value("operating_system").toString();
+        operatingSystem = object.value("operating_system").toString();
     } else {
-        device.operatingSystem = "unknown";
+        operatingSystem = "unknown";
     }
 
-    return true;
+    port = object.value("port").toInt();
+    lastPing = QDateTime::currentMSecsSinceEpoch();
+}
+
+bool Device::timeoutReached() const
+{
+    return QDateTime::currentMSecsSinceEpoch() - lastPing >=
+            Settings::get<qint64>(Settings::BroadcastTimeout);
 }

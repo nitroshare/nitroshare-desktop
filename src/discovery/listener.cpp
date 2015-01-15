@@ -22,54 +22,79 @@
  * IN THE SOFTWARE.
  **/
 
+#include <QJsonDocument>
 #include <QNetworkInterface>
+#include <QSet>
 
-#include "devicelistener.h"
+#include "../util/misc.h"
+#include "config.h"
+#include "listener.h"
 
-DeviceListener::DeviceListener()
+Listener::Listener()
 {
-    connect(&timer, &QTimer::timeout, this, &DeviceListener::sendPings);
-    connect(&socket, &QUdpSocket::readyRead, this, &DeviceListener::processPings);
+    connect(&timer, &QTimer::timeout, this, &Listener::sendPings);
+    connect(&socket, &QUdpSocket::readyRead, this, &Listener::processPings);
 
     initialize();
 }
 
-DeviceListener::~DeviceListener()
+Listener::~Listener()
 {
     shutdown();
 }
 
-void DeviceListener::start()
+void Listener::start()
 {
     sendPings();
     timer.start();
 }
 
-void DeviceListener::processPings()
+void Listener::processPings()
 {
     while(socket.hasPendingDatagrams()) {
         QByteArray data;
-        data.resize(socket->pendingDatagramSize());
-        socket->readDatagram(data.data(), data.size());
+        data.resize(socket.pendingDatagramSize());
+        socket.readDatagram(data.data(), data.size());
 
-        //...
-    }
-}
-
-void DeviceListener::sendPings()
-{
-    QByteArray data = "test";
-
-    foreach(QNetworkInterface interface, QNetworkInterface::allInterfaces()) {
-        if(interface.flags() & QNetworkInterface::CanBroadcast) {
-            foreach(QNetworkAddressEntry entry, interface.addressEntries()) {
-                socket.writeDatagram(data, entry.broadcast(), socket.localPort());
-            }
+        QJsonDocument document(QJsonDocument::fromJson(data));
+        if(!document.isEmpty()) {
+            emit pingReceived(document.object());
         }
     }
 }
 
-void DeviceListener::settingChanged(Settings::Key key)
+void Listener::sendPings()
+{
+    // TODO: when switching to Qt 5.4, switch to using QJsonObject's
+    // initializer instead of converting a QVariantMap
+
+    QJsonObject object(QJsonObject::fromVariantMap({
+        { "version", NITROSHARE_VERSION },
+        { "uuid", Settings::get<QString>(Settings::DeviceUUID) },
+        { "name", Settings::get<QString>(Settings::DeviceName) },
+        { "operating_system", currentOperatingSystem() },
+        { "port", Settings::get<quint16>(Settings::TransferPort) }
+    }));
+
+    QByteArray data(QJsonDocument(object).toJson(QJsonDocument::Compact));
+    QSet<QHostAddress> addresses;
+
+    foreach(QNetworkInterface interface, QNetworkInterface::allInterfaces()) {
+        if(interface.flags() & QNetworkInterface::CanBroadcast) {
+            foreach(QNetworkAddressEntry entry, interface.addressEntries()) {
+                if(!entry.broadcast().isNull()) {
+                    addresses.insert(entry.broadcast());
+                }
+            }
+        }
+    }
+
+    foreach(QHostAddress address, addresses) {
+        socket.writeDatagram(data, address, socket.localPort());
+    }
+}
+
+void Listener::settingChanged(Settings::Key key)
 {
     if(key == Settings::BroadcastInterval || key == Settings::BroadcastPort) {
         shutdown();
@@ -78,13 +103,13 @@ void DeviceListener::settingChanged(Settings::Key key)
     }
 }
 
-void DeviceListener::initialize()
+void Listener::initialize()
 {
     timer.setInterval(Settings::get<int>(Settings::BroadcastInterval));
     socket.bind(Settings::get<quint16>(Settings::BroadcastPort), QUdpSocket::ShareAddress);
 }
 
-void DeviceListener::shutdown()
+void Listener::shutdown()
 {
     timer.stop();
     socket.close();

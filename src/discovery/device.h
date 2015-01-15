@@ -25,27 +25,26 @@
 #ifndef NS_DEVICE_H
 #define NS_DEVICE_H
 
-#include <QMap>
+#include <QJsonObject>
+#include <QList>
 
 class Device
 {
 public:
 
-    Device();
+    Device(const QString &uuid);
 
-    bool hasTimedOut() const;
+    void update(const QJsonObject &object);
+    bool timeoutReached() const;
 
-    static QByteArray current();
-    static bool deserialize(const QByteArray &data, Device &device);
-
-    QString uuid;
-    QString name;
     QString version;
+    QString name;
     QString operatingSystem;
     quint16 port;
 
 private:
 
+    QString uuid;
     qint64 lastPing;
 };
 

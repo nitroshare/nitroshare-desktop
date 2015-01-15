@@ -22,38 +22,48 @@
  * IN THE SOFTWARE.
  **/
 
-#include <QApplication>
-#include <QIcon>
-#include <QMenu>
+#ifndef NS_MANAGER_H
+#define NS_MANAGER_H
 
-#include "nitroshare.h"
+#include <QJsonObject>
+#include <QMap>
+#include <QSharedPointer>
+#include <QTimer>
 
-NitroShare::NitroShare()
+#include "../util/settings.h"
+#include "device.h"
+#include "listener.h"
+
+class Manager : public QObject
 {
-    connect(&manager, &Manager::deviceAdded, this, &NitroShare::displayDeviceAdded);
-    connect(&manager, &Manager::deviceRemoved, this, &NitroShare::displayDeviceRemoved);
+    Q_OBJECT
 
-    initMenu();
+public:
 
-    setIcon(QIcon(":/img/icon.png"));
-    setContextMenu(&menu);
+    Manager();
 
-    show();
+    void start();
 
-    manager.start();
-}
+signals:
 
-void NitroShare::displayDeviceAdded(const Device &device)
-{
-    showMessage(tr("Device Added"), device.name);
-}
+    void deviceAdded(const Device &device);
+    void deviceRemoved(const Device &device);
 
-void NitroShare::displayDeviceRemoved(const Device &device)
-{
-    showMessage(tr("Device Removed"), device.name);
-}
+private slots:
 
-void NitroShare::initMenu()
-{
-    menu.addAction(tr("E&xit"), QApplication::instance(), SLOT(quit()));
-}
+    void checkTimeouts();
+    void processPing(const QJsonObject &object);
+
+    void settingChanged(Settings::Key key);
+
+private:
+
+    void reload();
+
+    QTimer timer;
+    Listener listener;
+
+    QMap<QString, QSharedPointer<Device>> devices;
+};
+
+#endif // NS_MANAGER_H
