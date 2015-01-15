@@ -22,7 +22,7 @@
  * IN THE SOFTWARE.
  **/
 
-#include <QMutableMapIterator>
+#include <QMutableHashIterator>
 
 #include "config.h"
 #include "manager.h"
@@ -43,7 +43,7 @@ void Manager::start()
 
 void Manager::checkTimeouts()
 {
-    QMutableMapIterator<QString, QSharedPointer<Device>> i(devices);
+    QMutableHashIterator<QString, QSharedPointer<Device>> i(devices);
 
     while(i.hasNext()) {
         if(i.next().value()->timeoutReached()) {

@@ -26,7 +26,7 @@
 #define NS_MANAGER_H
 
 #include <QJsonObject>
-#include <QMap>
+#include <QHash>
 #include <QSharedPointer>
 #include <QTimer>
 
@@ -63,7 +63,7 @@ private:
     QTimer timer;
     Listener listener;
 
-    QMap<QString, QSharedPointer<Device>> devices;
+    QHash<QString, QSharedPointer<Device>> devices;
 };
 
 #endif // NS_MANAGER_H
