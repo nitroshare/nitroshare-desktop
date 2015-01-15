@@ -27,6 +27,7 @@
 
 #include <QJsonObject>
 #include <QHash>
+#include <QHostAddress>
 #include <QSharedPointer>
 #include <QTimer>
 
@@ -52,7 +53,7 @@ signals:
 private slots:
 
     void checkTimeouts();
-    void processPing(const QJsonObject &object);
+    void processPing(const QJsonObject &object, const QHostAddress &address);
 
     void settingChanged(Settings::Key key);
 

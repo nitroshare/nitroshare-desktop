@@ -25,6 +25,7 @@
 #ifndef NS_LISTENER_H
 #define NS_LISTENER_H
 
+#include <QHostAddress>
 #include <QJsonObject>
 #include <QTimer>
 #include <QUdpSocket>
@@ -45,7 +46,7 @@ public:
 
 signals:
 
-    void pingReceived(const QJsonObject &object);
+    void pingReceived(const QJsonObject &object, const QHostAddress &address);
 
 private slots:
 

@@ -53,12 +53,14 @@ void Listener::processPings()
 {
     while(socket.hasPendingDatagrams()) {
         QByteArray data;
+        QHostAddress address;
+
         data.resize(socket.pendingDatagramSize());
-        socket.readDatagram(data.data(), data.size());
+        socket.readDatagram(data.data(), data.size(), &address);
 
         QJsonDocument document(QJsonDocument::fromJson(data));
         if(!document.isEmpty()) {
-            emit pingReceived(document.object());
+            emit pingReceived(document.object(), address);
         }
     }
 }

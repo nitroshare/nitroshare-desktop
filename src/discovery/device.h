@@ -25,8 +25,8 @@
 #ifndef NS_DEVICE_H
 #define NS_DEVICE_H
 
+#include <QHostAddress>
 #include <QJsonObject>
-#include <QList>
 
 class Device
 {
@@ -34,7 +34,7 @@ public:
 
     Device(const QString &uuid);
 
-    void update(const QJsonObject &object);
+    void update(const QJsonObject &object, const QHostAddress &address);
     bool timeoutReached() const;
 
     QString version;
@@ -45,6 +45,8 @@ public:
 private:
 
     QString uuid;
+
+    QHostAddress lastAddress;
     qint64 lastPing;
 };
 

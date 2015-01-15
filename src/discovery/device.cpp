@@ -32,7 +32,7 @@ Device::Device(const QString &uuid)
 {
 }
 
-void Device::update(const QJsonObject &object)
+void Device::update(const QJsonObject &object, const QHostAddress &address)
 {
     version = object.value("version").toString();
 
@@ -49,6 +49,8 @@ void Device::update(const QJsonObject &object)
     }
 
     port = object.value("port").toInt();
+
+    lastAddress = address;
     lastPing = QDateTime::currentMSecsSinceEpoch();
 }
 

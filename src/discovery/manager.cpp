@@ -53,7 +53,7 @@ void Manager::checkTimeouts()
     }
 }
 
-void Manager::processPing(const QJsonObject &object)
+void Manager::processPing(const QJsonObject &object, const QHostAddress &address)
 {
     if(object.contains("uuid") && object.contains("version")) {
         QString uuid(object.value("uuid").toString());
@@ -67,7 +67,8 @@ void Manager::processPing(const QJsonObject &object)
                 devices.insert(uuid, device);
                 emit deviceAdded(*device);
             }
-            devices.value(uuid)->update(object);
+
+            devices.value(uuid)->update(object, address);
         }
     }
 }
