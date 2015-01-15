@@ -11,6 +11,17 @@ A cross-platform network file transfer application designed to make transferring
 * Transfer entire directories
 * Completely free and open-source
 
+### Build Requirements
+
+The requirements for building NitroShare are as follows:
+
+* CMake 3.1+
+* C++ compiler with support for C++11:
+    * Microsoft Visual C++ 2013+
+    * GCC 4.5+
+    * Clang 3.1+
+* Qt 5.1+
+
 ### Build Instructions
 
 TODO
