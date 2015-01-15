@@ -69,7 +69,7 @@ void Manager::processPing(const QJsonObject &object, const QHostAddress &address
         QString uuid(object.value("uuid").toString());
         QString version(object.value("version").toString());
 
-        if(uuid != Settings::get<QString>(Settings::DeviceName) &&
+        if(uuid != Settings::get<QString>(Settings::DeviceUUID) &&
                 version == NITROSHARE_VERSION) {
 
             if(!devices.contains(uuid)) {
