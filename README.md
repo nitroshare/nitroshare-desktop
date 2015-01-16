@@ -18,7 +18,7 @@ The requirements for building NitroShare are as follows:
 * CMake 3.1+
 * C++ compiler with support for C++11:
     * Microsoft Visual C++ 2013+
-    * GCC 4.5+
+    * GCC 4.6+
     * Clang 3.1+
 * Qt 5.1+
 

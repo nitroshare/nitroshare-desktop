@@ -20,26 +20,26 @@ set(SRC
     src/discovery/manager.cpp
     src/filesystem/bundle.cpp
     src/filesystem/file.cpp
-    src/main.cpp
-    src/nitroshare.cpp
     src/transfer/connection.cpp
     src/transfer/pool.cpp
     src/transfer/receiveconnection.cpp
     src/transfer/sendconnection.cpp
     src/transfer/server.cpp
     src/util/misc.cpp
-    src/util/settings.cpp)
+    src/util/settings.cpp
+    src/main.cpp
+    src/nitroshare.cpp)
 
 # Add the files that require MOC
 qt5_wrap_cpp(MOC
     src/discovery/listener.h
     src/discovery/manager.h
-    src/nitroshare.h
     src/transfer/connection.h
     src/transfer/receiveconnection.h
     src/transfer/sendconnection.h
     src/transfer/server.h
-    src/util/settings.h)
+    src/util/settings.h
+    src/nitroshare.h)
 
 # Add resource files
 qt5_add_resources(QRC resources.qrc)
@@ -53,6 +53,7 @@ target_link_libraries(nitroshare Qt5::Network Qt5::Widgets)
 target_compile_features(nitroshare PRIVATE
     cxx_generalized_initializers
     cxx_lambdas
+    cxx_nullptr
     cxx_right_angle_brackets)
 
 # Install the application to the appropriate location
