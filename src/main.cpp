@@ -39,7 +39,7 @@ int main(int argc, char **argv)
     app.setOrganizationDomain("nitroshare.co");
     app.setOrganizationName("NitroShare");
 
-    // Create the main application
+    // Create the tray icon that runs the application
     NitroShare nitroshare;
     Q_UNUSED(nitroshare);
 

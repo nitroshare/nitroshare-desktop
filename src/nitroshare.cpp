@@ -66,7 +66,7 @@ void NitroShare::sendFiles()
             bundle.addFile(filename);
         }
 
-        bundle.print();
+        //...
     }
 }
 
@@ -78,7 +78,7 @@ void NitroShare::sendDirectory()
         Bundle bundle;
         bundle.addDirectory(path);
 
-        bundle.print();
+        //...
     }
 }
 
