@@ -22,4 +22,22 @@
  * IN THE SOFTWARE.
  **/
 
+#include <QDir>
+#include <QFileInfo>
+
 #include "file.h"
+
+File::File(const QString &filename, bool writable, bool executable)
+    : mFilename(filename), mWritable(writable), mExecutable(executable)
+{
+}
+
+QString File::absoluteFilename(const QString &root) const
+{
+    return QDir(root).absoluteFilePath(QFileInfo(mFilename).canonicalFilePath());
+}
+
+QString File::filename() const
+{
+    return mFilename;
+}

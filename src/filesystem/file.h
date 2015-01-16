@@ -25,11 +25,23 @@
 #ifndef NS_FILE_H
 #define NS_FILE_H
 
+#include <QFileInfo>
+
 class File
 {
 public:
 
-    //...
+    File(const QString &filename, bool writable, bool executable);
+
+    QString absoluteFilename(const QString &root) const;
+    QString filename() const;
+
+private:
+
+    QString mFilename;
+
+    bool mWritable;
+    bool mExecutable;
 };
 
 #endif // NS_FILE_H

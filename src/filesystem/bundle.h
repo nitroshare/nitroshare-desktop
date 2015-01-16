@@ -25,15 +25,20 @@
 #ifndef NS_BUNDLE_H
 #define NS_BUNDLE_H
 
-#include <QObject>
+#include <QList>
 
-class Bundle : QObject
+#include "file.h"
+
+class Bundle
 {
-    Q_OBJECT
-
 public:
 
-    //...
+    qint64 addFile(const QString &filename);
+    qint64 addDirectory(const QString &path);
+
+private:
+
+    QList<File> files;
 };
 
 #endif // NS_BUNDLE_H

@@ -22,4 +22,43 @@
  * IN THE SOFTWARE.
  **/
 
+#include <QDir>
+#include <QFileInfo>
+#include <QFileInfoList>
+#include <QStack>
+
 #include "bundle.h"
+
+qint64 Bundle::addFile(const QString &filename)
+{
+    QFileInfo info(filename);
+    files.append(File(info.fileName(), info.isWritable(), info.isExecutable()));
+
+    return info.size();
+}
+
+qint64 Bundle::addDirectory(const QString &path)
+{
+    QDir root(path);
+    QStack<QString> stack;
+    qint64 totalSize;
+
+    stack.push(root.absolutePath());
+
+    while(stack.count()) {
+        QString tos = stack.pop();
+
+        foreach(QFileInfo info, QDir(tos).entryInfoList(QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot)) {
+            if(info.isDir()) {
+                stack.push(info.absoluteFilePath());
+            } else {
+                QString relativeFilename(root.relativeFilePath(info.absoluteFilePath()));
+                files.append(File(relativeFilename, info.isWritable(), info.isExecutable()));
+
+                totalSize += info.size();
+            }
+        }
+    }
+
+    return totalSize;
+}
