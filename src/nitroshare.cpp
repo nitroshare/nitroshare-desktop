@@ -23,24 +23,26 @@
  **/
 
 #include <QApplication>
+#include <QFileDialog>
 #include <QIcon>
 #include <QMenu>
 
+#include "filesystem/bundle.h"
 #include "nitroshare.h"
 
 NitroShare::NitroShare()
 {
-    connect(&manager, &Manager::deviceAdded, this, &NitroShare::displayDeviceAdded);
-    connect(&manager, &Manager::deviceRemoved, this, &NitroShare::displayDeviceRemoved);
+    connect(&mManager, &Manager::deviceAdded, this, &NitroShare::displayDeviceAdded);
+    connect(&mManager, &Manager::deviceRemoved, this, &NitroShare::displayDeviceRemoved);
 
     initMenu();
 
     setIcon(QIcon(":/img/icon.png"));
-    setContextMenu(&menu);
+    setContextMenu(&mMenu);
 
     show();
 
-    manager.start();
+    mManager.start();
 }
 
 void NitroShare::displayDeviceAdded(const Device &device)
@@ -53,7 +55,37 @@ void NitroShare::displayDeviceRemoved(const Device &device)
     showMessage(tr("Device Removed"), device.name);
 }
 
+void NitroShare::sendFiles()
+{
+    QStringList filenames = QFileDialog::getOpenFileNames(nullptr, tr("Select Files"));
+
+    if(filenames.length()) {
+        Bundle bundle;
+
+        foreach(QString filename, filenames) {
+            bundle.addFile(filename);
+        }
+
+        bundle.print();
+    }
+}
+
+void NitroShare::sendDirectory()
+{
+    QString path = QFileDialog::getExistingDirectory(nullptr, tr("Select Directory"));
+
+    if(!path.isNull()) {
+        Bundle bundle;
+        bundle.addDirectory(path);
+
+        bundle.print();
+    }
+}
+
 void NitroShare::initMenu()
 {
-    menu.addAction(tr("E&xit"), QApplication::instance(), SLOT(quit()));
+    mMenu.addAction(tr("Send &Files..."), this, SLOT(sendFiles()));
+    mMenu.addAction(tr("Send &Directory..."), this, SLOT(sendDirectory()));
+    mMenu.addSeparator();
+    mMenu.addAction(tr("E&xit"), QApplication::instance(), SLOT(quit()));
 }

@@ -44,14 +44,17 @@ private slots:
     void displayDeviceAdded(const Device& device);
     void displayDeviceRemoved(const Device& device);
 
+    void sendFiles();
+    void sendDirectory();
+
 private:
 
     void initMenu();
 
-    QMenu menu;
+    QMenu mMenu;
 
-    Manager manager;
-    Pool pool;
+    Manager mManager;
+    Pool mPool;
 };
 
 #endif
