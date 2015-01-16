@@ -28,35 +28,35 @@
 
 #include "../util/misc.h"
 #include "config.h"
-#include "listener.h"
+#include "devicelistener.h"
 
-Listener::Listener()
+DeviceListener::DeviceListener()
 {
-    connect(&timer, &QTimer::timeout, this, &Listener::sendPings);
-    connect(&socket, &QUdpSocket::readyRead, this, &Listener::processPings);
+    connect(&mTimer, &QTimer::timeout, this, &DeviceListener::sendPings);
+    connect(&mSocket, &QUdpSocket::readyRead, this, &DeviceListener::processPings);
 
     initialize();
 }
 
-Listener::~Listener()
+DeviceListener::~DeviceListener()
 {
     shutdown();
 }
 
-void Listener::start()
+void DeviceListener::start()
 {
     sendPings();
-    timer.start();
+    mTimer.start();
 }
 
-void Listener::processPings()
+void DeviceListener::processPings()
 {
-    while(socket.hasPendingDatagrams()) {
+    while(mSocket.hasPendingDatagrams()) {
         QByteArray data;
         QHostAddress address;
 
-        data.resize(socket.pendingDatagramSize());
-        socket.readDatagram(data.data(), data.size(), &address);
+        data.resize(mSocket.pendingDatagramSize());
+        mSocket.readDatagram(data.data(), data.size(), &address);
 
         QJsonDocument document(QJsonDocument::fromJson(data));
         if(!document.isEmpty()) {
@@ -65,7 +65,7 @@ void Listener::processPings()
     }
 }
 
-void Listener::sendPings()
+void DeviceListener::sendPings()
 {
     // TODO: when switching to Qt 5.4, switch to using QJsonObject's
     // initializer instead of converting a QVariantMap
@@ -92,11 +92,11 @@ void Listener::sendPings()
     }
 
     foreach(QHostAddress address, addresses) {
-        socket.writeDatagram(data, address, socket.localPort());
+        mSocket.writeDatagram(data, address, mSocket.localPort());
     }
 }
 
-void Listener::settingChanged(Settings::Key key)
+void DeviceListener::settingChanged(Settings::Key key)
 {
     if(key == Settings::BroadcastInterval || key == Settings::BroadcastPort) {
         shutdown();
@@ -105,14 +105,14 @@ void Listener::settingChanged(Settings::Key key)
     }
 }
 
-void Listener::initialize()
+void DeviceListener::initialize()
 {
-    timer.setInterval(Settings::get<int>(Settings::BroadcastInterval));
-    socket.bind(Settings::get<quint16>(Settings::BroadcastPort), QUdpSocket::ShareAddress);
+    mTimer.setInterval(Settings::get<int>(Settings::BroadcastInterval));
+    mSocket.bind(Settings::get<quint16>(Settings::BroadcastPort), QUdpSocket::ShareAddress);
 }
 
-void Listener::shutdown()
+void DeviceListener::shutdown()
 {
-    timer.stop();
-    socket.close();
+    mTimer.stop();
+    mSocket.close();
 }

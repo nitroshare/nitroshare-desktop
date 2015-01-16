@@ -25,35 +25,35 @@
 #include <QMutableHashIterator>
 
 #include "config.h"
-#include "manager.h"
+#include "devicemanager.h"
 
-Manager::Manager()
+DeviceManager::DeviceManager()
 {
-    connect(&timer, &QTimer::timeout, this, &Manager::checkTimeouts);
-    connect(&listener, &Listener::pingReceived, this, &Manager::processPing);
+    connect(&mTimer, &QTimer::timeout, this, &DeviceManager::checkTimeouts);
+    connect(&mListener, &DeviceListener::pingReceived, this, &DeviceManager::processPing);
 
     reload();
 }
 
-void Manager::start()
+void DeviceManager::start()
 {
-    listener.start();
-    timer.start();
+    mListener.start();
+    mTimer.start();
 }
 
-QSharedPointer<Device> Manager::get(const QString &name) const
+QSharedPointer<Device> DeviceManager::get(const QString &name) const
 {
-    return devices.value(name);
+    return mDevices.value(name);
 }
 
-QList<QSharedPointer<Device>> Manager::list() const
+QList<QSharedPointer<Device>> DeviceManager::list() const
 {
-    return devices.values();
+    return mDevices.values();
 }
 
-void Manager::checkTimeouts()
+void DeviceManager::checkTimeouts()
 {
-    QMutableHashIterator<QString, QSharedPointer<Device>> i(devices);
+    QMutableHashIterator<QString, QSharedPointer<Device>> i(mDevices);
 
     while(i.hasNext()) {
         if(i.next().value()->timeoutReached()) {
@@ -63,7 +63,7 @@ void Manager::checkTimeouts()
     }
 }
 
-void Manager::processPing(const QJsonObject &object, const QHostAddress &address)
+void DeviceManager::processPing(const QJsonObject &object, const QHostAddress &address)
 {
     if(object.contains("uuid") && object.contains("version")) {
         QString uuid(object.value("uuid").toString());
@@ -72,29 +72,29 @@ void Manager::processPing(const QJsonObject &object, const QHostAddress &address
         if(uuid != Settings::get<QString>(Settings::DeviceUUID) &&
                 version == NITROSHARE_VERSION) {
 
-            if(!devices.contains(uuid)) {
+            if(!mDevices.contains(uuid)) {
                 QSharedPointer<Device> device(new Device(uuid));
                 device->update(object, address);
-                devices.insert(uuid, device);
+                mDevices.insert(uuid, device);
 
                 emit deviceAdded(*device);
             } else {
-                devices.value(uuid)->update(object, address);
+                mDevices.value(uuid)->update(object, address);
             }
         }
     }
 }
 
-void Manager::settingChanged(Settings::Key key)
+void DeviceManager::settingChanged(Settings::Key key)
 {
     if(key == Settings::BroadcastTimeout) {
-        timer.stop();
+        mTimer.stop();
         reload();
-        timer.start();
+        mTimer.start();
     }
 }
 
-void Manager::reload()
+void DeviceManager::reload()
 {
-    timer.setInterval(Settings::get<int>(Settings::BroadcastTimeout));
+    mTimer.setInterval(Settings::get<int>(Settings::BroadcastTimeout));
 }

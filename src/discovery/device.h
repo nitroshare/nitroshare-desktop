@@ -27,6 +27,7 @@
 
 #include <QHostAddress>
 #include <QJsonObject>
+#include <QSharedPointer>
 
 class Device
 {
@@ -34,19 +35,25 @@ public:
 
     Device(const QString &uuid);
 
+    QString uuid() const { return mUuid; }
+    QString name() const { return mName; }
+    QString operatingSystem() const { return mOperatingSystem; }
+
     void update(const QJsonObject &object, const QHostAddress &address);
     bool timeoutReached() const;
 
-    QString uuid;
-    QString version;
-    QString name;
-    QString operatingSystem;
-    quint16 port;
-
 private:
 
-    QHostAddress lastAddress;
-    qint64 lastPing;
+    QString mUuid;
+    QString mName;
+    QString mOperatingSystem;
+
+    QHostAddress mAddress;
+    quint16 mPort;
+
+    qint64 mLastPing;
 };
+
+typedef QSharedPointer<Device> DevicePointer;
 
 #endif // NS_DEVICE_H

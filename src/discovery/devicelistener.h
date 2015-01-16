@@ -22,8 +22,8 @@
  * IN THE SOFTWARE.
  **/
 
-#ifndef NS_LISTENER_H
-#define NS_LISTENER_H
+#ifndef NS_DEVICELISTENER_H
+#define NS_DEVICELISTENER_H
 
 #include <QHostAddress>
 #include <QJsonObject>
@@ -33,14 +33,14 @@
 
 #include "../util/settings.h"
 
-class Listener : public QObject
+class DeviceListener : public QObject
 {
     Q_OBJECT
 
 public:
 
-    Listener();
-    virtual ~Listener();
+    DeviceListener();
+    virtual ~DeviceListener();
 
     void start();
 
@@ -60,8 +60,8 @@ private:
     void initialize();
     void shutdown();
 
-    QTimer timer;
-    QUdpSocket socket;
+    QTimer mTimer;
+    QUdpSocket mSocket;
 };
 
-#endif // NS_LISTENER_H
+#endif // NS_DEVICELISTENER_H

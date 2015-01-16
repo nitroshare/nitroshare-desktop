@@ -32,8 +32,8 @@
 
 NitroShare::NitroShare()
 {
-    connect(&mManager, &Manager::deviceAdded, this, &NitroShare::displayDeviceAdded);
-    connect(&mManager, &Manager::deviceRemoved, this, &NitroShare::displayDeviceRemoved);
+    connect(&mManager, &DeviceManager::deviceAdded, this, &NitroShare::displayDeviceAdded);
+    connect(&mManager, &DeviceManager::deviceRemoved, this, &NitroShare::displayDeviceRemoved);
 
     initMenu();
 
@@ -47,12 +47,12 @@ NitroShare::NitroShare()
 
 void NitroShare::displayDeviceAdded(const Device &device)
 {
-    showMessage(tr("Device Added"), device.name);
+    showMessage(tr("Device Added"), device.name());
 }
 
 void NitroShare::displayDeviceRemoved(const Device &device)
 {
-    showMessage(tr("Device Removed"), device.name);
+    showMessage(tr("Device Removed"), device.name());
 }
 
 void NitroShare::sendFiles()

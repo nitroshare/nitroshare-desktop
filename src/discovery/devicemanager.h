@@ -22,8 +22,8 @@
  * IN THE SOFTWARE.
  **/
 
-#ifndef NS_MANAGER_H
-#define NS_MANAGER_H
+#ifndef NS_DEVICEMANAGER_H
+#define NS_DEVICEMANAGER_H
 
 #include <QJsonObject>
 #include <QHash>
@@ -34,15 +34,15 @@
 
 #include "../util/settings.h"
 #include "device.h"
-#include "listener.h"
+#include "devicelistener.h"
 
-class Manager : public QObject
+class DeviceManager : public QObject
 {
     Q_OBJECT
 
 public:
 
-    Manager();
+    DeviceManager();
 
     void start();
 
@@ -65,10 +65,10 @@ private:
 
     void reload();
 
-    QTimer timer;
-    Listener listener;
+    QTimer mTimer;
+    DeviceListener mListener;
 
-    QHash<QString, QSharedPointer<Device>> devices;
+    QHash<QString, QSharedPointer<Device>> mDevices;
 };
 
-#endif // NS_MANAGER_H
+#endif // NS_DEVICEMANAGER_H

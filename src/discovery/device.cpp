@@ -28,34 +28,32 @@
 #include "device.h"
 
 Device::Device(const QString &uuid)
-    : port(0), uuid(uuid), lastPing(0)
+    : mUuid(uuid), mPort(0), mLastPing(0)
 {
 }
 
 void Device::update(const QJsonObject &object, const QHostAddress &address)
 {
-    version = object.value("version").toString();
-
     if(object.contains("name")) {
-        name = object.value("name").toString();
+        mName = object.value("name").toString();
     } else {
-        name = uuid;
+        mName = mUuid;
     }
 
     if(object.contains("operating_system")) {
-        operatingSystem = object.value("operating_system").toString();
+        mOperatingSystem = object.value("operating_system").toString();
     } else {
-        operatingSystem = "unknown";
+        mOperatingSystem = "unknown";
     }
 
-    port = object.value("port").toInt();
+    mAddress = address;
+    mPort = object.value("port").toInt();
 
-    lastAddress = address;
-    lastPing = QDateTime::currentMSecsSinceEpoch();
+    mLastPing = QDateTime::currentMSecsSinceEpoch();
 }
 
 bool Device::timeoutReached() const
 {
-    return QDateTime::currentMSecsSinceEpoch() - lastPing >=
+    return QDateTime::currentMSecsSinceEpoch() - mLastPing >=
             Settings::get<qint64>(Settings::BroadcastTimeout);
 }
