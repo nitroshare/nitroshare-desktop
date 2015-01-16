@@ -30,6 +30,7 @@
 int main(int argc, char **argv)
 {
     QApplication app(argc, argv);
+    app.setQuitOnLastWindowClosed(false);
 
     // Set up application properties
     app.setApplicationDisplayName(QObject::tr("NitroShare"));
