@@ -27,13 +27,14 @@
 #include <QIcon>
 #include <QMenu>
 
+#include "discovery/device.h"
 #include "filesystem/bundle.h"
 #include "nitroshare.h"
 
 NitroShare::NitroShare()
 {
-    connect(&mManager, &DeviceManager::deviceAdded, this, &NitroShare::displayDeviceAdded);
-    connect(&mManager, &DeviceManager::deviceRemoved, this, &NitroShare::displayDeviceRemoved);
+    connect(&mDeviceModel, &DeviceModel::rowsInserted, this, &NitroShare::notifyDevicesAdded);
+    connect(&mDeviceModel, &DeviceModel::rowsAboutToBeRemoved, this, &NitroShare::notifyDevicesRemoved);
 
     initMenu();
 
@@ -42,17 +43,23 @@ NitroShare::NitroShare()
 
     show();
 
-    mManager.start();
+    mDeviceModel.start();
 }
 
-void NitroShare::displayDeviceAdded(const Device &device)
+void NitroShare::notifyDevicesAdded(const QModelIndex &parent, int first, int last)
 {
-    showMessage(tr("Device Added"), device.name());
+    for(int i = first; i < last; ++i) {
+        DevicePointer device = parent.data(Qt::UserRole).value<DevicePointer>();
+        showMessage(tr("Device Added"), device->name());
+    }
 }
 
-void NitroShare::displayDeviceRemoved(const Device &device)
+void NitroShare::notifyDevicesRemoved(const QModelIndex &parent, int first, int last)
 {
-    showMessage(tr("Device Removed"), device.name());
+    for(int i = first; i < last; ++i) {
+        DevicePointer device = parent.data(Qt::UserRole).value<DevicePointer>();
+        showMessage(tr("Device Removed"), device->name());
+    }
 }
 
 void NitroShare::sendFiles()

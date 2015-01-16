@@ -17,7 +17,7 @@ configure_file(src/config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 set(SRC
     src/discovery/device.cpp
     src/discovery/devicelistener.cpp
-    src/discovery/devicemanager.cpp
+    src/discovery/devicemodel.cpp
     src/filesystem/bundle.cpp
     src/filesystem/file.cpp
     src/transfer/connection.cpp
@@ -33,7 +33,7 @@ set(SRC
 # Add the files that require MOC
 qt5_wrap_cpp(MOC
     src/discovery/devicelistener.h
-    src/discovery/devicemanager.h
+    src/discovery/devicemodel.h
     src/transfer/connection.h
     src/transfer/receiveconnection.h
     src/transfer/sendconnection.h

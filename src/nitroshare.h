@@ -28,7 +28,7 @@
 #include <QMenu>
 #include <QSystemTrayIcon>
 
-#include "discovery/devicemanager.h"
+#include "discovery/devicemodel.h"
 #include "transfer/pool.h"
 
 class NitroShare : public QSystemTrayIcon
@@ -41,8 +41,8 @@ public:
 
 private slots:
 
-    void displayDeviceAdded(const Device& device);
-    void displayDeviceRemoved(const Device& device);
+    void notifyDevicesAdded(const QModelIndex &parent, int first, int last);
+    void notifyDevicesRemoved(const QModelIndex &parent, int first, int last);
 
     void sendFiles();
     void sendDirectory();
@@ -53,7 +53,7 @@ private:
 
     QMenu mMenu;
 
-    DeviceManager mManager;
+    DeviceModel mDeviceModel;
     Pool mPool;
 };
 

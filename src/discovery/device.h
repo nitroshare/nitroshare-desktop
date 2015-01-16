@@ -55,5 +55,6 @@ private:
 };
 
 typedef QSharedPointer<Device> DevicePointer;
+Q_DECLARE_METATYPE(DevicePointer)
 
 #endif // NS_DEVICE_H

@@ -22,37 +22,36 @@
  * IN THE SOFTWARE.
  **/
 
-#ifndef NS_DEVICEMANAGER_H
-#define NS_DEVICEMANAGER_H
+#ifndef NS_DEVICEMODEL_H
+#define NS_DEVICEMODEL_H
 
-#include <QJsonObject>
-#include <QHash>
+#include <QAbstractTableModel>
 #include <QHostAddress>
+#include <QJsonObject>
 #include <QList>
-#include <QSharedPointer>
+#include <QModelIndex>
 #include <QTimer>
+#include <QVariant>
 
 #include "../util/settings.h"
 #include "device.h"
 #include "devicelistener.h"
 
-class DeviceManager : public QObject
+class DeviceModel : public QAbstractTableModel
 {
     Q_OBJECT
 
 public:
 
-    DeviceManager();
+    DeviceModel();
 
     void start();
 
-    QSharedPointer<Device> get(const QString &name) const;
-    QList<QSharedPointer<Device>> list() const;
+    int rowCount(const QModelIndex &parent) const;
+    int columnCount(const QModelIndex &parent) const;
 
-signals:
-
-    void deviceAdded(const Device &device);
-    void deviceRemoved(const Device &device);
+    QVariant data(const QModelIndex &index, int role) const;
+    QVariant headerData(int section, Qt::Orientation orientation, int role) const;
 
 private slots:
 
@@ -65,10 +64,10 @@ private:
 
     void reload();
 
-    QTimer mTimer;
-    DeviceListener mListener;
+    QTimer mTimeoutTimer;
+    DeviceListener mDeviceListener;
 
-    QHash<QString, QSharedPointer<Device>> mDevices;
+    QList<DevicePointer> mDevices;
 };
 
-#endif // NS_DEVICEMANAGER_H
+#endif // NS_DEVICEMODEL_H
