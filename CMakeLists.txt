@@ -20,11 +20,11 @@ set(SRC
     src/device/devicemodel.cpp
     src/filesystem/bundle.cpp
     src/filesystem/file.cpp
-    src/transfer/connection.cpp
-    src/transfer/pool.cpp
-    src/transfer/receiveconnection.cpp
-    src/transfer/sendconnection.cpp
-    src/transfer/server.cpp
+    src/connection/connection.cpp
+    src/connection/pool.cpp
+    src/connection/receiveconnection.cpp
+    src/connection/sendconnection.cpp
+    src/connection/server.cpp
     src/util/misc.cpp
     src/util/settings.cpp
     src/main.cpp
@@ -34,10 +34,10 @@ set(SRC
 qt5_wrap_cpp(MOC
     src/device/devicelistener.h
     src/device/devicemodel.h
-    src/transfer/connection.h
-    src/transfer/receiveconnection.h
-    src/transfer/sendconnection.h
-    src/transfer/server.h
+    src/connection/connection.h
+    src/connection/receiveconnection.h
+    src/connection/sendconnection.h
+    src/connection/server.h
     src/util/settings.h
     src/nitroshare.h)
 

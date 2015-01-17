@@ -27,7 +27,7 @@
 #include <QIcon>
 #include <QMenu>
 
-#include "discovery/device.h"
+#include "device/device.h"
 #include "filesystem/bundle.h"
 #include "nitroshare.h"
 

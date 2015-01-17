@@ -28,8 +28,8 @@
 #include <QMenu>
 #include <QSystemTrayIcon>
 
-#include "discovery/devicemodel.h"
-#include "transfer/pool.h"
+#include "device/devicemodel.h"
+#include "connection/pool.h"
 
 class NitroShare : public QSystemTrayIcon
 {
@@ -57,4 +57,4 @@ private:
     Pool mPool;
 };
 
-#endif
+#endif // NS_NITROSHARE_H
