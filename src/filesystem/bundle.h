@@ -26,6 +26,7 @@
 #define NS_BUNDLE_H
 
 #include <QList>
+#include <QSharedPointer>
 
 #include "file.h"
 
@@ -40,5 +41,7 @@ private:
 
     QList<File> files;
 };
+
+typedef QSharedPointer<Bundle> BundlePointer;
 
 #endif // NS_BUNDLE_H
