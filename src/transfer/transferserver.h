@@ -22,4 +22,22 @@
  * IN THE SOFTWARE.
  **/
 
-#include "connection.h"
+#ifndef NS_TRANSFERSERVER_H
+#define NS_TRANSFERSERVER_H
+
+#include <QTcpServer>
+
+class TransferServer : public QTcpServer
+{
+    Q_OBJECT
+
+public:
+
+    //...
+
+private:
+
+    //...
+};
+
+#endif // NS_TRANSFERSERVER_H

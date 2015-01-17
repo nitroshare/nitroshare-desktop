@@ -25,13 +25,21 @@
 #ifndef NS_TRANSFER_H
 #define NS_TRANSFER_H
 
+#include <QObject>
 #include <QSharedPointer>
 
-class Transfer
+class Transfer : public QObject
 {
+    Q_OBJECT
+
 public:
 
     //...
+
+private:
+
+    //...
+
 };
 
 typedef QSharedPointer<Transfer> TransferPointer;

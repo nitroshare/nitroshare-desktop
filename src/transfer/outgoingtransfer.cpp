@@ -22,18 +22,4 @@
  * IN THE SOFTWARE.
  **/
 
-#ifndef NS_CONNECTION_H
-#define NS_CONNECTION_H
-
-#include <QObject>
-
-class Connection : public QObject
-{
-    Q_OBJECT
-
-public:
-
-    //...
-};
-
-#endif // NS_CONNECTION_H
+#include "outgoingtransfer.h"

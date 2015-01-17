@@ -22,4 +22,22 @@
  * IN THE SOFTWARE.
  **/
 
-#include "sendconnection.h"
+#ifndef NS_INCOMINGTRANSFER_H
+#define NS_INCOMINGTRANSFER_H
+
+#include "transfer.h"
+
+class IncomingTransfer : public Transfer
+{
+    Q_OBJECT
+
+public:
+
+    //...
+
+private:
+
+    //...
+};
+
+#endif // NS_INCOMINGTRANSFER_H

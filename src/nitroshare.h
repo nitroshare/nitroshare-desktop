@@ -26,6 +26,7 @@
 #define NS_NITROSHARE_H
 
 #include <QMenu>
+#include <QModelIndex>
 #include <QSystemTrayIcon>
 
 #include "device/devicemodel.h"

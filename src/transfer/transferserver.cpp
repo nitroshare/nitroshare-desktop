@@ -22,4 +22,4 @@
  * IN THE SOFTWARE.
  **/
 
-#include "receiveconnection.h"
+#include "transferserver.h"

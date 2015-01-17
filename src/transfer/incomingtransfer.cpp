@@ -22,18 +22,4 @@
  * IN THE SOFTWARE.
  **/
 
-#ifndef NS_SENDCONNECTION_H
-#define NS_SENDCONNECTION_H
-
-#include "connection.h"
-
-class SendConnection : public Connection
-{
-    Q_OBJECT
-
-public:
-
-    //...
-};
-
-#endif // NS_SENDCONNECTION_H
+#include "incomingtransfer.h"

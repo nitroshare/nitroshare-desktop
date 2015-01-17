@@ -22,31 +22,22 @@
  * IN THE SOFTWARE.
  **/
 
-#include <QHostAddress>
+#ifndef NS_OUTGOINGTRANSFER_H
+#define NS_OUTGOINGTRANSFER_H
 
-#include "server.h"
+#include "transfer.h"
 
-Server::Server()
+class OutgoingTransfer : public Transfer
 {
-    connect(Settings::instance(), &Settings::settingChanged, this, &Server::settingChanged);
+    Q_OBJECT
 
-    initialize();
-}
+public:
 
-void Server::settingChanged(Settings::Key key)
-{
-    if(key == Settings::TransferPort) {
-        shutdown();
-        initialize();
-    }
-}
+    //...
 
-void Server::initialize()
-{
-    listen(QHostAddress::Any, Settings::get<quint16>(Settings::TransferPort));
-}
+private:
 
-void Server::shutdown()
-{
-    close();
-}
+    //...
+};
+
+#endif // NS_OUTGOINGTRANSFER_H
