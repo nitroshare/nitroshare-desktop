@@ -16,6 +16,7 @@ configure_file(src/config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 # Add the source files
 set(SRC
     src/device/device.cpp
+    src/device/devicedialog.cpp
     src/device/devicelistener.cpp
     src/device/devicemodel.cpp
     src/filesystem/bundle.cpp
@@ -32,6 +33,7 @@ set(SRC
 
 # Add the files that require MOC
 qt5_wrap_cpp(MOC
+    src/device/devicedialog.h
     src/device/devicelistener.h
     src/device/devicemodel.h
     src/transfer/incomingtransfer.h
@@ -42,11 +44,15 @@ qt5_wrap_cpp(MOC
     src/util/settings.h
     src/nitroshare.h)
 
+# Add the UI files
+qt5_wrap_ui(UI
+    src/device/devicedialog.ui)
+
 # Add resource files
 qt5_add_resources(QRC resources.qrc)
 
 # Create a single executable
-add_executable(nitroshare WIN32 ${SRC} ${MOC} ${QRC})
+add_executable(nitroshare WIN32 ${SRC} ${MOC} ${UI} ${QRC})
 
 # Specify the required Qt libraries and ensure the
 # correct flags are set to enable C++11 features
