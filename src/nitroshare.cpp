@@ -48,18 +48,18 @@ NitroShare::NitroShare()
     mDeviceModel.start();
 }
 
-void NitroShare::notifyDevicesAdded(const QModelIndex &parent, int first, int last)
+void NitroShare::notifyDevicesAdded(const QModelIndex &, int first, int last)
 {
     for(int i = first; i < last; ++i) {
-        DevicePointer device = parent.child(i, 0).data(Qt::UserRole).value<DevicePointer>();
+        DevicePointer device = mDeviceModel.index(i, 0).data(Qt::UserRole).value<DevicePointer>();
         showMessage(tr("Device Added"), device->name());
     }
 }
 
-void NitroShare::notifyDevicesRemoved(const QModelIndex &parent, int first, int last)
+void NitroShare::notifyDevicesRemoved(const QModelIndex &, int first, int last)
 {
     for(int i = first; i < last; ++i) {
-        DevicePointer device = parent.child(i, 0).data(Qt::UserRole).value<DevicePointer>();
+        DevicePointer device = mDeviceModel.index(i, 0).data(Qt::UserRole).value<DevicePointer>();
         showMessage(tr("Device Removed"), device->name());
     }
 }
