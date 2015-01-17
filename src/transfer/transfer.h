@@ -22,16 +22,19 @@
  * IN THE SOFTWARE.
  **/
 
-#ifndef NS_POOL_H
-#define NS_POOL_H
+#ifndef NS_TRANSFER_H
+#define NS_TRANSFER_H
 
-#include <QHash>
+#include <QSharedPointer>
 
-class Pool
+class Transfer
 {
 public:
 
     //...
 };
 
-#endif // NS_POOL_H
+typedef QSharedPointer<Transfer> TransferPointer;
+Q_DECLARE_METATYPE(TransferPointer)
+
+#endif // NS_TRANSFER_H

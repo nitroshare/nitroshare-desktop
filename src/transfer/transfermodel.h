@@ -22,4 +22,32 @@
  * IN THE SOFTWARE.
  **/
 
-#include "pool.h"
+#ifndef NS_TRANSFERMODEL_H
+#define NS_TRANSFERMODEL_H
+
+#include <QAbstractTableModel>
+
+#include "transfer.h"
+
+class TransferModel : public QAbstractTableModel
+{
+    Q_OBJECT
+
+public:
+
+    int rowCount(const QModelIndex &parent) const;
+    int columnCount(const QModelIndex &parent) const;
+
+    QVariant data(const QModelIndex &index, int role) const;
+    QVariant headerData(int section, Qt::Orientation orientation, int role) const;
+
+public slots:
+
+    //...
+
+private:
+
+    QList<TransferPointer> mTransfers;
+};
+
+#endif // NS_TRANSFERMODEL_H

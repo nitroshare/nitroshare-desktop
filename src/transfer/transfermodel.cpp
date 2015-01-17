@@ -22,42 +22,44 @@
  * IN THE SOFTWARE.
  **/
 
-#ifndef NS_NITROSHARE_H
-#define NS_NITROSHARE_H
+#include "transfermodel.h"
 
-#include <QMenu>
-#include <QSystemTrayIcon>
-
-#include "device/devicemodel.h"
-#include "transfer/transfermodel.h"
-
-class NitroShare : public QSystemTrayIcon
+int TransferModel::rowCount(const QModelIndex &) const
 {
-    Q_OBJECT
+    return mTransfers.count();
+}
 
-public:
+int TransferModel::columnCount(const QModelIndex &) const
+{
+    // The model displays device name and transfer progress
+    return 2;
+}
 
-    NitroShare();
+QVariant TransferModel::data(const QModelIndex &index, int role) const
+{
+    TransferPointer transfer(mTransfers.at(index.row()));
 
-private slots:
+    switch(role) {
+    case Qt::DisplayRole:
+        switch(index.column()) {
+        case 0: return QVariant();
+        case 1: return QVariant();
+        }
+    case Qt::UserRole:
+        QVariant::fromValue(transfer);
+    }
 
-    void notifyDevicesAdded(const QModelIndex &parent, int first, int last);
-    void notifyDevicesRemoved(const QModelIndex &parent, int first, int last);
+    return QVariant();
+}
 
-    void notifyTransferReceived(const QModelIndex &parent, int first, int last);
-    void notifyTransferCompleted(const QModelIndex &parent, int first, int last);
+QVariant TransferModel::headerData(int section, Qt::Orientation orientation, int role) const
+{
+    if(orientation == Qt::Horizontal && role == Qt::DisplayRole) {
+        switch(section) {
+        case 0: return tr("Device Name");
+        case 1: return tr("Percentage");
+        }
+    }
 
-    void sendFiles();
-    void sendDirectory();
-
-private:
-
-    void initMenu();
-
-    QMenu mMenu;
-
-    DeviceModel mDeviceModel;
-    TransferModel mTransferModel;
-};
-
-#endif // NS_NITROSHARE_H
+    return QVariant();
+}

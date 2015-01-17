@@ -36,6 +36,8 @@ NitroShare::NitroShare()
     connect(&mDeviceModel, &DeviceModel::rowsInserted, this, &NitroShare::notifyDevicesAdded);
     connect(&mDeviceModel, &DeviceModel::rowsAboutToBeRemoved, this, &NitroShare::notifyDevicesRemoved);
 
+    //...
+
     initMenu();
 
     setIcon(QIcon(":/img/icon.png"));
@@ -49,7 +51,7 @@ NitroShare::NitroShare()
 void NitroShare::notifyDevicesAdded(const QModelIndex &parent, int first, int last)
 {
     for(int i = first; i < last; ++i) {
-        DevicePointer device = parent.data(Qt::UserRole).value<DevicePointer>();
+        DevicePointer device = parent.child(i, 0).data(Qt::UserRole).value<DevicePointer>();
         showMessage(tr("Device Added"), device->name());
     }
 }
@@ -57,9 +59,19 @@ void NitroShare::notifyDevicesAdded(const QModelIndex &parent, int first, int la
 void NitroShare::notifyDevicesRemoved(const QModelIndex &parent, int first, int last)
 {
     for(int i = first; i < last; ++i) {
-        DevicePointer device = parent.data(Qt::UserRole).value<DevicePointer>();
+        DevicePointer device = parent.child(i, 0).data(Qt::UserRole).value<DevicePointer>();
         showMessage(tr("Device Removed"), device->name());
     }
+}
+
+void NitroShare::notifyTransferReceived(const QModelIndex &parent, int first, int last)
+{
+    //...
+}
+
+void NitroShare::notifyTransferCompleted(const QModelIndex &parent, int first, int last)
+{
+    //...
 }
 
 void NitroShare::sendFiles()

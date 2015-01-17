@@ -69,7 +69,7 @@ QVariant DeviceModel::data(const QModelIndex &index, int role) const
 
 QVariant DeviceModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-    if(orientation == Qt::Horizontal || role == Qt::DisplayRole) {
+    if(orientation == Qt::Horizontal && role == Qt::DisplayRole) {
         switch(section) {
         case 0: return tr("Device Name");
         case 1: return tr("Operating System");

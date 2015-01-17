@@ -22,42 +22,4 @@
  * IN THE SOFTWARE.
  **/
 
-#ifndef NS_NITROSHARE_H
-#define NS_NITROSHARE_H
-
-#include <QMenu>
-#include <QSystemTrayIcon>
-
-#include "device/devicemodel.h"
-#include "transfer/transfermodel.h"
-
-class NitroShare : public QSystemTrayIcon
-{
-    Q_OBJECT
-
-public:
-
-    NitroShare();
-
-private slots:
-
-    void notifyDevicesAdded(const QModelIndex &parent, int first, int last);
-    void notifyDevicesRemoved(const QModelIndex &parent, int first, int last);
-
-    void notifyTransferReceived(const QModelIndex &parent, int first, int last);
-    void notifyTransferCompleted(const QModelIndex &parent, int first, int last);
-
-    void sendFiles();
-    void sendDirectory();
-
-private:
-
-    void initMenu();
-
-    QMenu mMenu;
-
-    DeviceModel mDeviceModel;
-    TransferModel mTransferModel;
-};
-
-#endif // NS_NITROSHARE_H
+#include "transfer.h"
