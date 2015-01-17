@@ -37,6 +37,7 @@ DeviceModel::DeviceModel()
 void DeviceModel::start()
 {
     mDeviceListener.start();
+    mTimeoutTimer.start();
 }
 
 DevicePointer DeviceModel::find(const QString &uuid)
@@ -95,7 +96,7 @@ QVariant DeviceModel::headerData(int section, Qt::Orientation orientation, int r
 void DeviceModel::checkTimeouts()
 {
     // Iterate over the list in reverse to preserve indices when items are removed
-    for(int i = mDevices.count() - 1; i; --i) {
+    for(int i = mDevices.count() - 1; i >= 0; --i) {
         if(mDevices.at(i)->timeoutReached()) {
             beginRemoveRows(QModelIndex(), i, i + 1);
             mDevices.removeAt(i);
