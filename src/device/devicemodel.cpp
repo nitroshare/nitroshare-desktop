@@ -39,15 +39,15 @@ void DeviceModel::start()
     mDeviceListener.start();
 }
 
-int DeviceModel::rowCount(const QModelIndex &) const
+int DeviceModel::rowCount(const QModelIndex &parent) const
 {
-    return mDevices.count();
+    return parent.isValid() ? 0 : mDevices.count();
 }
 
-int DeviceModel::columnCount(const QModelIndex &) const
+int DeviceModel::columnCount(const QModelIndex &parent) const
 {
     // The model displays name and operating system
-    return 2;
+    return parent.isValid() ? 0 : 2;
 }
 
 QVariant DeviceModel::data(const QModelIndex &index, int role) const
@@ -61,7 +61,7 @@ QVariant DeviceModel::data(const QModelIndex &index, int role) const
         case 1: return device->operatingSystem();
         }
     case Qt::UserRole:
-        QVariant::fromValue(device);
+        return QVariant::fromValue(device);
     }
 
     return QVariant();

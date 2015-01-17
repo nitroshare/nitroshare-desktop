@@ -24,15 +24,15 @@
 
 #include "transfermodel.h"
 
-int TransferModel::rowCount(const QModelIndex &) const
+int TransferModel::rowCount(const QModelIndex &parent) const
 {
-    return mTransfers.count();
+    return parent.isValid() ? 0 : mTransfers.count();
 }
 
-int TransferModel::columnCount(const QModelIndex &) const
+int TransferModel::columnCount(const QModelIndex &parent) const
 {
     // The model displays device name and transfer progress
-    return 2;
+    return parent.isValid() ? 0 : 2;
 }
 
 QVariant TransferModel::data(const QModelIndex &index, int role) const
@@ -46,7 +46,7 @@ QVariant TransferModel::data(const QModelIndex &index, int role) const
         case 1: return QVariant();
         }
     case Qt::UserRole:
-        QVariant::fromValue(transfer);
+        return QVariant::fromValue(transfer);
     }
 
     return QVariant();
