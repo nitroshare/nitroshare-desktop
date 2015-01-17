@@ -33,11 +33,7 @@ class IncomingTransfer : public Transfer
 
 public:
 
-    //...
-
-private:
-
-    //...
+    void start(qintptr socketDescriptor);
 };
 
 #endif // NS_INCOMINGTRANSFER_H

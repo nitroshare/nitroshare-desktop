@@ -27,17 +27,25 @@
 
 #include <QTcpServer>
 
+#include "../util/settings.h"
+
 class TransferServer : public QTcpServer
 {
     Q_OBJECT
 
 public:
 
-    //...
+    TransferServer();
+
+    void start();
+
+private slots:
+
+    void settingChanged(Settings::Key key);
 
 private:
 
-    //...
+    void reload();
 };
 
 #endif // NS_TRANSFERSERVER_H

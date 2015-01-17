@@ -23,3 +23,9 @@
  **/
 
 #include "transfer.h"
+
+void Transfer::cancel()
+{
+    // TODO: make this smarter
+    mSocket.close();
+}

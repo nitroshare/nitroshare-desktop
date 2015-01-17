@@ -23,3 +23,23 @@
  **/
 
 #include "transferserver.h"
+
+TransferServer::TransferServer()
+{
+    connect(Settings::instance(), &Settings::settingChanged, this, &TransferServer::settingChanged);
+
+    reload();
+}
+
+void TransferServer::settingChanged(Settings::Key key)
+{
+    if(key == Settings::TransferPort) {
+        reload();
+    }
+}
+
+void TransferServer::reload()
+{
+    close();
+    listen(QHostAddress::Any, Settings::get<quint16>(Settings::TransferPort));
+}

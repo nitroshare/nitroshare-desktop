@@ -25,6 +25,8 @@
 #ifndef NS_OUTGOINGTRANSFER_H
 #define NS_OUTGOINGTRANSFER_H
 
+#include "../device/device.h"
+#include "../filesystem/bundle.h"
 #include "transfer.h"
 
 class OutgoingTransfer : public Transfer
@@ -33,11 +35,7 @@ class OutgoingTransfer : public Transfer
 
 public:
 
-    //...
-
-private:
-
-    //...
+    void start(BundlePointer bundle, DevicePointer device);
 };
 
 #endif // NS_OUTGOINGTRANSFER_H

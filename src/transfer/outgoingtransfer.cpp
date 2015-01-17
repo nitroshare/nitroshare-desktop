@@ -23,3 +23,11 @@
  **/
 
 #include "outgoingtransfer.h"
+
+void OutgoingTransfer::start(BundlePointer bundle, DevicePointer device)
+{
+    // Communication takes place here...
+
+    Q_UNUSED(bundle)
+    Q_UNUSED(device)
+}

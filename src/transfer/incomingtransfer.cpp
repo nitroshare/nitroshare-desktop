@@ -23,3 +23,12 @@
  **/
 
 #include "incomingtransfer.h"
+
+void IncomingTransfer::start(qintptr socketDescriptor)
+{
+    if(!mSocket.setSocketDescriptor(socketDescriptor)) {
+        emit error(tr("Invalid socket descriptor provided."));
+    }
+
+    // Communication takes place here...
+}

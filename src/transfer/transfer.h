@@ -25,21 +25,26 @@
 #ifndef NS_TRANSFER_H
 #define NS_TRANSFER_H
 
-#include <QObject>
 #include <QSharedPointer>
+#include <QTcpSocket>
 
 class Transfer : public QObject
 {
     Q_OBJECT
 
-public:
+signals:
 
-    //...
+    void progress(int);
+    void error(const QString &message);
+    void complete();
 
-private:
+public slots:
 
-    //...
+    void cancel();
 
+protected:
+
+    QTcpSocket mSocket;
 };
 
 typedef QSharedPointer<Transfer> TransferPointer;
