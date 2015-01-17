@@ -46,6 +46,7 @@ public:
     DeviceModel();
 
     void start();
+    DevicePointer find(const QString &uuid);
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
     int columnCount(const QModelIndex &parent = QModelIndex()) const;

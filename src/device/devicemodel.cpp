@@ -39,6 +39,19 @@ void DeviceModel::start()
     mDeviceListener.start();
 }
 
+DevicePointer DeviceModel::find(const QString &uuid)
+{
+    QList<DevicePointer>::const_iterator i;
+
+    for(i = mDevices.constBegin(); i != mDevices.constEnd(); ++i) {
+        if((*i)->uuid() == uuid) {
+            return *i;
+        }
+    }
+
+    return DevicePointer();
+}
+
 int DeviceModel::rowCount(const QModelIndex &parent) const
 {
     return parent.isValid() ? 0 : mDevices.count();
@@ -98,23 +111,18 @@ void DeviceModel::processPing(const QJsonObject &object, const QHostAddress &add
         QString version(object.value("version").toString());
 
         if(uuid != Settings::get<QString>(Settings::DeviceUUID) && version == NITROSHARE_VERSION) {
+            DevicePointer device = find(uuid);
 
-            // Iterate over the list of devices, searching for a UUID match
-            for(int i = 0; i < mDevices.count(); ++i) {
-                if(mDevices.at(i)->uuid() == uuid) {
-                    mDevices.at(i)->update(object, address);
-                    return;
-                }
+            if(device.isNull()) {
+                device = DevicePointer(new Device(uuid));
+                device->update(object, address);
+
+                beginInsertRows(QModelIndex(), mDevices.count(), mDevices.count() + 1);
+                mDevices.append(device);
+                endInsertRows();
+            } else {
+                device->update(object, address);
             }
-
-            // No match was found, create a new device...
-            DevicePointer device(new Device(uuid));
-            device->update(object, address);
-
-            // ...and insert it into the list
-            beginInsertRows(QModelIndex(), mDevices.count(), mDevices.count() + 1);
-            mDevices.append(device);
-            endInsertRows();
         }
     }
 }
