@@ -22,14 +22,23 @@
  * IN THE SOFTWARE.
  **/
 
-#include "devicedialog.h"
+#include <QDialogButtonBox>
+#include <QItemSelectionModel>
+#include <QModelIndex>
+#include <QPushButton>
 
+#include "devicedialog.h"
 #include "ui_devicedialog.h"
 
 DeviceDialog::DeviceDialog(DeviceModel *deviceModel)
     : ui(new Ui::DeviceDialog)
 {
     ui->setupUi(this);
+
+    connect(ui->deviceView->selectionModel(), &QItemSelectionModel::selectionChanged,
+            this, &DeviceDialog::toggleOkButton);
+
+    ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
     ui->deviceView->setModel(deviceModel);
 }
 
@@ -40,7 +49,8 @@ DeviceDialog::~DeviceDialog()
 
 DevicePointer DeviceDialog::selectedDevice() const
 {
-    return ui->deviceView->currentIndex().data(Qt::UserRole).value<DevicePointer>();
+    QModelIndex selection(ui->deviceView->selectionModel()->selectedIndexes().at(0));
+    return selection.data(Qt::UserRole).value<DevicePointer>();
 }
 
 DevicePointer DeviceDialog::getDevice(DeviceModel *deviceModel)
@@ -52,4 +62,10 @@ DevicePointer DeviceDialog::getDevice(DeviceModel *deviceModel)
     } else {
         return DevicePointer();
     }
+}
+
+void DeviceDialog::toggleOkButton(const QItemSelection &selected, const QItemSelection &deselected)
+{
+    bool itemSelected(ui->deviceView->selectionModel()->hasSelection());
+    ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(itemSelected);
 }

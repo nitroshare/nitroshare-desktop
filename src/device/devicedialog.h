@@ -26,6 +26,7 @@
 #define NS_DEVICEDIALOG_H
 
 #include <QDialog>
+#include <QItemSelection>
 
 #include "device.h"
 #include "devicemodel.h"
@@ -46,6 +47,10 @@ public:
     DevicePointer selectedDevice() const;
 
     static DevicePointer getDevice(DeviceModel *deviceModel);
+
+private slots:
+
+    void toggleOkButton(const QItemSelection &selected, const QItemSelection &deselected);
 
 private:
 
