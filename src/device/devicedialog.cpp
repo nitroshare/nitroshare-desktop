@@ -32,11 +32,11 @@ DeviceDialog::DeviceDialog(DeviceModel *deviceModel)
 {
     ui->setupUi(this);
 
+    ui->deviceView->setModel(deviceModel);
+    ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
+
     connect(ui->deviceView->selectionModel(), &QItemSelectionModel::selectionChanged,
             this, &DeviceDialog::toggleOkButton);
-
-    ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
-    ui->deviceView->setModel(deviceModel);
 }
 
 DeviceDialog::~DeviceDialog()
