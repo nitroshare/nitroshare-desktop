@@ -35,7 +35,15 @@ class OutgoingTransfer : public Transfer
 
 public:
 
-    void start(BundlePointer bundle, DevicePointer device);
+    OutgoingTransfer(DevicePointer device, BundlePointer bundle);
+
+    virtual void start();
+    virtual int progress() const;
+
+private:
+
+    DevicePointer mDevice;
+    BundlePointer mBundle;
 };
 
 #endif // NS_OUTGOINGTRANSFER_H

@@ -24,10 +24,17 @@
 
 #include "outgoingtransfer.h"
 
-void OutgoingTransfer::start(BundlePointer bundle, DevicePointer device)
+OutgoingTransfer::OutgoingTransfer(DevicePointer device, BundlePointer bundle)
+    : mDevice(device), mBundle(bundle)
 {
-    // Communication takes place here...
+}
 
-    Q_UNUSED(bundle)
-    Q_UNUSED(device)
+void OutgoingTransfer::start()
+{
+    //...
+}
+
+int OutgoingTransfer::progress() const
+{
+    return 0;
 }

@@ -26,6 +26,5 @@
 
 void Transfer::cancel()
 {
-    // TODO: make this smarter
-    mSocket.close();
+    //...
 }

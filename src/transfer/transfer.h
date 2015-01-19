@@ -32,9 +32,13 @@ class Transfer : public QObject
 {
     Q_OBJECT
 
+public:
+
+    virtual void start() = 0;
+    virtual int progress() const = 0;
+
 signals:
 
-    void progress(int);
     void error(const QString &message);
     void complete();
 

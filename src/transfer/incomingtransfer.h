@@ -33,7 +33,14 @@ class IncomingTransfer : public Transfer
 
 public:
 
-    void start(qintptr socketDescriptor);
+    IncomingTransfer(qintptr socketDescriptor);
+
+    virtual void start();
+    virtual int progress() const;
+
+private:
+
+    qintptr mSocketDescriptor;
 };
 
 #endif // NS_INCOMINGTRANSFER_H
