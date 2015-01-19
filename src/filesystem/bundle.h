@@ -34,12 +34,15 @@ class Bundle
 {
 public:
 
-    qint64 addFile(const QString &filename);
-    qint64 addDirectory(const QString &path);
+    void addFile(const QString &filename);
+    void addDirectory(const QString &path);
+
+    qint64 totalSize() const { return mTotalSize; }
 
 private:
 
-    QList<File> files;
+    QList<File> mFiles;
+    qint64 mTotalSize;
 };
 
 typedef QSharedPointer<Bundle> BundlePointer;

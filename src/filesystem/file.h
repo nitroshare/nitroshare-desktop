@@ -25,7 +25,7 @@
 #ifndef NS_FILE_H
 #define NS_FILE_H
 
-#include <QFileInfo>
+#include <QDir>
 
 class File
 {
@@ -33,7 +33,7 @@ public:
 
     File(const QString &filename, bool writable, bool executable);
 
-    QString absoluteFilename(const QString &root) const;
+    QString absoluteFilename(const QDir &root) const;
     QString filename() const;
 
 private:

@@ -29,19 +29,18 @@
 
 #include "bundle.h"
 
-qint64 Bundle::addFile(const QString &filename)
+void Bundle::addFile(const QString &filename)
 {
     QFileInfo info(filename);
-    files.append(File(info.fileName(), info.isWritable(), info.isExecutable()));
 
-    return info.size();
+    mFiles.append(File(info.fileName(), info.isWritable(), info.isExecutable()));
+    mTotalSize += info.size();
 }
 
-qint64 Bundle::addDirectory(const QString &path)
+void Bundle::addDirectory(const QString &path)
 {
     QDir root(path);
     QStack<QString> stack;
-    qint64 totalSize;
 
     stack.push(root.absolutePath());
 
@@ -53,12 +52,10 @@ qint64 Bundle::addDirectory(const QString &path)
                 stack.push(info.absoluteFilePath());
             } else {
                 QString relativeFilename(root.relativeFilePath(info.absoluteFilePath()));
-                files.append(File(relativeFilename, info.isWritable(), info.isExecutable()));
 
-                totalSize += info.size();
+                mFiles.append(File(relativeFilename, info.isWritable(), info.isExecutable()));
+                mTotalSize += info.size();
             }
         }
     }
-
-    return totalSize;
 }
