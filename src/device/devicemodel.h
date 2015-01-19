@@ -29,9 +29,7 @@
 #include <QHostAddress>
 #include <QJsonObject>
 #include <QList>
-#include <QModelIndex>
 #include <QTimer>
-#include <QVariant>
 
 #include "../util/settings.h"
 #include "device.h"
@@ -53,6 +51,11 @@ public:
 
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
+
+signals:
+
+    void deviceAdded(DevicePointer device);
+    void deviceRemoved(DevicePointer device);
 
 private slots:
 

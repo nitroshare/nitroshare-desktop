@@ -98,6 +98,10 @@ void DeviceModel::checkTimeouts()
     // Iterate over the list in reverse to preserve indices when items are removed
     for(int i = mDevices.count() - 1; i >= 0; --i) {
         if(mDevices.at(i)->timeoutReached()) {
+
+            // Emit the deviceRemoved signal before removing the device
+            emit deviceRemoved(mDevices.at(i));
+
             beginRemoveRows(QModelIndex(), i, i);
             mDevices.removeAt(i);
             endRemoveRows();
@@ -117,6 +121,9 @@ void DeviceModel::processPing(const QJsonObject &object, const QHostAddress &add
             if(device.isNull()) {
                 device = DevicePointer(new Device(uuid));
                 device->update(object, address);
+
+                // Emit the deviceAdded signal before adding the device
+                emit deviceAdded(device);
 
                 beginInsertRows(QModelIndex(), mDevices.count(), mDevices.count());
                 mDevices.append(device);
