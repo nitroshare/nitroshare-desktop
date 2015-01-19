@@ -43,7 +43,7 @@ public:
 
 public slots:
 
-    //...
+    void add(TransferPointer transfer);
 
 private:
 

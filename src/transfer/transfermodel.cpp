@@ -63,3 +63,10 @@ QVariant TransferModel::headerData(int section, Qt::Orientation orientation, int
 
     return QVariant();
 }
+
+void TransferModel::add(TransferPointer transfer)
+{
+    beginInsertRows(QModelIndex(), mTransfers.count(), mTransfers.count());
+    mTransfers.append(transfer);
+    endInsertRows();
+}
