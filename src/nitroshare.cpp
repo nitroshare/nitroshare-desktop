@@ -28,17 +28,18 @@
 #include <QMenu>
 
 #include "device/device.h"
+#include "device/devicedialog.h"
 #include "filesystem/bundle.h"
 #include "nitroshare.h"
 
 NitroShare::NitroShare()
 {
-    connect(&mDeviceModel, &DeviceModel::rowsInserted, this, &NitroShare::notifyDevicesAdded);
-    connect(&mDeviceModel, &DeviceModel::rowsAboutToBeRemoved, this, &NitroShare::notifyDevicesRemoved);
+    connect(&mDeviceModel, &DeviceModel::deviceAdded, this, &NitroShare::notifyDeviceAdded);
+    connect(&mDeviceModel, &DeviceModel::deviceRemoved, this, &NitroShare::notifyDeviceRemoved);
 
     //...
 
-    initMenu();
+    initializeMenu();
 
     setIcon(QIcon(":/img/icon.png"));
     setContextMenu(&mMenu);
@@ -48,35 +49,19 @@ NitroShare::NitroShare()
     mDeviceModel.start();
 }
 
-void NitroShare::notifyDevicesAdded(const QModelIndex &, int first, int last)
+void NitroShare::notifyDeviceAdded(DevicePointer device)
 {
-    for(int i = first; i < last; ++i) {
-        DevicePointer device = mDeviceModel.index(i, 0).data(Qt::UserRole).value<DevicePointer>();
-        showMessage(tr("Device Added"), device->name());
-    }
+    showMessage(tr("Device Added"), device->name());
 }
 
-void NitroShare::notifyDevicesRemoved(const QModelIndex &, int first, int last)
+void NitroShare::notifyDeviceRemoved(DevicePointer device)
 {
-    for(int i = first; i < last; ++i) {
-        DevicePointer device = mDeviceModel.index(i, 0).data(Qt::UserRole).value<DevicePointer>();
-        showMessage(tr("Device Removed"), device->name());
-    }
-}
-
-void NitroShare::notifyTransferReceived(const QModelIndex &parent, int first, int last)
-{
-    //...
-}
-
-void NitroShare::notifyTransferCompleted(const QModelIndex &parent, int first, int last)
-{
-    //...
+    showMessage(tr("Device Removed"), device->name());
 }
 
 void NitroShare::sendFiles()
 {
-    QStringList filenames = QFileDialog::getOpenFileNames(nullptr, tr("Select Files"));
+    QStringList filenames(QFileDialog::getOpenFileNames(nullptr, tr("Select Files")));
 
     if(filenames.length()) {
         Bundle bundle;
@@ -85,23 +70,29 @@ void NitroShare::sendFiles()
             bundle.addFile(filename);
         }
 
-        //...
+        DevicePointer device(DeviceDialog::getDevice(&mDeviceModel));
+        if(device) {
+            //...
+        }
     }
 }
 
 void NitroShare::sendDirectory()
 {
-    QString path = QFileDialog::getExistingDirectory(nullptr, tr("Select Directory"));
+    QString path(QFileDialog::getExistingDirectory(nullptr, tr("Select Directory")));
 
     if(!path.isNull()) {
         Bundle bundle;
         bundle.addDirectory(path);
 
-        //...
+        DevicePointer device(DeviceDialog::getDevice(&mDeviceModel));
+        if(device) {
+            //...
+        }
     }
 }
 
-void NitroShare::initMenu()
+void NitroShare::initializeMenu()
 {
     mMenu.addAction(tr("Send &Files..."), this, SLOT(sendFiles()));
     mMenu.addAction(tr("Send &Directory..."), this, SLOT(sendDirectory()));

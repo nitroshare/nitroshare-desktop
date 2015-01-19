@@ -42,18 +42,15 @@ public:
 
 private slots:
 
-    void notifyDevicesAdded(const QModelIndex &parent, int first, int last);
-    void notifyDevicesRemoved(const QModelIndex &parent, int first, int last);
-
-    void notifyTransferReceived(const QModelIndex &parent, int first, int last);
-    void notifyTransferCompleted(const QModelIndex &parent, int first, int last);
+    void notifyDeviceAdded(DevicePointer device);
+    void notifyDeviceRemoved(DevicePointer device);
 
     void sendFiles();
     void sendDirectory();
 
 private:
 
-    void initMenu();
+    void initializeMenu();
 
     QMenu mMenu;
 
