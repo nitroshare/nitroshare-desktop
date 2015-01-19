@@ -23,8 +23,6 @@
  **/
 
 #include <QDir>
-#include <QFileInfo>
-#include <QFileInfoList>
 #include <QStack>
 
 #include "bundle.h"
@@ -33,7 +31,7 @@ void Bundle::addFile(const QString &filename)
 {
     QFileInfo info(filename);
 
-    mFiles.append(File(info.fileName(), info.isWritable(), info.isExecutable()));
+    mFiles.append(File(info));
     mTotalSize += info.size();
 }
 
@@ -51,9 +49,7 @@ void Bundle::addDirectory(const QString &path)
             if(info.isDir()) {
                 stack.push(info.absoluteFilePath());
             } else {
-                QString relativeFilename(root.relativeFilePath(info.absoluteFilePath()));
-
-                mFiles.append(File(relativeFilename, info.isWritable(), info.isExecutable()));
+                mFiles.append(File(info, root));
                 mTotalSize += info.size();
             }
         }

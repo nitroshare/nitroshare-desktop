@@ -24,8 +24,18 @@
 
 #include "file.h"
 
-File::File(const QString &filename, bool writable, bool executable)
-    : mFilename(filename), mWritable(writable), mExecutable(executable)
+File::File()
+{
+}
+
+File::File(const QFileInfo &info)
+    : mFilename(info.fileName()), mWritable(info.isWritable()), mExecutable(info.isExecutable())
+{
+}
+
+File::File(const QFileInfo &info, const QDir &root)
+    : mFilename(root.relativeFilePath(info.absoluteFilePath())),
+      mWritable(info.isWritable()), mExecutable(info.isExecutable())
 {
 }
 
@@ -35,7 +45,21 @@ QString File::absoluteFilename(const QDir &root) const
     return root.absoluteFilePath(QFileInfo(mFilename).canonicalFilePath());
 }
 
-QString File::filename() const
+QDataStream &operator<<(QDataStream &stream, const File &file)
 {
-    return mFilename;
+    stream << file.filename() << file.isWritable() << file.isExecutable();
+    return stream;
+}
+
+QDataStream &operator>>(QDataStream &stream, File &file)
+{
+    QString filename;
+    bool writable, executable;
+
+    stream >> filename >> writable >> executable;
+    file.setFilename(filename);
+    file.setWritable(writable);
+    file.setExecutable(executable);
+
+    return stream;
 }

@@ -25,16 +25,27 @@
 #ifndef NS_FILE_H
 #define NS_FILE_H
 
+#include <QDataStream>
 #include <QDir>
+#include <QFileInfo>
 
 class File
 {
 public:
 
-    File(const QString &filename, bool writable, bool executable);
+    File();
+    File(const QFileInfo &info);
+    File(const QFileInfo &info, const QDir &root);
 
     QString absoluteFilename(const QDir &root) const;
-    QString filename() const;
+
+    QString filename() const { return mFilename; }
+    bool isWritable() const { return mWritable; }
+    bool isExecutable() const { return mExecutable; }
+
+    void setFilename(const QString &filename) { mFilename = filename; }
+    void setWritable(bool writable) { mWritable = writable; }
+    void setExecutable(bool executable) { mExecutable = executable; }
 
 private:
 
@@ -43,5 +54,8 @@ private:
     bool mWritable;
     bool mExecutable;
 };
+
+QDataStream &operator<<(QDataStream &stream, const File &file);
+QDataStream &operator>>(QDataStream &stream, File &file);
 
 #endif // NS_FILE_H
