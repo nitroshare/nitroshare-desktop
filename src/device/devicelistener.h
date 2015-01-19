@@ -29,7 +29,6 @@
 #include <QJsonObject>
 #include <QTimer>
 #include <QUdpSocket>
-#include <QVariantMap>
 
 #include "../util/settings.h"
 
@@ -40,7 +39,6 @@ class DeviceListener : public QObject
 public:
 
     DeviceListener();
-    virtual ~DeviceListener();
 
     void start();
 
@@ -57,8 +55,7 @@ private slots:
 
 private:
 
-    void initialize();
-    void shutdown();
+    void reload();
 
     QTimer mTimer;
     QUdpSocket mSocket;

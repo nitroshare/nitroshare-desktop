@@ -35,12 +35,7 @@ DeviceListener::DeviceListener()
     connect(&mTimer, &QTimer::timeout, this, &DeviceListener::sendPings);
     connect(&mSocket, &QUdpSocket::readyRead, this, &DeviceListener::processPings);
 
-    initialize();
-}
-
-DeviceListener::~DeviceListener()
-{
-    shutdown();
+    reload();
 }
 
 void DeviceListener::start()
@@ -99,20 +94,16 @@ void DeviceListener::sendPings()
 void DeviceListener::settingChanged(Settings::Key key)
 {
     if(key == Settings::BroadcastInterval || key == Settings::BroadcastPort) {
-        shutdown();
-        initialize();
+        reload();
         start();
     }
 }
 
-void DeviceListener::initialize()
-{
-    mTimer.setInterval(Settings::get<int>(Settings::BroadcastInterval));
-    mSocket.bind(Settings::get<quint16>(Settings::BroadcastPort), QUdpSocket::ShareAddress);
-}
-
-void DeviceListener::shutdown()
+void DeviceListener::reload()
 {
     mTimer.stop();
+    mTimer.setInterval(Settings::get<int>(Settings::BroadcastInterval));
+
     mSocket.close();
+    mSocket.bind(Settings::get<quint16>(Settings::BroadcastPort), QUdpSocket::ShareAddress);
 }
