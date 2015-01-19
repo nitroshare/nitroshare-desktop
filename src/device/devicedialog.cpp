@@ -22,9 +22,6 @@
  * IN THE SOFTWARE.
  **/
 
-#include <QDialogButtonBox>
-#include <QItemSelectionModel>
-#include <QModelIndex>
 #include <QPushButton>
 
 #include "devicedialog.h"
@@ -49,8 +46,13 @@ DeviceDialog::~DeviceDialog()
 
 DevicePointer DeviceDialog::selectedDevice() const
 {
-    QModelIndex selection(ui->deviceView->selectionModel()->selectedIndexes().at(0));
-    return selection.data(Qt::UserRole).value<DevicePointer>();
+    QModelIndexList selection(ui->deviceView->selectionModel()->selectedIndexes());
+
+    if(selection.count()) {
+        return selection.at(0).data(Qt::UserRole).value<DevicePointer>();
+    } else {
+        return DevicePointer();
+    }
 }
 
 DevicePointer DeviceDialog::getDevice(DeviceModel *deviceModel)
