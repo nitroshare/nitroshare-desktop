@@ -28,6 +28,7 @@
 #include <QTcpServer>
 
 #include "../util/settings.h"
+#include "transfer.h"
 
 class TransferServer : public QTcpServer
 {
@@ -39,11 +40,17 @@ public:
 
     void start();
 
+signals:
+
+    void newTransfer(TransferPointer transfer);
+
 private slots:
 
     void settingChanged(Settings::Key key);
 
 private:
+
+    void incomingConnection(qintptr socketDescriptor);
 
     void reload();
 };

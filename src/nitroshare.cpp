@@ -36,8 +36,7 @@ NitroShare::NitroShare()
 {
     connect(&mDeviceModel, &DeviceModel::deviceAdded, this, &NitroShare::notifyDeviceAdded);
     connect(&mDeviceModel, &DeviceModel::deviceRemoved, this, &NitroShare::notifyDeviceRemoved);
-
-    //...
+    connect(&mTransferServer, &TransferServer::newTransfer, &mTransferModel, &TransferModel::add);
 
     initializeMenu();
 

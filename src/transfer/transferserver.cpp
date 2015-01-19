@@ -22,12 +22,14 @@
  * IN THE SOFTWARE.
  **/
 
+#include "incomingtransfer.h"
 #include "transferserver.h"
 
 TransferServer::TransferServer()
 {
     connect(Settings::instance(), &Settings::settingChanged, this, &TransferServer::settingChanged);
 
+    // TODO: listen() can fail without notifying the user
     reload();
 }
 
@@ -36,6 +38,11 @@ void TransferServer::settingChanged(Settings::Key key)
     if(key == Settings::TransferPort) {
         reload();
     }
+}
+
+void TransferServer::incomingConnection(qintptr socketDescriptor)
+{
+    emit newTransfer(TransferPointer(new IncomingTransfer(socketDescriptor)));
 }
 
 void TransferServer::reload()

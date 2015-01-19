@@ -32,6 +32,7 @@
 #include "device/devicemodel.h"
 #include "filesystem/bundle.h"
 #include "transfer/transfermodel.h"
+#include "transfer/transferserver.h"
 
 class NitroShare : public QSystemTrayIcon
 {
@@ -59,6 +60,7 @@ private:
 
     DeviceModel mDeviceModel;
     TransferModel mTransferModel;
+    TransferServer mTransferServer;
 };
 
 #endif // NS_NITROSHARE_H
