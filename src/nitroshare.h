@@ -30,6 +30,7 @@
 #include <QSystemTrayIcon>
 
 #include "device/devicemodel.h"
+#include "filesystem/bundle.h"
 #include "transfer/transfermodel.h"
 
 class NitroShare : public QSystemTrayIcon
@@ -51,6 +52,8 @@ private slots:
 private:
 
     void initializeMenu();
+
+    void sendBundle(BundlePointer bundle);
 
     QMenu mMenu;
 

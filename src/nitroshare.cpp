@@ -29,7 +29,7 @@
 
 #include "device/device.h"
 #include "device/devicedialog.h"
-#include "filesystem/bundle.h"
+#include "transfer/outgoingtransfer.h"
 #include "nitroshare.h"
 
 NitroShare::NitroShare()
@@ -64,16 +64,13 @@ void NitroShare::sendFiles()
     QStringList filenames(QFileDialog::getOpenFileNames(nullptr, tr("Select Files")));
 
     if(filenames.length()) {
-        Bundle bundle;
+        BundlePointer bundle(new Bundle);
 
         foreach(QString filename, filenames) {
-            bundle.addFile(filename);
+            bundle->addFile(filename);
         }
 
-        DevicePointer device(DeviceDialog::getDevice(&mDeviceModel));
-        if(device) {
-            //...
-        }
+        sendBundle(bundle);
     }
 }
 
@@ -82,13 +79,10 @@ void NitroShare::sendDirectory()
     QString path(QFileDialog::getExistingDirectory(nullptr, tr("Select Directory")));
 
     if(!path.isNull()) {
-        Bundle bundle;
-        bundle.addDirectory(path);
+        BundlePointer bundle(new Bundle);
 
-        DevicePointer device(DeviceDialog::getDevice(&mDeviceModel));
-        if(device) {
-            //...
-        }
+        bundle->addDirectory(path);
+        sendBundle(bundle);
     }
 }
 
@@ -98,4 +92,13 @@ void NitroShare::initializeMenu()
     mMenu.addAction(tr("Send &Directory..."), this, SLOT(sendDirectory()));
     mMenu.addSeparator();
     mMenu.addAction(tr("E&xit"), QApplication::instance(), SLOT(quit()));
+}
+
+void NitroShare::sendBundle(BundlePointer bundle)
+{
+    DevicePointer device(DeviceDialog::getDevice(&mDeviceModel));
+    if(device) {
+        TransferPointer transfer(new OutgoingTransfer(device, bundle));
+        mTransferModel.add(transfer);
+    }
 }
