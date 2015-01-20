@@ -24,6 +24,12 @@
 
 #include "transfer.h"
 
+Transfer::Transfer()
+{
+    connect(this, &Transfer::error, this, &Transfer::finished);
+    connect(this, &Transfer::complete, this, &Transfer::finished);
+}
+
 void Transfer::cancel()
 {
     //...

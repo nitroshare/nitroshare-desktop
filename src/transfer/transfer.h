@@ -34,6 +34,8 @@ class Transfer : public QObject
 
 public:
 
+    Transfer();
+
     virtual void start() = 0;
     virtual int progress() const = 0;
 
@@ -41,6 +43,8 @@ signals:
 
     void error(const QString &message);
     void complete();
+
+    void finished();
 
 public slots:
 
