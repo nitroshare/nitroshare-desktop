@@ -25,6 +25,8 @@
 #ifndef NS_TRANSFER_H
 #define NS_TRANSFER_H
 
+#include <QMutex>
+#include <QMutexLocker>
 #include <QSharedPointer>
 #include <QTcpSocket>
 
@@ -36,7 +38,19 @@ public:
 
     Transfer();
 
+    QString deviceName() const {
+        QMutexLocker locker(&mMutex);
+        return mDeviceName;
+    }
+    int progress() const {
+        QMutexLocker locker(&mMutex);
+        return mProgress;
+    }
+
 signals:
+
+    void deviceNameChanged(const QString &deviceName);
+    void progressChanged(int progress);
 
     void error(const QString &message);
     void complete();
@@ -55,6 +69,11 @@ protected slots:
 protected:
 
     QTcpSocket mSocket;
+    mutable QMutex mMutex;
+
+    QString mDeviceName;
+    int mProgress;
+    bool mCancelled;
 };
 
 typedef QSharedPointer<Transfer> TransferPointer;

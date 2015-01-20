@@ -45,10 +45,6 @@ public slots:
 
     void add(TransferPointer transfer);
 
-private slots:
-
-    void removeTransfer();
-
 private:
 
     QList<TransferPointer> mTransfers;

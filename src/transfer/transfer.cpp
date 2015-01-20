@@ -28,9 +28,19 @@
 #include "transfer.h"
 
 Transfer::Transfer()
+    : mDeviceName(tr("[unknown]")), mProgress(0), mCancelled(false)
 {
     connect(this, &Transfer::error, this, &Transfer::finished);
     connect(this, &Transfer::complete, this, &Transfer::finished);
+
+    connect(this, &Transfer::deviceNameChanged, [this](QString deviceName) {
+        QMutexLocker locker(&mMutex);
+        mDeviceName = deviceName;
+    });
+    connect(this, &Transfer::progressChanged, [this](int progress) {
+        QMutexLocker locker(&mMutex);
+        mProgress = progress;
+    });
 
     QThread * thread(new QThread);
     moveToThread(thread);
@@ -47,5 +57,6 @@ void Transfer::start()
 
 void Transfer::cancel()
 {
-    //...
+    QMutexLocker locker(&mMutex);
+    mCancelled = true;
 }

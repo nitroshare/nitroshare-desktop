@@ -42,8 +42,8 @@ QVariant TransferModel::data(const QModelIndex &index, int role) const
     switch(role) {
     case Qt::DisplayRole:
         switch(index.column()) {
-        case 0: return QVariant();
-        case 1: return QVariant();
+        case 0: return transfer->deviceName();
+        case 1: return transfer->progress();
         }
     case Qt::UserRole:
         return QVariant::fromValue(transfer);
@@ -70,11 +70,22 @@ void TransferModel::add(TransferPointer transfer)
     mTransfers.append(transfer);
     endInsertRows();
 
-    connect(transfer.data(), &Transfer::finished, this, &TransferModel::removeTransfer);
-    transfer->start();
-}
+    // Lambdas save us from an awkward dilemma - slots wouldn't have access to
+    // the TransferPointer, only the Transfer* itself - but the lambdas do!
+    auto update([this, transfer]() {
+        int index = mTransfers.indexOf(transfer);
+        emit dataChanged(this->index(index, 0), this->index(index, 1));
+    });
 
-void TransferModel::removeTransfer()
-{
-    //...
+    connect(transfer.data(), &Transfer::deviceNameChanged, update);
+    connect(transfer.data(), &Transfer::progressChanged, update);
+    connect(transfer.data(), &Transfer::finished, [this, transfer]() {
+        int index = mTransfers.indexOf(transfer);
+
+        beginRemoveRows(QModelIndex(), index, index);
+        mTransfers.removeAt(index);
+        endRemoveRows();
+    });
+
+    transfer->start();
 }
