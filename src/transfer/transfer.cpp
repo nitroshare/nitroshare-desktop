@@ -22,12 +22,27 @@
  * IN THE SOFTWARE.
  **/
 
+#include <QMetaObject>
+#include <QThread>
+
 #include "transfer.h"
 
 Transfer::Transfer()
 {
     connect(this, &Transfer::error, this, &Transfer::finished);
     connect(this, &Transfer::complete, this, &Transfer::finished);
+
+    QThread * thread(new QThread);
+    moveToThread(thread);
+    thread->start();
+
+    connect(this, &Transfer::finished, thread, &QThread::quit);
+    connect(thread, &QThread::finished, thread, &QThread::deleteLater);
+}
+
+void Transfer::start()
+{
+    QMetaObject::invokeMethod(this, "performTransfer", Qt::QueuedConnection);
 }
 
 void Transfer::cancel()

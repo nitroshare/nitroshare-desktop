@@ -69,4 +69,12 @@ void TransferModel::add(TransferPointer transfer)
     beginInsertRows(QModelIndex(), mTransfers.count(), mTransfers.count());
     mTransfers.append(transfer);
     endInsertRows();
+
+    connect(transfer.data(), &Transfer::finished, this, &TransferModel::removeTransfer);
+    transfer->start();
+}
+
+void TransferModel::removeTransfer()
+{
+    //...
 }

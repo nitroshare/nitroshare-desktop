@@ -29,16 +29,13 @@ IncomingTransfer::IncomingTransfer(qintptr socketDescriptor)
 {
 }
 
-void IncomingTransfer::start()
+void IncomingTransfer::performTransfer()
 {
     if(!mSocket.setSocketDescriptor(mSocketDescriptor)) {
         emit error(tr("Invalid socket descriptor provided."));
     }
 
-    // Communication takes place here...
-}
+    // TODO: perform transfer here
 
-int IncomingTransfer::progress() const
-{
-    return 0;
+    emit complete();
 }

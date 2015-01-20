@@ -35,10 +35,9 @@ public:
 
     IncomingTransfer(qintptr socketDescriptor);
 
-    virtual void start();
-    virtual int progress() const;
-
 private:
+
+    virtual void performTransfer();
 
     qintptr mSocketDescriptor;
 };

@@ -37,10 +37,9 @@ public:
 
     OutgoingTransfer(DevicePointer device, BundlePointer bundle);
 
-    virtual void start();
-    virtual int progress() const;
-
 private:
+
+    virtual void performTransfer();
 
     DevicePointer mDevice;
     BundlePointer mBundle;

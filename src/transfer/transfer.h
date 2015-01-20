@@ -36,9 +36,6 @@ public:
 
     Transfer();
 
-    virtual void start() = 0;
-    virtual int progress() const = 0;
-
 signals:
 
     void error(const QString &message);
@@ -48,7 +45,12 @@ signals:
 
 public slots:
 
+    void start();
     void cancel();
+
+protected slots:
+
+    virtual void performTransfer() = 0;
 
 protected:
 

@@ -29,12 +29,9 @@ OutgoingTransfer::OutgoingTransfer(DevicePointer device, BundlePointer bundle)
 {
 }
 
-void OutgoingTransfer::start()
+void OutgoingTransfer::performTransfer()
 {
-    //...
-}
+    // TODO: perform transfer here
 
-int OutgoingTransfer::progress() const
-{
-    return 0;
+    emit complete();
 }
