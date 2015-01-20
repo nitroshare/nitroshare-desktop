@@ -39,8 +39,12 @@ public:
     QString name() const { return mName; }
     QString operatingSystem() const { return mOperatingSystem; }
 
-    void update(const QJsonObject &object, const QHostAddress &address);
+    QHostAddress address() const { return mAddress; }
+    quint16 port() const { return mPort; }
+
     bool timeoutReached() const;
+
+    void update(const QJsonObject &object, const QHostAddress &address);
 
 private:
 

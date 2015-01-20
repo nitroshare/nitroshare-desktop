@@ -32,6 +32,12 @@ Device::Device(const QString &uuid)
 {
 }
 
+bool Device::timeoutReached() const
+{
+    return QDateTime::currentMSecsSinceEpoch() - mLastPing >=
+            Settings::get<qint64>(Settings::BroadcastTimeout);
+}
+
 void Device::update(const QJsonObject &object, const QHostAddress &address)
 {
     if(object.contains("name")) {
@@ -50,10 +56,4 @@ void Device::update(const QJsonObject &object, const QHostAddress &address)
     mPort = object.value("port").toInt();
 
     mLastPing = QDateTime::currentMSecsSinceEpoch();
-}
-
-bool Device::timeoutReached() const
-{
-    return QDateTime::currentMSecsSinceEpoch() - mLastPing >=
-            Settings::get<qint64>(Settings::BroadcastTimeout);
 }
