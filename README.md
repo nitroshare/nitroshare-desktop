@@ -24,4 +24,31 @@ The requirements for building NitroShare are as follows:
 
 ### Build Instructions
 
+#### Ubuntu 14.04, 14.10, & 15.04
+
+1. None of the current releases ship CMake 3.1, so you will need to add my PPA:
+
+        sudo add-apt-repository ppa:george-edison55/cmake-3.1
+        sudo apt-get update
+
+2. Install CMake, C++ compiler, and Qt 5 development files:
+
+        sudo apt-get install cmake build-essential qtbase5-dev
+
+3. Change to the root of the source directory and create a directory for building the project:
+
+        mkdir build
+        cd build
+
+4. Run CMake followed by make:
+
+        cmake ..
+        make
+
+5. The NitroShare binary will be in the current directory and can be run with:
+
+        ./nitroshare
+
+#### Windows 7, 8, & 8.1
+
 TODO
