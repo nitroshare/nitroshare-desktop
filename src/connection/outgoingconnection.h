@@ -27,6 +27,7 @@
 
 #include <QHostAddress>
 
+#include "../filesystem/bundle.h"
 #include "connection.h"
 
 class OutgoingConnection : public Connection
@@ -35,7 +36,7 @@ class OutgoingConnection : public Connection
 
 public:
 
-    OutgoingConnection(const QHostAddress &address, quint16 port);
+    OutgoingConnection(const QHostAddress &address, quint16 port, BundlePointer device);
 
 public slots:
 
@@ -45,6 +46,8 @@ private:
 
     QHostAddress mAddress;
     quint16 mPort;
+
+    BundlePointer mBundle;
 };
 
 #endif // NS_OUTGOINGCONNECTION_H

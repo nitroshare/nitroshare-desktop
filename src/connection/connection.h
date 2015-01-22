@@ -31,16 +31,13 @@ class Connection : public QObject
 {
     Q_OBJECT
 
-public:
-
-    Connection();
-
 signals:
 
+    void deviceName(const QString &message);
     void progress(int);
+
     void error(const QString &message);
     void completed();
-    void finished();
 
 public slots:
 

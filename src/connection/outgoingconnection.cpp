@@ -27,8 +27,8 @@
 
 #include "outgoingconnection.h"
 
-OutgoingConnection::OutgoingConnection(const QHostAddress &address, quint16 port)
-    : mAddress(address), mPort(port)
+OutgoingConnection::OutgoingConnection(const QHostAddress &address, quint16 port, BundlePointer bundle)
+    : mAddress(address), mPort(port), mBundle(bundle)
 {
 }
 
