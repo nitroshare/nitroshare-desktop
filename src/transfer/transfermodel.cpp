@@ -72,13 +72,10 @@ void TransferModel::add(TransferPointer transfer)
 
     // Lambdas save us from an awkward dilemma - slots wouldn't have access to
     // the TransferPointer, only the Transfer* itself - but the lambdas do!
-    auto update([this, transfer]() {
+    connect(transfer.data(), &Transfer::statusChanged, [this, transfer]() {
         int index = mTransfers.indexOf(transfer);
         emit dataChanged(this->index(index, 0), this->index(index, 1));
     });
-
-    connect(transfer.data(), &Transfer::deviceNameChanged, update);
-    connect(transfer.data(), &Transfer::progressChanged, update);
     connect(transfer.data(), &Transfer::finished, [this, transfer]() {
         int index = mTransfers.indexOf(transfer);
 

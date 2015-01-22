@@ -15,7 +15,6 @@ configure_file(src/config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
 # Add the source files
 set(SRC
-    src/connection/connection.cpp
     src/connection/incomingconnection.cpp
     src/connection/outgoingconnection.cpp
     src/device/device.cpp
@@ -24,8 +23,6 @@ set(SRC
     src/device/devicemodel.cpp
     src/filesystem/bundle.cpp
     src/filesystem/file.cpp
-    src/transfer/incomingtransfer.cpp
-    src/transfer/outgoingtransfer.cpp
     src/transfer/transfer.cpp
     src/transfer/transfermodel.cpp
     src/transfer/transferserver.cpp
@@ -42,8 +39,6 @@ qt5_wrap_cpp(MOC
     src/device/devicedialog.h
     src/device/devicelistener.h
     src/device/devicemodel.h
-    src/transfer/incomingtransfer.h
-    src/transfer/outgoingtransfer.h
     src/transfer/transfer.h
     src/transfer/transfermodel.h
     src/transfer/transferserver.h
@@ -64,7 +59,6 @@ add_executable(nitroshare WIN32 ${SRC} ${MOC} ${UI} ${QRC})
 # correct flags are set to enable C++11 features
 target_link_libraries(nitroshare Qt5::Network Qt5::Widgets)
 target_compile_features(nitroshare PRIVATE
-    cxx_auto_type
     cxx_generalized_initializers
     cxx_lambdas
     cxx_nullptr)

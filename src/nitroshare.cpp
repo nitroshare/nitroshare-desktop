@@ -29,7 +29,6 @@
 
 #include "device/device.h"
 #include "device/devicedialog.h"
-#include "transfer/outgoingtransfer.h"
 #include "nitroshare.h"
 
 NitroShare::NitroShare()
@@ -97,7 +96,7 @@ void NitroShare::sendBundle(BundlePointer bundle)
 {
     DevicePointer device(DeviceDialog::getDevice(&mDeviceModel));
     if(device) {
-        TransferPointer transfer(new OutgoingTransfer(device, bundle));
+        TransferPointer transfer(new Transfer(device, bundle));
         mTransferModel.add(transfer);
     }
 }

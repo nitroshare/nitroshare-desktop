@@ -22,7 +22,6 @@
  * IN THE SOFTWARE.
  **/
 
-#include "incomingtransfer.h"
 #include "transferserver.h"
 
 TransferServer::TransferServer()
@@ -42,7 +41,7 @@ void TransferServer::settingChanged(Settings::Key key)
 
 void TransferServer::incomingConnection(qintptr socketDescriptor)
 {
-    emit newTransfer(TransferPointer(new IncomingTransfer(socketDescriptor)));
+    emit newTransfer(TransferPointer(new Transfer(socketDescriptor)));
 }
 
 void TransferServer::reload()

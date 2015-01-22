@@ -25,10 +25,13 @@
 #ifndef NS_TRANSFER_H
 #define NS_TRANSFER_H
 
-#include <QMutex>
-#include <QMutexLocker>
+#include <QHostAddress>
 #include <QSharedPointer>
-#include <QTcpSocket>
+#include <QThread>
+
+#include "../connection/connection.h"
+#include "../device/device.h"
+#include "../filesystem/bundle.h"
 
 class Transfer : public QObject
 {
@@ -36,44 +39,38 @@ class Transfer : public QObject
 
 public:
 
-    Transfer();
+    Transfer(qintptr socketDescriptor);
+    Transfer(DevicePointer device, BundlePointer bundle);
 
-    QString deviceName() const {
-        QMutexLocker locker(&mMutex);
-        return mDeviceName;
-    }
-    int progress() const {
-        QMutexLocker locker(&mMutex);
-        return mProgress;
-    }
+    virtual ~Transfer();
+
+    QString deviceName() const;
+    int progress() const;
+
+    void start();
 
 signals:
 
-    void deviceNameChanged(const QString &deviceName);
-    void progressChanged(int progress);
+    void statusChanged();
 
     void error(const QString &message);
-    void complete();
-
+    void completed();
     void finished();
 
-public slots:
+private slots:
 
-    void start();
-    void cancel();
+    void setDeviceName(const QString &deviceName);
+    void setProgress(int progress);
 
-protected slots:
+private:
 
-    virtual void performTransfer() = 0;
+    void initialize();
 
-protected:
-
-    QTcpSocket mSocket;
-    mutable QMutex mMutex;
+    QSharedPointer<Connection> mConnection;
+    QThread mThread;
 
     QString mDeviceName;
     int mProgress;
-    bool mCancelled;
 };
 
 typedef QSharedPointer<Transfer> TransferPointer;

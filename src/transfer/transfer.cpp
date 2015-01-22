@@ -23,40 +23,68 @@
  **/
 
 #include <QMetaObject>
-#include <QThread>
 
+#include "../connection/incomingconnection.h"
+#include "../connection/outgoingconnection.h"
 #include "transfer.h"
 
-Transfer::Transfer()
-    : mDeviceName(tr("[unknown]")), mProgress(0), mCancelled(false)
+Transfer::Transfer(qintptr socketDescriptor)
+    : mConnection(new IncomingConnection(socketDescriptor)),
+      mDeviceName(tr("[unknown]")), mProgress(0)
 {
-    connect(this, &Transfer::error, this, &Transfer::finished);
-    connect(this, &Transfer::complete, this, &Transfer::finished);
+    initialize();
+}
 
-    connect(this, &Transfer::deviceNameChanged, [this](QString deviceName) {
-        QMutexLocker locker(&mMutex);
-        mDeviceName = deviceName;
-    });
-    connect(this, &Transfer::progressChanged, [this](int progress) {
-        QMutexLocker locker(&mMutex);
-        mProgress = progress;
-    });
+Transfer::Transfer(DevicePointer device, BundlePointer bundle)
+    : mConnection(new OutgoingConnection(device->address(), device->port(), bundle)),
+      mDeviceName(device->name()), mProgress(0)
+{
+    initialize();
+}
 
-    QThread * thread(new QThread);
-    moveToThread(thread);
-    thread->start();
+Transfer::~Transfer()
+{
+    mThread.quit();
+    mThread.wait();
+}
 
-    connect(this, &Transfer::finished, thread, &QThread::quit);
-    connect(thread, &QThread::finished, thread, &QThread::deleteLater);
+QString Transfer::deviceName() const
+{
+    return mDeviceName;
+}
+
+int Transfer::progress() const
+{
+    return mProgress;
 }
 
 void Transfer::start()
 {
-    QMetaObject::invokeMethod(this, "performTransfer", Qt::QueuedConnection);
+    QMetaObject::invokeMethod(mConnection.data(), "start", Qt::QueuedConnection);
 }
 
-void Transfer::cancel()
+void Transfer::setDeviceName(const QString &deviceName)
 {
-    QMutexLocker locker(&mMutex);
-    mCancelled = true;
+    mDeviceName = deviceName;
+}
+
+void Transfer::setProgress(int progress)
+{
+    mProgress = progress;
+}
+
+void Transfer::initialize()
+{
+    mThread.start();
+    mConnection->moveToThread(&mThread);
+
+    connect(mConnection.data(), &Connection::deviceName, this, &Transfer::setDeviceName);
+    connect(mConnection.data(), &Connection::progress, this, &Transfer::setProgress);
+    connect(mConnection.data(), &Connection::error, this, &Transfer::error);
+    connect(mConnection.data(), &Connection::completed, this, &Transfer::completed);
+
+    connect(mConnection.data(), &Connection::deviceName, this, &Transfer::statusChanged);
+    connect(mConnection.data(), &Connection::progress, this, &Transfer::statusChanged);
+    connect(mConnection.data(), &Connection::error, this, &Transfer::finished);
+    connect(mConnection.data(), &Connection::completed, this, &Transfer::finished);
 }
