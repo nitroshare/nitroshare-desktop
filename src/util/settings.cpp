@@ -44,7 +44,7 @@ struct Setting
         } \
     }
 
-QMap<Settings::Key, Setting> keys {
+const QMap<Settings::Key, Setting> keys {
     DEFINE_SETTING(BroadcastInterval, { return 5 * 1000; }),
     DEFINE_SETTING(BroadcastPort, { return 40816; }),
     DEFINE_SETTING(BroadcastTimeout, { return 30 * 1000; }),
