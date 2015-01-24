@@ -22,32 +22,25 @@
  * IN THE SOFTWARE.
  **/
 
-#ifndef NS_OUTGOINGCONNECTION_H
-#define NS_OUTGOINGCONNECTION_H
+#include <QTcpSocket>
 
-#include <QHostAddress>
+#include "socketwriter.h"
 
-#include "../filesystem/bundle.h"
-#include "connection.h"
-
-class OutgoingConnection : public Connection
+SocketWriter::SocketWriter(const QHostAddress &address, quint16 port, BundlePointer bundle)
+    : mAddress(address), mPort(port), mBundle(bundle)
 {
-    Q_OBJECT
+}
 
-public:
+void SocketWriter::start()
+{
+    QTcpSocket socket;
 
-    OutgoingConnection(const QHostAddress &address, quint16 port, BundlePointer device);
+    socket.connectToHost(mAddress, mPort);
+    if(!socket.waitForConnected()) {
+        emit error(tr("Unable to connect to host."));
+    }
 
-public slots:
+    //...
 
-    void start();
-
-private:
-
-    QHostAddress mAddress;
-    quint16 mPort;
-
-    BundlePointer mBundle;
-};
-
-#endif // NS_OUTGOINGCONNECTION_H
+    emit completed();
+}

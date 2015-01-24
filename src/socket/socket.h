@@ -22,29 +22,26 @@
  * IN THE SOFTWARE.
  **/
 
-#include <QDataStream>
-#include <QTcpSocket>
+#ifndef NS_SOCKET_H
+#define NS_SOCKET_H
 
-#include "incomingconnection.h"
+#include <QObject>
 
-IncomingConnection::IncomingConnection(qintptr socketDescriptor)
-    : mSocketDescriptor(socketDescriptor)
+class Socket : public QObject
 {
-}
+    Q_OBJECT
 
-void IncomingConnection::start()
-{
-    QTcpSocket socket;
+signals:
 
-    if(!socket.setSocketDescriptor(mSocketDescriptor)) {
-        emit error(tr("Invalid socket descriptor."));
-        return;
-    }
+    void deviceName(const QString &message);
+    void progress(int);
 
-    QDataStream stream(&socket);
+    void error(const QString &message);
+    void completed();
 
-    // TODO: process connection here
-    Q_UNUSED(stream)
+public slots:
 
-    emit completed();
-}
+    virtual void start() = 0;
+};
+
+#endif // NS_SOCKET_H

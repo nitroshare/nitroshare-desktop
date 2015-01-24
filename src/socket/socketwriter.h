@@ -22,26 +22,32 @@
  * IN THE SOFTWARE.
  **/
 
-#ifndef NS_CONNECTION_H
-#define NS_CONNECTION_H
+#ifndef NS_SOCKETWRITER_H
+#define NS_SOCKETWRITER_H
 
-#include <QObject>
+#include <QHostAddress>
 
-class Connection : public QObject
+#include "../filesystem/bundle.h"
+#include "socket.h"
+
+class SocketWriter : public Socket
 {
     Q_OBJECT
 
-signals:
+public:
 
-    void deviceName(const QString &message);
-    void progress(int);
-
-    void error(const QString &message);
-    void completed();
+    SocketWriter(const QHostAddress &address, quint16 port, BundlePointer device);
 
 public slots:
 
-    virtual void start() = 0;
+    void start();
+
+private:
+
+    QHostAddress mAddress;
+    quint16 mPort;
+
+    BundlePointer mBundle;
 };
 
-#endif // NS_CONNECTION_H
+#endif // NS_SOCKETWRITER_H

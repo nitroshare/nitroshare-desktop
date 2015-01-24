@@ -29,9 +29,9 @@
 #include <QSharedPointer>
 #include <QThread>
 
-#include "../connection/connection.h"
 #include "../device/device.h"
 #include "../filesystem/bundle.h"
+#include "../socket/socket.h"
 
 class Transfer : public QObject
 {
@@ -66,7 +66,7 @@ private:
 
     void initialize();
 
-    QSharedPointer<Connection> mConnection;
+    QSharedPointer<Socket> mConnection;
     QThread mThread;
 
     QString mDeviceName;

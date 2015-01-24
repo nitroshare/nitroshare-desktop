@@ -15,14 +15,14 @@ configure_file(src/config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
 # Add the source files
 set(SRC
-    src/connection/incomingconnection.cpp
-    src/connection/outgoingconnection.cpp
     src/device/device.cpp
     src/device/devicedialog.cpp
     src/device/devicelistener.cpp
     src/device/devicemodel.cpp
     src/filesystem/bundle.cpp
     src/filesystem/file.cpp
+    src/socket/socketreader.cpp
+    src/socket/socketwriter.cpp
     src/transfer/transfer.cpp
     src/transfer/transfermodel.cpp
     src/transfer/transferserver.cpp
@@ -33,12 +33,12 @@ set(SRC
 
 # Add the files that require MOC
 qt5_wrap_cpp(MOC
-    src/connection/connection.h
-    src/connection/incomingconnection.h
-    src/connection/outgoingconnection.h
     src/device/devicedialog.h
     src/device/devicelistener.h
     src/device/devicemodel.h
+    src/socket/socket.h
+    src/socket/socketreader.h
+    src/socket/socketwriter.h
     src/transfer/transfer.h
     src/transfer/transfermodel.h
     src/transfer/transferserver.h

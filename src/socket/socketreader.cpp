@@ -22,29 +22,25 @@
  * IN THE SOFTWARE.
  **/
 
-#include <QDataStream>
 #include <QTcpSocket>
 
-#include "outgoingconnection.h"
+#include "socketreader.h"
 
-OutgoingConnection::OutgoingConnection(const QHostAddress &address, quint16 port, BundlePointer bundle)
-    : mAddress(address), mPort(port), mBundle(bundle)
+SocketReader::SocketReader(qintptr socketDescriptor)
+    : mSocketDescriptor(socketDescriptor)
 {
 }
 
-void OutgoingConnection::start()
+void SocketReader::start()
 {
     QTcpSocket socket;
 
-    socket.connectToHost(mAddress, mPort);
-    if(!socket.waitForConnected()) {
-        emit error(tr("Unable to connect to host."));
+    if(!socket.setSocketDescriptor(mSocketDescriptor)) {
+        emit error(tr("Invalid socket descriptor."));
+        return;
     }
 
-    QDataStream stream(&socket);
-
-    // TODO: process connection here
-    Q_UNUSED(stream)
+    //...
 
     emit completed();
 }

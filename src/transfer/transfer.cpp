@@ -24,19 +24,19 @@
 
 #include <QMetaObject>
 
-#include "../connection/incomingconnection.h"
-#include "../connection/outgoingconnection.h"
+#include "../socket/socketreader.h"
+#include "../socket/socketwriter.h"
 #include "transfer.h"
 
 Transfer::Transfer(qintptr socketDescriptor)
-    : mConnection(new IncomingConnection(socketDescriptor)),
+    : mConnection(new SocketReader(socketDescriptor)),
       mDeviceName(tr("[unknown]")), mProgress(0)
 {
     initialize();
 }
 
 Transfer::Transfer(DevicePointer device, BundlePointer bundle)
-    : mConnection(new OutgoingConnection(device->address(), device->port(), bundle)),
+    : mConnection(new SocketWriter(device->address(), device->port(), bundle)),
       mDeviceName(device->name()), mProgress(0)
 {
     initialize();
@@ -78,13 +78,13 @@ void Transfer::initialize()
     mThread.start();
     mConnection->moveToThread(&mThread);
 
-    connect(mConnection.data(), &Connection::deviceName, this, &Transfer::setDeviceName);
-    connect(mConnection.data(), &Connection::progress, this, &Transfer::setProgress);
-    connect(mConnection.data(), &Connection::error, this, &Transfer::error);
-    connect(mConnection.data(), &Connection::completed, this, &Transfer::completed);
+    connect(mConnection.data(), &Socket::deviceName, this, &Transfer::setDeviceName);
+    connect(mConnection.data(), &Socket::progress, this, &Transfer::setProgress);
+    connect(mConnection.data(), &Socket::error, this, &Transfer::error);
+    connect(mConnection.data(), &Socket::completed, this, &Transfer::completed);
 
-    connect(mConnection.data(), &Connection::deviceName, this, &Transfer::statusChanged);
-    connect(mConnection.data(), &Connection::progress, this, &Transfer::statusChanged);
-    connect(mConnection.data(), &Connection::error, this, &Transfer::finished);
-    connect(mConnection.data(), &Connection::completed, this, &Transfer::finished);
+    connect(mConnection.data(), &Socket::deviceName, this, &Transfer::statusChanged);
+    connect(mConnection.data(), &Socket::progress, this, &Transfer::statusChanged);
+    connect(mConnection.data(), &Socket::error, this, &Transfer::finished);
+    connect(mConnection.data(), &Socket::completed, this, &Transfer::finished);
 }

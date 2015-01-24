@@ -22,18 +22,18 @@
  * IN THE SOFTWARE.
  **/
 
-#ifndef NS_INCOMINGCONNECTION_H
-#define NS_INCOMINGCONNECTION_H
+#ifndef NS_SOCKETREADER_H
+#define NS_SOCKETREADER_H
 
-#include "connection.h"
+#include "socket.h"
 
-class IncomingConnection : public Connection
+class SocketReader : public Socket
 {
     Q_OBJECT
 
 public:
 
-    IncomingConnection(qintptr socketDescriptor);
+    SocketReader(qintptr socketDescriptor);
 
 public slots:
 
@@ -44,4 +44,4 @@ private:
     qintptr mSocketDescriptor;
 };
 
-#endif // NS_INCOMINGCONNECTION_H
+#endif // NS_SOCKETREADER_H
