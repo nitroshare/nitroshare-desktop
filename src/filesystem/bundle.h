@@ -30,7 +30,7 @@
 
 #include "file.h"
 
-class Bundle
+class Bundle : public QList<File>
 {
 public:
 
@@ -41,7 +41,6 @@ public:
 
 private:
 
-    QList<File> mFiles;
     qint64 mTotalSize;
 };
 
