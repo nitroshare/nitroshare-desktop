@@ -44,22 +44,3 @@ QString File::absoluteFilename(const QDir &root) const
     // canonicalFilePath prevents a relative filename like '../../../.bashrc'
     return root.absoluteFilePath(QFileInfo(mFilename).canonicalFilePath());
 }
-
-QDataStream &operator<<(QDataStream &stream, const File &file)
-{
-    stream << file.filename() << file.isWritable() << file.isExecutable();
-    return stream;
-}
-
-QDataStream &operator>>(QDataStream &stream, File &file)
-{
-    QString filename;
-    bool writable, executable;
-
-    stream >> filename >> writable >> executable;
-    file.setFilename(filename);
-    file.setWritable(writable);
-    file.setExecutable(executable);
-
-    return stream;
-}

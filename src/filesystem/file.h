@@ -25,7 +25,6 @@
 #ifndef NS_FILE_H
 #define NS_FILE_H
 
-#include <QDataStream>
 #include <QDir>
 #include <QFileInfo>
 
@@ -54,8 +53,5 @@ private:
     bool mWritable;
     bool mExecutable;
 };
-
-QDataStream &operator<<(QDataStream &stream, const File &file);
-QDataStream &operator>>(QDataStream &stream, File &file);
 
 #endif // NS_FILE_H
