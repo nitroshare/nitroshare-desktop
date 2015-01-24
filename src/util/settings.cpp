@@ -24,6 +24,8 @@
 
 #include <QHostInfo>
 #include <QMap>
+#include <QMutex>
+#include <QMutexLocker>
 #include <QUuid>
 
 #include "settings.h"
@@ -52,10 +54,12 @@ QMap<Settings::Key, Setting> keys {
 };
 
 Q_GLOBAL_STATIC(Settings, settings)
+Q_GLOBAL_STATIC(QMutex, mutex)
 
 QVariant Settings::loadValue(Key key)
 {
-    Setting setting = keys.value(key);
+    QMutexLocker locker(mutex);
+    Setting setting(keys.value(key));
 
     if(!settings->contains(setting.name)) {
         Settings::storeValue(key, setting.initialize(), true);
@@ -66,6 +70,7 @@ QVariant Settings::loadValue(Key key)
 
 void Settings::storeValue(Key key, const QVariant &value, bool initializing)
 {
+    QMutexLocker locker(mutex);
     settings->setValue(keys.value(key).name, value);
 
     if(!initializing) {
