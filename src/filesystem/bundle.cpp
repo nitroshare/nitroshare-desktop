@@ -31,7 +31,7 @@ void Bundle::addFile(const QString &filename)
 {
     QFileInfo info(filename);
 
-    append(File(info));
+    append(FileInfo(info));
     mTotalSize += info.size();
 }
 
@@ -49,7 +49,7 @@ void Bundle::addDirectory(const QString &path)
             if(info.isDir()) {
                 stack.push(info.absoluteFilePath());
             } else {
-                append(File(info, root));
+                append(FileInfo(info, root));
                 mTotalSize += info.size();
             }
         }

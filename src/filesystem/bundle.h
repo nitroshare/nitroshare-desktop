@@ -28,9 +28,9 @@
 #include <QList>
 #include <QSharedPointer>
 
-#include "file.h"
+#include "fileinfo.h"
 
-class Bundle : public QList<File>
+class Bundle : public QList<FileInfo>
 {
 public:
 

@@ -20,7 +20,7 @@ set(SRC
     src/device/devicelistener.cpp
     src/device/devicemodel.cpp
     src/filesystem/bundle.cpp
-    src/filesystem/file.cpp
+    src/filesystem/fileinfo.cpp
     src/socket/socketreader.cpp
     src/socket/socketwriter.cpp
     src/transfer/transfer.cpp

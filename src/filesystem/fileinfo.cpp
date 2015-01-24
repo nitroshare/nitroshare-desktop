@@ -22,36 +22,25 @@
  * IN THE SOFTWARE.
  **/
 
-#ifndef NS_FILE_H
-#define NS_FILE_H
+#include "fileinfo.h"
 
-#include <QDir>
-#include <QFileInfo>
-
-class File
+FileInfo::FileInfo()
 {
-public:
+}
 
-    File();
-    File(const QFileInfo &info);
-    File(const QFileInfo &info, const QDir &root);
+FileInfo::FileInfo(const QFileInfo &info)
+    : mFilename(info.fileName()), mWritable(info.isWritable()), mExecutable(info.isExecutable())
+{
+}
 
-    QString absoluteFilename(const QDir &root) const;
+FileInfo::FileInfo(const QFileInfo &info, const QDir &root)
+    : mFilename(root.relativeFilePath(info.absoluteFilePath())),
+      mWritable(info.isWritable()), mExecutable(info.isExecutable())
+{
+}
 
-    QString filename() const { return mFilename; }
-    bool isWritable() const { return mWritable; }
-    bool isExecutable() const { return mExecutable; }
-
-    void setFilename(const QString &filename) { mFilename = filename; }
-    void setWritable(bool writable) { mWritable = writable; }
-    void setExecutable(bool executable) { mExecutable = executable; }
-
-private:
-
-    QString mFilename;
-
-    bool mWritable;
-    bool mExecutable;
-};
-
-#endif // NS_FILE_H
+QString FileInfo::absoluteFilename(const QDir &root) const
+{
+    // canonicalFilePath prevents a relative filename like '../../../.bashrc'
+    return root.absoluteFilePath(QFileInfo(mFilename).canonicalFilePath());
+}
