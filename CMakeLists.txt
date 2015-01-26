@@ -22,6 +22,7 @@ set(SRC
     src/filesystem/bundle.cpp
     src/filesystem/fileinfo.cpp
     src/socket/socketreader.cpp
+    src/socket/socketstream.cpp
     src/socket/socketwriter.cpp
     src/transfer/transfer.cpp
     src/transfer/transfermodel.cpp
