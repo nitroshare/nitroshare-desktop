@@ -34,7 +34,7 @@ class SocketStream
 {
 public:
 
-    SocketStream(QTcpSocket *socket);
+    SocketStream(QTcpSocket &socket);
 
     template <class T>
     inline T readInt() {
@@ -71,7 +71,7 @@ private:
     void read(char *data, qint32 length);
     void write(const char *data, qint32 length);
 
-    QTcpSocket *mSocket;
+    QTcpSocket &mSocket;
 };
 
 #endif // NS_SOCKETSTREAM_H

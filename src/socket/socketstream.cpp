@@ -24,7 +24,7 @@
 
 #include "socketstream.h"
 
-SocketStream::SocketStream(QTcpSocket *socket)
+SocketStream::SocketStream(QTcpSocket &socket)
     : mSocket(socket)
 {
 }
@@ -44,7 +44,7 @@ void SocketStream::read(char *data, qint32 length)
     qint32 lengthRemaining(length);
 
     while(lengthRemaining) {
-        qint64 lengthRead(mSocket->read(data, lengthRemaining));
+        qint64 lengthRead(mSocket.read(data, lengthRemaining));
 
         if(lengthRead == -1) {
             throw QObject::tr("Unable to read from socket.");
@@ -54,7 +54,7 @@ void SocketStream::read(char *data, qint32 length)
         lengthRemaining -= lengthRead;
 
         if(lengthRemaining) {
-            if(!mSocket->waitForReadyRead()) {
+            if(!mSocket.waitForReadyRead()) {
                 throw QObject::tr("Timeout while reading from socket.");
             }
         }
@@ -63,11 +63,11 @@ void SocketStream::read(char *data, qint32 length)
 
 void SocketStream::write(const char *data, qint32 length)
 {
-    if(mSocket->write(data, length) != length) {
+    if(mSocket.write(data, length) != length) {
         throw QObject::tr("Unable to write to socket.");
     }
 
-    if(!mSocket->waitForBytesWritten()) {
+    if(!mSocket.waitForBytesWritten()) {
         throw QObject::tr("Timeout while writing to socket.");
     }
 }

@@ -24,23 +24,39 @@
 
 #include <QTcpSocket>
 
+#include "../util/settings.h"
+#include "socketstream.h"
 #include "socketwriter.h"
 
 SocketWriter::SocketWriter(const QHostAddress &address, quint16 port, BundlePointer bundle)
-    : mAddress(address), mPort(port), mBundle(bundle)
+    : mAddress(address), mPort(port),
+      mDeviceName(Settings::get<QString>(Settings::DeviceName)),
+      mBundle(bundle)
 {
 }
 
 void SocketWriter::start()
 {
     QTcpSocket socket;
+    SocketStream stream(socket);
 
-    socket.connectToHost(mAddress, mPort);
-    if(!socket.waitForConnected()) {
-        emit error(tr("Unable to connect to host."));
+    try {
+        socket.connectToHost(mAddress, mPort);
+        if(!socket.waitForConnected()) {
+            throw tr("Unable to connect to host.");
+        }
+
+        stream.writeInt<qint32>(1);
+        stream.writeQByteArray(mDeviceName.toUtf8());
+        stream.writeInt<qint64>(mBundle->totalSize());
+        stream.writeInt<qint32>(mBundle->count());
+
+        foreach(FileInfo info, *mBundle) {
+            stream.writeFile(info);
+        }
+
+        emit completed();
+    } catch(const QString &exception) {
+        emit error(exception);
     }
-
-    //...
-
-    emit completed();
 }

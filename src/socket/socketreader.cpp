@@ -25,6 +25,7 @@
 #include <QTcpSocket>
 
 #include "socketreader.h"
+#include "socketstream.h"
 
 SocketReader::SocketReader(qintptr socketDescriptor)
     : mSocketDescriptor(socketDescriptor)
@@ -34,13 +35,28 @@ SocketReader::SocketReader(qintptr socketDescriptor)
 void SocketReader::start()
 {
     QTcpSocket socket;
+    SocketStream stream(socket);
 
-    if(!socket.setSocketDescriptor(mSocketDescriptor)) {
-        emit error(tr("Invalid socket descriptor."));
-        return;
+    try {
+        if(!socket.setSocketDescriptor(mSocketDescriptor)) {
+            throw tr("Invalid socket descriptor.");
+        }
+
+        if(stream.readInt<qint32>() != 1) {
+            throw tr("Protocol version mismatch.");
+        }
+
+        emit deviceName(stream.readQByteArray());
+
+        // TODO: use this for determining progress
+        stream.readInt<qint64>();
+
+        for(int count(stream.readInt<qint32>()); count; --count) {
+            stream.readFile();
+        }
+
+        emit completed();
+    } catch(const QString &exception) {
+        emit error(exception);
     }
-
-    //...
-
-    emit completed();
 }

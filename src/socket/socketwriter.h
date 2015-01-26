@@ -47,6 +47,7 @@ private:
     QHostAddress mAddress;
     quint16 mPort;
 
+    QString mDeviceName;
     BundlePointer mBundle;
 };
 
