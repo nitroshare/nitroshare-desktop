@@ -25,18 +25,20 @@
 #ifndef NS_SOCKETSTREAM_H
 #define NS_SOCKETSTREAM_H
 
+#include <QEventLoop>
 #include <QTcpSocket>
+#include <QTimer>
 #include <QtEndian>
 
-#include "../filesystem/fileinfo.h"
-
-class SocketStream
+class SocketStream : public QObject
 {
+    Q_OBJECT
+
 public:
 
     SocketStream(QTcpSocket &socket);
 
-    template <class T>
+    template <typename T>
     inline T readInt() {
         T value;
         read(reinterpret_cast<char *>(&value), sizeof(value));
@@ -51,9 +53,7 @@ public:
         return value;
     }
 
-    void readFile();
-
-    template <class T>
+    template <typename T>
     inline void writeInt(T value) {
         value = qToLittleEndian(value);
         write(reinterpret_cast<const char *>(&value), sizeof(value));
@@ -64,14 +64,29 @@ public:
         write(value.constData(), value.length());
     }
 
-    void writeFile(const FileInfo &info);
+public slots:
+
+    void cancel();
 
 private:
+
+    enum Signal {
+        ReadyRead,
+        BytesWritten
+    };
 
     void read(char *data, qint32 length);
     void write(const char *data, qint32 length);
 
+    bool waitFor(Signal signal);
+
     QTcpSocket &mSocket;
+
+    QEventLoop mLoop;
+    QTimer mTimer;
+
+    Signal mWaitingFor;
+    bool mSucceeded;
 };
 
 #endif // NS_SOCKETSTREAM_H

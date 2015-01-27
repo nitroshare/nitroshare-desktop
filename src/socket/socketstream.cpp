@@ -22,52 +22,80 @@
  * IN THE SOFTWARE.
  **/
 
+#include <QFile>
+
+#include "../util/settings.h"
 #include "socketstream.h"
 
 SocketStream::SocketStream(QTcpSocket &socket)
     : mSocket(socket)
 {
+    connect(&mSocket, &QTcpSocket::readyRead, [this]() {
+        if(mWaitingFor == ReadyRead) {
+            mSucceeded = true;
+            mLoop.quit();
+        }
+    });
+
+    connect(&mSocket, &QTcpSocket::bytesWritten, [this]() {
+        if(mWaitingFor == BytesWritten) {
+            mSucceeded = true;
+            mLoop.quit();
+        }
+    });
+
+    connect(&mTimer, &QTimer::timeout, [this]() {
+        mSucceeded = false;
+        mLoop.quit();
+    });
+
+    mTimer.setInterval(Settings::get<int>(Settings::TransferTimeout));
 }
 
-void SocketStream::readFile()
+void SocketStream::cancel()
 {
-    //...
-}
-
-void SocketStream::writeFile(const FileInfo &info)
-{
-    //...
+    mSucceeded = false;
+    mLoop.quit();
 }
 
 void SocketStream::read(char *data, qint32 length)
 {
-    qint32 lengthRemaining(length);
-
-    while(lengthRemaining) {
-        qint64 lengthRead(mSocket.read(data, lengthRemaining));
+    while(length) {
+        qint64 lengthRead(mSocket.read(data, length));
 
         if(lengthRead == -1) {
             throw QObject::tr("Unable to read from socket.");
         }
 
         data += lengthRead;
-        lengthRemaining -= lengthRead;
+        length -= lengthRead;
 
-        if(lengthRemaining) {
-            if(!mSocket.waitForReadyRead()) {
-                throw QObject::tr("Timeout while reading from socket.");
-            }
+        if(length && !waitFor(ReadyRead)) {
+            throw QObject::tr("Timeout while reading from socket.");
         }
     }
 }
 
 void SocketStream::write(const char *data, qint32 length)
 {
-    if(mSocket.write(data, length) != length) {
+    if(mSocket.write(data, length) == -1) {
         throw QObject::tr("Unable to write to socket.");
     }
 
-    if(!mSocket.waitForBytesWritten()) {
-        throw QObject::tr("Timeout while writing to socket.");
+    while(mSocket.bytesToWrite()) {
+        if(!waitFor(BytesWritten)) {
+            throw QObject::tr("Timeout while writing to socket.");
+        }
     }
+}
+
+bool SocketStream::waitFor(Signal signal)
+{
+    mWaitingFor = signal;
+
+    mTimer.start();
+    mLoop.exec();
+    mTimer.stop();
+
+    return mSucceeded;
 }
