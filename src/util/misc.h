@@ -25,7 +25,7 @@
 #ifndef NS_MISC_H
 #define NS_MISC_H
 
-#include <QObject>
+#include <QString>
 
 QString currentOperatingSystem();
 

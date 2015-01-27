@@ -43,6 +43,5 @@ FileInfo::FileInfo(const QDir &root, const QString &filename, qint32 flags)
 
 QString FileInfo::absoluteFilename() const
 {
-    // canonicalFilePath prevents a relative filename like '../../../.bashrc'
-    return mRoot.absoluteFilePath(QFileInfo(mFilename).canonicalFilePath());
+    return mRoot.absoluteFilePath(mFilename);
 }

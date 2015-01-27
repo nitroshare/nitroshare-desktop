@@ -22,9 +22,6 @@
  * IN THE SOFTWARE.
  **/
 
-#include <QEventLoop>
-#include <QTimer>
-
 #include "misc.h"
 
 QString currentOperatingSystem()
