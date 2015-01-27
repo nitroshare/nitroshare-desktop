@@ -24,23 +24,25 @@
 
 #include "fileinfo.h"
 
-FileInfo::FileInfo()
-{
-}
-
 FileInfo::FileInfo(const QFileInfo &info)
-    : mFilename(info.fileName()), mWritable(info.isWritable()), mExecutable(info.isExecutable())
+    : FileInfo(QDir(info.path()), info)
 {
 }
 
-FileInfo::FileInfo(const QFileInfo &info, const QDir &root)
-    : mFilename(root.relativeFilePath(info.absoluteFilePath())),
-      mWritable(info.isWritable()), mExecutable(info.isExecutable())
+FileInfo::FileInfo(const QDir &root, const QFileInfo &info)
+    : FileInfo(root, root.relativeFilePath(info.absoluteFilePath()),
+               (info.isWritable() ? Writable : 0) |
+               (info.isExecutable() ? Executable : 0))
 {
 }
 
-QString FileInfo::absoluteFilename(const QDir &root) const
+FileInfo::FileInfo(const QDir &root, const QString &filename, qint32 flags)
+    : mRoot(root), mFilename(filename), mFlags(flags)
+{
+}
+
+QString FileInfo::absoluteFilename() const
 {
     // canonicalFilePath prevents a relative filename like '../../../.bashrc'
-    return root.absoluteFilePath(QFileInfo(mFilename).canonicalFilePath());
+    return mRoot.absoluteFilePath(QFileInfo(mFilename).canonicalFilePath());
 }

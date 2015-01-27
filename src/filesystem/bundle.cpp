@@ -49,7 +49,7 @@ void Bundle::addDirectory(const QString &path)
             if(info.isDir()) {
                 stack.push(info.absoluteFilePath());
             } else {
-                append(FileInfo(info, root));
+                append(FileInfo(root, info));
                 mTotalSize += info.size();
             }
         }
