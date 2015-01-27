@@ -29,6 +29,4 @@
 
 QString currentOperatingSystem();
 
-bool waitFor(const QObject * sender, const char *signal, int timeout=30000);
-
 #endif // NS_MISC_H

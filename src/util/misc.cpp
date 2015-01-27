@@ -39,21 +39,3 @@ QString currentOperatingSystem()
     return "unknown";
 #endif
 }
-
-bool waitFor(const QObject *sender, const char *signal, int timeout)
-{
-    QEventLoop loop;
-    QTimer timer;
-    bool ret = true;
-
-    QObject::connect(sender, signal, &loop, SLOT(quit()));
-    QObject::connect(&timer, &QTimer::timeout, [&loop, &ret]() {
-        loop.quit();
-        ret = false;
-    });
-
-    timer.start(timeout);
-    loop.exec();
-
-    return ret;
-}
