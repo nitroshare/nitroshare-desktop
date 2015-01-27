@@ -22,6 +22,7 @@
  * IN THE SOFTWARE.
  **/
 
+#include <QDir>
 #include <QHostInfo>
 #include <QMap>
 #include <QMutex>
@@ -51,6 +52,7 @@ const QMap<Settings::Key, Setting> keys {
     DEFINE_SETTING(DeviceName, { return QHostInfo::localHostName(); }),
     DEFINE_SETTING(DeviceUUID, { return QUuid::createUuid(); }),
     DEFINE_SETTING(TransferBuffer, { return 16384; }),
+    DEFINE_SETTING(TransferDirectory, { return QDir::homePath(); }),
     DEFINE_SETTING(TransferPort, { return 40818; }),
     DEFINE_SETTING(TransferTimeout, { return 30 * 1000; })
 };

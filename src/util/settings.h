@@ -40,6 +40,7 @@ public:
         DeviceName,
         DeviceUUID,
         TransferBuffer,
+        TransferDirectory,
         TransferPort,
         TransferTimeout
     };
