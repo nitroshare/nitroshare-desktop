@@ -22,8 +22,11 @@
  * IN THE SOFTWARE.
  **/
 
+#include <QDir>
+#include <QFile>
 #include <QTcpSocket>
 
+#include "../util/settings.h"
 #include "socketreader.h"
 #include "socketstream.h"
 
@@ -36,6 +39,8 @@ void SocketReader::start()
 {
     QTcpSocket socket;
     SocketStream stream(socket);
+
+    QDir root(Settings::get<QString>(Settings::TransferDirectory));
 
     try {
         if(!socket.setSocketDescriptor(mSocketDescriptor)) {
@@ -52,7 +57,18 @@ void SocketReader::start()
         stream.readInt<qint64>();
 
         for(int count(stream.readInt<qint32>()); count; --count) {
-            //...
+            QString filename(stream.readQByteArray());
+            qint32 flags(stream.readInt<qint32>());
+            FileInfo info(root, filename, flags);
+
+            QFile file(info.absoluteFilename());
+            if(!file.open(QIODevice::WriteOnly)) {
+                throw tr("Unable to open %1 for writing.").arg(info.absoluteFilename());
+            }
+
+            qint64 fileSize(stream.readInt<qint64>());
+
+            // TODO: read file contents
         }
 
         emit completed();

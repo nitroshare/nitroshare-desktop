@@ -22,6 +22,7 @@
  * IN THE SOFTWARE.
  **/
 
+#include <QFile>
 #include <QTcpSocket>
 
 #include "../util/settings.h"
@@ -29,9 +30,7 @@
 #include "socketwriter.h"
 
 SocketWriter::SocketWriter(const QHostAddress &address, quint16 port, BundlePointer bundle)
-    : mAddress(address), mPort(port),
-      mDeviceName(Settings::get<QString>(Settings::DeviceName)),
-      mBundle(bundle)
+    : mAddress(address), mPort(port), mBundle(bundle)
 {
 }
 
@@ -48,12 +47,22 @@ void SocketWriter::start()
         }
 
         stream.writeInt<qint32>(1);
-        stream.writeQByteArray(mDeviceName.toUtf8());
+        stream.writeQByteArray(Settings::get<QString>(Settings::DeviceName).toUtf8());
         stream.writeInt<qint64>(mBundle->totalSize());
         stream.writeInt<qint32>(mBundle->count());
 
         foreach(FileInfo info, *mBundle) {
-            //...
+            stream.writeQByteArray(info.filename().toUtf8());
+            stream.writeInt<qint32>(info.flags());
+
+            QFile file(info.absoluteFilename());
+            if(!file.open(QIODevice::ReadOnly)) {
+                throw tr("Unable to open %1 for reading.").arg(info.absoluteFilename());
+            }
+
+            stream.writeInt<qint64>(file.size());
+
+            // TODO: write file contents
         }
 
         emit completed();
