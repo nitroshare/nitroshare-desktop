@@ -56,7 +56,7 @@ const QMap<Settings::Key, Setting> keys {
 };
 
 Q_GLOBAL_STATIC(Settings, settings)
-Q_GLOBAL_STATIC(QMutex, mutex)
+Q_GLOBAL_STATIC_WITH_ARGS(QMutex, mutex, (QMutex::Recursive))
 
 QVariant Settings::loadValue(Key key)
 {
