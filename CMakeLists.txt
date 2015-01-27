@@ -61,6 +61,7 @@ add_executable(nitroshare WIN32 ${SRC} ${MOC} ${UI} ${QRC})
 # correct flags are set to enable C++11 features
 target_link_libraries(nitroshare Qt5::Network Qt5::Widgets)
 target_compile_features(nitroshare PRIVATE
+    cxx_delegating_constructors
     cxx_generalized_initializers
     cxx_lambdas
     cxx_nullptr)
