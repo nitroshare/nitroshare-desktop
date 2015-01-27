@@ -39,6 +39,7 @@ qt5_wrap_cpp(MOC
     src/device/devicemodel.h
     src/socket/socket.h
     src/socket/socketreader.h
+    src/socket/socketstream.h
     src/socket/socketwriter.h
     src/transfer/transfer.h
     src/transfer/transfermodel.h
