@@ -32,26 +32,17 @@ class FileInfo
 {
 public:
 
-    enum {
-        Writable = 1,
-        Executable = 2
-    };
-
     FileInfo(const QFileInfo &info);
     FileInfo(const QDir &root, const QFileInfo &info);
-    FileInfo(const QDir &root, const QString &filename, qint32 flags);
+    FileInfo(const QDir &root, const QString &filename);
 
     QString filename() const { return mFilename; }
     QString absoluteFilename() const;
-
-    bool flags() const { return mFlags; }
 
 private:
 
     QDir mRoot;
     QString mFilename;
-
-    qint32 mFlags;
 };
 
 #endif // NS_FILEINFO_H

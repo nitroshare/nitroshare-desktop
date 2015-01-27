@@ -51,18 +51,30 @@ void SocketWriter::start()
         stream.writeInt<qint64>(mBundle->totalSize());
         stream.writeInt<qint32>(mBundle->count());
 
+        qint64 bufferSize(Settings::get<qint64>(Settings::TransferBuffer));
+        char buffer[bufferSize];
+
         foreach(FileInfo info, *mBundle) {
             stream.writeQByteArray(info.filename().toUtf8());
-            stream.writeInt<qint32>(info.flags());
 
             QFile file(info.absoluteFilename());
             if(!file.open(QIODevice::ReadOnly)) {
                 throw tr("Unable to open %1 for reading.").arg(info.absoluteFilename());
             }
 
-            stream.writeInt<qint64>(file.size());
+            qint64 fileSize(file.size());
+            stream.writeInt<qint64>(fileSize);
 
-            // TODO: write file contents
+            while(fileSize) {
+                qint64 lengthRead(file.read(buffer, qMin(fileSize, bufferSize)));
+
+                if(lengthRead <= 0) {
+                    throw tr("Unable to read from %1.").arg(info.absoluteFilename());
+                }
+
+                stream.writeQByteArray(qCompress(buffer, lengthRead));
+                fileSize -= lengthRead;
+            }
         }
 
         emit completed();

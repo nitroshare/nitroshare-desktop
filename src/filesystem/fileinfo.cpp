@@ -30,14 +30,12 @@ FileInfo::FileInfo(const QFileInfo &info)
 }
 
 FileInfo::FileInfo(const QDir &root, const QFileInfo &info)
-    : FileInfo(root, root.relativeFilePath(info.absoluteFilePath()),
-               (info.isWritable() ? Writable : 0) |
-               (info.isExecutable() ? Executable : 0))
+    : FileInfo(root, root.relativeFilePath(info.absoluteFilePath()))
 {
 }
 
-FileInfo::FileInfo(const QDir &root, const QString &filename, qint32 flags)
-    : mRoot(root), mFilename(filename), mFlags(flags)
+FileInfo::FileInfo(const QDir &root, const QString &filename)
+    : mRoot(root), mFilename(filename)
 {
 }
 
