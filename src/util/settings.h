@@ -39,6 +39,7 @@ public:
         BroadcastTimeout,
         DeviceName,
         DeviceUUID,
+        TransferBuffer,
         TransferPort,
         TransferTimeout
     };
