@@ -39,7 +39,8 @@ public:
         BroadcastTimeout,
         DeviceName,
         DeviceUUID,
-        TransferPort
+        TransferPort,
+        TransferTimeout
     };
 
     template <class T>

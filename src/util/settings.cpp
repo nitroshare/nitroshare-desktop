@@ -50,7 +50,8 @@ const QMap<Settings::Key, Setting> keys {
     DEFINE_SETTING(BroadcastTimeout, { return 30 * 1000; }),
     DEFINE_SETTING(DeviceName, { return QHostInfo::localHostName(); }),
     DEFINE_SETTING(DeviceUUID, { return QUuid::createUuid(); }),
-    DEFINE_SETTING(TransferPort, { return 40818; })
+    DEFINE_SETTING(TransferPort, { return 40818; }),
+    DEFINE_SETTING(TransferTimeout, { return 30 * 1000; })
 };
 
 Q_GLOBAL_STATIC(Settings, settings)
