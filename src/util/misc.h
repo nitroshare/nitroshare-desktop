@@ -25,8 +25,10 @@
 #ifndef NS_MISC_H
 #define NS_MISC_H
 
-#include <QString>
+#include <QObject>
 
 QString currentOperatingSystem();
+
+bool waitFor(const QObject * sender, const char *signal, int timeout=30000);
 
 #endif // NS_MISC_H
