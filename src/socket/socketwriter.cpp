@@ -42,7 +42,8 @@ void SocketWriter::start()
 
     try {
         socket.connectToHost(mAddress, mPort);
-        if(!socket.waitForConnected()) {
+
+        if(!stream.waitForConnected()) {
             throw tr("Unable to connect to host.");
         }
 
@@ -52,7 +53,7 @@ void SocketWriter::start()
         stream.writeInt<qint32>(mBundle->count());
 
         foreach(FileInfo info, *mBundle) {
-            stream.writeFile(info);
+            //...
         }
 
         emit completed();

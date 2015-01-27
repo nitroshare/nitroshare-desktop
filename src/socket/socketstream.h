@@ -38,6 +38,10 @@ public:
 
     SocketStream(QTcpSocket &socket);
 
+    inline bool waitForConnected() {
+        return waitFor(Connected);
+    }
+
     template <typename T>
     inline T readInt() {
         T value;
@@ -66,11 +70,12 @@ public:
 
 public slots:
 
-    void cancel();
+    void abort();
 
 private:
 
     enum Signal {
+        Connected,
         ReadyRead,
         BytesWritten
     };

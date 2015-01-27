@@ -52,7 +52,7 @@ void SocketReader::start()
         stream.readInt<qint64>();
 
         for(int count(stream.readInt<qint32>()); count; --count) {
-            stream.readFile();
+            //...
         }
 
         emit completed();

@@ -30,6 +30,13 @@
 SocketStream::SocketStream(QTcpSocket &socket)
     : mSocket(socket)
 {
+    connect(&mSocket, &QTcpSocket::connected, [this]() {
+        mSucceeded = true;
+        mLoop.quit();
+    });
+
+    connect(&mSocket, &QTcpSocket::disconnected, this, &SocketStream::abort);
+
     connect(&mSocket, &QTcpSocket::readyRead, [this]() {
         if(mWaitingFor == ReadyRead) {
             mSucceeded = true;
@@ -49,10 +56,11 @@ SocketStream::SocketStream(QTcpSocket &socket)
         mLoop.quit();
     });
 
+    mTimer.setSingleShot(true);
     mTimer.setInterval(Settings::get<int>(Settings::TransferTimeout));
 }
 
-void SocketStream::cancel()
+void SocketStream::abort()
 {
     mSucceeded = false;
     mLoop.quit();
