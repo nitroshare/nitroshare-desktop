@@ -26,6 +26,7 @@ set(SRC
     src/socket/socketstream.cpp
     src/socket/socketwriter.cpp
     src/transfer/transfer.cpp
+    src/transfer/transferdelegate.cpp
     src/transfer/transfermodel.cpp
     src/transfer/transferserver.cpp
     src/transfer/transferwindow.cpp
@@ -44,6 +45,7 @@ qt5_wrap_cpp(MOC
     src/socket/socketstream.h
     src/socket/socketwriter.h
     src/transfer/transfer.h
+    src/transfer/transferdelegate.h
     src/transfer/transfermodel.h
     src/transfer/transferserver.h
     src/transfer/transferwindow.h

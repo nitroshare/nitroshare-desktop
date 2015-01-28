@@ -22,19 +22,31 @@
  * IN THE SOFTWARE.
  **/
 
-#include "transferdelegate.h"
-#include "transferwindow.h"
-#include "ui_transferwindow.h"
+#include <QApplication>
+#include <QStyleOptionProgressBar>
 
-TransferWindow::TransferWindow(TransferModel &model)
-    : ui(new Ui::TransferWindow)
+#include "transferdelegate.h"
+
+TransferDelegate::TransferDelegate(QObject *parent)
+    : QStyledItemDelegate(parent)
 {
-    ui->setupUi(this);
-    ui->transferView->setModel(&model);
-    ui->transferView->setItemDelegate(new TransferDelegate(this));
 }
 
-TransferWindow::~TransferWindow()
+void TransferDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option,
+                             const QModelIndex &index) const
 {
-    delete ui;
+    if(index.column() == 1) {
+        int progress = index.data().toInt();
+
+        QStyleOptionProgressBar progressBar;
+        progressBar.maximum = 100;
+        progressBar.progress = progress;
+        progressBar.rect = option.rect.adjusted(2, 2, -2, -2);
+        progressBar.text = QString("%1%").arg(progress);
+        progressBar.textVisible = true;
+
+        QApplication::style()->drawControl(QStyle::CE_ProgressBar, &progressBar, painter);
+    } else {
+        QStyledItemDelegate::paint(painter, option, index);
+    }
 }

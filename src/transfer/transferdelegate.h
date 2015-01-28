@@ -22,19 +22,20 @@
  * IN THE SOFTWARE.
  **/
 
-#include "transferdelegate.h"
-#include "transferwindow.h"
-#include "ui_transferwindow.h"
+#ifndef NS_TRANSFERDELEGATE_H
+#define NS_TRANSFERDELEGATE_H
 
-TransferWindow::TransferWindow(TransferModel &model)
-    : ui(new Ui::TransferWindow)
-{
-    ui->setupUi(this);
-    ui->transferView->setModel(&model);
-    ui->transferView->setItemDelegate(new TransferDelegate(this));
-}
+#include <QStyledItemDelegate>
 
-TransferWindow::~TransferWindow()
+class TransferDelegate : public QStyledItemDelegate
 {
-    delete ui;
-}
+    Q_OBJECT
+
+public:
+
+    explicit TransferDelegate(QObject * parent);
+
+    void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
+};
+
+#endif // NS_TRANSFERDELEGATE_H
