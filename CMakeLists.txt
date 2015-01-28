@@ -28,6 +28,7 @@ set(SRC
     src/transfer/transfer.cpp
     src/transfer/transfermodel.cpp
     src/transfer/transferserver.cpp
+    src/transfer/transferwindow.cpp
     src/util/misc.cpp
     src/util/settings.cpp
     src/main.cpp
@@ -45,12 +46,14 @@ qt5_wrap_cpp(MOC
     src/transfer/transfer.h
     src/transfer/transfermodel.h
     src/transfer/transferserver.h
+    src/transfer/transferwindow.h
     src/util/settings.h
     src/nitroshare.h)
 
 # Add the UI files
 qt5_wrap_ui(UI
-    src/device/devicedialog.ui)
+    src/device/devicedialog.ui
+    src/transfer/transferwindow.ui)
 
 # Add resource files
 qt5_add_resources(QRC resources.qrc)

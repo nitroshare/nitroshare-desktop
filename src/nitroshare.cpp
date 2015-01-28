@@ -32,6 +32,7 @@
 #include "nitroshare.h"
 
 NitroShare::NitroShare()
+    : mTransferWindow(mTransferModel)
 {
     connect(&mDeviceModel, &DeviceModel::deviceAdded, this, &NitroShare::notifyDeviceAdded);
     connect(&mDeviceModel, &DeviceModel::deviceRemoved, this, &NitroShare::notifyDeviceRemoved);
@@ -89,12 +90,14 @@ void NitroShare::initializeMenu()
     mMenu.addAction(tr("Send &Files..."), this, SLOT(sendFiles()));
     mMenu.addAction(tr("Send &Directory..."), this, SLOT(sendDirectory()));
     mMenu.addSeparator();
+    mMenu.addAction(tr("View &Transfers..."), &mTransferWindow, SLOT(show()));
+    mMenu.addSeparator();
     mMenu.addAction(tr("E&xit"), QApplication::instance(), SLOT(quit()));
 }
 
 void NitroShare::sendBundle(BundlePointer bundle)
 {
-    DevicePointer device(DeviceDialog::getDevice(&mDeviceModel));
+    DevicePointer device(DeviceDialog::getDevice(mDeviceModel));
     if(device) {
         TransferPointer transfer(new Transfer(device, bundle));
         mTransferModel.add(transfer);

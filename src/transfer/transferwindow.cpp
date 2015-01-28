@@ -22,39 +22,17 @@
  * IN THE SOFTWARE.
  **/
 
-#ifndef NS_DEVICEDIALOG_H
-#define NS_DEVICEDIALOG_H
+#include "transferwindow.h"
+#include "ui_transferwindow.h"
 
-#include <QDialog>
-#include <QItemSelection>
-
-#include "device.h"
-#include "devicemodel.h"
-
-namespace Ui {
-    class DeviceDialog;
+TransferWindow::TransferWindow(TransferModel &model)
+    : ui(new Ui::TransferWindow)
+{
+    ui->setupUi(this);
+    ui->transferView->setModel(&model);
 }
 
-class DeviceDialog : public QDialog
+TransferWindow::~TransferWindow()
 {
-    Q_OBJECT
-
-public:
-
-    explicit DeviceDialog(DeviceModel &model);
-    virtual ~DeviceDialog();
-
-    DevicePointer selectedDevice() const;
-
-    static DevicePointer getDevice(DeviceModel &model);
-
-private slots:
-
-    void toggleOkButton(const QItemSelection &selected, const QItemSelection &deselected);
-
-private:
-
-    Ui::DeviceDialog *ui;
-};
-
-#endif // NS_DEVICEDIALOG_H
+    delete ui;
+}

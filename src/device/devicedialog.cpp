@@ -27,12 +27,12 @@
 #include "devicedialog.h"
 #include "ui_devicedialog.h"
 
-DeviceDialog::DeviceDialog(DeviceModel *deviceModel)
+DeviceDialog::DeviceDialog(DeviceModel &model)
     : ui(new Ui::DeviceDialog)
 {
     ui->setupUi(this);
 
-    ui->deviceView->setModel(deviceModel);
+    ui->deviceView->setModel(&model);
     ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
 
     connect(ui->deviceView->selectionModel(), &QItemSelectionModel::selectionChanged,
@@ -55,9 +55,9 @@ DevicePointer DeviceDialog::selectedDevice() const
     }
 }
 
-DevicePointer DeviceDialog::getDevice(DeviceModel *deviceModel)
+DevicePointer DeviceDialog::getDevice(DeviceModel &model)
 {
-    DeviceDialog deviceDialog(deviceModel);
+    DeviceDialog deviceDialog(model);
 
     if(deviceDialog.exec() == QDialog::Accepted) {
         return deviceDialog.selectedDevice();
