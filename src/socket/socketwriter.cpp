@@ -72,7 +72,7 @@ void SocketWriter::start()
                     throw tr("Unable to read from %1.").arg(info.absoluteFilename());
                 }
 
-                stream.writeQByteArray(qCompress(buffer, lengthRead));
+                stream.writeQByteArray(qCompress(reinterpret_cast<const uchar *>(buffer), lengthRead));
                 fileSize -= lengthRead;
             }
         }
