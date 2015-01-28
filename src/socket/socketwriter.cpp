@@ -39,6 +39,8 @@ void SocketWriter::start()
     QTcpSocket socket;
     SocketStream stream(socket);
 
+    connect(this, &SocketWriter::cancel, &stream, &SocketStream::abort);
+
     try {
         socket.connectToHost(mAddress, mPort);
 
@@ -48,11 +50,13 @@ void SocketWriter::start()
 
         stream.writeInt<qint32>(1);
         stream.writeQByteArray(Settings::get<QString>(Settings::DeviceName).toUtf8());
-        stream.writeInt<qint64>(mBundle->totalSize());
-        stream.writeInt<qint32>(mBundle->count());
 
+        qint64 totalBytesWritten(0), totalBytes(mBundle->totalSize());
         qint64 bufferSize(Settings::get<qint64>(Settings::TransferBuffer));
         char buffer[bufferSize];
+
+        stream.writeInt<qint64>(totalBytes);
+        stream.writeInt<qint32>(mBundle->count());
 
         foreach(FileInfo info, *mBundle) {
             stream.writeQByteArray(info.filename().toUtf8());
@@ -62,18 +66,21 @@ void SocketWriter::start()
                 throw tr("Unable to open %1 for reading.").arg(info.absoluteFilename());
             }
 
-            qint64 fileSize(file.size());
-            stream.writeInt<qint64>(fileSize);
+            qint64 bytesRemaining(file.size());
+            stream.writeInt<qint64>(bytesRemaining);
 
-            while(fileSize) {
-                qint64 lengthRead(file.read(buffer, qMin(fileSize, bufferSize)));
+            while(bytesRemaining) {
+                qint64 bytesRead(file.read(buffer, qMin(bytesRemaining, bufferSize)));
 
-                if(lengthRead <= 0) {
+                if(bytesRead <= 0) {
                     throw tr("Unable to read from %1.").arg(info.absoluteFilename());
                 }
 
-                stream.writeQByteArray(qCompress(reinterpret_cast<const uchar *>(buffer), lengthRead));
-                fileSize -= lengthRead;
+                stream.writeQByteArray(qCompress(reinterpret_cast<const uchar *>(buffer), bytesRead));
+
+                bytesRemaining -= bytesRead;
+                totalBytesWritten += bytesRead;
+                emitProgress(totalBytesWritten, totalBytes);
             }
         }
 

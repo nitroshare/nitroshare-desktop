@@ -41,6 +41,8 @@ void SocketReader::start()
     QTcpSocket socket;
     SocketStream stream(socket);
 
+    connect(this, &SocketReader::cancel, &stream, &SocketStream::abort);
+
     try {
         if(!socket.setSocketDescriptor(mSocketDescriptor)) {
             throw tr("Invalid socket descriptor.");
@@ -52,12 +54,12 @@ void SocketReader::start()
 
         emit deviceName(stream.readQByteArray());
 
-        // TODO: use this for determining progress
-        stream.readInt<qint64>();
-
         QDir root(Settings::get<QString>(Settings::TransferDirectory));
 
-        for(int count(stream.readInt<qint32>()); count; --count) {
+        qint64 totalBytesRead(0), totalBytes(stream.readInt<qint64>());
+        qint32 numFiles(stream.readInt<qint32>());
+
+        for(int i = 0; i < numFiles; ++i) {
             QString filename(stream.readQByteArray());
             FileInfo info(root, filename);
 
@@ -73,13 +75,14 @@ void SocketReader::start()
                 throw tr("Unable to open %1 for writing.").arg(info.absoluteFilename());
             }
 
-            qint64 fileSize(stream.readInt<qint64>());
-
-            while(fileSize) {
+            qint64 bytesRemaining(stream.readInt<qint64>());
+            while(bytesRemaining) {
                 QByteArray data(qUncompress(stream.readQByteArray()));
-
                 file.write(data);
-                fileSize -= data.length();
+
+                bytesRemaining -= data.length();
+                totalBytesRead += data.length();
+                emitProgress(totalBytesRead, totalBytes);
             }
         }
 

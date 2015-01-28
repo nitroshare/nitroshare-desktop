@@ -39,6 +39,8 @@ signals:
     void error(const QString &message);
     void completed();
 
+    void cancel();
+
 public slots:
 
     virtual void start() = 0;
