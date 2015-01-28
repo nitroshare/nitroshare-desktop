@@ -24,6 +24,7 @@
 
 #include <QDir>
 #include <QFile>
+#include <QFileInfo>
 #include <QTcpSocket>
 
 #include "../util/settings.h"
@@ -59,6 +60,13 @@ void SocketReader::start()
         for(int count(stream.readInt<qint32>()); count; --count) {
             QString filename(stream.readQByteArray());
             FileInfo info(root, filename);
+
+            QDir path(QFileInfo(info.absoluteFilename()).path());
+            if(!path.exists()) {
+                if(!path.mkpath(".")) {
+                    throw tr("Unable to create %1.").arg(path.absolutePath());
+                }
+            }
 
             QFile file(info.absoluteFilename());
             if(!file.open(QIODevice::WriteOnly)) {
