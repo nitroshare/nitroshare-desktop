@@ -22,30 +22,14 @@
  * IN THE SOFTWARE.
  **/
 
-#ifndef NS_SOCKET_H
-#define NS_SOCKET_H
+#include "socket.h"
 
-#include <QObject>
-
-class Socket : public QObject
+void Socket::emitProgress(qint64 bytes, qint64 totalBytes)
 {
-    Q_OBJECT
-
-signals:
-
-    void deviceName(const QString &message);
-    void progress(int percentage);
-
-    void error(const QString &message);
-    void completed();
-
-public slots:
-
-    virtual void start() = 0;
-
-protected:
-
-    void emitProgress(qint64 bytes, qint64 totalBytes);
-};
-
-#endif // NS_SOCKET_H
+    if(totalBytes) {
+        double percentage(static_cast<double>(bytes) / static_cast<double>(totalBytes));
+        emit progress(qMin(100, qMax(0, static_cast<int>(percentage * 100.0))));
+    } else {
+        emit progress(0);
+    }
+}

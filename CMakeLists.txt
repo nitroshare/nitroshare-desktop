@@ -21,6 +21,7 @@ set(SRC
     src/device/devicemodel.cpp
     src/filesystem/bundle.cpp
     src/filesystem/fileinfo.cpp
+    src/socket/socket.cpp
     src/socket/socketreader.cpp
     src/socket/socketstream.cpp
     src/socket/socketwriter.cpp
