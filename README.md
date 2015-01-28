@@ -28,7 +28,7 @@ The requirements for building NitroShare are as follows:
 
 1. None of the current releases ship CMake 3.1, so you will need to add my PPA:
 
-        sudo add-apt-repository ppa:george-edison55/cmake-3.1
+        sudo add-apt-repository ppa:george-edison55/cmake-3.x
         sudo apt-get update
 
 2. Install CMake, C++ compiler, and Qt 5 development files:
