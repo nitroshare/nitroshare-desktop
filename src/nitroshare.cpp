@@ -40,7 +40,7 @@ NitroShare::NitroShare()
 
     initializeMenu();
 
-    setIcon(QIcon(":/img/icon.png"));
+    setIcon(QIcon(":/img/nitroshare.svg"));
     setContextMenu(&mMenu);
 
     show();

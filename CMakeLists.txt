@@ -5,6 +5,7 @@ project(nitroshare VERSION 0.3.0 LANGUAGES CXX)
 
 # Ensure that the required Qt libraries are available
 find_package(Qt5Network 5.1 REQUIRED)
+find_package(Qt5Svg     5.1 REQUIRED)
 find_package(Qt5Widgets 5.1 REQUIRED)
 
 # Set a flag needed for building Qt projects
@@ -65,7 +66,7 @@ add_executable(nitroshare WIN32 ${SRC} ${MOC} ${UI} ${QRC})
 
 # Specify the required Qt libraries and ensure the
 # correct flags are set to enable C++11 features
-target_link_libraries(nitroshare Qt5::Network Qt5::Widgets)
+target_link_libraries(nitroshare Qt5::Network Qt5::Svg Qt5::Widgets)
 target_compile_features(nitroshare PRIVATE
     cxx_delegating_constructors
     cxx_generalized_initializers
