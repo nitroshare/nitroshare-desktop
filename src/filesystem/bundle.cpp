@@ -27,6 +27,11 @@
 
 #include "bundle.h"
 
+Bundle::Bundle()
+    : mTotalSize(0)
+{
+}
+
 void Bundle::addFile(const QString &filename)
 {
     QFileInfo info(filename);

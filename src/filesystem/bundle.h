@@ -34,6 +34,8 @@ class Bundle : public QList<FileInfo>
 {
 public:
 
+    Bundle();
+
     void addFile(const QString &filename);
     void addDirectory(const QString &path);
 
