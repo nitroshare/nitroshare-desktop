@@ -1,0 +1,16 @@
+Source: nitroshare
+Section: net
+Priority: extra
+Maintainer: Nathan Osman <nathan@quickmediasolutions.com>
+Build-Depends: debhelper (>= 9), cmake (>= 3.1), qtbase5-dev (>= 5.1)
+Standards-Version: 3.9.5
+Homepage: https://github.com/nitroshare/nitroshare
+
+Package: nitroshare
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Cross-platform network file transfer application
+ NitroShare is designed to make transferring any file to any device as painless
+ as possible. Network discovery is completely automatic, allowing files and
+ entire directories to be instantly transferred to any other device on the
+ network running the application.
