@@ -23,6 +23,7 @@
  **/
 
 #include <QFile>
+#include <QSharedPointer>
 #include <QTcpSocket>
 
 #include "../util/settings.h"
@@ -53,7 +54,7 @@ void SocketWriter::start()
 
         qint64 totalBytesWritten(0), totalBytes(mBundle->totalSize());
         qint64 bufferSize(Settings::get<qint64>(Settings::TransferBuffer));
-        char buffer[bufferSize];
+        QSharedPointer<char> buffer(new char[bufferSize]);
 
         stream.writeInt<qint64>(totalBytes);
         stream.writeInt<qint32>(mBundle->count());
@@ -70,13 +71,14 @@ void SocketWriter::start()
             stream.writeInt<qint64>(bytesRemaining);
 
             while(bytesRemaining) {
-                qint64 bytesRead(file.read(buffer, qMin(bytesRemaining, bufferSize)));
+                qint64 bytesRead(file.read(buffer.data(), qMin(bytesRemaining, bufferSize)));
 
                 if(bytesRead <= 0) {
                     throw tr("Unable to read from %1.").arg(info.absoluteFilename());
                 }
 
-                stream.writeQByteArray(qCompress(reinterpret_cast<const uchar *>(buffer), bytesRead));
+                const uchar * data(reinterpret_cast<const uchar *>(buffer.data()));
+                stream.writeQByteArray(qCompress(data, bytesRead));
 
                 bytesRemaining -= bytesRead;
                 totalBytesWritten += bytesRead;
