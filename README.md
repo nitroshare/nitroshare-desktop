@@ -54,7 +54,7 @@ The requirements for building NitroShare are as follows:
 1. Download and install the following tools:
 
     - [CMake Win32 Installer](http://www.cmake.org/download/)
-    - [Visual Studio Express 2013 for Windows Desktop](http://go.microsoft.com/?linkid=9832280&clcid=0x409)
+    - [Visual Studio Express 2013 for Windows Desktop](http://go.microsoft.com/?linkid=9832280&clcid=0x409) [requires sign-in]
     - [Qt Online Installer for Windows](http://www.qt.io/download-open-source/#section-2)
 
 2. Ensure that the `bin` directory for both CMake and Qt have been added to the `PATH` environment variable.
@@ -69,14 +69,14 @@ The requirements for building NitroShare are as follows:
         mkdir build
         cd build
 
-5. Run CMake, being sure to specify the "NMake Makefiles" generator and indicate a release build:
+5. Run CMake, being sure to specify the `NMake Makefiles` generator and indicate a release build:
 
         cmake -G "NMake Makefiles" -DCMAKE_BUILD_TYPE=Release ..
 
-6. Run nmake to build the executable:
+6. Run `nmake` to build the executable:
 
         nmake
 
-7. The nitroshare binary will be in the current directory and can be run with:
+7. The NitroShare binary will be in the current directory and can be run with:
 
         nitroshare.exe
