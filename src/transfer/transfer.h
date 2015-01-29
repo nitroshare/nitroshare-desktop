@@ -48,6 +48,7 @@ public:
     int progress() const;
 
     void start();
+    void cancel();
 
 signals:
 

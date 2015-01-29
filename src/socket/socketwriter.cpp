@@ -40,7 +40,7 @@ void SocketWriter::start()
     QTcpSocket socket;
     SocketStream stream(socket);
 
-    connect(this, &SocketWriter::cancel, &stream, &SocketStream::abort);
+    connect(this, &SocketWriter::canceled, &stream, &SocketStream::abort);
 
     try {
         socket.connectToHost(mAddress, mPort);

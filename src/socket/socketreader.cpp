@@ -41,7 +41,7 @@ void SocketReader::start()
     QTcpSocket socket;
     SocketStream stream(socket);
 
-    connect(this, &SocketReader::cancel, &stream, &SocketStream::abort);
+    connect(this, &SocketReader::canceled, &stream, &SocketStream::abort);
 
     try {
         if(!socket.setSocketDescriptor(mSocketDescriptor)) {

@@ -24,6 +24,11 @@
 
 #include "socket.h"
 
+void Socket::cancel()
+{
+    emit canceled();
+}
+
 void Socket::emitProgress(qint64 bytes, qint64 totalBytes)
 {
     if(totalBytes) {

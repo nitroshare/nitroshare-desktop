@@ -63,6 +63,11 @@ void Transfer::start()
     QMetaObject::invokeMethod(mConnection.data(), "start", Qt::QueuedConnection);
 }
 
+void Transfer::cancel()
+{
+    QMetaObject::invokeMethod(mConnection.data(), "cancel", Qt::QueuedConnection);
+}
+
 void Transfer::setDeviceName(const QString &deviceName)
 {
     mDeviceName = deviceName;
