@@ -60,6 +60,12 @@ qt5_wrap_ui(UI
 # Add resource files
 qt5_add_resources(QRC resources.qrc)
 
+# On Windows, add the resource file as well
+if(WIN32)
+    configure_file(windows/resource.rc.in ${CMAKE_CURRENT_BINARY_DIR}/resource.rc)
+    set(SRC ${SRC} resource.rc)
+endif()
+
 # Create a single executable
 add_executable(nitroshare WIN32 ${SRC} ${MOC} ${UI} ${QRC})
 

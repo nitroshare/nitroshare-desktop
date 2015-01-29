@@ -1,0 +1,33 @@
+#include <windows.h>
+
+APP_ICON ICON DISCARDABLE "windows/nitroshare.ico"
+
+#define PROJECT_VERSION \
+    @PROJECT_VERSION_MAJOR@, \
+    @PROJECT_VERSION_MINOR@, \
+    @PROJECT_VERSION_PATCH@, \
+    0
+
+VS_VERSION_INFO VERSIONINFO
+    FILEVERSION    PROJECT_VERSION
+    PRODUCTVERSION PROJECT_VERSION
+{
+    BLOCK "StringFileInfo"
+    {
+        BLOCK "040904b0"
+        {
+            VALUE "CompanyName",      "Nathan Osman\0"
+            VALUE "FileDescription",  "Network File Transfer Application\0"
+            VALUE "FileVersion",      "@PROJECT_VERSION@\0"
+            VALUE "InternalName",     "nitroshare\0"
+            VALUE "LegalCopyright",   "Copyright (c) 2015 Nathan Osman\0"
+            VALUE "OriginalFilename", "nitroshare.exe\0"
+            VALUE "ProductName",      "NitroShare\0"
+            VALUE "ProductVersion",   "@PROJECT_VERSION@\0"
+        }
+    }
+    BLOCK "VarFileInfo"
+    {
+        VALUE "Translation", 0x409, 1252
+    }
+}
