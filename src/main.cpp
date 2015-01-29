@@ -37,7 +37,7 @@ int main(int argc, char **argv)
     app.setApplicationName("NitroShare");
     app.setApplicationVersion(NITROSHARE_VERSION);
     app.setOrganizationDomain("nitroshare.co");
-    app.setOrganizationName("NitroShare");
+    app.setOrganizationName("Nathan Osman");
 
     // Create the tray icon that runs the application
     NitroShare nitroshare;
