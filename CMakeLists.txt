@@ -11,7 +11,7 @@ find_package(Qt5Widgets 5.1 REQUIRED)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 # Prepare a "config.h" file that contains version information
-configure_file(src/config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
+configure_file(src/config.h.in "${CMAKE_CURRENT_BINARY_DIR}/config.h")
 
 # Add the source files
 set(SRC
@@ -62,7 +62,7 @@ qt5_add_resources(QRC resources.qrc)
 
 # On Windows, add the resource file as well
 if(WIN32)
-    configure_file(windows/resource.rc.in ${CMAKE_CURRENT_BINARY_DIR}/resource.rc)
+    configure_file(windows/resource.rc.in "${CMAKE_CURRENT_BINARY_DIR}/resource.rc")
     set(SRC ${SRC} resource.rc)
 endif()
 
@@ -80,3 +80,19 @@ target_compile_features(nitroshare PRIVATE
 
 # Install the application to the appropriate location
 install(TARGETS nitroshare RUNTIME DESTINATION bin)
+
+# Include required system libraries
+include(InstallRequiredSystemLibraries)
+
+# Settings for CPack
+set(CPACK_PACKAGE_NAME "NitroShare")
+set(CPACK_PACKAGE_VENDOR "Nathan Osman")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Network File Transfer Application")
+set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
+set(CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})
+set(CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH})
+set(CPACK_PACKAGE_EXECUTABLES "nitroshare;NitroShare")
+set(CPACK_PACKAGE_INSTALL_DIRECTORY "NitroShare")
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
+
+include(CPack)
