@@ -7,8 +7,11 @@ project(nitroshare VERSION 0.3.0 LANGUAGES CXX)
 find_package(Qt5Network 5.1 REQUIRED)
 find_package(Qt5Widgets 5.1 REQUIRED)
 
-# Set a flag needed for building Qt projects
+# Set some flags that are needed for building Qt projects
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
 
 # Include each applicable subdirectory in the build
 add_subdirectory(src)

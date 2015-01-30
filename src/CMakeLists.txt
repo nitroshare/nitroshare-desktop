@@ -21,35 +21,11 @@ set(SRC
     util/misc.cpp
     util/settings.cpp
     main.cpp
-    nitroshare.cpp)
-
-# Add the files that require MOC
-qt5_wrap_cpp(MOC
-    device/devicedialog.h
-    device/devicelistener.h
-    device/devicemodel.h
-    socket/socket.h
-    socket/socketreader.h
-    socket/socketstream.h
-    socket/socketwriter.h
-    transfer/transfer.h
-    transfer/transferdelegate.h
-    transfer/transfermodel.h
-    transfer/transferserver.h
-    transfer/transferwindow.h
-    util/settings.h
-    nitroshare.h)
-
-# Add the UI files
-qt5_wrap_ui(UI
-    device/devicedialog.ui
-    transfer/transferwindow.ui)
-
-# Add resource files
-qt5_add_resources(QRC resources.qrc)
+    nitroshare.cpp
+    resources.qrc)
 
 # Create a single executable
-add_executable(nitroshare WIN32 ${SRC} ${MOC} ${UI} ${QRC})
+add_executable(nitroshare WIN32 ${SRC})
 
 # Specify the required Qt libraries and ensure the
 # correct flags are set to enable C++11 features
