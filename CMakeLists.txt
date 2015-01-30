@@ -10,76 +10,15 @@ find_package(Qt5Widgets 5.1 REQUIRED)
 # Set a flag needed for building Qt projects
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-# Prepare a "config.h" file that contains version information
-configure_file(src/config.h.in "${CMAKE_CURRENT_BINARY_DIR}/config.h")
+# Include each applicable subdirectory in the build
+add_subdirectory(src)
 
-# Add the source files
-set(SRC
-    src/device/device.cpp
-    src/device/devicedialog.cpp
-    src/device/devicelistener.cpp
-    src/device/devicemodel.cpp
-    src/filesystem/bundle.cpp
-    src/filesystem/fileinfo.cpp
-    src/socket/socket.cpp
-    src/socket/socketreader.cpp
-    src/socket/socketstream.cpp
-    src/socket/socketwriter.cpp
-    src/transfer/transfer.cpp
-    src/transfer/transferdelegate.cpp
-    src/transfer/transfermodel.cpp
-    src/transfer/transferserver.cpp
-    src/transfer/transferwindow.cpp
-    src/util/misc.cpp
-    src/util/settings.cpp
-    src/main.cpp
-    src/nitroshare.cpp)
-
-# Add the files that require MOC
-qt5_wrap_cpp(MOC
-    src/device/devicedialog.h
-    src/device/devicelistener.h
-    src/device/devicemodel.h
-    src/socket/socket.h
-    src/socket/socketreader.h
-    src/socket/socketstream.h
-    src/socket/socketwriter.h
-    src/transfer/transfer.h
-    src/transfer/transferdelegate.h
-    src/transfer/transfermodel.h
-    src/transfer/transferserver.h
-    src/transfer/transferwindow.h
-    src/util/settings.h
-    src/nitroshare.h)
-
-# Add the UI files
-qt5_wrap_ui(UI
-    src/device/devicedialog.ui
-    src/transfer/transferwindow.ui)
-
-# Add resource files
-qt5_add_resources(QRC resources.qrc)
-
-# On Windows, add the resource file as well
-if(WIN32)
-    configure_file(windows/resource.rc.in "${CMAKE_CURRENT_BINARY_DIR}/resource.rc")
-    set(SRC ${SRC} resource.rc)
+if("${CMAKE_SYSTEM_NAME}" MATCHES "Windows")
+    add_subdirectory(windows)
+elseif("${CMAKE_SYSTEM_NAME}" MATCHES "Darwin")
+    add_subdirectory(mac)
+elseif("${CMAKE_SYSTEM_NAME}" MATCHES "Linux")
+    add_subdirectory(linux)
+else()
+    message(FATAL_ERROR "Building NitroShare on ${CMAKE_SYSTEM_NAME} is currently not supported.")
 endif()
-
-# Create a single executable
-add_executable(nitroshare WIN32 ${SRC} ${MOC} ${UI} ${QRC})
-
-# Specify the required Qt libraries and ensure the
-# correct flags are set to enable C++11 features
-target_link_libraries(nitroshare Qt5::Network Qt5::Widgets)
-target_compile_features(nitroshare PRIVATE
-    cxx_delegating_constructors
-    cxx_generalized_initializers
-    cxx_lambdas
-    cxx_nullptr)
-
-# Install the application to the appropriate location
-install(TARGETS nitroshare RUNTIME DESTINATION bin)
-
-# Include required system libraries when installing
-include(InstallRequiredSystemLibraries)
