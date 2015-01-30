@@ -1,0 +1,8 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=NitroShare
+Comment=Network File Transfer Application
+Icon=nitroshare
+Exec=nitroshare
+Categories=Network;FileTransfer
