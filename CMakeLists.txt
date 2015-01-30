@@ -81,18 +81,5 @@ target_compile_features(nitroshare PRIVATE
 # Install the application to the appropriate location
 install(TARGETS nitroshare RUNTIME DESTINATION bin)
 
-# Include required system libraries
+# Include required system libraries when installing
 include(InstallRequiredSystemLibraries)
-
-# Settings for CPack
-set(CPACK_PACKAGE_NAME "NitroShare")
-set(CPACK_PACKAGE_VENDOR "Nathan Osman")
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Network File Transfer Application")
-set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
-set(CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})
-set(CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH})
-set(CPACK_PACKAGE_EXECUTABLES "nitroshare;NitroShare")
-set(CPACK_PACKAGE_INSTALL_DIRECTORY "NitroShare")
-set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
-
-include(CPack)
