@@ -29,11 +29,11 @@
 #include <QModelIndex>
 #include <QSystemTrayIcon>
 
-#include "device/devicemodel.h"
-#include "filesystem/bundle.h"
-#include "transfer/transfermodel.h"
-#include "transfer/transferserver.h"
-#include "transfer/transferwindow.h"
+#include "../device/devicemodel.h"
+#include "../filesystem/bundle.h"
+#include "../transfer/transfermodel.h"
+#include "../transfer/transferserver.h"
+#include "../transfer/transferwindow.h"
 
 class NitroShare : public QSystemTrayIcon
 {

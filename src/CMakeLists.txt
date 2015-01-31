@@ -3,6 +3,8 @@ configure_file(config.h.in "${CMAKE_CURRENT_BINARY_DIR}/config.h")
 
 # Add the source files
 set(SRC
+    application/main.cpp
+    application/nitroshare.cpp
     device/device.cpp
     device/devicedialog.cpp
     device/devicelistener.cpp
@@ -20,8 +22,6 @@ set(SRC
     transfer/transferwindow.cpp
     util/misc.cpp
     util/settings.cpp
-    main.cpp
-    nitroshare.cpp
     resources.qrc)
 
 # Create a single executable

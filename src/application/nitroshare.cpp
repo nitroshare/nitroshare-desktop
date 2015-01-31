@@ -27,8 +27,8 @@
 #include <QIcon>
 #include <QMenu>
 
-#include "device/device.h"
-#include "device/devicedialog.h"
+#include "../device/device.h"
+#include "../device/devicedialog.h"
 #include "nitroshare.h"
 
 NitroShare::NitroShare()
