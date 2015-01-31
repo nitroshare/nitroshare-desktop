@@ -1,6 +1,6 @@
 #include <windows.h>
 
-APP_ICON ICON DISCARDABLE "windows/nitroshare.ico"
+APP_ICON ICON DISCARDABLE "data/nitroshare.ico"
 
 #define PROJECT_VERSION \
     @PROJECT_VERSION_MAJOR@, \

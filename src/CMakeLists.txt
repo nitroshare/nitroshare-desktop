@@ -31,7 +31,7 @@ set(SRC
 
 # On Windows, also include the resource file
 if(WIN32)
-    set(SRC ${SRC} resource.rc)
+    set(SRC ${SRC} ${CMAKE_CURRENT_BINARY_DIR}/resource.rc)
 endif()
 
 # Create a single executable
