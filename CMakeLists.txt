@@ -13,14 +13,17 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-# Include each applicable subdirectory in the build
+# Include the subdirectory containing the source code for the application
 add_subdirectory(src)
 
-if("${CMAKE_SYSTEM_NAME}" MATCHES "Windows")
+# Further customization is provided by platform-specific subdirectories
+# We must manually compare CMAKE_SYSTEM_NAME for Mac and Linux since
+# there are no predefined variables for them specifically
+if(WIN32)
     add_subdirectory(windows)
-elseif("${CMAKE_SYSTEM_NAME}" MATCHES "Darwin")
+elseif(CMAKE_SYSTEM_NAME MATCHES "Darwin")
     add_subdirectory(mac)
-elseif("${CMAKE_SYSTEM_NAME}" MATCHES "Linux")
+elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
     add_subdirectory(linux)
 else()
     message(FATAL_ERROR "Building NitroShare on ${CMAKE_SYSTEM_NAME} is currently not supported.")

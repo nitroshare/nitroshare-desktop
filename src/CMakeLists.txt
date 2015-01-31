@@ -1,6 +1,11 @@
 # Prepare a "config.h" file that contains version information
 configure_file(config.h.in "${CMAKE_CURRENT_BINARY_DIR}/config.h")
 
+# On Windows, prepare a resource.rc script
+if(WIN32)
+    configure_file(resource.rc.in "${CMAKE_CURRENT_BINARY_DIR}/resource.rc")
+endif()
+
 # Add the source files
 set(SRC
     application/main.cpp
@@ -23,6 +28,11 @@ set(SRC
     util/misc.cpp
     util/settings.cpp
     resources.qrc)
+
+# On Windows, also include the resource file
+if(WIN32)
+    set(SRC ${SRC} resource.rc)
+endif()
 
 # Create a single executable
 add_executable(nitroshare WIN32 ${SRC})
