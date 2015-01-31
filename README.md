@@ -69,9 +69,9 @@ The requirements for building NitroShare are as follows:
         mkdir build
         cd build
 
-5. Run CMake, being sure to specify the `NMake Makefiles` generator and indicate a release build:
+5. Run CMake, being sure to specify the `NMake Makefiles` generator:
 
-        cmake -G "NMake Makefiles" -DCMAKE_BUILD_TYPE=Release ..
+        cmake -G "NMake Makefiles" ..
 
 6. Run `nmake` to build the executable:
 
