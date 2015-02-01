@@ -1,6 +1,13 @@
 # CMake 3.1 was the first release to provide
 # target_compile_features for setting C++11 flags
 cmake_minimum_required(VERSION 3.1.0)
+
+# If build type is not set, assume release by default
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Release CACHE STRING "None Debug Release RelWithDebInfo MinSizeRel")
+endif()
+
+# The current version of the application is specified here exclusively
 project(nitroshare VERSION 0.3.0 LANGUAGES CXX)
 
 # Ensure that the required Qt libraries are available
