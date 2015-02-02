@@ -26,13 +26,11 @@ add_subdirectory(src)
 # Further customization is provided by platform-specific subdirectories
 # We must manually compare CMAKE_SYSTEM_NAME for Mac and Linux since
 # there are no predefined variables for them specifically
-if(WIN32)
-    add_subdirectory(windows)
-elseif(CMAKE_SYSTEM_NAME MATCHES "Darwin")
+if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
     add_subdirectory(mac)
 elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
     add_subdirectory(linux)
-else()
+elseif(NOT WIN32)
     message(FATAL_ERROR "Building NitroShare on ${CMAKE_SYSTEM_NAME} is currently not supported.")
 endif()
 

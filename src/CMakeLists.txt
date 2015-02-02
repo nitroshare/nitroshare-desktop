@@ -34,11 +34,9 @@ if(WIN32)
     set(SRC ${SRC} ${CMAKE_CURRENT_BINARY_DIR}/resource.rc)
 endif()
 
-# Create a single executable
+# Create a single executable and specify the required Qt libraries and
+# ensure the correct flags are set to enable C++11 features
 add_executable(nitroshare WIN32 ${SRC})
-
-# Specify the required Qt libraries and ensure the
-# correct flags are set to enable C++11 features
 target_link_libraries(nitroshare Qt5::Network Qt5::Widgets)
 target_compile_features(nitroshare PRIVATE
     cxx_delegating_constructors
@@ -46,5 +44,27 @@ target_compile_features(nitroshare PRIVATE
     cxx_lambdas
     cxx_nullptr)
 
-# Install the application to the appropriate location
+# Install the application (and any required system libraries)
 install(TARGETS nitroshare RUNTIME DESTINATION bin)
+include(InstallRequiredSystemLibraries)
+
+# On Windows, we must also install the Qt libraries
+if(WIN32)
+    # Determine the path to windeployqt by finding the path to qmake
+    get_target_property(_qmake_executable Qt5::qmake IMPORTED_LOCATION)
+    get_filename_component(_qt_bin_dir "${_qmake_executable}" DIRECTORY)
+    find_program(_windeployqt windeployqt HINTS "${_qt_bin_dir}")
+
+    # Add a custom command that runs immediately after build, copying the
+    # Qt libraries and their dependencies to a temporary directory
+    add_custom_command(TARGET nitroshare POST_BUILD
+        COMMAND ${_windeployqt}
+            --dir "${CMAKE_BINARY_DIR}/qt"
+            --no-compiler-runtime
+            --verbose 0
+            "$<TARGET_FILE:nitroshare>"
+        VERBATIM)
+
+    # Include the Qt libraries during installation
+    install(DIRECTORY "${CMAKE_BINARY_DIR}/qt/" DESTINATION bin)
+endif()
