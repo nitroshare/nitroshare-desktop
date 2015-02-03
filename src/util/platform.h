@@ -40,6 +40,8 @@ public:
 
     static OperatingSystem currentOS();
     static QString currentOSName();
+
+    static bool isUnity();
 };
 
 #endif // NS_PLATFORM_H

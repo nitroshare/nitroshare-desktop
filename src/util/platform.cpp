@@ -23,6 +23,7 @@
  **/
 
 #include <QObject>
+#include <QProcessEnvironment>
 
 #include "platform.h"
 
@@ -50,5 +51,15 @@ QString Platform::currentOSName()
         return QObject::tr("linux");
     case Unknown:
         return QObject::tr("unknown");
+    }
+}
+
+bool Platform::isUnity()
+{
+    if(currentOS() == Linux) {
+        return QProcessEnvironment::systemEnvironment()
+                .value("XDG_CURRENT_DESKTOP").toLower() == "unity";
+    } else {
+        return false;
     }
 }
