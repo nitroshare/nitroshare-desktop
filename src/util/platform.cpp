@@ -39,16 +39,16 @@ Platform::OperatingSystem Platform::currentOS()
 #endif
 }
 
-QString Platform::currentOSString()
+QString Platform::currentOSName()
 {
     switch(currentOS()) {
     case Windows:
-        return QObject::tr("Windows");
+        return QObject::tr("windows");
     case Mac:
-        return QObject::tr("Mac");
+        return QObject::tr("mac");
     case Linux:
-        return QObject::tr("Linux");
+        return QObject::tr("linux");
     case Unknown:
-        return QObject::tr("Unknown");
+        return QObject::tr("unknown");
     }
 }

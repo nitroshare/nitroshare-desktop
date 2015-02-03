@@ -70,7 +70,7 @@ void DeviceListener::sendPings()
         { "version", NITROSHARE_VERSION },
         { "uuid", Settings::get<QString>(Settings::DeviceUUID) },
         { "name", Settings::get<QString>(Settings::DeviceName) },
-        { "os", Platform::currentOSString() },
+        { "operating_system", Platform::currentOSName() },
         { "port", Settings::get<quint16>(Settings::TransferPort) }
     }));
 

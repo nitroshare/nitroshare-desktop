@@ -39,7 +39,7 @@ public:
     };
 
     static OperatingSystem currentOS();
-    static QString currentOSString();
+    static QString currentOSName();
 };
 
 #endif // NS_PLATFORM_H
