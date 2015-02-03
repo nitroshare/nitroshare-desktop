@@ -29,14 +29,15 @@ endif()
 find_package(Qt5Network 5.1 REQUIRED)
 find_package(Qt5Widgets 5.1 REQUIRED)
 
-# Optionally, the libappindicator libraries are used for AppIndicators in Unity
+# Optionally, the libappindicator and libnotify libraries are used for AppIndicators in Unity
 if(BUILD_APPINDICATOR)
     find_package(PkgConfig REQUIRED)
     pkg_search_module(APPINDICATOR REQUIRED appindicator3-0.1 appindicator-0.1)
+    pkg_check_modules(NOTIFY REQUIRED libnotify)
 
     # Add the appropriate directories for the compiler and linker
-    include_directories(${APPINDICATOR_INCLUDE_DIRS})
-    link_directories(${APPINDICATOR_LIBRARY_DIRS})
+    include_directories(${APPINDICATOR_INCLUDE_DIRS} ${NOTIFY_INCLUDE_DIRS})
+    link_directories(${APPINDICATOR_LIBRARY_DIRS} ${NOTIFY_LIBRARY_DIRS})
 endif()
 
 # Set some flags that are needed for building Qt projects

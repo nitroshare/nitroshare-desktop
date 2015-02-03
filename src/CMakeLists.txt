@@ -47,7 +47,7 @@ target_link_libraries(nitroshare Qt5::Network Qt5::Widgets)
 
 # Include the appindicator libraries if enabled
 if(BUILD_APPINDICATOR)
-    target_link_libraries(nitroshare ${APPINDICATOR_LIBRARIES})
+    target_link_libraries(nitroshare ${APPINDICATOR_LIBRARIES} ${NOTIFY_LIBRARIES})
 endif()
 
 # Ensure the correct flags are set to enable C++11 features
