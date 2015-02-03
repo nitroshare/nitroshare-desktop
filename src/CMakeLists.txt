@@ -31,8 +31,8 @@ set(SRC
     main.cpp
     resources.qrc)
 
-# Include the IconIndicator class if we're building it
-if(BUILD_INDICATOR)
+# Include the IndicatorIcon class if enabled
+if(BUILD_APPINDICATOR)
     set(SRC ${SRC} icon/indicatoricon.cpp)
 endif()
 
@@ -45,9 +45,9 @@ endif()
 add_executable(nitroshare WIN32 ${SRC})
 target_link_libraries(nitroshare Qt5::Network Qt5::Widgets)
 
-# Link against libindicator if present
-if(BUILD_INDICATOR)
-    target_link_libraries(nitroshare ${INDICATOR_LIBRARIES})
+# Include the appindicator libraries if enabled
+if(BUILD_APPINDICATOR)
+    target_link_libraries(nitroshare ${APPINDICATOR_LIBRARIES})
 endif()
 
 # Ensure the correct flags are set to enable C++11 features

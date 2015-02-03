@@ -29,6 +29,6 @@
 #define NITROSHARE_VERSION "@PROJECT_VERSION@"
 
 // This is set if NitroShare should be built with indicator support
-#cmakedefine BUILD_INDICATOR
+#cmakedefine BUILD_APPINDICATOR
 
 #endif // NS_CONFIG_H
