@@ -22,6 +22,8 @@
  * IN THE SOFTWARE.
  **/
 
+#include <QIcon>
+
 #include "transferdelegate.h"
 #include "transferwindow.h"
 #include "ui_transferwindow.h"
@@ -30,8 +32,11 @@ TransferWindow::TransferWindow(TransferModel &model)
     : ui(new Ui::TransferWindow)
 {
     ui->setupUi(this);
+
     ui->transferView->setModel(&model);
     ui->transferView->setItemDelegate(new TransferDelegate(this));
+
+    setWindowIcon(QIcon(":/data/nitroshare.svg"));
 }
 
 TransferWindow::~TransferWindow()
