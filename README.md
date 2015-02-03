@@ -45,9 +45,9 @@ The requirements for building NitroShare are as follows:
         cmake ..
         make
 
-5. The NitroShare binary will be in the current directory and can be run with:
+5. The NitroShare binary will be in the `src` directory and can be run with:
 
-        ./nitroshare
+        src/nitroshare
 
 #### Windows 7, 8, & 8.1
 
@@ -77,9 +77,9 @@ The requirements for building NitroShare are as follows:
 
         nmake
 
-7. The NitroShare binary will be in the current directory and can be run with:
+7. The NitroShare binary will be in the `src` directory and can be run with:
 
-        nitroshare.exe
+        src\nitroshare.exe
 
 > **Important:** By default, Visual C++ 2013 will build a binary that will not run on Windows XP. To avoid this behavior, ensure that the following environment variables are set before running `nmake`:
 >
