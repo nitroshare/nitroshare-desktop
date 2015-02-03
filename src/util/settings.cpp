@@ -29,6 +29,7 @@
 #include <QStandardPaths>
 #include <QUuid>
 
+#include "platform.h"
 #include "settings.h"
 
 struct Setting
@@ -51,6 +52,13 @@ const QMap<Settings::Key, Setting> keys {
     DEFINE_SETTING(BroadcastTimeout, { return 30 * 1000; }),
     DEFINE_SETTING(DeviceName, { return QHostInfo::localHostName(); }),
     DEFINE_SETTING(DeviceUUID, { return QUuid::createUuid(); }),
+    DEFINE_SETTING(ShowTrayIcon, {
+        if(Platform::currentOS() == Platform::Windows) {
+            return true;
+        } else {
+            return false;
+        }
+    }),
     DEFINE_SETTING(TransferBuffer, { return 16384; }),
     DEFINE_SETTING(TransferDirectory, {
         return QStandardPaths::writableLocation(QStandardPaths::DesktopLocation);

@@ -39,6 +39,7 @@ public:
         BroadcastTimeout,
         DeviceName,
         DeviceUUID,
+        ShowTrayIcon,
         TransferBuffer,
         TransferDirectory,
         TransferPort,
