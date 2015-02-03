@@ -49,12 +49,12 @@ Application::Application()
     connect(&mDeviceModel, &DeviceModel::deviceRemoved, this, &Application::notifyDeviceRemoved);
     connect(&mTransferServer, &TransferServer::newTransfer, &mTransferModel, &TransferModel::add);
 
-    mIcon->addAction(tr("Send &Files..."), this, SLOT(sendFiles()));
-    mIcon->addAction(tr("Send &Directory..."), this, SLOT(sendDirectory()));
+    mIcon->addAction(tr("Send Files..."), this, SLOT(sendFiles()));
+    mIcon->addAction(tr("Send Directory..."), this, SLOT(sendDirectory()));
     mIcon->addSeparator();
-    mIcon->addAction(tr("View &Transfers..."), &mTransferWindow, SLOT(show()));
+    mIcon->addAction(tr("View Transfers..."), &mTransferWindow, SLOT(show()));
     mIcon->addSeparator();
-    mIcon->addAction(tr("E&xit"), QApplication::instance(), SLOT(quit()));
+    mIcon->addAction(tr("Exit"), QApplication::instance(), SLOT(quit()));
 
     mDeviceModel.start();
 }
