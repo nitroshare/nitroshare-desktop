@@ -14,6 +14,12 @@ project(nitroshare VERSION 0.3.0 LANGUAGES CXX)
 find_package(Qt5Network 5.1 REQUIRED)
 find_package(Qt5Widgets 5.1 REQUIRED)
 
+# Optionally, the libindicator libraries are used for AppIndicators in Unity
+find_package(PkgConfig)
+if(PKGCONFIG_FOUND)
+    pkg_search_module(INDICATOR indicator3-0.4 indicator-0.4)
+endif()
+
 # Set some flags that are needed for building Qt projects
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
