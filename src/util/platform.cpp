@@ -22,11 +22,33 @@
  * IN THE SOFTWARE.
  **/
 
-#ifndef NS_MISC_H
-#define NS_MISC_H
+#include <QObject>
 
-#include <QString>
+#include "platform.h"
 
-QString currentOperatingSystem();
+Platform::OperatingSystem Platform::currentOS()
+{
+#if defined(Q_OS_WIN32)
+    return Windows;
+#elif defined(Q_OS_MAC)
+    return Mac;
+#elif defined(Q_OS_LINUX)
+    return Linux;
+#else
+    return Unknown;
+#endif
+}
 
-#endif // NS_MISC_H
+QString Platform::currentOSString()
+{
+    switch(currentOS()) {
+    case Windows:
+        return QObject::tr("Windows");
+    case Mac:
+        return QObject::tr("Mac");
+    case Linux:
+        return QObject::tr("Linux");
+    case Unknown:
+        return QObject::tr("Unknown");
+    }
+}

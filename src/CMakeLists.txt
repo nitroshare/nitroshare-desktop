@@ -25,7 +25,7 @@ set(SRC
     transfer/transfermodel.cpp
     transfer/transferserver.cpp
     transfer/transferwindow.cpp
-    util/misc.cpp
+    util/platform.cpp
     util/settings.cpp
     resources.qrc)
 

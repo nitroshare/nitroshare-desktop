@@ -22,17 +22,24 @@
  * IN THE SOFTWARE.
  **/
 
-#include "misc.h"
+#ifndef NS_PLATFORM_H
+#define NS_PLATFORM_H
 
-QString currentOperatingSystem()
+#include <QString>
+
+class Platform
 {
-#if defined(Q_OS_WIN32)
-    return "win32";
-#elif defined(Q_OS_MAC)
-    return "mac";
-#elif defined(Q_OS_LINUX)
-    return "linux";
-#else
-    return "unknown";
-#endif
-}
+public:
+
+    enum OperatingSystem {
+        Unknown,
+        Windows,
+        Mac,
+        Linux
+    };
+
+    static OperatingSystem currentOS();
+    static QString currentOSString();
+};
+
+#endif // NS_PLATFORM_H

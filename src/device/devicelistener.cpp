@@ -26,7 +26,7 @@
 #include <QNetworkInterface>
 #include <QSet>
 
-#include "../util/misc.h"
+#include "../util/platform.h"
 #include "config.h"
 #include "devicelistener.h"
 
@@ -69,7 +69,7 @@ void DeviceListener::sendPings()
         { "version", NITROSHARE_VERSION },
         { "uuid", Settings::get<QString>(Settings::DeviceUUID) },
         { "name", Settings::get<QString>(Settings::DeviceName) },
-        { "operating_system", currentOperatingSystem() },
+        { "os", Platform::currentOSString() },
         { "port", Settings::get<quint16>(Settings::TransferPort) }
     }));
 
