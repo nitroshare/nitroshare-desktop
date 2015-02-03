@@ -22,24 +22,66 @@
  * IN THE SOFTWARE.
  **/
 
+#include <QAction>
+
+#undef signals
+#include <libnotify/notify.h>
+
 #include "indicatoricon.h"
 
-IndicatorIcon::IndicatorIcon()
+// Assumes 'data' is a QAction * and triggers it
+void triggerQAction(GtkMenu *, gpointer data)
 {
-    //...
+    reinterpret_cast<QAction *>(data)->trigger();
+}
+
+IndicatorIcon::IndicatorIcon()
+    : mIndicator(app_indicator_new("nitroshare", "nitroshare", APP_INDICATOR_CATEGORY_APPLICATION_STATUS)),
+      mMenu(gtk_menu_new())
+{
+    notify_init("nitroshare");
+
+    app_indicator_set_menu(mIndicator, GTK_MENU(mMenu));
+    app_indicator_set_status(mIndicator, APP_INDICATOR_STATUS_ACTIVE);
+}
+
+IndicatorIcon::~IndicatorIcon()
+{
+    notify_uninit();
+
+    g_object_unref(G_OBJECT(mIndicator));
 }
 
 void IndicatorIcon::addAction(const QString &text, QObject *receiver, const char *member)
 {
-    //...
+    GtkWidget *menuItem(gtk_menu_item_new_with_label(text.toUtf8().constData()));
+
+    QAction *action(new QAction(text, this));
+    connect(action, SIGNAL(triggered()), receiver, member);
+
+    g_signal_connect(menuItem, "activate", G_CALLBACK(triggerQAction), action);
+
+    gtk_widget_show(menuItem);
+    gtk_menu_shell_append(GTK_MENU_SHELL(mMenu), menuItem);
 }
 
 void IndicatorIcon::addSeparator()
 {
-    //...
+    GtkWidget *separator(gtk_separator_menu_item_new());
+
+    gtk_widget_show(separator);
+    gtk_menu_shell_append(GTK_MENU_SHELL(mMenu), separator);
 }
 
 void IndicatorIcon::showMessage(const QString &message)
 {
-    //...
+    NotifyNotification *notification(notify_notification_new(
+        "NitroShare Notification",
+        message.toUtf8().constData(),
+        "nitroshare"
+    ));
+
+    notify_notification_show(notification, nullptr);
+
+    g_object_unref(G_OBJECT(notification));
 }
