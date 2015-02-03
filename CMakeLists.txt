@@ -10,6 +10,18 @@ endif()
 # The current version of the application is specified here exclusively
 project(nitroshare VERSION 0.3.0 LANGUAGES CXX)
 
+# We currently support a total of three platforms:
+# - Windows XP / Vista / 7 / 8
+# - OS X 10.6, 10.7, and 10.8
+# - Linux (tested on Ubuntu)
+if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
+    set(MAC 1)
+elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
+    set(LINUX 1)
+elseif(NOT WIN32)
+    message(FATAL_ERROR "Building NitroShare on ${CMAKE_SYSTEM_NAME} is currently not supported.")
+endif()
+
 # Ensure that the required Qt libraries are available
 find_package(Qt5Network 5.1 REQUIRED)
 find_package(Qt5Widgets 5.1 REQUIRED)
@@ -29,15 +41,9 @@ set(CMAKE_AUTOUIC ON)
 # Include the subdirectory containing the source code for the application
 add_subdirectory(src)
 
-# Further customization is provided by platform-specific subdirectories
-# We must manually compare CMAKE_SYSTEM_NAME for Mac and Linux since
-# there are no predefined variables for them specifically
-if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
-    add_subdirectory(mac)
-elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
+# On Linux, there are a few extra files that need to be installed
+if(LINUX)
     add_subdirectory(linux)
-elseif(NOT WIN32)
-    message(FATAL_ERROR "Building NitroShare on ${CMAKE_SYSTEM_NAME} is currently not supported.")
 endif()
 
 # Settings for CPack
