@@ -34,6 +34,7 @@ DeviceListener::DeviceListener()
 {
     connect(&mTimer, &QTimer::timeout, this, &DeviceListener::sendPings);
     connect(&mSocket, &QUdpSocket::readyRead, this, &DeviceListener::processPings);
+    connect(Settings::instance(), &Settings::settingChanged, this, &DeviceListener::settingChanged);
 
     reload();
 }
