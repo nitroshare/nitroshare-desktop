@@ -24,41 +24,52 @@
 
 #include <QApplication>
 #include <QFileDialog>
-#include <QIcon>
-#include <QMenu>
 
 #include "../device/device.h"
 #include "../device/devicedialog.h"
-#include "nitroshare.h"
+#include "../icon/trayicon.h"
+#include "application.h"
+#include "config.h"
 
-NitroShare::NitroShare()
-    : mTransferWindow(mTransferModel)
+#ifdef BUILD_INDICATOR
+#include "../icon/indicatoricon.h"
+#include "../util/platform.h"
+#endif
+
+Application::Application()
+    : mTransferWindow(mTransferModel),
+#ifdef BUILD_INDICATOR
+      mIcon(Platform::isUnity() ? static_cast<Icon *>(new IndicatorIcon) :
+                                  static_cast<Icon *>(new TrayIcon))
+#else
+      mIcon(new TrayIcon)
+#endif
 {
-    connect(&mDeviceModel, &DeviceModel::deviceAdded, this, &NitroShare::notifyDeviceAdded);
-    connect(&mDeviceModel, &DeviceModel::deviceRemoved, this, &NitroShare::notifyDeviceRemoved);
+    connect(&mDeviceModel, &DeviceModel::deviceAdded, this, &Application::notifyDeviceAdded);
+    connect(&mDeviceModel, &DeviceModel::deviceRemoved, this, &Application::notifyDeviceRemoved);
     connect(&mTransferServer, &TransferServer::newTransfer, &mTransferModel, &TransferModel::add);
 
-    initializeMenu();
-
-    setIcon(QIcon(":/img/nitroshare.svg"));
-    setContextMenu(&mMenu);
-
-    show();
+    mIcon->addAction(tr("Send &Files..."), this, SLOT(sendFiles()));
+    mIcon->addAction(tr("Send &Directory..."), this, SLOT(sendDirectory()));
+    mIcon->addSeparator();
+    mIcon->addAction(tr("View &Transfers..."), &mTransferWindow, SLOT(show()));
+    mIcon->addSeparator();
+    mIcon->addAction(tr("E&xit"), QApplication::instance(), SLOT(quit()));
 
     mDeviceModel.start();
 }
 
-void NitroShare::notifyDeviceAdded(DevicePointer device)
+void Application::notifyDeviceAdded(DevicePointer device)
 {
-    showMessage(tr("Device Added"), device->name());
+    mIcon->showMessage(tr("%1 has joined.").arg(device->name()));
 }
 
-void NitroShare::notifyDeviceRemoved(DevicePointer device)
+void Application::notifyDeviceRemoved(DevicePointer device)
 {
-    showMessage(tr("Device Removed"), device->name());
+    mIcon->showMessage(tr("%1 has left.").arg(device->name()));
 }
 
-void NitroShare::sendFiles()
+void Application::sendFiles()
 {
     QStringList filenames(QFileDialog::getOpenFileNames(nullptr, tr("Select Files")));
 
@@ -73,7 +84,7 @@ void NitroShare::sendFiles()
     }
 }
 
-void NitroShare::sendDirectory()
+void Application::sendDirectory()
 {
     QString path(QFileDialog::getExistingDirectory(nullptr, tr("Select Directory")));
 
@@ -85,17 +96,7 @@ void NitroShare::sendDirectory()
     }
 }
 
-void NitroShare::initializeMenu()
-{
-    mMenu.addAction(tr("Send &Files..."), this, SLOT(sendFiles()));
-    mMenu.addAction(tr("Send &Directory..."), this, SLOT(sendDirectory()));
-    mMenu.addSeparator();
-    mMenu.addAction(tr("View &Transfers..."), &mTransferWindow, SLOT(show()));
-    mMenu.addSeparator();
-    mMenu.addAction(tr("E&xit"), QApplication::instance(), SLOT(quit()));
-}
-
-void NitroShare::sendBundle(BundlePointer bundle)
+void Application::sendBundle(BundlePointer bundle)
 {
     DevicePointer device(DeviceDialog::getDevice(mDeviceModel));
     if(device) {

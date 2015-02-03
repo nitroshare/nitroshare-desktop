@@ -22,13 +22,45 @@
  * IN THE SOFTWARE.
  **/
 
-#ifndef NS_CONFIG_H
-#define NS_CONFIG_H
+#ifndef NS_APPLICATION_H
+#define NS_APPLICATION_H
 
-// Contains the current version of NitroShare as a string in the format xx.yy.zz
-#define NITROSHARE_VERSION "@PROJECT_VERSION@"
+#include <QSharedPointer>
 
-// This is set if NitroShare should be built with indicator support
-#cmakedefine BUILD_INDICATOR
+#include "../device/device.h"
+#include "../device/devicemodel.h"
+#include "../filesystem/bundle.h"
+#include "../icon/icon.h"
+#include "../transfer/transfermodel.h"
+#include "../transfer/transferserver.h"
+#include "../transfer/transferwindow.h"
 
-#endif // NS_CONFIG_H
+class Application : public QObject
+{
+    Q_OBJECT
+
+public:
+
+    Application();
+
+private slots:
+
+    void notifyDeviceAdded(DevicePointer device);
+    void notifyDeviceRemoved(DevicePointer device);
+
+    void sendFiles();
+    void sendDirectory();
+
+private:
+
+    void sendBundle(BundlePointer bundle);
+
+    DeviceModel mDeviceModel;
+    TransferModel mTransferModel;
+    TransferServer mTransferServer;
+    TransferWindow mTransferWindow;
+
+    QSharedPointer<Icon> mIcon;
+};
+
+#endif // NS_APPLICATION_H

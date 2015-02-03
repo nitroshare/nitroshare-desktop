@@ -22,26 +22,23 @@
  * IN THE SOFTWARE.
  **/
 
-#include <QApplication>
+#ifndef NS_ICON_H
+#define NS_ICON_H
 
-#include "config.h"
-#include "nitroshare.h"
+#include <QObject>
 
-int main(int argc, char **argv)
+class Icon : public QObject
 {
-    QApplication app(argc, argv);
-    app.setQuitOnLastWindowClosed(false);
+    Q_OBJECT
 
-    // Set up application properties
-    app.setApplicationDisplayName(QObject::tr("NitroShare"));
-    app.setApplicationName("NitroShare");
-    app.setApplicationVersion(NITROSHARE_VERSION);
-    app.setOrganizationDomain("nitroshare.co");
-    app.setOrganizationName("Nathan Osman");
+public:
 
-    // Create the tray icon that runs the application
-    NitroShare nitroshare;
-    Q_UNUSED(nitroshare);
+    virtual void addAction(const QString &text, QObject *object, const char *slot) = 0;
+    virtual void addSeparator() = 0;
 
-    app.exec();
-}
+public slots:
+
+    virtual void showMessage(const QString &message) = 0;
+};
+
+#endif // NS_ICON_H

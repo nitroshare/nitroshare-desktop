@@ -8,14 +8,15 @@ endif()
 
 # Add the source files
 set(SRC
-    application/main.cpp
-    application/nitroshare.cpp
+    application/application.cpp
     device/device.cpp
     device/devicedialog.cpp
     device/devicelistener.cpp
     device/devicemodel.cpp
     filesystem/bundle.cpp
     filesystem/fileinfo.cpp
+    icon/icon.cpp
+    icon/trayicon.cpp
     socket/socket.cpp
     socket/socketreader.cpp
     socket/socketstream.cpp
@@ -27,17 +28,29 @@ set(SRC
     transfer/transferwindow.cpp
     util/platform.cpp
     util/settings.cpp
+    main.cpp
     resources.qrc)
+
+# Include the IconIndicator class if we're building it
+if(BUILD_INDICATOR)
+    set(SRC ${SRC} icon/indicatoricon.cpp)
+endif()
 
 # On Windows, also include the resource file
 if(WIN32)
     set(SRC ${SRC} ${CMAKE_CURRENT_BINARY_DIR}/resource.rc)
 endif()
 
-# Create a single executable and specify the required Qt libraries and
-# ensure the correct flags are set to enable C++11 features
+# Create a single executable and specify the required Qt libraries
 add_executable(nitroshare WIN32 ${SRC})
 target_link_libraries(nitroshare Qt5::Network Qt5::Widgets)
+
+# Link against libindicator if present
+if(BUILD_INDICATOR)
+    target_link_libraries(nitroshare ${INDICATOR_LIBRARIES})
+endif()
+
+# Ensure the correct flags are set to enable C++11 features
 target_compile_features(nitroshare PRIVATE
     cxx_delegating_constructors
     cxx_generalized_initializers

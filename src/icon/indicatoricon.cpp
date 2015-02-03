@@ -22,13 +22,24 @@
  * IN THE SOFTWARE.
  **/
 
-#ifndef NS_CONFIG_H
-#define NS_CONFIG_H
+#include "indicatoricon.h"
 
-// Contains the current version of NitroShare as a string in the format xx.yy.zz
-#define NITROSHARE_VERSION "@PROJECT_VERSION@"
+IndicatorIcon::IndicatorIcon()
+{
+    //...
+}
 
-// This is set if NitroShare should be built with indicator support
-#cmakedefine BUILD_INDICATOR
+void IndicatorIcon::addAction(const QString &text, QObject *receiver, const char *member)
+{
+    //...
+}
 
-#endif // NS_CONFIG_H
+void IndicatorIcon::addSeparator()
+{
+    //...
+}
+
+void IndicatorIcon::showMessage(const QString &message)
+{
+    //...
+}

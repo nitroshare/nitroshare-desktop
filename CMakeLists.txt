@@ -10,6 +10,9 @@ endif()
 # The current version of the application is specified here exclusively
 project(nitroshare VERSION 0.3.0 LANGUAGES CXX)
 
+# Only a single option is currently supported
+option(BUILD_INDICATOR "Include support for displaying an application indicator")
+
 # We currently support a total of three platforms:
 # - Windows XP / Vista / 7 / 8
 # - OS X 10.6, 10.7, and 10.8
@@ -27,9 +30,13 @@ find_package(Qt5Network 5.1 REQUIRED)
 find_package(Qt5Widgets 5.1 REQUIRED)
 
 # Optionally, the libindicator libraries are used for AppIndicators in Unity
-find_package(PkgConfig)
-if(PKGCONFIG_FOUND)
-    pkg_search_module(INDICATOR indicator3-0.4 indicator-0.4)
+if(BUILD_INDICATOR)
+    find_package(PkgConfig REQUIRED)
+    pkg_search_module(INDICATOR REQUIRED indicator3-0.4 indicator-0.4)
+
+    # Add the appropriate directories for the compiler and linker
+    include_directories(${INDICATOR_INCLUDE_DIRS})
+    link_directories(${INDICATOR_LIBRARY_DIRS})
 endif()
 
 # Set some flags that are needed for building Qt projects

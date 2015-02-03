@@ -22,13 +22,4 @@
  * IN THE SOFTWARE.
  **/
 
-#ifndef NS_CONFIG_H
-#define NS_CONFIG_H
-
-// Contains the current version of NitroShare as a string in the format xx.yy.zz
-#define NITROSHARE_VERSION "@PROJECT_VERSION@"
-
-// This is set if NitroShare should be built with indicator support
-#cmakedefine BUILD_INDICATOR
-
-#endif // NS_CONFIG_H
+#include "icon.h"

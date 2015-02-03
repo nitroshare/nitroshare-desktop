@@ -22,47 +22,33 @@
  * IN THE SOFTWARE.
  **/
 
-#ifndef NS_NITROSHARE_H
-#define NS_NITROSHARE_H
+#ifndef NS_TRAYICON_H
+#define NS_TRAYICON_H
 
 #include <QMenu>
-#include <QModelIndex>
 #include <QSystemTrayIcon>
 
-#include "../device/devicemodel.h"
-#include "../filesystem/bundle.h"
-#include "../transfer/transfermodel.h"
-#include "../transfer/transferserver.h"
-#include "../transfer/transferwindow.h"
+#include "icon.h"
 
-class NitroShare : public QSystemTrayIcon
+class TrayIcon : public Icon
 {
     Q_OBJECT
 
 public:
 
-    NitroShare();
+    TrayIcon();
 
-private slots:
+    virtual void addAction(const QString &text, QObject *receiver, const char *member);
+    virtual void addSeparator();
 
-    void notifyDeviceAdded(DevicePointer device);
-    void notifyDeviceRemoved(DevicePointer device);
+public slots:
 
-    void sendFiles();
-    void sendDirectory();
+    virtual void showMessage(const QString &message);
 
 private:
 
-    void initializeMenu();
-
-    void sendBundle(BundlePointer bundle);
-
+    QSystemTrayIcon mTrayIcon;
     QMenu mMenu;
-
-    DeviceModel mDeviceModel;
-    TransferModel mTransferModel;
-    TransferServer mTransferServer;
-    TransferWindow mTransferWindow;
 };
 
-#endif // NS_NITROSHARE_H
+#endif // NS_TRAYICON_H

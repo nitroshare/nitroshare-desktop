@@ -22,13 +22,29 @@
  * IN THE SOFTWARE.
  **/
 
-#ifndef NS_CONFIG_H
-#define NS_CONFIG_H
+#include "trayicon.h"
 
-// Contains the current version of NitroShare as a string in the format xx.yy.zz
-#define NITROSHARE_VERSION "@PROJECT_VERSION@"
+TrayIcon::TrayIcon()
+{
+    mTrayIcon.setContextMenu(&mMenu);
 
-// This is set if NitroShare should be built with indicator support
-#cmakedefine BUILD_INDICATOR
+    mTrayIcon.setIcon(QIcon(":/img/nitroshare.svg"));
+    mTrayIcon.setToolTip(tr("NitroShare"));
 
-#endif // NS_CONFIG_H
+    mTrayIcon.show();
+}
+
+void TrayIcon::addAction(const QString &text, QObject *receiver, const char *member)
+{
+    mMenu.addAction(text, receiver, member);
+}
+
+void TrayIcon::addSeparator()
+{
+    mMenu.addSeparator();
+}
+
+void TrayIcon::showMessage(const QString &message)
+{
+    mTrayIcon.showMessage(tr("NitroShare Notification"), message);
+}

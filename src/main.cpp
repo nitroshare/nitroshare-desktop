@@ -22,13 +22,26 @@
  * IN THE SOFTWARE.
  **/
 
-#ifndef NS_CONFIG_H
-#define NS_CONFIG_H
+#include <QApplication>
 
-// Contains the current version of NitroShare as a string in the format xx.yy.zz
-#define NITROSHARE_VERSION "@PROJECT_VERSION@"
+#include "config.h"
+#include "application/application.h"
 
-// This is set if NitroShare should be built with indicator support
-#cmakedefine BUILD_INDICATOR
+int main(int argc, char **argv)
+{
+    QApplication app(argc, argv);
+    app.setQuitOnLastWindowClosed(false);
 
-#endif // NS_CONFIG_H
+    // Set up application properties
+    app.setApplicationDisplayName(QObject::tr("NitroShare"));
+    app.setApplicationName("NitroShare");
+    app.setApplicationVersion(NITROSHARE_VERSION);
+    app.setOrganizationDomain("nitroshare.co");
+    app.setOrganizationName("Nathan Osman");
+
+    // Create the tray icon that runs the application
+    Application nitroshare;
+    Q_UNUSED(nitroshare);
+
+    app.exec();
+}
