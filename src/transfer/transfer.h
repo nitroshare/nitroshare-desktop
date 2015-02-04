@@ -39,6 +39,11 @@ class Transfer : public QObject
 
 public:
 
+    enum Direction {
+        Send,
+        Receive
+    };
+
     Transfer(qintptr socketDescriptor);
     Transfer(DevicePointer device, BundlePointer bundle);
 
@@ -46,6 +51,7 @@ public:
 
     QString deviceName() const;
     int progress() const;
+    Direction direction() const;
 
     void start();
     void cancel();
@@ -72,6 +78,7 @@ private:
 
     QString mDeviceName;
     int mProgress;
+    Direction mDirection;
 };
 
 typedef QSharedPointer<Transfer> TransferPointer;

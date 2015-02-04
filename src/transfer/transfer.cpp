@@ -30,14 +30,14 @@
 
 Transfer::Transfer(qintptr socketDescriptor)
     : mConnection(new SocketReader(socketDescriptor)),
-      mDeviceName(tr("[unknown]")), mProgress(0)
+      mDeviceName(tr("[unknown]")), mProgress(0), mDirection(Receive)
 {
     initialize();
 }
 
 Transfer::Transfer(DevicePointer device, BundlePointer bundle)
     : mConnection(new SocketWriter(device->address(), device->port(), bundle)),
-      mDeviceName(device->name()), mProgress(0)
+      mDeviceName(device->name()), mProgress(0), mDirection(Send)
 {
     initialize();
 }
@@ -56,6 +56,11 @@ QString Transfer::deviceName() const
 int Transfer::progress() const
 {
     return mProgress;
+}
+
+Transfer::Direction Transfer::direction() const
+{
+    return mDirection;
 }
 
 void Transfer::start()
