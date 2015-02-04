@@ -22,6 +22,12 @@ The requirements for building NitroShare are as follows:
     * Clang 3.1+
 * Qt 5.1+
 
+In order to use [application indicators](https://unity.ubuntu.com/projects/appindicators/) on supported Linux platforms, you also need the following development packages installed:
+
+* GTK+ 2
+* libappindicator
+* libnotify
+
 ### Build Instructions
 
 #### Ubuntu 14.04, 14.10, & 15.04
