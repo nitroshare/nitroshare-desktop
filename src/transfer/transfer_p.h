@@ -22,33 +22,47 @@
  * IN THE SOFTWARE.
  **/
 
-#ifndef NS_SOCKET_H
-#define NS_SOCKET_H
+#ifndef NS_TRANSFERPRIVATE_H
+#define NS_TRANSFERPRIVATE_H
 
-#include <QObject>
+#include <QThread>
 
-class Socket : public QObject
+#include "../socket/socket.h"
+#include "transfer.h"
+
+class TransferPrivate : public QObject
 {
     Q_OBJECT
 
-signals:
+public:
 
-    void deviceNameChanged(const QString &message);
-    void progressChanged(int percentage);
+    explicit TransferPrivate(Transfer *transfer,
+                             Socket *socket,
+                             const QString &deviceName,
+                             Transfer::Direction direction);
+    virtual ~TransferPrivate();
 
-    void error(const QString &message);
-    void completed();
+private slots:
 
-    void canceled();
+    void setDeviceName(const QString &value);
+    void setProgress(int value);
 
-public slots:
+    void setStatusError(const QString &value);
+    void setStatusCompleted();
 
-    virtual void start() = 0;
-    void cancel();
+public:
 
-protected:
+    Transfer * const q;
 
-    void emitProgress(qint64 bytes, qint64 totalBytes);
+    QThread thread;
+    Socket * const socket;
+
+    QString deviceName;
+    int progress;
+    QString error;
+
+    Transfer::Status status;
+    Transfer::Direction direction;
 };
 
-#endif // NS_SOCKET_H
+#endif // NS_TRANSFERPRIVATE_H

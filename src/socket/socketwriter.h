@@ -27,6 +27,7 @@
 
 #include <QHostAddress>
 
+#include "../device/device.h"
 #include "../filesystem/bundle.h"
 #include "socket.h"
 
@@ -36,7 +37,7 @@ class SocketWriter : public Socket
 
 public:
 
-    SocketWriter(const QHostAddress &address, quint16 port, BundlePointer device);
+    SocketWriter(DevicePointer device, BundlePointer bundle);
 
 public slots:
 

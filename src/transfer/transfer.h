@@ -25,63 +25,142 @@
 #ifndef NS_TRANSFER_H
 #define NS_TRANSFER_H
 
-#include <QHostAddress>
-#include <QSharedPointer>
-#include <QThread>
+#include <QObject>
 
 #include "../device/device.h"
 #include "../filesystem/bundle.h"
-#include "../socket/socket.h"
 
+class TransferPrivate;
+
+/**
+ * @brief Transfer currently in progress
+ *
+ * Transfers take place in a secondary thread, allowing blocking read and write
+ * operations to run without interfering with the UI. The Transfer class is
+ * used both for sending and receiving files.
+ */
 class Transfer : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(QString deviceName READ deviceName NOTIFY deviceNameChanged)
+    Q_PROPERTY(int progress READ progress NOTIFY progressChanged)
+    Q_PROPERTY(QString error READ error)
+    Q_PROPERTY(Status status READ status NOTIFY statusChanged)
+    Q_PROPERTY(Direction direction READ direction)
+    Q_ENUMS(Status)
+    Q_ENUMS(Direction)
 
 public:
 
+    /**
+     * @brief Status of the transfer
+     */
+    enum Status {
+        /// Transfer has not yet begun
+        Pending,
+        /// Transfer is currently in progress
+        InProgress,
+        /// Transfer encountered an error
+        Error,
+        /// Transfer completed without error
+        Completed
+    };
+
+    /**
+     * @brief Direction of the transfer
+     */
     enum Direction {
+        /// Files are being sent
         Send,
+        /// Files are being received
         Receive
     };
 
+    /**
+     * @brief Create a new transfer for receiving files
+     * @param socketDescriptor open descriptor for the socket
+     */
     Transfer(qintptr socketDescriptor);
+
+    /**
+     * @brief Create a new transfer for sending a bundle
+     * @param device device to send the bundle to
+     * @param bundle bundle to send to the specified device
+     */
     Transfer(DevicePointer device, BundlePointer bundle);
 
-    virtual ~Transfer();
-
+    /**
+     * @brief Retrieve the name of the connected device
+     * @return name of the device
+     */
     QString deviceName() const;
-    int progress() const;
-    Direction direction() const;
 
-    void start();
-    void cancel();
+    /**
+     * @brief Retrieve the progress of the transfer
+     * @return transfer progress between 0 and 100
+     */
+    int progress() const;
+
+    /**
+     * @brief Retrieve the error message (if any)
+     * @return error message or empty string if none
+     */
+    QString error() const;
+
+    /**
+     * @brief Retrieve the status of the transfer
+     * @return transfer status
+     */
+    Status status() const;
+
+    /**
+     * @brief Retrieve the direction of the transfer (sending or receiving)
+     * @return transfer direction
+     */
+    Direction direction() const;
 
 signals:
 
-    void statusChanged();
+    /**
+     * @brief Indicate that the connected device name has changed
+     * @param deviceName name of the device
+     */
+    void deviceNameChanged(const QString &deviceName);
 
-    void error(const QString &message);
-    void completed();
-    void finished();
+    /**
+     * @brief Indicate that the progress of the transfer has changed
+     * @param progress transfer progress between 0 and 100
+     */
+    void progressChanged(int progress);
 
-private slots:
+    /**
+     * @brief Indicate that the status of the transfer has changed
+     * @param status status of the transfer
+     */
+    void statusChanged(Status status);
 
-    void setDeviceName(const QString &deviceName);
-    void setProgress(int progress);
+public slots:
+
+    /**
+     * @brief Begin the transfer
+     */
+    void start();
+
+    /**
+     * @brief Cancel the transfer
+     */
+    void cancel();
 
 private:
 
-    void initialize();
-
-    QSharedPointer<Socket> mConnection;
-    QThread mThread;
-
-    QString mDeviceName;
-    int mProgress;
-    Direction mDirection;
+    TransferPrivate * const d;
 };
 
+/**
+ * @brief Shared pointer to a Transfer instance
+ */
 typedef QSharedPointer<Transfer> TransferPointer;
+
 Q_DECLARE_METATYPE(TransferPointer)
 
 #endif // NS_TRANSFER_H

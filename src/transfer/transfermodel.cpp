@@ -85,16 +85,24 @@ void TransferModel::add(TransferPointer transfer)
 
     // Lambdas save us from an awkward dilemma - slots wouldn't have access to
     // the TransferPointer, only the Transfer* itself - but the lambdas do!
-    connect(transfer.data(), &Transfer::statusChanged, [this, transfer]() {
+    connect(transfer.data(), &Transfer::deviceNameChanged, [this, transfer]() {
         int index = mTransfers.indexOf(transfer);
-        emit dataChanged(this->index(index, 0), this->index(index, 1));
+        emit dataChanged(this->index(index, 0), this->index(index, 0));
     });
-    connect(transfer.data(), &Transfer::finished, [this, transfer]() {
-        int index = mTransfers.indexOf(transfer);
 
-        beginRemoveRows(QModelIndex(), index, index);
-        mTransfers.removeAt(index);
-        endRemoveRows();
+    connect(transfer.data(), &Transfer::progressChanged, [this, transfer]() {
+        int index = mTransfers.indexOf(transfer);
+        emit dataChanged(this->index(index, 1), this->index(index, 1));
+    });
+
+    connect(transfer.data(), &Transfer::statusChanged, [this, transfer](Transfer::Status status) {
+        if(status == Transfer::Error || status == Transfer::Completed) {
+            int index = mTransfers.indexOf(transfer);
+
+            beginRemoveRows(QModelIndex(), index, index);
+            mTransfers.removeAt(index);
+            endRemoveRows();
+        }
     });
 
     transfer->start();

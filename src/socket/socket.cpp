@@ -33,8 +33,8 @@ void Socket::emitProgress(qint64 bytes, qint64 totalBytes)
 {
     if(totalBytes) {
         double percentage(static_cast<double>(bytes) / static_cast<double>(totalBytes));
-        emit progress(qMin(100, qMax(0, static_cast<int>(percentage * 100.0))));
+        emit progressChanged(qMin(100, qMax(0, static_cast<int>(percentage * 100.0))));
     } else {
-        emit progress(0);
+        emit progressChanged(0);
     }
 }

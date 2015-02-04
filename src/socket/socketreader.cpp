@@ -27,6 +27,7 @@
 #include <QFileInfo>
 #include <QTcpSocket>
 
+#include "../filesystem/fileinfo.h"
 #include "../util/settings.h"
 #include "socketreader.h"
 #include "socketstream.h"
@@ -52,7 +53,7 @@ void SocketReader::start()
             throw tr("Protocol version mismatch.");
         }
 
-        emit deviceName(stream.readQByteArray());
+        emit deviceNameChanged(stream.readQByteArray());
 
         QDir root(Settings::get<QString>(Settings::TransferDirectory));
 

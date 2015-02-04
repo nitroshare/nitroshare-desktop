@@ -30,8 +30,8 @@
 #include "socketstream.h"
 #include "socketwriter.h"
 
-SocketWriter::SocketWriter(const QHostAddress &address, quint16 port, BundlePointer bundle)
-    : mAddress(address), mPort(port), mBundle(bundle)
+SocketWriter::SocketWriter(DevicePointer device, BundlePointer bundle)
+    : mAddress(device->address()), mPort(device->port()), mBundle(bundle)
 {
 }
 

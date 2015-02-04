@@ -25,7 +25,6 @@
 #ifndef NS_SOCKETREADER_H
 #define NS_SOCKETREADER_H
 
-#include "../filesystem/fileinfo.h"
 #include "socket.h"
 
 class SocketReader : public Socket
@@ -34,7 +33,7 @@ class SocketReader : public Socket
 
 public:
 
-    SocketReader(qintptr socketDescriptor);
+    explicit SocketReader(qintptr socketDescriptor);
 
 public slots:
 

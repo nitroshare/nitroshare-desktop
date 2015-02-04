@@ -29,6 +29,7 @@
 #undef signals
 #include <gtk/gtk.h>
 #include <libappindicator/app-indicator.h>
+#define signals public
 
 #include "icon.h"
 
