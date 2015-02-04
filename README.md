@@ -30,6 +30,8 @@ In order to use [application indicators](https://unity.ubuntu.com/projects/appin
 
 ### Build Instructions
 
+The instructions below describe the build process for each of the supported platforms.
+
 #### Ubuntu 14.04, 14.10, & 15.04
 
 1. None of the current releases ship CMake 3.1, so you will need to add my PPA:
@@ -39,7 +41,9 @@ In order to use [application indicators](https://unity.ubuntu.com/projects/appin
 
 2. Install CMake, C++ compiler, and Qt 5 development files:
 
-        sudo apt-get install cmake build-essential qtbase5-dev libqt5svg5
+        sudo apt-get install cmake build-essential qtbase5-dev libqt5svg5 libgtk2.0-dev libappindicator-dev libnotify-dev
+
+   Note: the last three packages add support for application indicators and are optional.
 
 3. Change to the root of the source directory and create a directory for building the project:
 
@@ -87,7 +91,16 @@ In order to use [application indicators](https://unity.ubuntu.com/projects/appin
 
         src\nitroshare.exe
 
+8. If NSIS is installed, you can build a standalone installer with the following command:
+
+        nmake package
+
 > **Important:** By default, Visual C++ 2013 will build a binary that will not run on Windows XP. To avoid this behavior, ensure that the following environment variables are set before running `nmake`:
 >
 >     set CL=/D_USING_V110_SDK71_
 >     set LINK=/SUBSYSTEM:WINDOWS,5.01
+
+#### OS X 10.6, 10.7, & 10.8
+
+TODO
+
