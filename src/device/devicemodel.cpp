@@ -22,6 +22,8 @@
  * IN THE SOFTWARE.
  **/
 
+#include <QIcon>
+
 #include "config.h"
 #include "devicemodel.h"
 
@@ -73,6 +75,10 @@ QVariant DeviceModel::data(const QModelIndex &index, int role) const
         switch(index.column()) {
         case 0: return device->name();
         case 1: return device->operatingSystem();
+        }
+    case Qt::DecorationRole:
+        if(index.column() == 0) {
+            return QVariant::fromValue(QIcon(":/data/desktop.png"));
         }
     case Qt::UserRole:
         return QVariant::fromValue(device);
