@@ -42,7 +42,7 @@ public:
                              Transfer::Direction direction);
     virtual ~TransferPrivate();
 
-private slots:
+private Q_SLOTS:
 
     void setDeviceName(const QString &value);
     void setProgress(int value);

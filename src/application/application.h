@@ -43,7 +43,7 @@ public:
 
     Application();
 
-private slots:
+private Q_SLOTS:
 
     void notifyDeviceAdded(DevicePointer device);
     void notifyDeviceRemoved(DevicePointer device);

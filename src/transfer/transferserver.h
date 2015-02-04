@@ -40,11 +40,11 @@ public:
 
     void start();
 
-signals:
+Q_SIGNALS:
 
     void newTransfer(TransferPointer transfer);
 
-private slots:
+private Q_SLOTS:
 
     void settingChanged(Settings::Key key);
 

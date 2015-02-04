@@ -39,7 +39,7 @@ public:
 
     SocketWriter(DevicePointer device, BundlePointer bundle);
 
-public slots:
+public Q_SLOTS:
 
     void start();
 

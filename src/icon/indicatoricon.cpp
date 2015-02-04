@@ -23,8 +23,6 @@
  **/
 
 #include <QAction>
-
-#undef signals
 #include <libnotify/notify.h>
 
 #include "indicatoricon.h"

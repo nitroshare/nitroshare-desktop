@@ -119,7 +119,7 @@ public:
      */
     Direction direction() const;
 
-signals:
+Q_SIGNALS:
 
     /**
      * @brief Indicate that the connected device name has changed
@@ -139,7 +139,7 @@ signals:
      */
     void statusChanged(Status status);
 
-public slots:
+public Q_SLOTS:
 
     /**
      * @brief Begin the transfer

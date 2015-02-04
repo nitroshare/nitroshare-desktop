@@ -48,7 +48,7 @@ public:
 
     static DevicePointer getDevice(DeviceModel &model);
 
-private slots:
+private Q_SLOTS:
 
     void toggleOkButton(const QItemSelection &selected, const QItemSelection &deselected);
 

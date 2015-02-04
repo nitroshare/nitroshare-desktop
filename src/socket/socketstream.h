@@ -68,7 +68,7 @@ public:
         write(value.constData(), value.length());
     }
 
-public slots:
+public Q_SLOTS:
 
     void abort();
 

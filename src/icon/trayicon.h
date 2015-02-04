@@ -41,7 +41,7 @@ public:
     virtual void addAction(const QString &text, QObject *receiver, const char *member);
     virtual void addSeparator();
 
-public slots:
+public Q_SLOTS:
 
     virtual void showMessage(const QString &message);
 

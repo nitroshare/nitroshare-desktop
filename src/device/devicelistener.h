@@ -42,11 +42,11 @@ public:
 
     void start();
 
-signals:
+Q_SIGNALS:
 
     void pingReceived(const QJsonObject &object, const QHostAddress &address);
 
-private slots:
+private Q_SLOTS:
 
     void processPings();
     void sendPings();

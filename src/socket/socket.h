@@ -31,7 +31,7 @@ class Socket : public QObject
 {
     Q_OBJECT
 
-signals:
+Q_SIGNALS:
 
     void deviceNameChanged(const QString &message);
     void progressChanged(int percentage);
@@ -41,7 +41,7 @@ signals:
 
     void canceled();
 
-public slots:
+public Q_SLOTS:
 
     virtual void start() = 0;
     void cancel();

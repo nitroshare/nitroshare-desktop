@@ -52,12 +52,12 @@ public:
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
 
-signals:
+Q_SIGNALS:
 
     void deviceAdded(DevicePointer device);
     void deviceRemoved(DevicePointer device);
 
-private slots:
+private Q_SLOTS:
 
     void checkTimeouts();
     void processPing(const QJsonObject &object, const QHostAddress &address);

@@ -35,7 +35,7 @@ public:
 
     explicit SocketReader(qintptr socketDescriptor);
 
-public slots:
+public Q_SLOTS:
 
     virtual void start();
 

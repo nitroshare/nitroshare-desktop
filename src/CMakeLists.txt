@@ -1,3 +1,7 @@
+# Prevent the "signals" and "slots" keywords from being defined
+# in order to prevent symbol collisions with GTK+ headers
+add_definitions(-DQT_NO_SIGNALS_SLOTS_KEYWORDS)
+
 # Prepare a "config.h" file that contains version information
 configure_file(config.h.in "${CMAKE_CURRENT_BINARY_DIR}/config.h")
 

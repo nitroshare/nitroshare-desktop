@@ -55,7 +55,7 @@ public:
 
     static Settings * instance();
 
-signals:
+Q_SIGNALS:
 
     void settingChanged(Key key);
 

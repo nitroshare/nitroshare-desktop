@@ -25,11 +25,8 @@
 #ifndef NS_INDICATORICON_H
 #define NS_INDICATORICON_H
 
-// The GTK+ headers use the "signals" symbol, so it must be undefined
-#undef signals
 #include <gtk/gtk.h>
 #include <libappindicator/app-indicator.h>
-#define signals public
 
 #include "icon.h"
 
@@ -45,7 +42,7 @@ public:
     virtual void addAction(const QString &text, QObject *receiver, const char *member);
     virtual void addSeparator();
 
-public slots:
+public Q_SLOTS:
 
     virtual void showMessage(const QString &message);
 
