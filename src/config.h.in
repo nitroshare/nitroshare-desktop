@@ -28,7 +28,7 @@
 // Contains the current version of NitroShare as a string in the format xx.yy.zz
 #define NITROSHARE_VERSION "@PROJECT_VERSION@"
 
-// This is set if NitroShare should be built with indicator support
-#cmakedefine BUILD_APPINDICATOR
+// This is set if the IndicatorIcon class should be built
+#cmakedefine BUILD_INDICATORICON
 
 #endif // NS_CONFIG_H

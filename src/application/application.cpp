@@ -31,14 +31,14 @@
 #include "application.h"
 #include "config.h"
 
-#ifdef BUILD_APPINDICATOR
+#ifdef BUILD_INDICATORICON
 #include "../icon/indicatoricon.h"
 #include "../util/platform.h"
 #endif
 
 Application::Application()
     : mTransferWindow(mTransferModel),
-#ifdef BUILD_APPINDICATOR
+#ifdef BUILD_INDICATORICON
       mIcon(Platform::isUnity() ? static_cast<Icon *>(new IndicatorIcon) :
                                   static_cast<Icon *>(new TrayIcon))
 #else

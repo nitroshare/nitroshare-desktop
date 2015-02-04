@@ -10,9 +10,6 @@ endif()
 # The current version of the application is specified here exclusively
 project(nitroshare VERSION 0.3.0 LANGUAGES CXX)
 
-# Only a single option is currently supported
-option(BUILD_APPINDICATOR "Include support for displaying an application indicator")
-
 # We currently support a total of three platforms:
 # - Windows XP / Vista / 7 / 8
 # - OS X 10.6, 10.7, and 10.8
@@ -29,15 +26,18 @@ endif()
 find_package(Qt5Network 5.1 REQUIRED)
 find_package(Qt5Widgets 5.1 REQUIRED)
 
-# Optionally, the libappindicator and libnotify libraries are used for AppIndicators in Unity
-if(BUILD_APPINDICATOR)
-    find_package(PkgConfig REQUIRED)
-    pkg_search_module(APPINDICATOR REQUIRED appindicator3-0.1 appindicator-0.1)
-    pkg_check_modules(NOTIFY REQUIRED libnotify)
-
-    # Add the appropriate directories for the compiler and linker
-    include_directories(${APPINDICATOR_INCLUDE_DIRS} ${NOTIFY_INCLUDE_DIRS})
-    link_directories(${APPINDICATOR_LIBRARY_DIRS} ${NOTIFY_LIBRARY_DIRS})
+# If pkg-config and the appindicator libraries are available, build the IndicatorIcon class
+find_package(PkgConfig)
+if(PKG_CONFIG_FOUND)
+    pkg_check_modules(APPINDICATOR gtk+-2.0 appindicator-0.1 libnotify)
+    if(APPINDICATOR_FOUND)
+        message(STATUS "IndicatorIcon class will be built")
+        include_directories(${APPINDICATOR_INCLUDE_DIRS})
+        link_directories(${APPINDICATOR_LIBRARY_DIRS})
+        set(BUILD_INDICATORICON 1)
+    else()
+        message(STATUS "IndicatorIcon class will not be built")
+    endif()
 endif()
 
 # Set some flags that are needed for building Qt projects
