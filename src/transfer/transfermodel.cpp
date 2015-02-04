@@ -22,7 +22,9 @@
  * IN THE SOFTWARE.
  **/
 
+#include <QApplication>
 #include <QIcon>
+#include <QStyle>
 
 #include "transfermodel.h"
 
@@ -33,7 +35,7 @@ int TransferModel::rowCount(const QModelIndex &parent) const
 
 int TransferModel::columnCount(const QModelIndex &parent) const
 {
-    // The model displays device name, transfer progress, and cancel button
+    // The model displays transfer direction / device name, transfer progress, and cancel button
     return parent.isValid() ? 0 : 3;
 }
 
@@ -49,7 +51,12 @@ QVariant TransferModel::data(const QModelIndex &index, int role) const
         }
     case Qt::DecorationRole:
         if(index.column() == 0) {
-            return QVariant::fromValue(QIcon(":/data/desktop.png"));
+            switch(transfer->direction()) {
+            case Transfer::Send:
+                return QVariant::fromValue(QApplication::style()->standardIcon(QStyle::SP_ArrowUp));
+            case Transfer::Receive:
+                return QVariant::fromValue(QApplication::style()->standardIcon(QStyle::SP_ArrowDown));
+            }
         }
     case Qt::UserRole:
         return QVariant::fromValue(transfer);
