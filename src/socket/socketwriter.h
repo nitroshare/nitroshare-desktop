@@ -37,7 +37,7 @@ class SocketWriter : public Socket
 
 public:
 
-    SocketWriter(DevicePointer device, BundlePointer bundle);
+    SocketWriter(const Device *device, BundlePointer bundle);
 
 public Q_SLOTS:
 

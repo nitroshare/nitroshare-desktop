@@ -22,45 +22,42 @@
  * IN THE SOFTWARE.
  **/
 
-#ifndef NS_APPLICATION_H
-#define NS_APPLICATION_H
+#ifndef NS_DEVICEMODELPRIVATE_H
+#define NS_DEVICEMODELPRIVATE_H
 
-#include <QSharedPointer>
+#include <QHostAddress>
+#include <QJsonObject>
+#include <QTimer>
 
-#include "../device/device.h"
-#include "../device/devicemodel.h"
-#include "../filesystem/bundle.h"
-#include "../icon/icon.h"
-#include "../transfer/transfermodel.h"
-#include "../transfer/transferserver.h"
-#include "../transfer/transferwindow.h"
+#include "../util/settings.h"
+#include "device.h"
+#include "devicelistener.h"
+#include "devicemodel.h"
 
-class Application : public QObject
+class DeviceModelPrivate : public QObject
 {
     Q_OBJECT
 
 public:
 
-    Application();
+    explicit DeviceModelPrivate(DeviceModel * deviceModel);
+    virtual ~DeviceModelPrivate();
+
+    DeviceModel * const q;
+
+    QTimer timer;
+    DeviceListener listener;
+
+    QList<Device *> devices;
 
 private Q_SLOTS:
 
-    void notifyDeviceAdded(const Device *device);
-    void notifyDeviceRemoved(const Device *device);
-
-    void sendFiles();
-    void sendDirectory();
+    void processPing(const QJsonObject &object, const QHostAddress &address);
+    void settingChanged(Settings::Key key);
 
 private:
 
-    void sendBundle(BundlePointer bundle);
-
-    DeviceModel mDeviceModel;
-    TransferModel mTransferModel;
-    TransferServer mTransferServer;
-    TransferWindow mTransferWindow;
-
-    QSharedPointer<Icon> mIcon;
+    void reload();
 };
 
-#endif // NS_APPLICATION_H
+#endif // NS_DEVICEMODELPRIVATE_H

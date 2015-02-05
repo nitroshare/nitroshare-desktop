@@ -40,8 +40,6 @@ public:
 
     DeviceListener();
 
-    void start();
-
 Q_SIGNALS:
 
     void pingReceived(const QJsonObject &object, const QHostAddress &address);

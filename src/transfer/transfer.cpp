@@ -96,7 +96,7 @@ Transfer::Transfer(qintptr socketDescriptor)
 {
 }
 
-Transfer::Transfer(DevicePointer device, BundlePointer bundle)
+Transfer::Transfer(const Device *device, BundlePointer bundle)
     : d(new TransferPrivate(this, new SocketWriter(device, bundle), device->name(), Send))
 {
 }

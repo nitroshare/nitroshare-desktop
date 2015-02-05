@@ -26,39 +26,109 @@
 #define NS_DEVICE_H
 
 #include <QHostAddress>
-#include <QJsonObject>
+#include <QObject>
 #include <QSharedPointer>
 
-class Device
+class DevicePrivate;
+
+/**
+ * @brief Device discovered through broadcast
+ *
+ * A device is considered "expired" if a packet has not been received from the
+ * device after a configurable amount of time has elapsed.
+ */
+class Device : public QObject
 {
+    Q_OBJECT
+    Q_PROPERTY(QString uuid READ uuid CONSTANT)
+    Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
+    Q_PROPERTY(QString operatingSystem READ operatingSystem WRITE setOperatingSystem)
+    Q_PROPERTY(QHostAddress address READ address)
+    Q_PROPERTY(quint16 port READ port)
+    Q_PROPERTY(bool expired READ expired)
+
 public:
 
-    Device(const QString &uuid);
+    /**
+     * @brief Create a new device
+     * @param uuid the device UUID
+     */
+    explicit Device(const QString &uuid);
 
-    QString uuid() const { return mUuid; }
-    QString name() const { return mName; }
-    QString operatingSystem() const { return mOperatingSystem; }
+    /**
+     * @brief Destroy the device
+     */
+    virtual ~Device();
 
-    QHostAddress address() const { return mAddress; }
-    quint16 port() const { return mPort; }
+    /**
+     * @brief Retrieve the UUID of the device
+     * @return device UUID
+     */
+    QString uuid() const;
 
-    bool timeoutReached() const;
+    /**
+     * @brief Retrieve the name of the device
+     * @return device name
+     */
+    QString name() const;
 
-    void update(const QJsonObject &object, const QHostAddress &address);
+    /**
+     * @brief Set the name of the device
+     * @param device name
+     */
+    void setName(const QString &name);
+
+    /**
+     * @brief Retrieve the operating system of the device
+     * @return device operating system
+     */
+    QString operatingSystem() const;
+
+    /**
+     * @brief Set the operating system of the device
+     * @param device operating system
+     */
+    void setOperatingSystem(const QString &operatingSystem);
+
+    /**
+     * @brief Retrieve the address for connecting to the device
+     * @return device address
+     */
+    QHostAddress address() const;
+
+    /**
+     * @brief Retrieve the port for connecting to the device
+     * @return device port
+     */
+    quint16 port() const;
+
+    /**
+     * @brief Retrieve the expiration status of the device
+     * @return true if the device has expired
+     */
+    bool expired() const;
+
+    /**
+     * @brief Update the device address and port
+     * @param address device address
+     * @param port device port
+     *
+     * This method will update the timestamp used to determine if the device
+     * has expired.
+     */
+    void update(const QHostAddress &address, quint16 port);
+
+Q_SIGNALS:
+
+    /**
+     * @brief Indicate that the name of the device has changed
+     * @param name device name
+     */
+    void nameChanged(const QString &name);
 
 private:
 
-    QString mUuid;
-    QString mName;
-    QString mOperatingSystem;
-
-    QHostAddress mAddress;
-    quint16 mPort;
-
-    qint64 mLastPing;
+    DevicePrivate * const d;
 };
-
-typedef QSharedPointer<Device> DevicePointer;
-Q_DECLARE_METATYPE(DevicePointer)
 
 #endif // NS_DEVICE_H

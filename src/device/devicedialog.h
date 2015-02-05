@@ -44,9 +44,9 @@ public:
     explicit DeviceDialog(DeviceModel &model);
     virtual ~DeviceDialog();
 
-    DevicePointer selectedDevice() const;
+    Device* selectedDevice() const;
 
-    static DevicePointer getDevice(DeviceModel &model);
+    static Device* getDevice(DeviceModel &model);
 
 private Q_SLOTS:
 

@@ -44,25 +44,25 @@ DeviceDialog::~DeviceDialog()
     delete ui;
 }
 
-DevicePointer DeviceDialog::selectedDevice() const
+Device* DeviceDialog::selectedDevice() const
 {
     QModelIndexList selection(ui->deviceView->selectionModel()->selectedIndexes());
 
     if(selection.count()) {
-        return selection.at(0).data(Qt::UserRole).value<DevicePointer>();
+        return selection.at(0).data(Qt::UserRole).value<Device*>();
     } else {
-        return DevicePointer();
+        return nullptr;
     }
 }
 
-DevicePointer DeviceDialog::getDevice(DeviceModel &model)
+Device* DeviceDialog::getDevice(DeviceModel &model)
 {
     DeviceDialog deviceDialog(model);
 
     if(deviceDialog.exec() == QDialog::Accepted) {
         return deviceDialog.selectedDevice();
     } else {
-        return DevicePointer();
+        return nullptr;
     }
 }
 

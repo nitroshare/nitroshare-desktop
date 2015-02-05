@@ -26,6 +26,7 @@
 #define NS_TRANSFER_H
 
 #include <QObject>
+#include <QSharedPointer>
 
 #include "../device/device.h"
 #include "../filesystem/bundle.h"
@@ -46,7 +47,7 @@ class Transfer : public QObject
     Q_PROPERTY(int progress READ progress NOTIFY progressChanged)
     Q_PROPERTY(QString error READ error)
     Q_PROPERTY(Status status READ status NOTIFY statusChanged)
-    Q_PROPERTY(Direction direction READ direction)
+    Q_PROPERTY(Direction direction READ direction CONSTANT)
     Q_ENUMS(Status)
     Q_ENUMS(Direction)
 
@@ -87,7 +88,7 @@ public:
      * @param device device to send the bundle to
      * @param bundle bundle to send to the specified device
      */
-    Transfer(DevicePointer device, BundlePointer bundle);
+    Transfer(const Device *device, BundlePointer bundle);
 
     /**
      * @brief Retrieve the name of the connected device

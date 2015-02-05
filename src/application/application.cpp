@@ -25,7 +25,6 @@
 #include <QApplication>
 #include <QFileDialog>
 
-#include "../device/device.h"
 #include "../device/devicedialog.h"
 #include "../icon/trayicon.h"
 #include "application.h"
@@ -55,16 +54,14 @@ Application::Application()
     mIcon->addAction(tr("View Transfers..."), &mTransferWindow, SLOT(show()));
     mIcon->addSeparator();
     mIcon->addAction(tr("Exit"), QApplication::instance(), SLOT(quit()));
-
-    mDeviceModel.start();
 }
 
-void Application::notifyDeviceAdded(DevicePointer device)
+void Application::notifyDeviceAdded(const Device *device)
 {
     mIcon->showMessage(tr("%1 has joined.").arg(device->name()));
 }
 
-void Application::notifyDeviceRemoved(DevicePointer device)
+void Application::notifyDeviceRemoved(const Device *device)
 {
     mIcon->showMessage(tr("%1 has left.").arg(device->name()));
 }
@@ -98,7 +95,7 @@ void Application::sendDirectory()
 
 void Application::sendBundle(BundlePointer bundle)
 {
-    DevicePointer device(DeviceDialog::getDevice(mDeviceModel));
+    Device *device(DeviceDialog::getDevice(mDeviceModel));
     if(device) {
         TransferPointer transfer(new Transfer(device, bundle));
         mTransferModel.add(transfer);

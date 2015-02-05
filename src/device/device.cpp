@@ -26,34 +26,72 @@
 
 #include "../util/settings.h"
 #include "device.h"
+#include "device_p.h"
 
-Device::Device(const QString &uuid)
-    : mUuid(uuid), mPort(0), mLastPing(0)
+DevicePrivate::DevicePrivate(const QString &uuid)
+    : uuid(uuid),
+      name(uuid),
+      operatingSystem(QObject::tr("unknown")),
+      port(0),
+      lastPing(0)
 {
 }
 
-bool Device::timeoutReached() const
+Device::Device(const QString &uuid)
+    : d(new DevicePrivate(uuid))
 {
-    return QDateTime::currentMSecsSinceEpoch() - mLastPing >=
+}
+
+Device::~Device()
+{
+    delete d;
+}
+
+QString Device::uuid() const
+{
+    return d->uuid;
+}
+
+QString Device::name() const
+{
+    return d->name;
+}
+
+void Device::setName(const QString &name)
+{
+    d->name = name;
+    emit nameChanged(d->name);
+}
+
+QString Device::operatingSystem() const
+{
+    return d->operatingSystem;
+}
+
+void Device::setOperatingSystem(const QString &operatingSystem)
+{
+    d->operatingSystem = operatingSystem;
+}
+
+QHostAddress Device::address() const
+{
+    return d->address;
+}
+
+quint16 Device::port() const
+{
+    return d->port;
+}
+
+bool Device::expired() const
+{
+    return QDateTime::currentMSecsSinceEpoch() - d->lastPing >=
             Settings::get<qint64>(Settings::BroadcastTimeout);
 }
 
-void Device::update(const QJsonObject &object, const QHostAddress &address)
+void Device::update(const QHostAddress &address, quint16 port)
 {
-    if(object.contains("name")) {
-        mName = object.value("name").toString();
-    } else {
-        mName = mUuid;
-    }
-
-    if(object.contains("operating_system")) {
-        mOperatingSystem = object.value("operating_system").toString();
-    } else {
-        mOperatingSystem = "unknown";
-    }
-
-    mAddress = address;
-    mPort = object.value("port").toInt();
-
-    mLastPing = QDateTime::currentMSecsSinceEpoch();
+    d->address = address;
+    d->port = port;
+    d->lastPing = QDateTime::currentMSecsSinceEpoch();
 }

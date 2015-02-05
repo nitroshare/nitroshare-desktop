@@ -30,7 +30,7 @@
 #include "socketstream.h"
 #include "socketwriter.h"
 
-SocketWriter::SocketWriter(DevicePointer device, BundlePointer bundle)
+SocketWriter::SocketWriter(const Device *device, BundlePointer bundle)
     : mAddress(device->address()), mPort(device->port()), mBundle(bundle)
 {
 }

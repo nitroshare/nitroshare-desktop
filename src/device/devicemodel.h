@@ -26,52 +26,101 @@
 #define NS_DEVICEMODEL_H
 
 #include <QAbstractTableModel>
-#include <QHostAddress>
-#include <QJsonObject>
-#include <QList>
-#include <QTimer>
 
-#include "../util/settings.h"
 #include "device.h"
-#include "devicelistener.h"
 
+class DeviceModelPrivate;
+
+/**
+ * @brief Data model for discovered devices
+ *
+ * Devices continuously send out broadcast packets on all active network
+ * interfaces. Once a packet is received, it is examined and an instance of
+ * the Device class is created to represent the device.
+ */
 class DeviceModel : public QAbstractTableModel
 {
     Q_OBJECT
 
 public:
 
+    /**
+     * @brief Create a device model
+     */
     DeviceModel();
 
-    void start();
-    DevicePointer find(const QString &uuid);
+    /**
+     * @brief Retrieve the number of rows in the model
+     * @param parent parent index
+     * @return number of rows
+     */
+    virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
 
-    int rowCount(const QModelIndex &parent = QModelIndex()) const;
-    int columnCount(const QModelIndex &parent = QModelIndex()) const;
+    /**
+     * @brief Retrieve the number of columns in the model
+     * @param parent parent index
+     * @return number of columns
+     */
+    virtual int columnCount(const QModelIndex &parent = QModelIndex()) const;
 
-    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
-    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
+    /**
+     * @brief Retrieve data for the specified index
+     * @param index index to retrieve
+     * @param role role to retrieve
+     * @return retrieved data
+     */
+    virtual QVariant data(const QModelIndex &index,
+                          int role = Qt::DisplayRole) const;
+
+    /**
+     * @brief Retrieve header data for the specified section
+     * @param section section to retrieve
+     * @param orientation orientation to retrieve
+     * @param role role to retrieve
+     * @return retrieved data
+     */
+   virtual QVariant headerData(int section,
+                               Qt::Orientation orientation,
+                               int role = Qt::DisplayRole) const;
+
+    /**
+     * @brief Find a device by its UUID
+     * @param uuid device UUID
+     * @return device if found, otherwise nullptr
+     */
+    Device* find(const QString &uuid);
 
 Q_SIGNALS:
 
-    void deviceAdded(DevicePointer device);
-    void deviceRemoved(DevicePointer device);
+    /**
+     * @brief Indicate that a device has been added to the model
+     * @param device device added
+     *
+     * The pointer is only guaranteed to exist for the duration of the slots
+     * connected to this signal and should not be stored.
+     */
+    void deviceAdded(const Device *device);
 
-private Q_SLOTS:
+    /**
+     * @brief Indicate that a device has been removed from the model
+     * @param device device removed
+     *
+     * The pointer is only guaranteed to exist for the duration of the slots
+     * connected to this signal and should not be stored.
+     */
+    void deviceRemoved(const Device *device);
 
-    void checkTimeouts();
-    void processPing(const QJsonObject &object, const QHostAddress &address);
+public Q_SLOTS:
 
-    void settingChanged(Settings::Key key);
+    /**
+     * @brief Update the model, removing expired devices
+     */
+    void update();
 
 private:
 
-    void reload();
-
-    QTimer mTimeoutTimer;
-    DeviceListener mDeviceListener;
-
-    QList<DevicePointer> mDevices;
+    DeviceModelPrivate * const d;
+    friend class DeviceModelPrivate;
 };
 
 #endif // NS_DEVICEMODEL_H

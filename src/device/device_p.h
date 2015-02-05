@@ -22,45 +22,25 @@
  * IN THE SOFTWARE.
  **/
 
-#ifndef NS_APPLICATION_H
-#define NS_APPLICATION_H
+#ifndef NS_DEVICEPRIVATE_H
+#define NS_DEVICEPRIVATE_H
 
-#include <QSharedPointer>
+#include <QHostAddress>
 
-#include "../device/device.h"
-#include "../device/devicemodel.h"
-#include "../filesystem/bundle.h"
-#include "../icon/icon.h"
-#include "../transfer/transfermodel.h"
-#include "../transfer/transferserver.h"
-#include "../transfer/transferwindow.h"
-
-class Application : public QObject
+class DevicePrivate
 {
-    Q_OBJECT
-
 public:
 
-    Application();
+    DevicePrivate(const QString &uuid);
 
-private Q_SLOTS:
+    QString uuid;
+    QString name;
+    QString operatingSystem;
 
-    void notifyDeviceAdded(const Device *device);
-    void notifyDeviceRemoved(const Device *device);
+    QHostAddress address;
+    quint16 port;
 
-    void sendFiles();
-    void sendDirectory();
-
-private:
-
-    void sendBundle(BundlePointer bundle);
-
-    DeviceModel mDeviceModel;
-    TransferModel mTransferModel;
-    TransferServer mTransferServer;
-    TransferWindow mTransferWindow;
-
-    QSharedPointer<Icon> mIcon;
+    qint64 lastPing;
 };
 
-#endif // NS_APPLICATION_H
+#endif // NS_DEVICEPRIVATE_H
