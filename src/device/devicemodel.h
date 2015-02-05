@@ -69,8 +69,7 @@ public:
      * @param role role to retrieve
      * @return retrieved data
      */
-    virtual QVariant data(const QModelIndex &index,
-                          int role = Qt::DisplayRole) const;
+    virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
 
     /**
      * @brief Retrieve header data for the specified section
@@ -79,9 +78,7 @@ public:
      * @param role role to retrieve
      * @return retrieved data
      */
-   virtual QVariant headerData(int section,
-                               Qt::Orientation orientation,
-                               int role = Qt::DisplayRole) const;
+   virtual QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
 
     /**
      * @brief Find a device by its UUID

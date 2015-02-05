@@ -40,7 +40,7 @@ class DeviceModelPrivate : public QObject
 
 public:
 
-    explicit DeviceModelPrivate(DeviceModel * deviceModel);
+    explicit DeviceModelPrivate(DeviceModel *deviceModel);
     virtual ~DeviceModelPrivate();
 
     DeviceModel * const q;
@@ -48,7 +48,7 @@ public:
     QTimer timer;
     DeviceListener listener;
 
-    QList<Device *> devices;
+    QList<Device*> devices;
 
 private Q_SLOTS:
 

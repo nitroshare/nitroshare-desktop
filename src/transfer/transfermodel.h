@@ -29,25 +29,84 @@
 
 #include "transfer.h"
 
+class TransferModelPrivate;
+
+/**
+ * @brief Data model for transfers
+ *
+ * Transfers are created in one of two ways: in response to an incoming TCP
+ * request or as the result of a user directive to transfer files. Once
+ * started, they remain in the model until cleared, allowing them to be
+ * restarted in case of error.
+ */
 class TransferModel : public QAbstractTableModel
 {
     Q_OBJECT
 
 public:
 
-    int rowCount(const QModelIndex &parent = QModelIndex()) const;
-    int columnCount(const QModelIndex &parent = QModelIndex()) const;
+    /**
+     * @brief Create a transfer model
+     */
+    TransferModel();
 
-    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
-    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
+    /**
+     * @brief Retrieve the number of rows in the model
+     * @param parent parent index
+     * @return number of rows
+     */
+    virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
+
+    /**
+     * @brief Retrieve the number of columns in the model
+     * @param parent parent index
+     * @return number of columns
+     */
+    virtual int columnCount(const QModelIndex &parent = QModelIndex()) const;
+
+    /**
+     * @brief Retrieve data for the specified index
+     * @param index index to retrieve
+     * @param role role to retrieve
+     * @return retrieved data
+     */
+    virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
+
+    /**
+     * @brief Retrieve header data for the specified section
+     * @param section section to retrieve
+     * @param orientation orientation to retrieve
+     * @param role role to retrieve
+     * @return retrieved data
+     */
+    virtual QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
+
+    /**
+     * @brief Retrieve the index of the specified transfer
+     * @param transfer transfer to retrieve the index of
+     * @param column column to set the index to
+     * @return index of the transfer
+     */
+    QModelIndex indexOf(Transfer *transfer, int column) const;
 
 public Q_SLOTS:
 
-    void add(TransferPointer transfer);
+    /**
+     * @brief Add a transfer to the model
+     * @param transfer transfer to add
+     *
+     * The model takes ownership of the transfer and starts it.
+     */
+    void add(Transfer *transfer);
+
+    /**
+     * @brief Remove all finished transfers from the model
+     */
+    void clear();
 
 private:
 
-    QList<TransferPointer> mTransfers;
+    TransferModelPrivate *const d;
 };
 
 #endif // NS_TRANSFERMODEL_H

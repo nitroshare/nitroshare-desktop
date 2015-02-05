@@ -97,7 +97,7 @@ void Application::sendBundle(BundlePointer bundle)
 {
     Device *device(DeviceDialog::getDevice(mDeviceModel));
     if(device) {
-        TransferPointer transfer(new Transfer(device, bundle));
+        Transfer *transfer = new Transfer(device, bundle);
         mTransferModel.add(transfer);
     }
 }

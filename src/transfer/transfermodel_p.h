@@ -22,37 +22,24 @@
  * IN THE SOFTWARE.
  **/
 
-#ifndef NS_TRANSFERSERVER_H
-#define NS_TRANSFERSERVER_H
+#ifndef NS_TRANSFERMODELPRIVATE_H
+#define NS_TRANSFERMODELPRIVATE_H
 
-#include <QTcpServer>
+#include <QList>
+#include <QObject>
 
-#include "../util/settings.h"
 #include "transfer.h"
 
-class TransferServer : public QTcpServer
+class TransferModelPrivate : public QObject
 {
     Q_OBJECT
 
 public:
 
-    TransferServer();
+    explicit TransferModelPrivate(QObject *parent);
+    virtual ~TransferModelPrivate();
 
-    void start();
-
-Q_SIGNALS:
-
-    void newTransfer(Transfer *transfer);
-
-private Q_SLOTS:
-
-    void settingChanged(Settings::Key key);
-
-private:
-
-    void incomingConnection(qintptr socketDescriptor);
-
-    void reload();
+    QList<Transfer*> transfers;
 };
 
-#endif // NS_TRANSFERSERVER_H
+#endif // NS_TRANSFERMODELPRIVATE_H

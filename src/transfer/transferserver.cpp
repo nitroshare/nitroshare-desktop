@@ -41,7 +41,7 @@ void TransferServer::settingChanged(Settings::Key key)
 
 void TransferServer::incomingConnection(qintptr socketDescriptor)
 {
-    emit newTransfer(TransferPointer(new Transfer(socketDescriptor)));
+    emit newTransfer(new Transfer(socketDescriptor));
 }
 
 void TransferServer::reload()
