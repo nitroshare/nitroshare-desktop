@@ -96,7 +96,7 @@ Q_SIGNALS:
      * The pointer is only guaranteed to exist for the duration of the slots
      * connected to this signal and should not be stored.
      */
-    void deviceAdded(const Device *device);
+    void deviceAdded(Device *device);
 
     /**
      * @brief Indicate that a device has been removed from the model
@@ -105,7 +105,7 @@ Q_SIGNALS:
      * The pointer is only guaranteed to exist for the duration of the slots
      * connected to this signal and should not be stored.
      */
-    void deviceRemoved(const Device *device);
+    void deviceRemoved(Device *device);
 
 public Q_SLOTS:
 
