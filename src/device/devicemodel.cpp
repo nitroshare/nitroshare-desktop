@@ -29,12 +29,6 @@
 #include "devicemodel.h"
 #include "devicemodel_p.h"
 
-enum {
-    ColumnName = 0,
-    ColumnOperatingSystem,
-    ColumnCount
-};
-
 DeviceModelPrivate::DeviceModelPrivate(DeviceModel *deviceModel)
     : QObject(deviceModel),
       q(deviceModel)
@@ -121,24 +115,24 @@ int DeviceModel::rowCount(const QModelIndex &parent) const
 
 int DeviceModel::columnCount(const QModelIndex &parent) const
 {
-    return parent.isValid() ? 0 : ColumnCount;
+    return parent.isValid() ? 0 : DeviceModelPrivate::ColumnCount;
 }
 
 QVariant DeviceModel::data(const QModelIndex &index, int role) const
 {
-    if(index.row() < d->devices.count() && index.column() < ColumnCount) {
+    if(index.row() < d->devices.count() && index.column() < DeviceModelPrivate::ColumnCount) {
         Device *device = d->devices.at(index.row());
 
         switch(role) {
         case Qt::DisplayRole:
             switch(index.column()) {
-            case ColumnName:
+            case DeviceModelPrivate::ColumnName:
                 return device->name();
-            case ColumnOperatingSystem:
+            case DeviceModelPrivate::ColumnOperatingSystem:
                 return device->operatingSystem();
             }
         case Qt::DecorationRole:
-            if(index.column() == ColumnName) {
+            if(index.column() == DeviceModelPrivate::ColumnName) {
                 return QVariant::fromValue(QIcon(":/data/desktop.png"));
             }
         case Qt::UserRole:
@@ -151,11 +145,11 @@ QVariant DeviceModel::data(const QModelIndex &index, int role) const
 
 QVariant DeviceModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-    if(section < ColumnCount && orientation == Qt::Horizontal && role == Qt::DisplayRole) {
+    if(section < DeviceModelPrivate::ColumnCount && orientation == Qt::Horizontal && role == Qt::DisplayRole) {
         switch(section) {
-        case ColumnName:
+        case DeviceModelPrivate::ColumnName:
             return tr("Device Name");
-        case ColumnOperatingSystem:
+        case DeviceModelPrivate::ColumnOperatingSystem:
             return tr("Operating System");
         }
     }

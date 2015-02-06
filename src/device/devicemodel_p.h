@@ -40,6 +40,12 @@ class DeviceModelPrivate : public QObject
 
 public:
 
+    enum {
+        ColumnName = 0,
+        ColumnOperatingSystem,
+        ColumnCount
+    };
+
     explicit DeviceModelPrivate(DeviceModel *deviceModel);
     virtual ~DeviceModelPrivate();
 

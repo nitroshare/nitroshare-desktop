@@ -36,6 +36,13 @@ class TransferModelPrivate : public QObject
 
 public:
 
+    enum {
+        ColumnDeviceName = 0,
+        ColumnProgress,
+        ColumnStatus,
+        ColumnCount
+    };
+
     explicit TransferModelPrivate(QObject *parent);
     virtual ~TransferModelPrivate();
 

@@ -29,13 +29,6 @@
 #include "transfermodel.h"
 #include "transfermodel_p.h"
 
-enum {
-    ColumnDeviceName = 0,
-    ColumnProgress,
-    ColumnStatus,
-    ColumnCount
-};
-
 TransferModelPrivate::TransferModelPrivate(QObject *parent)
     : QObject(parent)
 {
@@ -58,24 +51,24 @@ int TransferModel::rowCount(const QModelIndex &parent) const
 
 int TransferModel::columnCount(const QModelIndex &parent) const
 {
-    return parent.isValid() ? 0 : ColumnCount;
+    return parent.isValid() ? 0 : TransferModelPrivate::ColumnCount;
 }
 
 QVariant TransferModel::data(const QModelIndex &index, int role) const
 {
-    if(index.row() < d->transfers.count() && index.column() < ColumnCount) {
+    if(index.row() < d->transfers.count() && index.column() < TransferModelPrivate::ColumnCount) {
         Transfer *transfer = d->transfers.at(index.row());
 
         switch(role) {
         case Qt::DisplayRole:
             switch(index.column()) {
-            case ColumnDeviceName:
+            case TransferModelPrivate::ColumnDeviceName:
                 return transfer->deviceName();
-            case ColumnProgress:
+            case TransferModelPrivate::ColumnProgress:
                 return transfer->progress();
             }
         case Qt::DecorationRole:
-            if(index.column() == 0) {
+            if(index.column() == TransferModelPrivate::ColumnDeviceName) {
                 switch(transfer->direction()) {
                 case Transfer::Send:
                     return QVariant::fromValue(QApplication::style()->standardIcon(QStyle::SP_ArrowUp));
@@ -95,11 +88,11 @@ QVariant TransferModel::headerData(int section, Qt::Orientation orientation, int
 {
     if(orientation == Qt::Horizontal && role == Qt::DisplayRole) {
         switch(section) {
-        case ColumnDeviceName:
+        case TransferModelPrivate::ColumnDeviceName:
             return tr("Device Name");
-        case ColumnProgress:
+        case TransferModelPrivate::ColumnProgress:
             return tr("Progress");
-        case ColumnStatus:
+        case TransferModelPrivate::ColumnStatus:
             return tr("Status");
         }
     }
@@ -120,17 +113,17 @@ void TransferModel::add(Transfer *transfer)
 
     // Whenever properties of the transfer change, emit the appropriate signal
     connect(transfer, &Transfer::deviceNameChanged, [this, transfer]() {
-        QModelIndex index = indexOf(transfer, ColumnDeviceName);
+        QModelIndex index = indexOf(transfer, TransferModelPrivate::ColumnDeviceName);
         emit dataChanged(index, index);
     });
 
     connect(transfer, &Transfer::progressChanged, [this, transfer]() {
-        QModelIndex index = indexOf(transfer, ColumnProgress);
+        QModelIndex index = indexOf(transfer, TransferModelPrivate::ColumnProgress);
         emit dataChanged(index, index);
     });
 
     connect(transfer, &Transfer::statusChanged, [this, transfer]() {
-        QModelIndex index = indexOf(transfer, ColumnStatus);
+        QModelIndex index = indexOf(transfer, TransferModelPrivate::ColumnStatus);
         emit dataChanged(index, index);
     });
 
