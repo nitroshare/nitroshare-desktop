@@ -54,7 +54,7 @@ if(LINUX)
     add_subdirectory(linux)
 endif()
 
-# Settings for CPack
+# Generic settings for CPack
 set(CPACK_PACKAGE_NAME "NitroShare")
 set(CPACK_PACKAGE_VENDOR "Nathan Osman")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Network File Transfer Application")
@@ -63,6 +63,15 @@ set(CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})
 set(CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH})
 set(CPACK_PACKAGE_EXECUTABLES "nitroshare;NitroShare")
 set(CPACK_PACKAGE_INSTALL_DIRECTORY "NitroShare")
-set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}\\\\LICENSE.txt")
+
+# NSIS settings for CPack
+set(CPACK_PACKAGE_ICON "${CMAKE_CURRENT_SOURCE_DIR}\\\\res\\\\nsis-icon.bmp")
+set(CPACK_NSIS_MUI_FINISHPAGE_RUN "nitroshare.exe")
+
+# WiX (Windows installer) settings for CPack
+set(CPACK_WIX_UPGRADE_GUID "51AA6F60-87CD-4C52-8CDF-97F784B276C0")
+set(CPACK_WIX_UI_BANNER "${CMAKE_CURRENT_SOURCE_DIR}\\\\res\\\\wix-banner.bmp")
+set(CPACK_WIX_UI_DIALOG "${CMAKE_CURRENT_SOURCE_DIR}\\\\res\\\\wix-dialog.bmp")
 
 include(CPack)
