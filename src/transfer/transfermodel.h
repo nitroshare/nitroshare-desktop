@@ -89,6 +89,26 @@ public:
      */
     QModelIndex indexOf(Transfer *transfer, int column) const;
 
+Q_SIGNALS:
+
+    /**
+     * @brief Indicate that a transfer has been added to the model
+     * @param transfer transfer added
+     *
+     * The pointer is only guaranteed to exist for the duration of the slots
+     * connected to this signal and should not be stored.
+     */
+    void transferAdded(Transfer *transfer);
+
+    /**
+     * @brief Indicate that a transfer has been removed from the model
+     * @param transfer transfer removed
+     *
+     * The pointer is only guaranteed to exist for the duration of the slots
+     * connected to this signal and should not be stored.
+     */
+    void transferRemoved(Transfer *transfer);
+
 public Q_SLOTS:
 
     /**

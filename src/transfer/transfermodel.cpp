@@ -66,6 +66,8 @@ QVariant TransferModel::data(const QModelIndex &index, int role) const
                 return transfer->deviceName();
             case TransferModelPrivate::ColumnProgress:
                 return transfer->progress();
+            case TransferModelPrivate::ColumnStatus:
+                return transfer->status();
             }
         case Qt::DecorationRole:
             if(index.column() == TransferModelPrivate::ColumnDeviceName) {
@@ -107,10 +109,6 @@ QModelIndex TransferModel::indexOf(Transfer *transfer, int column) const
 
 void TransferModel::add(Transfer *transfer)
 {
-    beginInsertRows(QModelIndex(), d->transfers.count(), d->transfers.count());
-    d->transfers.append(transfer);
-    endInsertRows();
-
     // Whenever properties of the transfer change, emit the appropriate signal
     connect(transfer, &Transfer::deviceNameChanged, [this, transfer]() {
         QModelIndex index = indexOf(transfer, TransferModelPrivate::ColumnDeviceName);
@@ -127,6 +125,13 @@ void TransferModel::add(Transfer *transfer)
         emit dataChanged(index, index);
     });
 
+    beginInsertRows(QModelIndex(), d->transfers.count(), d->transfers.count());
+    d->transfers.append(transfer);
+    endInsertRows();
+
+    // This needs to come after inserting the transfer so that it will have a valid index
+    emit transferAdded(transfer);
+
     transfer->start();
 }
 
@@ -138,8 +143,11 @@ void TransferModel::clear()
 
         if(transfer->status() == Transfer::Completed || transfer->status() == Transfer::Error) {
             beginRemoveRows(QModelIndex(), i, i);
-            delete d->transfers.takeAt(i);
+            d->transfers.removeAt(i);
             endRemoveRows();
+
+            emit transferRemoved(transfer);
+            delete transfer;
         }
     }
 }
