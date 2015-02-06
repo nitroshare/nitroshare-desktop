@@ -10,6 +10,9 @@
     <height>400</height>
    </rect>
   </property>
+  <property name="windowTitle">
+   <string>NitroShare - Transfers</string>
+  </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>

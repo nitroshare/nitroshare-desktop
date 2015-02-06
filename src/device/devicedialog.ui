@@ -10,6 +10,9 @@
     <height>200</height>
    </rect>
   </property>
+  <property name="windowTitle">
+   <string>NitroShare - Select Device</string>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="QLabel" name="selectLabel">
