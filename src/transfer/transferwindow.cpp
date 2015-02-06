@@ -54,11 +54,14 @@ void TransferWindow::add(Transfer *transfer)
     connect(transfer, &Transfer::statusChanged, [this, transfer](Transfer::Status status) {
         QModelIndex index = mModel->indexOf(transfer, TransferModelPrivate::ColumnStatus);
 
-        // When the status becomes InProgress, display a button that allows the
-        // transfer to be canceled; for everything else, clear the widget
         if(status == Transfer::InProgress) {
             QPushButton *button = new QPushButton(tr("Cancel"));
             connect(button, &QPushButton::clicked, transfer, &Transfer::cancel);
+
+            ui->transferView->setIndexWidget(index, button);
+        } else if(status == Transfer::Error) {
+            QPushButton *button = new QPushButton(tr("Retry"));
+            connect(button, &QPushButton::clicked, transfer, &Transfer::start);
 
             ui->transferView->setIndexWidget(index, button);
         } else {
