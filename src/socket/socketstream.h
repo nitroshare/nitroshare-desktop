@@ -25,73 +25,96 @@
 #ifndef NS_SOCKETSTREAM_H
 #define NS_SOCKETSTREAM_H
 
-#include <QEventLoop>
 #include <QTcpSocket>
-#include <QTimer>
 #include <QtEndian>
 
+class SocketStreamPrivate;
+
+/**
+ * @brief Synchronous stream for socket I/O
+ *
+ * The SocketStream class provides a set of methods that enable synchronous
+ * operations on sockets. Each of the read and write methods enters an event
+ * loop that blocks until the operation is complete or an error occurs.
+ *
+ * If an error occurs before the expected data is read or written, an exception
+ * of type QString is thrown. The string contains a description of the error.
+ */
 class SocketStream : public QObject
 {
     Q_OBJECT
 
 public:
 
-    SocketStream(QTcpSocket &socket);
+    /**
+     * @brief Create a socket stream
+     * @param socket socket to use for I/O
+     */
+    SocketStream(QTcpSocket *socket);
 
-    inline bool waitForConnected() {
-        return waitFor(Connected);
-    }
+    /**
+     * @brief Wait for connection to complete
+     * @return true if the connection completed without error
+     */
+    bool waitForConnected();
 
+    /**
+     * @brief Read raw data from the socket
+     * @param data storage for data read from the socket
+     * @param length length of data to read
+     */
+    void read(char *data, qint32 length);
+
+    /**
+     * @brief Read an integer from the socket
+     * @return integer value
+     */
     template <typename T>
-    inline T readInt() {
+    T readInt() {
         T value;
         read(reinterpret_cast<char *>(&value), sizeof(value));
         return qFromLittleEndian(value);
     }
 
-    inline QByteArray readQByteArray() {
-        qint32 length(readInt<qint32>());
-        QByteArray value;
-        value.resize(length);
-        read(value.data(), length);
-        return value;
-    }
+    /**
+     * @brief Read a QByteArray from the socket
+     * @return QByteArray value
+     */
+    QByteArray readQByteArray();
 
+    /**
+     * @brief Write raw data to the socket
+     * @param data data to write
+     * @param length length of data to write
+     */
+    void write(const char *data, qint32 length);
+
+    /**
+     * @brief Write an integer to the socket
+     * @param value integer value
+     */
     template <typename T>
-    inline void writeInt(T value) {
+    void writeInt(T value) {
         value = qToLittleEndian(value);
         write(reinterpret_cast<const char *>(&value), sizeof(value));
     }
 
-    inline void writeQByteArray(const QByteArray &value) {
-        writeInt<qint32>(value.length());
-        write(value.constData(), value.length());
-    }
+    /**
+     * @brief Write a QByteArray to the socket
+     * @param value QByteArray value
+     */
+    void writeQByteArray(const QByteArray &value);
 
 public Q_SLOTS:
 
+    /**
+     * @brief Abort any pending operations.
+     */
     void abort();
 
 private:
 
-    enum Signal {
-        Connected,
-        ReadyRead,
-        BytesWritten
-    };
-
-    void read(char *data, qint32 length);
-    void write(const char *data, qint32 length);
-
-    bool waitFor(Signal signal);
-
-    QTcpSocket &mSocket;
-
-    QEventLoop mLoop;
-    QTimer mTimer;
-
-    Signal mWaitingFor;
-    bool mSucceeded;
+    SocketStreamPrivate *const d;
 };
 
 #endif // NS_SOCKETSTREAM_H

@@ -22,88 +22,128 @@
  * IN THE SOFTWARE.
  **/
 
-#include <QFile>
+#include <QEventLoop>
 
 #include "../util/settings.h"
 #include "socketstream.h"
+#include "socketstream_p.h"
 
-SocketStream::SocketStream(QTcpSocket &socket)
-    : mSocket(socket)
+SocketStreamPrivate::SocketStreamPrivate(QTcpSocket *socket, SocketStream *stream)
+    : QObject(stream),
+      q(stream),
+      socket(socket)
 {
-    connect(&mSocket, &QTcpSocket::connected, [this]() {
-        mSucceeded = true;
-        mLoop.quit();
+    // This will only be emitted if waitForConnected was called and
+    // therefore signal will always be equal to Connected
+    connect(socket, &QTcpSocket::connected, [this]() {
+        succeeded = true;
+        emit quitRequested();
     });
 
-    connect(&mSocket, &QTcpSocket::disconnected, this, &SocketStream::abort);
-
-    connect(&mSocket, &QTcpSocket::readyRead, [this]() {
-        if(mWaitingFor == ReadyRead) {
-            mSucceeded = true;
-            mLoop.quit();
+    connect(socket, &QTcpSocket::readyRead, [this]() {
+        if(signal == ReadyRead) {
+            succeeded = true;
+            emit quitRequested();
         }
     });
 
-    connect(&mSocket, &QTcpSocket::bytesWritten, [this]() {
-        if(mWaitingFor == BytesWritten) {
-            mSucceeded = true;
-            mLoop.quit();
+    connect(socket, &QTcpSocket::bytesWritten, [this]() {
+        if(signal == BytesWritten) {
+            succeeded = true;
+            emit quitRequested();
         }
     });
 
-    connect(&mTimer, &QTimer::timeout, [this]() {
-        mSucceeded = false;
-        mLoop.quit();
-    });
+    // Both a disconnect and a timeout are always unexpected when our event
+    // loop is active and are therefore errors
+    connect(socket, &QTcpSocket::disconnected, this, &SocketStreamPrivate::quitRequested);
+    connect(&timer, &QTimer::timeout, this, &SocketStreamPrivate::quitRequested);
 
-    mTimer.setSingleShot(true);
-    mTimer.setInterval(Settings::get<int>(Settings::TransferTimeout));
+    timer.setSingleShot(true);
+    timer.setInterval(Settings::get<int>(Settings::TransferTimeout));
 }
 
-void SocketStream::abort()
+bool SocketStreamPrivate::waitFor(Signal value)
 {
-    mSucceeded = false;
-    mLoop.quit();
+    signal = value;
+    succeeded = false;
+
+    // Start the timer that will timeout if the operation takes too long
+    timer.start();
+
+    // Create an event loop that will run until quitRequested is emitted
+    QEventLoop eventLoop;
+    connect(this, &SocketStreamPrivate::quitRequested, &eventLoop, &QEventLoop::quit);
+    eventLoop.exec();
+
+    timer.stop();
+
+    return succeeded;
+}
+
+SocketStream::SocketStream(QTcpSocket *socket)
+    : d(new SocketStreamPrivate(socket, this))
+{
+}
+
+bool SocketStream::waitForConnected()
+{
+    return d->waitFor(SocketStreamPrivate::Connected);
 }
 
 void SocketStream::read(char *data, qint32 length)
 {
     while(length) {
-        qint64 lengthRead(mSocket.read(data, length));
+        qint64 lengthRead = d->socket->read(data, length);
 
         if(lengthRead == -1) {
-            throw QObject::tr("Unable to read from socket.");
+            throw tr("Unable to read from socket.");
         }
 
         data += lengthRead;
         length -= lengthRead;
 
-        if(length && !waitFor(ReadyRead)) {
-            throw QObject::tr("Timeout while reading from socket.");
+        if(length && !d->waitFor(SocketStreamPrivate::ReadyRead)) {
+            throw tr("Timeout while reading from socket.");
         }
     }
+}
+
+QByteArray SocketStream::readQByteArray()
+{
+    qint32 length = readInt<qint32>();
+
+    QByteArray value;
+    value.resize(length);
+
+    read(value.data(), length);
+
+    return value;
 }
 
 void SocketStream::write(const char *data, qint32 length)
 {
-    if(mSocket.write(data, length) == -1) {
-        throw QObject::tr("Unable to write to socket.");
+    if(d->socket->write(data, length) == -1) {
+        throw tr("Unable to write to socket.");
     }
 
-    while(mSocket.bytesToWrite()) {
-        if(!waitFor(BytesWritten)) {
-            throw QObject::tr("Timeout while writing to socket.");
+    // TODO: waiting here may be a bottleneck
+    // further investigation is needed
+
+    while(d->socket->bytesToWrite()) {
+        if(!d->waitFor(SocketStreamPrivate::BytesWritten)) {
+            throw tr("Timeout while writing to socket.");
         }
     }
 }
 
-bool SocketStream::waitFor(Signal signal)
+void SocketStream::writeQByteArray(const QByteArray &value)
 {
-    mWaitingFor = signal;
+    writeInt<qint32>(value.length());
+    write(value.constData(), value.length());
+}
 
-    mTimer.start();
-    mLoop.exec();
-    mTimer.stop();
-
-    return mSucceeded;
+void SocketStream::abort()
+{
+    emit d->quitRequested();
 }

@@ -38,7 +38,7 @@ SocketWriter::SocketWriter(const Device *device, BundlePointer bundle)
 void SocketWriter::start()
 {
     QTcpSocket socket;
-    SocketStream stream(socket);
+    SocketStream stream(&socket);
 
     connect(this, &SocketWriter::canceled, &stream, &SocketStream::abort);
 

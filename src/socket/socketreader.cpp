@@ -40,7 +40,7 @@ SocketReader::SocketReader(qintptr socketDescriptor)
 void SocketReader::start()
 {
     QTcpSocket socket;
-    SocketStream stream(socket);
+    SocketStream stream(&socket);
 
     connect(this, &SocketReader::canceled, &stream, &SocketStream::abort);
 

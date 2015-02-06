@@ -157,11 +157,4 @@ private:
     TransferPrivate * const d;
 };
 
-/**
- * @brief Shared pointer to a Transfer instance
- */
-typedef QSharedPointer<Transfer> TransferPointer;
-
-Q_DECLARE_METATYPE(TransferPointer)
-
 #endif // NS_TRANSFER_H
