@@ -23,23 +23,46 @@
  **/
 
 #include <QIcon>
+#include <QModelIndex>
+#include <QPushButton>
 
 #include "transferdelegate.h"
+#include "transfermodel_p.h"
 #include "transferwindow.h"
 #include "ui_transferwindow.h"
 
-TransferWindow::TransferWindow(TransferModel &model)
-    : ui(new Ui::TransferWindow)
+TransferWindow::TransferWindow(TransferModel *model)
+    : ui(new Ui::TransferWindow),
+      mModel(model)
 {
     ui->setupUi(this);
 
-    ui->transferView->setModel(&model);
+    ui->transferView->setModel(mModel);
     ui->transferView->setItemDelegate(new TransferDelegate(this));
 
-    setWindowIcon(QIcon(":/data/nitroshare.svg"));
+    connect(ui->clear, &QPushButton::clicked, mModel, &TransferModel::clear);
+    connect(mModel, &TransferModel::transferAdded, this, &TransferWindow::add);
 }
 
 TransferWindow::~TransferWindow()
 {
     delete ui;
+}
+
+void TransferWindow::add(Transfer *transfer)
+{
+    connect(transfer, &Transfer::statusChanged, [this, transfer](Transfer::Status status) {
+        QModelIndex index = mModel->indexOf(transfer, TransferModelPrivate::ColumnStatus);
+
+        // When the status becomes InProgress, display a button that allows the
+        // transfer to be canceled; for everything else, clear the widget
+        if(status == Transfer::InProgress) {
+            QPushButton *button = new QPushButton(tr("Cancel"));
+            connect(button, &QPushButton::clicked, transfer, &Transfer::cancel);
+
+            ui->transferView->setIndexWidget(index, button);
+        } else {
+            ui->transferView->setIndexWidget(index, nullptr);
+        }
+    });
 }

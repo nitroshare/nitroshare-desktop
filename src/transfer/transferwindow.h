@@ -27,6 +27,7 @@
 
 #include <QMainWindow>
 
+#include "transfer.h"
 #include "transfermodel.h"
 
 namespace Ui {
@@ -39,12 +40,17 @@ class TransferWindow : public QMainWindow
 
 public:
 
-    explicit TransferWindow(TransferModel &model);
+    explicit TransferWindow(TransferModel *model);
     virtual ~TransferWindow();
+
+public Q_SLOTS:
+
+    void add(Transfer *transfer);
 
 private:
 
-    Ui::TransferWindow *ui;
+    Ui::TransferWindow *const ui;
+    TransferModel *const mModel;
 };
 
 #endif // NS_TRANSFERDIALOG_H

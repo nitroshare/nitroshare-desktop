@@ -36,7 +36,7 @@
 #endif
 
 Application::Application()
-    : mTransferWindow(mTransferModel),
+    : mTransferWindow(&mTransferModel),
 #ifdef BUILD_INDICATORICON
       mIcon(Platform::isUnity() ? static_cast<Icon *>(new IndicatorIcon) :
                                   static_cast<Icon *>(new TrayIcon))
