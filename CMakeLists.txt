@@ -49,13 +49,6 @@ set(CMAKE_AUTOUIC ON)
 # Include the subdirectory containing the source code for the application
 add_subdirectory(src)
 
-# On Linux, there are a few extra files that need to be installed
-if(LINUX)
-    # Install the .desktop file and vector icon to the appropriate directory
-    install(FILES nitroshare.desktop DESTINATION share/applications)
-    install(FILES nitroshare.svg DESTINATION share/pixmaps)
-endif()
-
 # Generic settings for CPack
 set(CPACK_PACKAGE_NAME "NitroShare")
 set(CPACK_PACKAGE_VENDOR "Nathan Osman")
@@ -67,12 +60,31 @@ set(CPACK_PACKAGE_EXECUTABLES "nitroshare;NitroShare")
 set(CPACK_PACKAGE_INSTALL_DIRECTORY "NitroShare")
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.txt")
 
-# NSIS settings for CPack
-set(CPACK_PACKAGE_ICON "${CMAKE_CURRENT_SOURCE_DIR}\\\\res\\\\nsis-icon.bmp")
+# CPack settings for Windows-specific generators
+# They don't seem to like forward slashes, hence all of the escaping
+if(WIN32)
+    # NSIS generator
+    set(CPACK_PACKAGE_ICON "${CMAKE_CURRENT_SOURCE_DIR}\\\\res\\\\nsis-icon.bmp")
 
-# WiX (Windows installer) settings for CPack
-set(CPACK_WIX_UPGRADE_GUID "51AA6F60-87CD-4C52-8CDF-97F784B276C0")
-set(CPACK_WIX_UI_BANNER "${CMAKE_CURRENT_SOURCE_DIR}\\\\res\\\\wix-banner.bmp")
-set(CPACK_WIX_UI_DIALOG "${CMAKE_CURRENT_SOURCE_DIR}\\\\res\\\\wix-dialog.bmp")
+    # WIX (Windows installer) generator
+    set(CPACK_WIX_UPGRADE_GUID "51AA6F60-87CD-4C52-8CDF-97F784B276C0")
+    set(CPACK_WIX_UI_BANNER "${CMAKE_CURRENT_SOURCE_DIR}\\\\res\\\\wix-banner.bmp")
+    set(CPACK_WIX_UI_DIALOG "${CMAKE_CURRENT_SOURCE_DIR}\\\\res\\\\wix-dialog.bmp")
+endif()
+
+# CPack settings for Mac-specific generators
+if(MAC)
+    # Bundle generator
+    set(CPACK_BUNDLE_NAME "NitroShare")
+    set(CPACK_BUNDLE_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/res/Info.plist")
+    set(CPACK_BUNDLE_ICON "${CMAKE_CURRENT_SOURCE_DIR}/res/nitroshare.icns")
+endif()
+
+# CPack settings for Linux and extra files to be installed
+if(LINUX)
+    # Install the .desktop file and vector icon to the appropriate directory
+    install(FILES res/nitroshare.desktop DESTINATION share/applications)
+    install(FILES res/nitroshare.svg DESTINATION share/pixmaps)
+endif()
 
 include(CPack)
