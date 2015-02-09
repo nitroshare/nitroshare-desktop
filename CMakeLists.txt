@@ -51,7 +51,9 @@ add_subdirectory(src)
 
 # On Linux, there are a few extra files that need to be installed
 if(LINUX)
-    add_subdirectory(linux)
+    # Install the .desktop file and vector icon to the appropriate directory
+    install(FILES nitroshare.desktop DESTINATION share/applications)
+    install(FILES nitroshare.svg DESTINATION share/pixmaps)
 endif()
 
 # Generic settings for CPack
