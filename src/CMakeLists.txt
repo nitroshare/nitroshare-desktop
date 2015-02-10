@@ -65,15 +65,18 @@ target_compile_features(nitroshare PRIVATE
 install(TARGETS nitroshare RUNTIME DESTINATION bin)
 include(InstallRequiredSystemLibraries)
 
-# On Windows, we must also install the Qt libraries
-if(WIN32)
-    # Determine the path to windeployqt by finding the path to qmake
+# On Windows and Mac, we need to package the Qt libraries
+# This macro searches for either windeployqt and macdeployqt
+macro(_find_qt_binary _name _binary)
     get_target_property(_qmake_executable Qt5::qmake IMPORTED_LOCATION)
     get_filename_component(_qt_bin_dir "${_qmake_executable}" DIRECTORY)
-    find_program(_windeployqt windeployqt HINTS "${_qt_bin_dir}")
+    find_program(${_name} ${_binary} HINTS "${_qt_bin_dir}")
+endmacro()
 
-    # Add a custom command that runs immediately after build, copying the
-    # Qt libraries and their dependencies to a temporary directory
+if(WIN32)
+    # Determine the path to windeployqt and invoke it once the binary
+    # is built, copying the Qt libraries to a temporary directory
+    _find_qt_binary(_windeployqt windeployqt)
     add_custom_command(TARGET nitroshare POST_BUILD
         COMMAND ${_windeployqt}
             --dir "${CMAKE_BINARY_DIR}/qt"
