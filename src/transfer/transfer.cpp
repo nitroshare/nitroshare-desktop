@@ -109,7 +109,7 @@ Transfer::Transfer(const Device *device, BundlePointer bundle, QObject *parent)
     d->state = Connecting;
     d->deviceName = device->name();
 
-    d->socket->start();
+    qobject_cast<SocketSender*>(d->socket)->start();
 }
 
 Transfer::Direction Transfer::direction() const
@@ -160,5 +160,6 @@ void Transfer::restart()
         return;
     }
 
-    d->socket->start();
+    // We know that d->socket is a SocketSender*
+    qobject_cast<SocketSender*>(d->socket)->start();
 }

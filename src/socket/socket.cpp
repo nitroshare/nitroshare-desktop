@@ -22,24 +22,59 @@
  * IN THE SOFTWARE.
  **/
 
+#include <cstring>
+
+#include <QtEndian>
+
 #include "socket.h"
 
 Socket::Socket()
+    : mBufferSize(0)
 {
     connect(this, &Socket::readyRead, this, &Socket::processRead);
     connect(this, &Socket::bytesWritten, this, &Socket::processWrite);
 }
 
-// Default implementations of start, processRead, and processWrite are empty
-
-void Socket::start()
-{
-}
-
 void Socket::processRead()
 {
+    mBuffer.append(readAll());
+
+    // Attempt to read all available packets from the buffer
+    forever {
+        // If the size of the packet is not yet known try to read it
+        if(!mBufferSize) {
+            if(mBuffer.size() >= sizeof(mBufferSize)) {
+                memcpy(&mBufferSize, mBuffer.constData(), sizeof(mBufferSize));
+                mBufferSize = qFromLittleEndian(mBufferSize);
+                mBuffer.remove(0, sizeof(mBufferSize));
+            } else {
+                break;
+            }
+        }
+
+        // The size is known at this point, check to see if the amount is available
+        if(mBuffer.size() >= mBufferSize) {
+            processPacket(qUncompress(mBuffer.left(mBufferSize)));
+            mBuffer.remove(0, mBufferSize);
+            mBufferSize = 0;
+        } else {
+            break;
+        }
+    };
 }
 
 void Socket::processWrite()
 {
+    // Only write the next packet when the buffer is empty
+    if(!bytesToWrite()) {
+        writeNextPacket();
+    }
+}
+
+void Socket::writePacket(const QByteArray &data)
+{
+    // Write the length of the packet followed by the contents
+    qint32 size = qToLittleEndian(data.length());
+    write(reinterpret_cast<const char*>(size), sizeof(size));
+    write(qCompress(data));
 }

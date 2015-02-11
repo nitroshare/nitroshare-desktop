@@ -22,6 +22,11 @@
  * IN THE SOFTWARE.
  **/
 
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QVariantMap>
+
+#include "../util/settings.h"
 #include "socketsender.h"
 
 SocketSender::SocketSender(const Device *device, BundlePointer bundle)
@@ -29,14 +34,117 @@ SocketSender::SocketSender(const Device *device, BundlePointer bundle)
       mPort(device->port()),
       mBundle(bundle)
 {
+    // As soon as the connection succeeds, write the first packet
+    connect(this, &SocketSender::connected, [this]() {
+        writeNextPacket();
+    });
 }
 
 void SocketSender::start()
 {
-    // TODO - perform connection
+    // Reset everything
+    mState = WritingTransferHeader;
+    mIterator = mBundle->constBegin();
+    mTransferBytes = 0;
+
+    if(mFile.isOpen()) {
+        mFile.close();
+    }
+    mFileRemainingBytes = 0;
+
+    mBuffer.resize(Settings::get<int>(Settings::TransferBuffer));
+
+    // Attempt connection to receiver
+    connectToHost(mAddress, mPort);
 }
 
-void SocketSender::processWrite()
+void SocketSender::processPacket(const QByteArray &data)
 {
-    // TODO
+    // This is not currently used for sending transfers
+}
+
+void SocketSender::writeNextPacket()
+{
+    switch(mState) {
+    case WritingTransferHeader:
+        writeTransferHeader();
+        break;
+    case WritingFileHeader:
+        writeFileHeader();
+        break;
+    case WritingFile:
+        writeFile();
+        break;
+    }
+}
+
+void SocketSender::writeTransferHeader()
+{
+    // Write the transfer header
+    QJsonObject object = QJsonObject::fromVariantMap({
+        { "protocol", 1 },
+        { "name", Settings::get<QString>(Settings::DeviceName) },
+        { "size", mBundle->totalSize() },
+        { "count", mBundle->count() }
+    });
+    writePacket(QJsonDocument(object).toJson(QJsonDocument::Compact));
+
+    // Move on to writing the files
+    mState = WritingFileHeader;
+}
+
+void SocketSender::writeFileHeader()
+{
+    // Open the file and obtain its size
+    mFile.setFileName(mIterator->absoluteFilename());
+
+    if(mFile.open(QIODevice::ReadOnly)) {
+        mFileRemainingBytes = mFile.size();
+
+        // Write the file header
+        QJsonObject object = QJsonObject::fromVariantMap({
+            { "name", mIterator->filename() },
+            { "size", mFileRemainingBytes }
+        });
+        writePacket(QJsonDocument(object).toJson(QJsonDocument::Compact));
+
+        // Switch the state to file writing
+        mState = WritingFile;
+    } else {
+        emit transferError(tr("Unable to read %1").arg(mIterator->absoluteFilename()));
+    }
+}
+
+void SocketSender::writeFile()
+{
+    // Read the next chunk of data from the file
+    qint64 bytesRead = mFile.read(mBuffer.data(), qMin(mFileRemainingBytes, static_cast<qint64>(mBuffer.size())));
+
+    // Ensure that a valid number of bytes were read
+    if(bytesRead <= 0) {
+        emit transferError(tr("Unable to read from %1").arg(mFile.fileName()));
+        return;
+    }
+
+    // Write a packet containing the data that was just read
+    writePacket(mBuffer.left(bytesRead));
+
+    // Update the number of bytes remaining in the file and the total transferred
+    mFileRemainingBytes -= bytesRead;
+    mTransferBytes += bytesRead;
+
+    // TODO: emit progress
+
+    // Check to see if we wrote the entire file contents
+    if(!mFileRemainingBytes) {
+        // Check to see if there are any files left
+        if(mIterator == mBundle->constEnd()) {
+            // None left, emit the success signal
+            emit success();
+        } else {
+            // Otherwise, move on to the next file
+            mIterator++;
+            mState = WritingFileHeader;
+        }
+    }
 }

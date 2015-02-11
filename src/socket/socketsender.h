@@ -41,15 +41,36 @@ public:
 
 public Q_SLOTS:
 
-    virtual void start();
+    void start();
 
 private:
 
-    virtual void processWrite();
+    enum State {
+        WritingTransferHeader,
+        WritingFileHeader,
+        WritingFile,
+    };
+
+    virtual void processPacket(const QByteArray &data);
+    virtual void writeNextPacket();
+
+    void writeTransferHeader();
+    void writeFileHeader();
+    void writeFile();
 
     QHostAddress mAddress;
     quint16 mPort;
     BundlePointer mBundle;
+
+    State mState;
+
+    Bundle::const_iterator mIterator;
+    qint64 mTransferBytes;
+
+    QFile mFile;
+    qint64 mFileRemainingBytes;
+
+    QByteArray mBuffer;
 };
 
 #endif // NS_SOCKETSENDER_H

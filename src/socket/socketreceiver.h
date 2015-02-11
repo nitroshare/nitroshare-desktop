@@ -25,6 +25,8 @@
 #ifndef NS_SOCKETRECEIVER_H
 #define NS_SOCKETRECEIVER_H
 
+#include <QFile>
+
 #include "socket.h"
 
 class SocketReceiver : public Socket
@@ -37,7 +39,27 @@ public:
 
 private:
 
-    virtual void processRead();
+    enum State {
+        WaitingForTransferHeader,
+        WaitingForFileHeader,
+        WaitingForFile
+    };
+
+    virtual void processPacket(const QByteArray &data);
+    virtual void writeNextPacket();
+
+    void processTransferHeader(const QByteArray &data);
+    void processFileHeader(const QByteArray &data);
+    void processFile(const QByteArray &data);
+
+    State mState;
+
+    qint32 mTransferRemainingFiles;
+    qint64 mTransferBytes;
+    qint64 mTransferTotalBytes;
+
+    QFile mFile;
+    qint64 mFileRemainingBytes;
 };
 
 #endif // NS_SOCKETRECEIVER_H

@@ -42,14 +42,22 @@ Q_SIGNALS:
     void transferError(const QString &message);
     void success();
 
-public Q_SLOTS:
+private Q_SLOTS:
 
-    virtual void start();
+    void processRead();
+    void processWrite();
 
-protected Q_SLOTS:
+protected:
 
-    virtual void processRead();
-    virtual void processWrite();
+    virtual void processPacket(const QByteArray &data) = 0;
+    virtual void writeNextPacket() = 0;
+
+    void writePacket(const QByteArray &data);
+
+private:
+
+    QByteArray mBuffer;
+    qint32 mBufferSize;
 };
 
 #endif // NS_SOCKET_H
