@@ -51,21 +51,33 @@ TransferWindow::~TransferWindow()
 
 void TransferWindow::add(Transfer *transfer)
 {
-    connect(transfer, &Transfer::statusChanged, [this, transfer](Transfer::Status status) {
-        QModelIndex index = mModel->indexOf(transfer, TransferModelPrivate::ColumnStatus);
+    connect(transfer, &Transfer::stateChanged, [this, transfer](Transfer::State state) {
+        QModelIndex index = mModel->indexOf(transfer, TransferModelPrivate::ColumnState);
 
-        if(status == Transfer::InProgress) {
+        switch(state) {
+        case Transfer::Connecting:
+        case Transfer::InProgress:
+        {
             QPushButton *button = new QPushButton(tr("Cancel"));
             connect(button, &QPushButton::clicked, transfer, &Transfer::cancel);
 
             ui->transferView->setIndexWidget(index, button);
-        } else if(status == Transfer::Error) {
-            QPushButton *button = new QPushButton(tr("Retry"));
-            connect(button, &QPushButton::clicked, transfer, &Transfer::start);
+            break;
+        }
+        case Transfer::Canceled:
+        case Transfer::Failed:
+        case Transfer::Succeeded:
+        {
+            QPushButton *button = new QPushButton(tr("Restart"));
+            connect(button, &QPushButton::clicked, transfer, &Transfer::restart);
 
             ui->transferView->setIndexWidget(index, button);
-        } else {
+            break;
+        }
+        default:
+        {
             ui->transferView->setIndexWidget(index, nullptr);
+        }
         }
     });
 }

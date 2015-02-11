@@ -22,24 +22,34 @@
  * IN THE SOFTWARE.
  **/
 
+#ifndef NS_SOCKETSENDER_H
+#define NS_SOCKETSENDER_H
+
+#include <QHostAddress>
+
+#include "../device/device.h"
+#include "../filesystem/bundle.h"
 #include "socket.h"
 
-Socket::Socket()
+class SocketSender : public Socket
 {
-    connect(this, &Socket::readyRead, this, &Socket::processRead);
-    connect(this, &Socket::bytesWritten, this, &Socket::processWrite);
-}
+    Q_OBJECT
 
-// Default implementations of start, processRead, and processWrite are empty
+public:
 
-void Socket::start()
-{
-}
+    SocketSender(const Device *device, BundlePointer bundle);
 
-void Socket::processRead()
-{
-}
+public Q_SLOTS:
 
-void Socket::processWrite()
-{
-}
+    virtual void start();
+
+private:
+
+    virtual void processWrite();
+
+    QHostAddress mAddress;
+    quint16 mPort;
+    BundlePointer mBundle;
+};
+
+#endif // NS_SOCKETSENDER_H

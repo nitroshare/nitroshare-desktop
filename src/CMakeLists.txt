@@ -22,9 +22,8 @@ set(SRC
     icon/icon.cpp
     icon/trayicon.cpp
     socket/socket.cpp
-    socket/socketreader.cpp
-    socket/socketstream.cpp
-    socket/socketwriter.cpp
+    socket/socketreceiver.cpp
+    socket/socketsender.cpp
     transfer/transfer.cpp
     transfer/transferdelegate.cpp
     transfer/transfermodel.cpp

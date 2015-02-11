@@ -25,8 +25,8 @@
 #ifndef NS_TRANSFERPRIVATE_H
 #define NS_TRANSFERPRIVATE_H
 
-#include <QThread>
-
+#include "../device/device.h"
+#include "../filesystem/bundle.h"
 #include "../socket/socket.h"
 #include "transfer.h"
 
@@ -36,33 +36,29 @@ class TransferPrivate : public QObject
 
 public:
 
-    explicit TransferPrivate(Transfer *transfer,
-                             Socket *socket,
-                             const QString &deviceName,
-                             Transfer::Direction direction);
+    TransferPrivate(Socket *socket, Transfer *transfer);
     virtual ~TransferPrivate();
 
-private Q_SLOTS:
+    Transfer *const q;
 
-    void setDeviceName(const QString &value);
-    void setProgress(int value);
+    Socket *const socket;
 
-    void setStatusError(const QString &value);
-    void setStatusCompleted();
-
-public:
-
-    Transfer * const q;
-
-    QThread thread;
-    Socket * const socket;
+    Transfer::Direction direction;
+    Transfer::State state;
 
     QString deviceName;
     int progress;
     QString error;
 
-    Transfer::Status status;
-    Transfer::Direction direction;
+private Q_SLOTS:
+
+    void processConnect();
+    void processError();
+
+    void setDeviceName(const QString &value);
+    void setProgress(int value);
+    void setError(const QString &value);
+    void setSuccess();
 };
 
 #endif // NS_TRANSFERPRIVATE_H

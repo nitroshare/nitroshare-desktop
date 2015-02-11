@@ -25,30 +25,31 @@
 #ifndef NS_SOCKET_H
 #define NS_SOCKET_H
 
-#include <QObject>
+#include <QTcpSocket>
 
-class Socket : public QObject
+class Socket : public QTcpSocket
 {
     Q_OBJECT
 
+public:
+
+    Socket();
+
 Q_SIGNALS:
 
-    void deviceNameChanged(const QString &message);
-    void progressChanged(int percentage);
-
-    void error(const QString &message);
-    void completed();
-
-    void canceled();
+    void deviceName(const QString &deviceName);
+    void progress(int progress);
+    void transferError(const QString &message);
+    void success();
 
 public Q_SLOTS:
 
-    virtual void start() = 0;
-    void cancel();
+    virtual void start();
 
-protected:
+protected Q_SLOTS:
 
-    void emitProgress(qint64 bytes, qint64 totalBytes);
+    virtual void processRead();
+    virtual void processWrite();
 };
 
 #endif // NS_SOCKET_H

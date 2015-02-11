@@ -66,8 +66,8 @@ QVariant TransferModel::data(const QModelIndex &index, int role) const
                 return transfer->deviceName();
             case TransferModelPrivate::ColumnProgress:
                 return transfer->progress();
-            case TransferModelPrivate::ColumnStatus:
-                return transfer->status();
+            case TransferModelPrivate::ColumnState:
+                return transfer->state();
             }
         case Qt::DecorationRole:
             if(index.column() == TransferModelPrivate::ColumnDeviceName) {
@@ -94,7 +94,7 @@ QVariant TransferModel::headerData(int section, Qt::Orientation orientation, int
             return tr("Device Name");
         case TransferModelPrivate::ColumnProgress:
             return tr("Progress");
-        case TransferModelPrivate::ColumnStatus:
+        case TransferModelPrivate::ColumnState:
             return tr("Status");
         }
     }
@@ -120,8 +120,8 @@ void TransferModel::add(Transfer *transfer)
         emit dataChanged(index, index);
     });
 
-    connect(transfer, &Transfer::statusChanged, [this, transfer]() {
-        QModelIndex index = indexOf(transfer, TransferModelPrivate::ColumnStatus);
+    connect(transfer, &Transfer::stateChanged, [this, transfer]() {
+        QModelIndex index = indexOf(transfer, TransferModelPrivate::ColumnState);
         emit dataChanged(index, index);
     });
 
@@ -131,8 +131,6 @@ void TransferModel::add(Transfer *transfer)
 
     // This needs to come after inserting the transfer so that it will have a valid index
     emit transferAdded(transfer);
-
-    transfer->start();
 }
 
 void TransferModel::clear()
@@ -141,7 +139,8 @@ void TransferModel::clear()
     for(int i = d->transfers.count() - 1; i >= 0; --i) {
         Transfer *transfer = d->transfers.at(i);
 
-        if(transfer->status() == Transfer::Completed || transfer->status() == Transfer::Error) {
+        if(transfer->state() == Transfer::Canceled || transfer->state() == Transfer::Failed ||
+                transfer->state() == Transfer::Succeeded) {
             beginRemoveRows(QModelIndex(), i, i);
             d->transfers.removeAt(i);
             endRemoveRows();

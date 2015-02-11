@@ -25,8 +25,7 @@
 #ifndef NS_TRANSFER_H
 #define NS_TRANSFER_H
 
-#include <QObject>
-#include <QSharedPointer>
+#include <QTcpSocket>
 
 #include "../device/device.h"
 #include "../filesystem/bundle.h"
@@ -36,36 +35,21 @@ class TransferPrivate;
 /**
  * @brief Transfer currently in progress
  *
- * Transfers take place in a secondary thread, allowing blocking read and write
- * operations to run without interfering with the UI. The Transfer class is
- * used both for sending and receiving files.
+ * A transfer is initiated either by the user attempting to send a file or by
+ * an incoming TCP connection. The connection is processed asynchronously.
  */
 class Transfer : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(Direction direction READ direction CONSTANT)
+    Q_PROPERTY(State state READ state NOTIFY stateChanged)
     Q_PROPERTY(QString deviceName READ deviceName NOTIFY deviceNameChanged)
     Q_PROPERTY(int progress READ progress NOTIFY progressChanged)
     Q_PROPERTY(QString error READ error)
-    Q_PROPERTY(Status status READ status NOTIFY statusChanged)
-    Q_PROPERTY(Direction direction READ direction CONSTANT)
-    Q_ENUMS(Status)
     Q_ENUMS(Direction)
+    Q_ENUMS(Status)
 
 public:
-
-    /**
-     * @brief Status of the transfer
-     */
-    enum Status {
-        /// Transfer has not yet begun
-        Pending,
-        /// Transfer is currently in progress
-        InProgress,
-        /// Transfer encountered an error
-        Error,
-        /// Transfer completed without error
-        Completed
-    };
 
     /**
      * @brief Direction of the transfer
@@ -78,17 +62,47 @@ public:
     };
 
     /**
-     * @brief Create a new transfer for receiving files
-     * @param socketDescriptor open descriptor for the socket
+     * @brief State of the transfer
      */
-    Transfer(qintptr socketDescriptor);
+    enum State {
+        /// Connection is in progress
+        Connecting,
+        /// Transfer is currently in progress
+        InProgress,
+        /// Transfer was canceled
+        Canceled,
+        /// Transfer failed to complete
+        Failed,
+        /// Transfer completed successfully
+        Succeeded
+    };
+
+    /**
+     * @brief Create a new transfer for receiving files
+     * @param socketDescriptor socket descriptor
+     * @param parent parent QObject
+     */
+    Transfer(qintptr socketDescriptor, QObject *parent = nullptr);
 
     /**
      * @brief Create a new transfer for sending a bundle
      * @param device device to send the bundle to
      * @param bundle bundle to send to the specified device
+     * @param parent parent QObject
      */
-    Transfer(const Device *device, BundlePointer bundle);
+    Transfer(const Device *device, BundlePointer bundle, QObject *parent = nullptr);
+
+    /**
+     * @brief Retrieve the direction of the transfer (sending or receiving)
+     * @return transfer direction
+     */
+    Direction direction() const;
+
+    /**
+     * @brief Retrieve the state of the transfer
+     * @return transfer state
+     */
+    State state() const;
 
     /**
      * @brief Retrieve the name of the connected device
@@ -108,18 +122,6 @@ public:
      */
     QString error() const;
 
-    /**
-     * @brief Retrieve the status of the transfer
-     * @return transfer status
-     */
-    Status status() const;
-
-    /**
-     * @brief Retrieve the direction of the transfer (sending or receiving)
-     * @return transfer direction
-     */
-    Direction direction() const;
-
 Q_SIGNALS:
 
     /**
@@ -135,22 +137,22 @@ Q_SIGNALS:
     void progressChanged(int progress);
 
     /**
-     * @brief Indicate that the status of the transfer has changed
-     * @param status status of the transfer
+     * @brief Indicate that the state of the transfer has changed
+     * @param state state of the transfer
      */
-    void statusChanged(Status status);
+    void stateChanged(State state);
 
 public Q_SLOTS:
-
-    /**
-     * @brief Begin the transfer
-     */
-    void start();
 
     /**
      * @brief Cancel the transfer
      */
     void cancel();
+
+    /**
+     * @brief Start the transfer again
+     */
+    void restart();
 
 private:
 

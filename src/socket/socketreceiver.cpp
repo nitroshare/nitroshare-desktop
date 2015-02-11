@@ -22,26 +22,14 @@
  * IN THE SOFTWARE.
  **/
 
-#ifndef NS_SOCKETREADER_H
-#define NS_SOCKETREADER_H
+#include "socketreceiver.h"
 
-#include "socket.h"
-
-class SocketReader : public Socket
+SocketReceiver::SocketReceiver(qintptr socketDescriptor)
 {
-    Q_OBJECT
+    setSocketDescriptor(socketDescriptor);
+}
 
-public:
-
-    explicit SocketReader(qintptr socketDescriptor);
-
-public Q_SLOTS:
-
-    virtual void start();
-
-private:
-
-    qintptr mSocketDescriptor;
-};
-
-#endif // NS_SOCKETREADER_H
+void SocketReceiver::processRead()
+{
+    //...
+}

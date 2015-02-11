@@ -22,83 +22,104 @@
  * IN THE SOFTWARE.
  **/
 
-#include <QMetaObject>
-
-#include "../socket/socketreader.h"
-#include "../socket/socketwriter.h"
+#include "../socket/socketreceiver.h"
+#include "../socket/socketsender.h"
 #include "transfer.h"
 #include "transfer_p.h"
 
-TransferPrivate::TransferPrivate(Transfer *transfer,
-                                 Socket *socket,
-                                 const QString &deviceName,
-                                 Transfer::Direction direction)
+TransferPrivate::TransferPrivate(Socket *socket, Transfer *transfer)
     : QObject(transfer),
       q(transfer),
       socket(socket),
-      deviceName(deviceName),
-      progress(0),
-      status(Transfer::Pending),
-      direction(direction)
+      progress(0)
 {
-    thread.start();
-    socket->moveToThread(&thread);
+    connect(socket, &Socket::connected, this, &TransferPrivate::processConnect);
 
-    // Store the information made available by the socket through signals
-    connect(socket, &Socket::deviceNameChanged, this, &TransferPrivate::setDeviceName);
-    connect(socket, &Socket::progressChanged, this, &TransferPrivate::setProgress);
-    connect(socket, &Socket::error, this, &TransferPrivate::setStatusError);
-    connect(socket, &Socket::completed, this, &TransferPrivate::setStatusCompleted);
+    // The static_cast<> is necessary since error() is overloaded
+    connect(socket, static_cast<void (Socket::*)(QAbstractSocket::SocketError)>(&Socket::error),
+            this, &TransferPrivate::processError);
+
+    connect(socket, &Socket::deviceName, this, &TransferPrivate::setDeviceName);
+    connect(socket, &Socket::progress, this, &TransferPrivate::setProgress);
+    connect(socket, &Socket::transferError, this, &TransferPrivate::setError);
+    connect(socket, &Socket::success, this, &TransferPrivate::setSuccess);
 }
 
 TransferPrivate::~TransferPrivate()
 {
-    // If a transfer is in progress, canceling it will cause
-    // either the error or completed signal to be emitted
-    if(status == Transfer::InProgress) {
-        q->cancel();
-    }
-
-    // Wait for the thread to finish (this should never block for more than a few MS)
-    thread.quit();
-    thread.wait();
-
     delete socket;
+}
+
+void TransferPrivate::processConnect()
+{
+    // Only SocketSender instances will invoke this slot since
+    // SocketReceiver instances begin in the connected state
+    emit q->stateChanged(state = Transfer::InProgress);
+}
+
+void TransferPrivate::processError()
+{
+    // We only deal with errors that occur during Connecting and InProgress
+    // states since errors no longer matter in any of the other states
+    if(state == Transfer::Connecting || state == Transfer::InProgress) {
+        error = socket->errorString();
+        emit q->stateChanged(state = Transfer::Failed);
+    }
 }
 
 void TransferPrivate::setDeviceName(const QString &value)
 {
-    deviceName = value;
-    emit q->deviceNameChanged(deviceName);
+    emit q->deviceNameChanged(deviceName = value);
 }
 
 void TransferPrivate::setProgress(int value)
 {
-    progress = value;
-    emit q->progressChanged(progress);
+    emit q->progressChanged(progress = value);
 }
 
-void TransferPrivate::setStatusError(const QString &value)
+void TransferPrivate::setError(const QString &value)
 {
-    status = Transfer::Error;
+    // Change the state before disconnecting to ensure that any
+    // errors that arise from aborting the connection are ignored
     error = value;
-    emit q->statusChanged(status);
+    emit q->stateChanged(state = Transfer::Failed);
+    socket->abort();
 }
 
-void TransferPrivate::setStatusCompleted()
+void TransferPrivate::setSuccess()
 {
-    status = Transfer::Completed;
-    emit q->statusChanged(status);
+    emit q->stateChanged(state = Transfer::Succeeded);
+    socket->abort();
 }
 
-Transfer::Transfer(qintptr socketDescriptor)
-    : d(new TransferPrivate(this, new SocketReader(socketDescriptor), tr("[unknown]"), Receive))
+Transfer::Transfer(qintptr socketDescriptor, QObject *parent)
+    : QObject(parent),
+      d(new TransferPrivate(new SocketReceiver(socketDescriptor), this))
 {
+    d->direction = Receive;
+    d->state = InProgress;
+    d->deviceName = tr("[unknown]");
 }
 
-Transfer::Transfer(const Device *device, BundlePointer bundle)
-    : d(new TransferPrivate(this, new SocketWriter(device, bundle), device->name(), Send))
+Transfer::Transfer(const Device *device, BundlePointer bundle, QObject *parent)
+    : QObject(parent),
+      d(new TransferPrivate(new SocketSender(device, bundle), this))
 {
+    d->direction = Send;
+    d->state = Connecting;
+    d->deviceName = device->name();
+
+    d->socket->start();
+}
+
+Transfer::Direction Transfer::direction() const
+{
+    return d->direction;
+}
+
+Transfer::State Transfer::state() const
+{
+    return d->state;
 }
 
 QString Transfer::deviceName() const
@@ -116,35 +137,28 @@ QString Transfer::error() const
     return d->error;
 }
 
-Transfer::Status Transfer::status() const
-{
-    return d->status;
-}
-
-Transfer::Direction Transfer::direction() const
-{
-    return d->direction;
-}
-
-void Transfer::start()
-{
-    if(d->status == InProgress) {
-        qWarning("Cannot start a transfer that is already in progress");
-        return;
-    }
-
-    QMetaObject::invokeMethod(d->socket, "start", Qt::QueuedConnection);
-
-    d->status = InProgress;
-    emit statusChanged(d->status);
-}
-
 void Transfer::cancel()
 {
-    if(d->status != InProgress) {
-        qWarning("Cannot cancel a transfer that is not in progress");
+    if(d->state == Canceled || d->state == Failed || d->state == Succeeded) {
+        qWarning("Cannot cancel a transfer that has finished");
         return;
     }
 
-    QMetaObject::invokeMethod(d->socket, "cancel", Qt::QueuedConnection);
+    emit stateChanged(d->state = Transfer::Canceled);
+    d->socket->abort();
+}
+
+void Transfer::restart()
+{
+    if(d->direction == Receive) {
+        qWarning("Cannot restart a transfer that receives files");
+        return;
+    }
+
+    if(d->state == Connecting || d->state == InProgress) {
+        qWarning("Cannot restart a transfer in progress");
+        return;
+    }
+
+    d->socket->start();
 }

@@ -39,7 +39,7 @@ public:
     enum {
         ColumnDeviceName = 0,
         ColumnProgress,
-        ColumnStatus,
+        ColumnState,
         ColumnCount
     };
 

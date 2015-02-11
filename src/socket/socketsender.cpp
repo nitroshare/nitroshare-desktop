@@ -22,33 +22,21 @@
  * IN THE SOFTWARE.
  **/
 
-#ifndef NS_SOCKETWRITER_H
-#define NS_SOCKETWRITER_H
+#include "socketsender.h"
 
-#include <QHostAddress>
-
-#include "../device/device.h"
-#include "../filesystem/bundle.h"
-#include "socket.h"
-
-class SocketWriter : public Socket
+SocketSender::SocketSender(const Device *device, BundlePointer bundle)
+    : mAddress(device->address()),
+      mPort(device->port()),
+      mBundle(bundle)
 {
-    Q_OBJECT
+}
 
-public:
+void SocketSender::start()
+{
+    // TODO - perform connection
+}
 
-    SocketWriter(const Device *device, BundlePointer bundle);
-
-public Q_SLOTS:
-
-    void start();
-
-private:
-
-    QHostAddress mAddress;
-    quint16 mPort;
-
-    BundlePointer mBundle;
-};
-
-#endif // NS_SOCKETWRITER_H
+void SocketSender::processWrite()
+{
+    // TODO
+}

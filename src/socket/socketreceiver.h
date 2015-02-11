@@ -22,24 +22,22 @@
  * IN THE SOFTWARE.
  **/
 
+#ifndef NS_SOCKETRECEIVER_H
+#define NS_SOCKETRECEIVER_H
+
 #include "socket.h"
 
-Socket::Socket()
+class SocketReceiver : public Socket
 {
-    connect(this, &Socket::readyRead, this, &Socket::processRead);
-    connect(this, &Socket::bytesWritten, this, &Socket::processWrite);
-}
+    Q_OBJECT
 
-// Default implementations of start, processRead, and processWrite are empty
+public:
 
-void Socket::start()
-{
-}
+    SocketReceiver(qintptr socketDescriptor);
 
-void Socket::processRead()
-{
-}
+private:
 
-void Socket::processWrite()
-{
-}
+    virtual void processRead();
+};
+
+#endif // NS_SOCKETRECEIVER_H
