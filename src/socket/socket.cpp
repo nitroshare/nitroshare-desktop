@@ -66,8 +66,7 @@ void Socket::processRead()
         // At this point, the size of the packet is known,
         // check if the specified number of bytes are available
         if(mBuffer.size() >= mBufferSize) {
-            // Read the data and uncompress it
-            processPacket(qUncompress(mBuffer.left(mBufferSize)));
+            processPacket(mBuffer.left(mBufferSize));
             mBuffer.remove(0, mBufferSize);
             mBufferSize = 0;
         } else {
@@ -87,11 +86,10 @@ void Socket::processWrite()
 
 void Socket::writePacket(const QByteArray &data)
 {
-    // Compress the data, writing its length and contents
-    QByteArray compressed = qCompress(data);
-    qint32 packetSize = qToLittleEndian(compressed.length());
+    // Write the length of the data and its contents
+    qint32 packetSize = qToLittleEndian(data.length());
     write(reinterpret_cast<const char*>(&packetSize), sizeof(packetSize));
-    write(compressed);
+    write(data);
 }
 
 void Socket::emitProgress()
