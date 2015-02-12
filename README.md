@@ -7,7 +7,6 @@ A cross-platform network file transfer application designed to make transferring
 * Runs on Windows / Mac OS X / Linux
 * Automatic discovery of devices on the local network
 * Simple and intuitive user interface
-* Transparent compression applied during transfer
 * Transfer entire directories
 * Completely free and open-source
 
