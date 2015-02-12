@@ -29,21 +29,31 @@
 #include "socket.h"
 
 Socket::Socket()
-    : mBufferSize(0)
 {
     connect(this, &Socket::readyRead, this, &Socket::processRead);
     connect(this, &Socket::bytesWritten, this, &Socket::processWrite);
 }
 
+void Socket::start()
+{
+    // Reset transfer variables
+    mTransferBytes = 0;
+    mTransferBytesTotal = 0;
+
+    initialize();
+}
+
 void Socket::processRead()
 {
+    // Add the new data to the buffer
     mBuffer.append(readAll());
 
-    // Attempt to read all available packets from the buffer
+    // Process as many packets as can be read from the buffer
     forever {
-        // If the size of the packet is not yet known try to read it
+        // If the size of the packet is not yet known attempt to read it
         if(!mBufferSize) {
             if(mBuffer.size() >= sizeof(mBufferSize)) {
+                // memcpy must be used in order to avoid alignment issues
                 memcpy(&mBufferSize, mBuffer.constData(), sizeof(mBufferSize));
                 mBufferSize = qFromLittleEndian(mBufferSize);
                 mBuffer.remove(0, sizeof(mBufferSize));
@@ -52,8 +62,10 @@ void Socket::processRead()
             }
         }
 
-        // The size is known at this point, check to see if the amount is available
+        // At this point, the size of the packet is known,
+        // check if the specified number of bytes are available
         if(mBuffer.size() >= mBufferSize) {
+            // Read the data and uncompress it
             processPacket(qUncompress(mBuffer.left(mBufferSize)));
             mBuffer.remove(0, mBufferSize);
             mBufferSize = 0;
@@ -65,7 +77,8 @@ void Socket::processRead()
 
 void Socket::processWrite()
 {
-    // Only write the next packet when the buffer is empty
+    // This slot is invoked after data has been written - only write more
+    // packets if there is no data still waiting to be written
     if(!bytesToWrite()) {
         writeNextPacket();
     }
@@ -73,8 +86,17 @@ void Socket::processWrite()
 
 void Socket::writePacket(const QByteArray &data)
 {
-    // Write the length of the packet followed by the contents
-    qint32 size = qToLittleEndian(data.length());
-    write(reinterpret_cast<const char*>(size), sizeof(size));
+    // Write the length of the packet followed by its compressed contents
+    qint32 packetSize = qToLittleEndian(data.length());
+    write(reinterpret_cast<const char*>(packetSize), sizeof(packetSize));
     write(qCompress(data));
+}
+
+void Socket::emitProgress()
+{
+    // Calculate the current progress in the range 0-100
+    emit progress(static_cast<int>((
+            static_cast<double>(mTransferBytes) /
+            static_cast<double>(mTransferBytesTotal)
+    ) * 100));
 }

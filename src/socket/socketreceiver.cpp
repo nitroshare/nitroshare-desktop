@@ -28,9 +28,14 @@
 #include "socketreceiver.h"
 
 SocketReceiver::SocketReceiver(qintptr socketDescriptor)
-    : mState(WaitingForTransferHeader)
 {
     setSocketDescriptor(socketDescriptor);
+}
+
+void SocketReceiver::initialize()
+{
+    // Nothing happens until data is received
+    mState = WaitingForTransferHeader;
 }
 
 void SocketReceiver::processPacket(const QByteArray &data)
@@ -51,68 +56,76 @@ void SocketReceiver::processPacket(const QByteArray &data)
 
 void SocketReceiver::writeNextPacket()
 {
-    // This is not currently used for receiving transfers
+    // This should never be invoked since no data is written
 }
 
 void SocketReceiver::processTransferHeader(const QByteArray &data)
 {
     QJsonDocument document = QJsonDocument::fromJson(data);
-    if(!document.isEmpty()) {
-        QJsonObject object = document.object();
 
-        // TODO: do more error checking here
-        emit deviceName(object.value("name").toString());
-        mTransferTotalBytes = object.value("size").toString().toLongLong();
-        mTransferRemainingFiles = object.value("count").toString().toLongLong();
-
-        // Move on to waiting for the first file header
-        mState = WaitingForFileHeader;
-    } else {
+    // Ensure that the transfer header was readable
+    if(document.isEmpty()) {
         emit transferError(tr("Unable to read transfer header"));
+        return;
     }
+
+    QJsonObject object = document.object();
+
+    // TODO: do more error checking here
+    emit deviceName(object.value("name").toString());
+    mTransferBytesTotal = object.value("size").toString().toLongLong();
+    mTransferFilesRemaining = object.value("count").toString().toLongLong();
+
+    // Switch states
+    mState = WaitingForFileHeader;
 }
 
 void SocketReceiver::processFileHeader(const QByteArray &data)
 {
     QJsonDocument document = QJsonDocument::fromJson(data);
     if(!document.isEmpty()) {
-        QJsonObject object = document.object();
-
-        // TODO: do more error checking here
-        mFile.setFileName(object.value("name").toString());
-        mFileRemainingBytes = object.value("size").toString().toLongLong();
-
-        // If the file can be opened, switch states
-        if(!mFile.open(QIODevice::WriteOnly)) {
-            mState = WaitingForFile;
-        } else {
-            emit transferError(tr("Unable to write %1").arg(mFile.fileName()));
-        }
-    } else {
         emit transferError(tr("Unable to read file header"));
+        return;
     }
+
+    QJsonObject object = document.object();
+
+    // TODO: do more error checking here
+    mFile.setFileName(object.value("name").toString());
+    mFileBytesRemaining = object.value("size").toString().toLongLong();
+
+    // Abort if the file can't be opened
+    if(!mFile.open(QIODevice::WriteOnly)) {
+        emit transferError(tr("Unable to open %1").arg(mFile.fileName()));
+        return;
+    }
+
+    // Switch states
+    mState = WaitingForFile;
 }
 
 void SocketReceiver::processFile(const QByteArray &data)
 {
     // Write the data to the file
     mFile.write(data);
-    mFileRemainingBytes -= data.size();
+
+    // Update the number of bytes remaining for the file and the total transferred
+    mFileBytesRemaining -= data.size();
     mTransferBytes += data.size();
 
-    // TODO: Update progress
+    // Provide a progress update
+    emitProgress();
 
-    // Check to see if that was the end of the file
-    if(mFileRemainingBytes <= 0) {
-        // If so, close the file and begin waiting for the next header
+    // If there are no more bytes to write to the file, move on the
+    // next file or indicate that the transfer has completed
+    if(mFileBytesRemaining <= 0) {
         mFile.close();
-        mState = WaitingForFileHeader;
-        mTransferRemainingFiles -= 1;
 
-        // Check to see if that was the end of the transfer
-        if(mTransferRemainingFiles) {
-            // If so, we're done!
+        if(!mTransferFilesRemaining) {
             emit success();
+        } else {
+            mTransferFilesRemaining -= 1;
+            mState = WaitingForFileHeader;
         }
     }
 }

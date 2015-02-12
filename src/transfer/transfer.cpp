@@ -99,6 +99,8 @@ Transfer::Transfer(qintptr socketDescriptor, QObject *parent)
     d->direction = Receive;
     d->state = InProgress;
     d->deviceName = tr("[unknown]");
+
+    d->socket->start();
 }
 
 Transfer::Transfer(const Device *device, BundlePointer bundle, QObject *parent)
@@ -109,7 +111,7 @@ Transfer::Transfer(const Device *device, BundlePointer bundle, QObject *parent)
     d->state = Connecting;
     d->deviceName = device->name();
 
-    qobject_cast<SocketSender*>(d->socket)->start();
+    d->socket->start();
 }
 
 Transfer::Direction Transfer::direction() const

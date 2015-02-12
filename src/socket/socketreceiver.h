@@ -39,12 +39,7 @@ public:
 
 private:
 
-    enum State {
-        WaitingForTransferHeader,
-        WaitingForFileHeader,
-        WaitingForFile
-    };
-
+    virtual void initialize();
     virtual void processPacket(const QByteArray &data);
     virtual void writeNextPacket();
 
@@ -52,14 +47,19 @@ private:
     void processFileHeader(const QByteArray &data);
     void processFile(const QByteArray &data);
 
-    State mState;
+    // Current transfer state
+    enum {
+        WaitingForTransferHeader,
+        WaitingForFileHeader,
+        WaitingForFile
+    } mState;
 
-    qint32 mTransferRemainingFiles;
-    qint64 mTransferBytes;
-    qint64 mTransferTotalBytes;
+    // Number of files remaining to be transferred
+    qint32 mTransferFilesRemaining;
 
+    // Data for the file currently being read
     QFile mFile;
-    qint64 mFileRemainingBytes;
+    qint64 mFileBytesRemaining;
 };
 
 #endif // NS_SOCKETRECEIVER_H

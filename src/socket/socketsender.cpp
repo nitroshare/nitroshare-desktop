@@ -40,31 +40,31 @@ SocketSender::SocketSender(const Device *device, BundlePointer bundle)
     });
 }
 
-void SocketSender::start()
+void SocketSender::initialize()
 {
-    // Reset everything
     mState = WritingTransferHeader;
     mIterator = mBundle->constBegin();
-    mTransferBytes = 0;
 
     if(mFile.isOpen()) {
         mFile.close();
     }
-    mFileRemainingBytes = 0;
 
-    mBuffer.resize(Settings::get<int>(Settings::TransferBuffer));
+    mFileBuffer.resize(Settings::get<int>(Settings::TransferBuffer));
 
-    // Attempt connection to receiver
+    // If this succeeds, connected will be emitted and writeNextPacket called
     connectToHost(mAddress, mPort);
 }
 
-void SocketSender::processPacket(const QByteArray &data)
+void SocketSender::processPacket(const QByteArray &)
 {
-    // This is not currently used for sending transfers
+    // Any data received here is completely unexpected
+    emit transferError(tr("Unexpected data received"));
 }
 
 void SocketSender::writeNextPacket()
 {
+    // This is invoked when there is no data waiting to be written
+    // Depending on the current state, send the next packet
     switch(mState) {
     case WritingTransferHeader:
         writeTransferHeader();
@@ -75,50 +75,52 @@ void SocketSender::writeNextPacket()
     case WritingFile:
         writeFile();
         break;
+    case Finished:
+        emit success();
     }
 }
 
 void SocketSender::writeTransferHeader()
 {
-    // Write the transfer header
+    // Due to poor translation between 64-bit integers in C++ and JSON,
+    // it is necessary to send these integers as strings
     QJsonObject object = QJsonObject::fromVariantMap({
         { "protocol", 1 },
         { "name", Settings::get<QString>(Settings::DeviceName) },
-        { "size", mBundle->totalSize() },
-        { "count", mBundle->count() }
+        { "size", QString::number(mBundle->totalSize()) },
+        { "count", QString::number(mBundle->count()) }
     });
-    writePacket(QJsonDocument(object).toJson(QJsonDocument::Compact));
 
-    // Move on to writing the files
+    // Write the packet containing the header and switch states
+    writePacket(QJsonDocument(object).toJson(QJsonDocument::Compact));
     mState = WritingFileHeader;
 }
 
 void SocketSender::writeFileHeader()
 {
-    // Open the file and obtain its size
     mFile.setFileName(mIterator->absoluteFilename());
-
     if(mFile.open(QIODevice::ReadOnly)) {
-        mFileRemainingBytes = mFile.size();
+        mFileBytesRemaining = mFile.size();
 
-        // Write the file header
         QJsonObject object = QJsonObject::fromVariantMap({
             { "name", mIterator->filename() },
-            { "size", mFileRemainingBytes }
+            { "size", QString::number(mFileBytesRemaining) }
         });
-        writePacket(QJsonDocument(object).toJson(QJsonDocument::Compact));
 
-        // Switch the state to file writing
+        // Write the packet containing the header and switch states
+        writePacket(QJsonDocument(object).toJson(QJsonDocument::Compact));
         mState = WritingFile;
     } else {
-        emit transferError(tr("Unable to read %1").arg(mIterator->absoluteFilename()));
+        emit transferError(tr("Unable to open %1").arg(mIterator->absoluteFilename()));
     }
 }
 
 void SocketSender::writeFile()
 {
-    // Read the next chunk of data from the file
-    qint64 bytesRead = mFile.read(mBuffer.data(), qMin(mFileRemainingBytes, static_cast<qint64>(mBuffer.size())));
+    // Read the next chunk of data from the file - no more than either the size
+    // of the buffer or the amount of data remaining in the file
+    qint64 bytesRead = mFile.read(mFileBuffer.data(),
+            qMin(mFileBytesRemaining, static_cast<qint64>(mFileBuffer.size())));
 
     // Ensure that a valid number of bytes were read
     if(bytesRead <= 0) {
@@ -127,23 +129,24 @@ void SocketSender::writeFile()
     }
 
     // Write a packet containing the data that was just read
-    writePacket(mBuffer.left(bytesRead));
+    writePacket(mFileBuffer.left(bytesRead));
 
     // Update the number of bytes remaining in the file and the total transferred
-    mFileRemainingBytes -= bytesRead;
+    mFileBytesRemaining -= bytesRead;
     mTransferBytes += bytesRead;
 
-    // TODO: emit progress
+    // Provide a progress update
+    emitProgress();
 
-    // Check to see if we wrote the entire file contents
-    if(!mFileRemainingBytes) {
-        // Check to see if there are any files left
+    // If there are no bytes remaining in the file, move on to the next file
+    // or indicate that the transfer has completed (emit success after write completes)
+    if(!mFileBytesRemaining) {
+        mFile.close();
+
         if(mIterator == mBundle->constEnd()) {
-            // None left, emit the success signal
-            emit success();
+            mState = Finished;
         } else {
-            // Otherwise, move on to the next file
-            mIterator++;
+            ++mIterator;
             mState = WritingFileHeader;
         }
     }

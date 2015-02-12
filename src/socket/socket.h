@@ -35,6 +35,8 @@ public:
 
     Socket();
 
+    void start();
+
 Q_SIGNALS:
 
     void deviceName(const QString &deviceName);
@@ -49,10 +51,15 @@ private Q_SLOTS:
 
 protected:
 
+    virtual void initialize() = 0;
     virtual void processPacket(const QByteArray &data) = 0;
     virtual void writeNextPacket() = 0;
 
     void writePacket(const QByteArray &data);
+    void emitProgress();
+
+    qint64 mTransferBytes;
+    qint64 mTransferBytesTotal;
 
 private:
 

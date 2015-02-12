@@ -39,18 +39,9 @@ public:
 
     SocketSender(const Device *device, BundlePointer bundle);
 
-public Q_SLOTS:
-
-    void start();
-
 private:
 
-    enum State {
-        WritingTransferHeader,
-        WritingFileHeader,
-        WritingFile,
-    };
-
+    virtual void initialize();
     virtual void processPacket(const QByteArray &data);
     virtual void writeNextPacket();
 
@@ -58,19 +49,26 @@ private:
     void writeFileHeader();
     void writeFile();
 
+    // Data specific to a transfer that sends files
     QHostAddress mAddress;
     quint16 mPort;
     BundlePointer mBundle;
 
-    State mState;
+    // Current transfer state
+    enum {
+        WritingTransferHeader,
+        WritingFileHeader,
+        WritingFile,
+        Finished
+    } mState;
 
+    // Iterator pointing to the file currently being written
     Bundle::const_iterator mIterator;
-    qint64 mTransferBytes;
 
+    // Data for the file currently being written
     QFile mFile;
-    qint64 mFileRemainingBytes;
-
-    QByteArray mBuffer;
+    qint64 mFileBytesRemaining;
+    QByteArray mFileBuffer;
 };
 
 #endif // NS_SOCKETSENDER_H
