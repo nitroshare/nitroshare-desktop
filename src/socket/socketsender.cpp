@@ -138,11 +138,11 @@ void SocketSender::writeFileData()
     // or indicate that the transfer has completed (emit success after write completes)
     if(!mFileBytesRemaining) {
         mFile.close();
+        ++mIterator;
 
         if(mIterator == mBundle->constEnd()) {
             mState = Finished;
         } else {
-            ++mIterator;
             mState = FileHeader;
         }
     }

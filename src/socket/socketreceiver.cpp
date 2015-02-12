@@ -134,11 +134,11 @@ void SocketReceiver::processFileData(const QByteArray &data)
     // next file or indicate that the transfer has completed
     if(mFileBytesRemaining <= 0) {
         mFile.close();
+        mTransferFilesRemaining -= 1;
 
         if(!mTransferFilesRemaining) {
             emit success();
         } else {
-            mTransferFilesRemaining -= 1;
             mState = FileHeader;
         }
     }
