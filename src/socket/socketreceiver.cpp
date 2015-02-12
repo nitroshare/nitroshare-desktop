@@ -83,7 +83,9 @@ void SocketReceiver::processTransferHeader(const QByteArray &data)
 void SocketReceiver::processFileHeader(const QByteArray &data)
 {
     QJsonDocument document = QJsonDocument::fromJson(data);
-    if(!document.isEmpty()) {
+
+    // Ensure that the file header was readable
+    if(document.isEmpty()) {
         emit transferError(tr("Unable to read file header"));
         return;
     }

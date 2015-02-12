@@ -87,7 +87,7 @@ void SocketSender::writeTransferHeader()
     // Due to poor translation between 64-bit integers in C++ and JSON,
     // it is necessary to send these integers as strings
     QJsonObject object = QJsonObject::fromVariantMap({
-        { "protocol", 1 },
+        { "protocol", "1" },
         { "name", Settings::get<QString>(Settings::DeviceName) },
         { "size", QString::number(mTransferBytesTotal) },
         { "count", QString::number(mBundle->count()) }
