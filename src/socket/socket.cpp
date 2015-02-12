@@ -87,10 +87,11 @@ void Socket::processWrite()
 
 void Socket::writePacket(const QByteArray &data)
 {
-    // Write the length of the packet followed by its compressed contents
-    qint32 packetSize = qToLittleEndian(data.length());
+    // Compress the data, writing its length and contents
+    QByteArray compressed = qCompress(data);
+    qint32 packetSize = qToLittleEndian(compressed.length());
     write(reinterpret_cast<const char*>(&packetSize), sizeof(packetSize));
-    write(qCompress(data));
+    write(compressed);
 }
 
 void Socket::emitProgress()
