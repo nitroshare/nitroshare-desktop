@@ -42,6 +42,8 @@ SocketSender::SocketSender(const Device *device, BundlePointer bundle)
 
 void SocketSender::initialize()
 {
+    mTransferBytesTotal = mBundle->totalSize();
+
     mState = WritingTransferHeader;
     mIterator = mBundle->constBegin();
 
@@ -87,7 +89,7 @@ void SocketSender::writeTransferHeader()
     QJsonObject object = QJsonObject::fromVariantMap({
         { "protocol", 1 },
         { "name", Settings::get<QString>(Settings::DeviceName) },
-        { "size", QString::number(mBundle->totalSize()) },
+        { "size", QString::number(mTransferBytesTotal) },
         { "count", QString::number(mBundle->count()) }
     });
 

@@ -95,9 +95,13 @@ void Socket::writePacket(const QByteArray &data)
 
 void Socket::emitProgress()
 {
-    // Calculate the current progress in the range 0-100
-    emit progress(static_cast<int>((
-            static_cast<double>(mTransferBytes) /
-            static_cast<double>(mTransferBytesTotal)
-    ) * 100.0));
+    // Calculate the current progress in the range 0-100,
+    // being sure to avoid a division by 0 error
+    if(mTransferBytesTotal) {
+        double n = static_cast<double>(mTransferBytes),
+               d = static_cast<double>(mTransferBytesTotal);
+        emit progress(static_cast<int>((n / d) * 100.0));
+    } else {
+        emit progress(0);
+    }
 }
