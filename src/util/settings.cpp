@@ -59,7 +59,7 @@ const QMap<Settings::Key, Setting> keys {
             return false;
         }
     }),
-    DEFINE_SETTING(TransferBuffer, { return 16384; }),
+    DEFINE_SETTING(TransferBuffer, { return 65536; }),
     DEFINE_SETTING(TransferDirectory, {
         return QStandardPaths::writableLocation(QStandardPaths::DesktopLocation);
     }),
