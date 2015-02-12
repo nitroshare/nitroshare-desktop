@@ -29,6 +29,7 @@
 #include "socket.h"
 
 Socket::Socket()
+    : mBufferSize(0)
 {
     connect(this, &Socket::readyRead, this, &Socket::processRead);
     connect(this, &Socket::bytesWritten, this, &Socket::processWrite);
@@ -98,5 +99,5 @@ void Socket::emitProgress()
     emit progress(static_cast<int>((
             static_cast<double>(mTransferBytes) /
             static_cast<double>(mTransferBytesTotal)
-    ) * 100));
+    ) * 100.0));
 }
