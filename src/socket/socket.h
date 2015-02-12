@@ -26,6 +26,7 @@
 #define NS_SOCKET_H
 
 #include <QTcpSocket>
+#include <QVariantMap>
 
 class Socket : public QTcpSocket
 {
@@ -56,6 +57,7 @@ protected:
     virtual void writeNextPacket() = 0;
 
     void writePacket(const QByteArray &data);
+    void writePacket(const QVariantMap &map);
     void emitProgress();
 
     qint64 mTransferBytes;

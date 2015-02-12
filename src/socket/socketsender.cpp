@@ -60,7 +60,7 @@ void SocketSender::initialize()
 void SocketSender::processPacket(const QByteArray &)
 {
     // Any data received here is completely unexpected
-    emit transferError(tr("Unexpected data received"));
+    throw tr("Unexpected data received");
 }
 
 void SocketSender::writeNextPacket()
@@ -85,36 +85,35 @@ void SocketSender::writeNextPacket()
 void SocketSender::writeTransferHeader()
 {
     // Due to poor translation between 64-bit integers in C++ and JSON,
-    // it is necessary to send these integers as strings
-    QJsonObject object = QJsonObject::fromVariantMap({
+    // it is necessary to send large integers as strings
+    writePacket({
         { "protocol", "1" },
         { "name", Settings::get<QString>(Settings::DeviceName) },
         { "size", QString::number(mTransferBytesTotal) },
         { "count", QString::number(mBundle->count()) }
     });
 
-    // Write the packet containing the header and switch states
-    writePacket(QJsonDocument(object).toJson(QJsonDocument::Compact));
+    // The next packet will be the first file header
     mState = WritingFileHeader;
 }
 
 void SocketSender::writeFileHeader()
 {
+    // Set the filename and attempt to open the file
     mFile.setFileName(mIterator->absoluteFilename());
-    if(mFile.open(QIODevice::ReadOnly)) {
-        mFileBytesRemaining = mFile.size();
-
-        QJsonObject object = QJsonObject::fromVariantMap({
-            { "name", mIterator->filename() },
-            { "size", QString::number(mFileBytesRemaining) }
-        });
-
-        // Write the packet containing the header and switch states
-        writePacket(QJsonDocument(object).toJson(QJsonDocument::Compact));
-        mState = WritingFile;
-    } else {
-        emit transferError(tr("Unable to open %1").arg(mIterator->absoluteFilename()));
+    if(!mFile.open(QIODevice::ReadOnly)) {
+        throw tr("Unable to open %1").arg(mIterator->absoluteFilename());
     }
+
+    // Obtain the file size and write the file header
+    mFileBytesRemaining = mFile.size();
+    writePacket({
+        { "name", mIterator->filename() },
+        { "size", QString::number(mFileBytesRemaining) }
+    });
+
+    // The next packet will be the first chunk from the file
+    mState = WritingFile;
 }
 
 void SocketSender::writeFile()
@@ -126,8 +125,7 @@ void SocketSender::writeFile()
 
     // Ensure that a valid number of bytes were read
     if(bytesRead <= 0) {
-        emit transferError(tr("Unable to read from %1").arg(mFile.fileName()));
-        return;
+         throw tr("Unable to read from %1").arg(mFile.fileName());
     }
 
     // Write a packet containing the data that was just read

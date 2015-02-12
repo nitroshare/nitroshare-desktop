@@ -69,8 +69,7 @@ void SocketReceiver::processTransferHeader(const QByteArray &data)
 
     // Ensure that the transfer header was readable
     if(document.isEmpty()) {
-        emit transferError(tr("Unable to read transfer header"));
-        return;
+        throw tr("Unable to read transfer header");
     }
 
     QJsonObject object = document.object();
@@ -80,7 +79,7 @@ void SocketReceiver::processTransferHeader(const QByteArray &data)
     mTransferBytesTotal = object.value("size").toString().toLongLong();
     mTransferFilesRemaining = object.value("count").toString().toLongLong();
 
-    // Switch states
+    // The next packet will be the first file header
     mState = WaitingForFileHeader;
 }
 
@@ -90,8 +89,7 @@ void SocketReceiver::processFileHeader(const QByteArray &data)
 
     // Ensure that the file header was readable
     if(document.isEmpty()) {
-        emit transferError(tr("Unable to read file header"));
-        return;
+        throw tr("Unable to read file header");
     }
 
     QJsonObject object = document.object();
@@ -104,8 +102,7 @@ void SocketReceiver::processFileHeader(const QByteArray &data)
     QDir path(QFileInfo(info.absoluteFilename()).path());
     if(!path.exists()) {
         if(!path.mkpath(".")) {
-            emit transferError(tr("Unable to create %1").arg(path.absolutePath()));
-            return;
+            throw tr("Unable to create %1").arg(path.absolutePath());
         }
     }
 
@@ -115,11 +112,10 @@ void SocketReceiver::processFileHeader(const QByteArray &data)
 
     // Abort if the file can't be opened
     if(!mFile.open(QIODevice::WriteOnly)) {
-        emit transferError(tr("Unable to open %1").arg(mFile.fileName()));
-        return;
+        throw tr("Unable to open %1").arg(mFile.fileName());
     }
 
-    // Switch states
+    // The next packet will be the first chunk from the file
     mState = WaitingForFile;
 }
 

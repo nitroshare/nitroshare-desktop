@@ -24,6 +24,8 @@
 
 #include <cstring>
 
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QtEndian>
 
 #include "socket.h"
@@ -66,9 +68,16 @@ void Socket::processRead()
         // At this point, the size of the packet is known,
         // check if the specified number of bytes are available
         if(mBuffer.size() >= mBufferSize) {
-            processPacket(mBuffer.left(mBufferSize));
+            QByteArray data = mBuffer.left(mBufferSize);
             mBuffer.remove(0, mBufferSize);
             mBufferSize = 0;
+
+            // Pass the packet along to the child class
+            try {
+                processPacket(data);
+            } catch(const QByteArray &message) {
+                emit transferError(message);
+            }
         } else {
             break;
         }
@@ -80,7 +89,11 @@ void Socket::processWrite()
     // This slot is invoked after data has been written - only write more
     // packets if there is no data still waiting to be written
     if(!bytesToWrite()) {
-        writeNextPacket();
+        try {
+            writeNextPacket();
+        } catch(const QString &message) {
+            emit transferError(message);
+        }
     }
 }
 
@@ -92,10 +105,17 @@ void Socket::writePacket(const QByteArray &data)
     write(data);
 }
 
+void Socket::writePacket(const QVariantMap &map)
+{
+    // Create a JSON string from the map and write it
+    QJsonObject object = QJsonObject::fromVariantMap(map);
+    writePacket(QJsonDocument(object).toJson(QJsonDocument::Compact));
+}
+
 void Socket::emitProgress()
 {
     // Calculate the current progress in the range 0-100,
-    // being sure to avoid a division by 0 error
+    // being careful to avoid a division by 0 error
     if(mTransferBytesTotal) {
         double n = static_cast<double>(mTransferBytes),
                d = static_cast<double>(mTransferBytesTotal);
