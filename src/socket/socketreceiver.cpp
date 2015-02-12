@@ -22,12 +22,16 @@
  * IN THE SOFTWARE.
  **/
 
+#include <QFileInfo>
 #include <QJsonDocument>
 #include <QJsonObject>
 
+#include "../filesystem/fileinfo.h"
+#include "../util/settings.h"
 #include "socketreceiver.h"
 
 SocketReceiver::SocketReceiver(qintptr socketDescriptor)
+    : mRoot(Settings::get<QString>(Settings::TransferDirectory))
 {
     setSocketDescriptor(socketDescriptor);
 }
@@ -92,8 +96,21 @@ void SocketReceiver::processFileHeader(const QByteArray &data)
 
     QJsonObject object = document.object();
 
+    // Obtain the filename
+    QString filename = object.value("name").toString();
+    FileInfo info(mRoot, filename);
+
+    // Ensure that the path exists
+    QDir path(QFileInfo(info.absoluteFilename()).path());
+    if(!path.exists()) {
+        if(!path.mkpath(".")) {
+            emit transferError(tr("Unable to create %1").arg(path.absolutePath()));
+            return;
+        }
+    }
+
     // TODO: do more error checking here
-    mFile.setFileName(object.value("name").toString());
+    mFile.setFileName(info.absoluteFilename());
     mFileBytesRemaining = object.value("size").toString().toLongLong();
 
     // Abort if the file can't be opened

@@ -25,6 +25,7 @@
 #ifndef NS_SOCKETRECEIVER_H
 #define NS_SOCKETRECEIVER_H
 
+#include <QDir>
 #include <QFile>
 
 #include "socket.h"
@@ -56,6 +57,9 @@ private:
 
     // Number of files remaining to be transferred
     qint32 mTransferFilesRemaining;
+
+    // Directory to write files to
+    QDir mRoot;
 
     // Data for the file currently being read
     QFile mFile;
