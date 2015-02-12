@@ -40,6 +40,8 @@ Socket::Socket()
 void Socket::start()
 {
     // Reset transfer variables
+    mState = TransferHeader;
+
     mTransferBytes = 0;
     mTransferBytesTotal = 0;
 

@@ -22,8 +22,6 @@
  * IN THE SOFTWARE.
  **/
 
-#include <QJsonDocument>
-#include <QJsonObject>
 #include <QVariantMap>
 
 #include "../util/settings.h"
@@ -43,8 +41,6 @@ SocketSender::SocketSender(const Device *device, BundlePointer bundle)
 void SocketSender::initialize()
 {
     mTransferBytesTotal = mBundle->totalSize();
-
-    mState = WritingTransferHeader;
     mIterator = mBundle->constBegin();
 
     if(mFile.isOpen()) {
@@ -68,14 +64,14 @@ void SocketSender::writeNextPacket()
     // This is invoked when there is no data waiting to be written
     // Depending on the current state, send the next packet
     switch(mState) {
-    case WritingTransferHeader:
+    case TransferHeader:
         writeTransferHeader();
         break;
-    case WritingFileHeader:
+    case FileHeader:
         writeFileHeader();
         break;
-    case WritingFile:
-        writeFile();
+    case FileData:
+        writeFileData();
         break;
     case Finished:
         emit success();
@@ -94,7 +90,7 @@ void SocketSender::writeTransferHeader()
     });
 
     // The next packet will be the first file header
-    mState = WritingFileHeader;
+    mState = FileHeader;
 }
 
 void SocketSender::writeFileHeader()
@@ -113,10 +109,10 @@ void SocketSender::writeFileHeader()
     });
 
     // The next packet will be the first chunk from the file
-    mState = WritingFile;
+    mState = FileData;
 }
 
-void SocketSender::writeFile()
+void SocketSender::writeFileData()
 {
     // Read the next chunk of data from the file - no more than either the size
     // of the buffer or the amount of data remaining in the file
@@ -147,7 +143,7 @@ void SocketSender::writeFile()
             mState = Finished;
         } else {
             ++mIterator;
-            mState = WritingFileHeader;
+            mState = FileHeader;
         }
     }
 }

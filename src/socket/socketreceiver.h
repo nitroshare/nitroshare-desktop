@@ -46,14 +46,7 @@ private:
 
     void processTransferHeader(const QByteArray &data);
     void processFileHeader(const QByteArray &data);
-    void processFile(const QByteArray &data);
-
-    // Current transfer state
-    enum {
-        WaitingForTransferHeader,
-        WaitingForFileHeader,
-        WaitingForFile
-    } mState;
+    void processFileData(const QByteArray &data);
 
     // Number of files remaining to be transferred
     qint32 mTransferFilesRemaining;

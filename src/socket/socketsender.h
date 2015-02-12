@@ -47,20 +47,12 @@ private:
 
     void writeTransferHeader();
     void writeFileHeader();
-    void writeFile();
+    void writeFileData();
 
-    // Data specific to a transfer that sends files
+    // Data needed to connect to the receiver and send files
     QHostAddress mAddress;
     quint16 mPort;
     BundlePointer mBundle;
-
-    // Current transfer state
-    enum {
-        WritingTransferHeader,
-        WritingFileHeader,
-        WritingFile,
-        Finished
-    } mState;
 
     // Iterator pointing to the file currently being written
     Bundle::const_iterator mIterator;

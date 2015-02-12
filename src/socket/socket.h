@@ -60,6 +60,13 @@ protected:
     void writePacket(const QVariantMap &map);
     void emitProgress();
 
+    enum {
+        TransferHeader,
+        FileHeader,
+        FileData,
+        Finished
+    } mState;
+
     qint64 mTransferBytes;
     qint64 mTransferBytesTotal;
 

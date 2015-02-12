@@ -38,22 +38,21 @@ SocketReceiver::SocketReceiver(qintptr socketDescriptor)
 
 void SocketReceiver::initialize()
 {
-    // Nothing happens until data is received
-    mState = WaitingForTransferHeader;
+    // Socket is already connected at this point, do nothing
 }
 
 void SocketReceiver::processPacket(const QByteArray &data)
 {
     // Depending on the state of the transfer, process the packet accordingly
     switch(mState){
-    case WaitingForTransferHeader:
+    case TransferHeader:
         processTransferHeader(data);
         break;
-    case WaitingForFileHeader:
+    case FileHeader:
         processFileHeader(data);
         break;
-    case WaitingForFile:
-        processFile(data);
+    case FileData:
+        processFileData(data);
         break;
     }
 }
@@ -80,7 +79,7 @@ void SocketReceiver::processTransferHeader(const QByteArray &data)
     mTransferFilesRemaining = object.value("count").toString().toLongLong();
 
     // The next packet will be the first file header
-    mState = WaitingForFileHeader;
+    mState = FileHeader;
 }
 
 void SocketReceiver::processFileHeader(const QByteArray &data)
@@ -116,10 +115,10 @@ void SocketReceiver::processFileHeader(const QByteArray &data)
     }
 
     // The next packet will be the first chunk from the file
-    mState = WaitingForFile;
+    mState = FileData;
 }
 
-void SocketReceiver::processFile(const QByteArray &data)
+void SocketReceiver::processFileData(const QByteArray &data)
 {
     // Write the data to the file
     mFile.write(data);
@@ -140,7 +139,7 @@ void SocketReceiver::processFile(const QByteArray &data)
             emit success();
         } else {
             mTransferFilesRemaining -= 1;
-            mState = WaitingForFileHeader;
+            mState = FileHeader;
         }
     }
 }
