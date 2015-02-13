@@ -1,20 +1,21 @@
+# Define a few important variables that describe the application
+PROJECT_NAME        = nitroshare
+PROJECT_TITLE       = NitroShare
+PROJECT_DESCRIPTION = Network File Transfer Application
+PROJECT_AUTHOR      = Nathan Osman
+PROJECT_DOMAIN      = nitroshare.co
+PROJECT_WEBSITE     = http://$${PROJECT_DOMAIN}
+
 # Define the components of the application version
-NITROSHARE_VERSION_MAJOR = 0
-NITROSHARE_VERSION_MINOR = 3
-NITROSHARE_VERSION_PATCH = 0
+PROJECT_VERSION_MAJOR = 0
+PROJECT_VERSION_MINOR = 3
+PROJECT_VERSION_PATCH = 0
 
-# Create a string that combines the application version
-NITROSHARE_VERSION = $${NITROSHARE_VERSION_MAJOR}.$${NITROSHARE_VERSION_MINOR}.$${NITROSHARE_VERSION_PATCH}
-
-# Add the version components to the list of defines
-DEFINES += \
-    NITROSHARE_VERSION_MAJOR=$${NITROSHARE_VERSION_MAJOR} \
-    NITROSHARE_VERSION_MINOR=$${NITROSHARE_VERSION_MINOR} \
-    NITROSHARE_VERSION_PATCH=$${NITROSHARE_VERSION_PATCH} \
-    NITROSHARE_VERSION=\\\"$${NITROSHARE_VERSION}\\\"
+# Define a string that combines the application version components
+PROJECT_VERSION = $${PROJECT_VERSION_MAJOR}.$${PROJECT_VERSION_MINOR}.$${PROJECT_VERSION_PATCH}
 
 # Don't pollute the source tree with files everywhere!
-# Instead, create a directory to store the files
+# Instead, define filetype-specific directories where built files should go
 DESTDIR     = $${PWD}/out
 OBJECTS_DIR = $${PWD}/out/obj
 MOC_DIR     = $${PWD}/out/moc

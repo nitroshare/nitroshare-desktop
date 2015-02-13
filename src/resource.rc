@@ -1,29 +1,32 @@
 #include <windows.h>
 
+#include "config.h"
+
 APP_ICON ICON DISCARDABLE "data/nitroshare.ico"
 
-#define NITROSHARE_VERSION_RC \
-    NITROSHARE_VERSION_MAJOR, \
-    NITROSHARE_VERSION_MINOR, \
-    NITROSHARE_VERSION_PATCH, \
+// Build a comma-separated version
+#define PROJECT_VERSION_RC \
+    PROJECT_VERSION_MAJOR, \
+    PROJECT_VERSION_MINOR, \
+    PROJECT_VERSION_PATCH, \
     0
 
 VS_VERSION_INFO VERSIONINFO
-    FILEVERSION    NITROSHARE_VERSION_RC
-    PRODUCTVERSION NITROSHARE_VERSION_RC
+    FILEVERSION    PROJECT_VERSION_RC
+    PRODUCTVERSION PROJECT_VERSION_RC
 {
     BLOCK "StringFileInfo"
     {
         BLOCK "040904b0"
         {
-            VALUE "CompanyName",      "Nathan Osman\0"
-            VALUE "FileDescription",  "Network File Transfer Application\0"
-            VALUE "FileVersion",      "@PROJECT_VERSION@\0"
-            VALUE "InternalName",     "nitroshare\0"
-            VALUE "LegalCopyright",   "Copyright (c) 2015 Nathan Osman\0"
-            VALUE "OriginalFilename", "nitroshare.exe\0"
-            VALUE "ProductName",      "NitroShare\0"
-            VALUE "ProductVersion",   "@PROJECT_VERSION@\0"
+            VALUE "CompanyName",      PROJECT_AUTHOR "\0"
+            VALUE "FileDescription",  PROJECT_DESCRIPTION "\0"
+            VALUE "FileVersion",      PROJECT_VERSION "\0"
+            VALUE "InternalName",     PROJECT_NAME "\0"
+            VALUE "LegalCopyright",   "Copyright (c) 2015 " PROJECT_AUTHOR "\0"
+            VALUE "OriginalFilename", PROJECT_NAME ".exe\0"
+            VALUE "ProductName",      PROJECT_TITLE "\0"
+            VALUE "ProductVersion",   PROJECT_VERSION "\0"
         }
     }
     BLOCK "VarFileInfo"

@@ -7,6 +7,9 @@ QT      += network widgets
 # Some compilers require a flag to enable C++11
 CONFIG += c++11
 
+# Generate the config.h file
+QMAKE_SUBSTITUTES += config.h.in
+
 # Files common to all platforms
 HEADERS += \
     application/application.h \

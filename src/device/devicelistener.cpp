@@ -27,6 +27,7 @@
 #include <QSet>
 
 #include "../util/platform.h"
+#include "config.h"
 #include "devicelistener.h"
 
 DeviceListener::DeviceListener()
@@ -61,7 +62,7 @@ void DeviceListener::sendPings()
     // initializer instead of converting a QVariantMap
 
     QJsonObject object(QJsonObject::fromVariantMap({
-        { "version", NITROSHARE_VERSION },
+        { "version", PROJECT_VERSION },
         { "uuid", Settings::get<QString>(Settings::DeviceUUID) },
         { "name", Settings::get<QString>(Settings::DeviceName) },
         { "operating_system", Platform::currentOSName() },

@@ -29,14 +29,14 @@
 #include "../icon/trayicon.h"
 #include "application.h"
 
-#ifdef BUILD_INDICATORICON
+#ifdef BUILD_APPINDICATOR
 #include "../icon/indicatoricon.h"
 #include "../util/platform.h"
 #endif
 
 Application::Application()
     : mTransferWindow(&mTransferModel),
-#ifdef BUILD_INDICATORICON
+#ifdef BUILD_APPINDICATOR
       mIcon(Platform::isUnity() ? static_cast<Icon *>(new IndicatorIcon) :
                                   static_cast<Icon *>(new TrayIcon))
 #else

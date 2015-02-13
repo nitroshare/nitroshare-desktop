@@ -25,6 +25,7 @@
 #include <QApplication>
 
 #include "application/application.h"
+#include "config.h"
 
 int main(int argc, char **argv)
 {
@@ -32,11 +33,11 @@ int main(int argc, char **argv)
     app.setQuitOnLastWindowClosed(false);
 
     // Set up application properties
-    app.setApplicationDisplayName(QObject::tr("NitroShare"));
-    app.setApplicationName("NitroShare");
-    app.setApplicationVersion(NITROSHARE_VERSION);
-    app.setOrganizationDomain("nitroshare.co");
-    app.setOrganizationName("Nathan Osman");
+    app.setApplicationDisplayName(PROJECT_TITLE);
+    app.setApplicationName(PROJECT_TITLE);
+    app.setApplicationVersion(PROJECT_VERSION);
+    app.setOrganizationDomain(PROJECT_DOMAIN);
+    app.setOrganizationName(PROJECT_AUTHOR);
 
     // Create the tray icon that runs the application
     Application nitroshare;

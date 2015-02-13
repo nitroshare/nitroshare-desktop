@@ -25,6 +25,7 @@
 #include <QIcon>
 
 #include "../util/settings.h"
+#include "config.h"
 #include "devicemodel.h"
 #include "devicemodel_p.h"
 
@@ -54,7 +55,7 @@ void DeviceModelPrivate::processPing(const QJsonObject &object, const QHostAddre
 
     // Ensure that the minimum set of values were provided and are valid
     if(uuid.isEmpty() || uuid == Settings::get<QString>(Settings::DeviceUUID) ||
-            version != NITROSHARE_VERSION || !port) {
+            version != PROJECT_VERSION || !port) {
         return;
     }
 
