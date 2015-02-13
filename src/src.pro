@@ -89,6 +89,7 @@ win32 {
 # Files and settings specific to the Mac build
 macx {
     ICON = data/nitroshare.icns
+    QMAKE_INFO_PLIST = data/Info.plist
 }
 
 # Setup the target for the main executable
