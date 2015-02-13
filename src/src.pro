@@ -7,8 +7,11 @@ QT      += network widgets
 # Some compilers require a flag to enable C++11
 CONFIG += c++11
 
-# Generate the config.h file
-QMAKE_SUBSTITUTES += config.h.in
+# Generate the config.h file and add its path for inclusion
+config_h.input  = config.h.in
+config_h.output = $${INCLUDE_DIR}/config.h
+QMAKE_SUBSTITUTES += config_h
+INCLUDEPATH       += $${INCLUDE_DIR}
 
 # Files common to all platforms
 HEADERS += \

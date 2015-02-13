@@ -17,7 +17,9 @@ PROJECT_VERSION = $${PROJECT_VERSION_MAJOR}.$${PROJECT_VERSION_MINOR}.$${PROJECT
 # Don't pollute the source tree with files everywhere!
 # Instead, define filetype-specific directories where built files should go
 DESTDIR     = $${PWD}/out
-OBJECTS_DIR = $${PWD}/out/obj
+INCLUDE_DIR = $${PWD}/out/include
 MOC_DIR     = $${PWD}/out/moc
+OBJECTS_DIR = $${PWD}/out/obj
 RCC_DIR     = $${PWD}/out/rcc
 UI_DIR      = $${PWD}/out/ui
+
