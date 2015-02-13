@@ -14,7 +14,6 @@ A cross-platform network file transfer application designed to make transferring
 
 The requirements for building NitroShare are as follows:
 
-* CMake 3.1+
 * C++ compiler with support for C++11:
     * Microsoft Visual C++ 2013+
     * GCC 4.7+
@@ -33,66 +32,43 @@ The instructions below describe the build process for each of the supported plat
 
 #### Ubuntu 14.04, 14.10, & 15.04
 
-1. None of the current releases ship CMake 3.1, so you will need to add my PPA:
+1. Install GCC and the Qt 5 development files:
 
-        sudo add-apt-repository ppa:george-edison55/cmake-3.x
-        sudo apt-get update
-
-2. Install CMake, C++ compiler, and Qt 5 development files:
-
-        sudo apt-get install cmake build-essential qtbase5-dev libqt5svg5 libgtk2.0-dev libappindicator-dev libnotify-dev
+        sudo apt-get install build-essential qtbase5-dev libqt5svg5 libgtk2.0-dev libappindicator-dev libnotify-dev
 
    Note: the last three packages add support for application indicators and are optional.
 
-3. Change to the root of the source directory and create a directory for building the project:
+2. Change to the root of the source directory and build the project:
 
-        mkdir build
-        cd build
-
-4. Run CMake followed by make:
-
-        cmake ..
+        qmake
         make
 
-5. The NitroShare binary will be in the `src` directory and can be run with:
+3. The NitroShare binary will be in the `out` directory and can be run with:
 
-        src/nitroshare
+        out/nitroshare
 
 #### Windows 7, 8, & 8.1
 
 1. Download and install the following tools:
 
-    - [CMake Win32 Installer](http://www.cmake.org/download/)
     - [Visual Studio Express 2013 for Windows Desktop](http://go.microsoft.com/?linkid=9832280&clcid=0x409) [requires sign-in]
-    - [Qt Online Installer for Windows](http://www.qt.io/download-open-source/#section-2)
+    - [Qt Online Installer for Windows](http://www.qt.io/download-open-source/)
 
-2. Ensure that the `bin` directory for both CMake and Qt have been added to the `PATH` environment variable.
+2. Ensure that the `bin` directory for Qt has been added to the `PATH` environment variable.
 
 3. Open the appropriate command prompt for Visual C++. In Visual C++ 2013, these shortcuts are labeled as follows:
 
     - VS2013 x86 Native Tools Command Prompt
     - VS2013 x64 Cross Tools Command Prompt
 
-4. Change to the root of the source directory and create a directory for building the project:
+4. Change to the root of the source directory and build the project
 
-        mkdir build
-        cd build
-
-5. Run CMake, being sure to specify the `NMake Makefiles` generator:
-
-        cmake -G "NMake Makefiles" ..
-
-6. Run `nmake` to build the executable:
-
+        qmake
         nmake
 
-7. The NitroShare binary will be in the `src` directory and can be run with:
+5. The NitroShare binary will be in the `out` directory and can be run with:
 
-        src\nitroshare.exe
-
-8. If NSIS is installed, you can build a standalone installer with the following command:
-
-        nmake package
+        out\nitroshare.exe
 
 > **Important:** By default, Visual C++ 2013 will build a binary that will not run on Windows XP. To avoid this behavior, ensure that the following environment variables are set before running `nmake`:
 >
@@ -101,5 +77,18 @@ The instructions below describe the build process for each of the supported plat
 
 #### OS X 10.6, 10.7, & 10.8
 
-TODO
+1. Download and install the following tools:
 
+    - [Xcode](https://itunes.apple.com/ca/app/xcode/id497799835?mt=12)
+    - [Qt Online Installer for Mac](http://www.qt.io/download-open-source/)
+
+2. Ensure that the `bin` directory for Qt has been added to `/etc/paths`.
+
+3. Open the terminal app, change to the root source directory, and build the project:
+
+        qmake
+        make
+
+4. The NitroShare bundle will be in the `out` directory and can be run with:
+
+        open out/nitroshare.app
