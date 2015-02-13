@@ -7,22 +7,6 @@ QT      += network widgets
 # Some compilers require a flag to enable C++11
 CONFIG += c++11
 
-# Check for the packages needed by the appindicator class
-CONFIG += link_pkgconfig
-packagesExist(gtk+-2.0 appindicator-0.1 libnotify) {
-    PKGCONFIG += gtk+-2.0 appindicator-0.1 libnotify
-
-    # Indicate that the appindicator class should be built and turn
-    # off the 'signals' and 'slots' keywords to avoid symbol collisions
-    DEFINES += \
-        BUILD_APPINDICATOR \
-        QT_NO_SIGNALS_SLOTS_KEYWORDS
-
-    # Add the necessary source files
-    HEADERS += icon/indicatoricon.h
-    SOURCES += icon/indicatoricon.cpp
-}
-
 # Files common to all platforms
 HEADERS += \
     application/application.h \
@@ -87,6 +71,25 @@ win32 {
 macx {
     ICON = data/nitroshare.icns
     QMAKE_INFO_PLIST = data/Info.plist
+}
+
+# Files and settings specific to the Linux build
+unix:!macx {
+    # Check for the packages needed to build the appindicator class
+    CONFIG += link_pkgconfig
+    packagesExist(gtk+-2.0 appindicator-0.1 libnotify) {
+        PKGCONFIG += gtk+-2.0 appindicator-0.1 libnotify
+
+        # Indicate that the appindicator class should be built and turn
+        # off the 'signals' and 'slots' keywords to avoid symbol collisions
+        DEFINES += \
+            BUILD_APPINDICATOR \
+            QT_NO_SIGNALS_SLOTS_KEYWORDS
+
+        # Add the necessary source files
+        HEADERS += icon/indicatoricon.h
+        SOURCES += icon/indicatoricon.cpp
+    }
 }
 
 # Setup the target for the main executable
