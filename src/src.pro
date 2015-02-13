@@ -81,9 +81,15 @@ FORMS += \
 RESOURCES += \
     resources.qrc
 
-# Files specific to the Windows build
-win32:RC_FILE = \
-    resource.rc
+# Files and settings specific to the Windows build
+win32 {
+    RC_FILE = resource.rc
+}
+
+# Files and settings specific to the Mac build
+macx {
+    ICON = data/nitroshare.icns
+}
 
 # Setup the target for the main executable
 TARGET      = nitroshare
