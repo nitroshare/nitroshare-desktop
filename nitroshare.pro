@@ -8,4 +8,4 @@ lessThan(QT_MAJOR_VERSION, 5) | lessThan(QT_MINOR_VERSION, 1) {
 
 # Each of the subdirectories contains its own project file
 TEMPLATE = subdirs
-SUBDIRS = src
+SUBDIRS  = src

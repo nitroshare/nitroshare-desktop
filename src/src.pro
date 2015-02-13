@@ -5,7 +5,7 @@ include(../nitroshare.pri)
 
 # Build an application and specify the required Qt modules
 TEMPLATE = app
-QT += network widgets
+QT      += network widgets
 
 # Some compilers require a flag to enable C++11
 CONFIG += c++11
@@ -86,6 +86,6 @@ win32:RC_FILE = \
     resource.rc
 
 # Setup the target for the main executable
-TARGET = nitroshare
+TARGET      = nitroshare
 target.path = /bin
-INSTALLS += target
+INSTALLS   += target
