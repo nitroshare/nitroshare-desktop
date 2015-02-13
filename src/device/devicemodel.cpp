@@ -25,7 +25,6 @@
 #include <QIcon>
 
 #include "../util/settings.h"
-#include "config.h"
 #include "devicemodel.h"
 #include "devicemodel_p.h"
 

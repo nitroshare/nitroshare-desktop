@@ -27,7 +27,6 @@
 #include <QSet>
 
 #include "../util/platform.h"
-#include "config.h"
 #include "devicelistener.h"
 
 DeviceListener::DeviceListener()

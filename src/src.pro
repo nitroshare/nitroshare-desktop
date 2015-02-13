@@ -1,0 +1,91 @@
+# NitroShare qmake project file
+# Copyright 2015 - Nathan Osman
+
+include(../nitroshare.pri)
+
+# Build an application and specify the required Qt modules
+TEMPLATE = app
+QT += network widgets
+
+# Some compilers require a flag to enable C++11
+CONFIG += c++11
+
+# Check for the packages needed by the appindicator class
+CONFIG += link_pkgconfig
+packagesExist(gtk+-2.0 appindicator-0.1 libnotify) {
+    PKGCONFIG += gtk+-2.0 appindicator-0.1 libnotify
+
+    # Indicate that the appindicator class should be built and turn
+    # off the 'signals' and 'slots' keywords to avoid symbol collisions
+    DEFINES += \
+        BUILD_APPINDICATOR \
+        QT_NO_SIGNALS_SLOTS_KEYWORDS
+
+    # Add the necessary source files
+    HEADERS += icon/indicatoricon.h
+    SOURCES += icon/indicatoricon.cpp
+}
+
+# Files common to all platforms
+HEADERS += \
+    application/application.h \
+    device/device.h \
+    device/device_p.h \
+    device/devicedialog.h \
+    device/devicelistener.h \
+    device/devicemodel.h \
+    device/devicemodel_p.h \
+    filesystem/bundle.h \
+    filesystem/fileinfo.h \
+    icon/icon.h \
+    icon/trayicon.h \
+    socket/socket.h \
+    socket/socketreceiver.h \
+    socket/socketsender.h \
+    transfer/transfer.h \
+    transfer/transfer_p.h \
+    transfer/transferdelegate.h \
+    transfer/transfermodel.h \
+    transfer/transfermodel_p.h \
+    transfer/transferserver.h \
+    transfer/transferwindow.h \
+    util/platform.h \
+    util/settings.h
+
+SOURCES += \
+    application/application.cpp \
+    device/device.cpp \
+    device/devicedialog.cpp \
+    device/devicelistener.cpp \
+    device/devicemodel.cpp \
+    filesystem/bundle.cpp \
+    filesystem/fileinfo.cpp \
+    icon/icon.cpp \
+    icon/trayicon.cpp \
+    socket/socket.cpp \
+    socket/socketreceiver.cpp \
+    socket/socketsender.cpp \
+    transfer/transfer.cpp \
+    transfer/transferdelegate.cpp \
+    transfer/transfermodel.cpp \
+    transfer/transferserver.cpp \
+    transfer/transferwindow.cpp \
+    util/platform.cpp \
+    util/settings.cpp \
+    main.cpp
+
+FORMS += \
+    device/devicedialog.ui \
+    transfer/transferwindow.ui
+
+RESOURCES += \
+    resources.qrc
+
+# Files specific to the Windows build
+win32:RC_FILE = \
+    resource.rc
+
+# Setup the target for the main executable
+TARGET = nitroshare
+target.path = /bin
+INSTALLS += target

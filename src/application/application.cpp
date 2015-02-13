@@ -28,7 +28,6 @@
 #include "../device/devicedialog.h"
 #include "../icon/trayicon.h"
 #include "application.h"
-#include "config.h"
 
 #ifdef BUILD_INDICATORICON
 #include "../icon/indicatoricon.h"

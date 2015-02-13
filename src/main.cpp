@@ -24,7 +24,6 @@
 
 #include <QApplication>
 
-#include "config.h"
 #include "application/application.h"
 
 int main(int argc, char **argv)

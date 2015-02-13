@@ -1,0 +1,17 @@
+# NitroShare qmake project file
+# Copyright 2015 - Nathan Osman
+
+# Define the components of the application version
+NITROSHARE_VERSION_MAJOR = 0
+NITROSHARE_VERSION_MINOR = 3
+NITROSHARE_VERSION_PATCH = 0
+
+# Create a string that combines the application version
+NITROSHARE_VERSION = $${NITROSHARE_VERSION_MAJOR}.$${NITROSHARE_VERSION_MINOR}.$${NITROSHARE_VERSION_PATCH}
+
+# Add the version components to the list of defines
+DEFINES += \
+    NITROSHARE_VERSION_MAJOR=$${NITROSHARE_VERSION_MAJOR} \
+    NITROSHARE_VERSION_MINOR=$${NITROSHARE_VERSION_MINOR} \
+    NITROSHARE_VERSION_PATCH=$${NITROSHARE_VERSION_PATCH} \
+    NITROSHARE_VERSION=\\\"$${NITROSHARE_VERSION}\\\"
