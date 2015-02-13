@@ -6,7 +6,7 @@
     <string>en</string>
     <key>CFBundleExecutable</key>
     <string>@EXECUTABLE@</string>
-    <key>CFBundleIconFiles</key>
+    <key>CFBundleIconFile</key>
     <string>@ICON@</string>
     <key>CFBundleIdentifier</key>
     <string>com.NathanOsman.NitroShare</string>
