@@ -94,5 +94,5 @@ unix:!macx {
 
 # Setup the target for the main executable
 TARGET      = nitroshare
-target.path = /bin
+target.path = $${PREFIX}/bin
 INSTALLS   += target
