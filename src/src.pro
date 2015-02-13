@@ -1,6 +1,3 @@
-# NitroShare qmake project file
-# Copyright 2015 - Nathan Osman
-
 include(../nitroshare.pri)
 
 # Build an application and specify the required Qt modules

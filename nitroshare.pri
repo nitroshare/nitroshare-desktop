@@ -1,6 +1,3 @@
-# NitroShare qmake project file
-# Copyright 2015 - Nathan Osman
-
 # Define the components of the application version
 NITROSHARE_VERSION_MAJOR = 0
 NITROSHARE_VERSION_MINOR = 3
