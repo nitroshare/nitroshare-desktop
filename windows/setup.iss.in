@@ -1,0 +1,38 @@
+// This file is used to build setup.iss which is then fed to the Inno Setup compiler
+// The variables used below come from the qmake project files
+
+[Setup]
+AppId              = {{174A4547-917E-4BAF-9F25-FCE545CCD487}
+AppName            = \"$${PROJECT_TITLE}\"
+AppVersion         = \"$${PROJECT_VERSION}\"
+AppPublisher       = \"$${PROJECT_AUTHOR}\"
+DefaultDirName     = \"{pf}\\$${PROJECT_TITLE}\"
+DefaultGroupName   = \"$${PROJECT_TITLE}\"
+LicenseFile        = ..\\LICENSE.txt
+OutputDir          = .
+OutputBaseFilename = \"$${INSTALLER_FILENAME}\"
+Compression        = lzma
+SolidCompression   = yes
+
+// Set two additional directives if we are building a 64-bit installer
+!!IF equals(ARCH, 64)
+ArchitecturesAllowed            = x64
+ArchitecturesInstallIn64BitMode = x64
+!!ENDIF
+
+[Languages]
+Name: \"english\"; MessagesFile: \"compiler:Default.isl\"
+
+[Tasks]
+Name: \"desktopicon\"; Description: \"{cm:CreateDesktopIcon}\"; GroupDescription: \"{cm:AdditionalIcons}\"; Flags: unchecked
+
+[Files]
+Source: \"$${DESTDIR}\\*\"; DestDir: \"{app}\"; Flags: ignoreversion recursesubdirs createallsubdirs
+
+[Icons]
+Name: \"{group}\\$${PROJECT_TITLE}\"; Filename: \"{app}\\$${EXE_FILENAME}\"
+Name: \"{commondesktop}\\$${PROJECT_TITLE}\"; Filename: \"{app}\\$${EXE_FILENAME}\"; Tasks: desktopicon
+
+[Run]
+Filename: "{app}\\$${PROJECT_TITLE}"; Description: "{cm:LaunchProgram,{#StringChange(\"$${PROJECT_TITLE}\", '&', '&&')}}"; Flags: nowait postinstall skipifsilent
+
