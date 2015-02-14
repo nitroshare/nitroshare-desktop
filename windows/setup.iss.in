@@ -1,5 +1,5 @@
-// This file is used to build setup.iss which is then fed to the Inno Setup compiler
-// The variables used below come from the qmake project files
+; This file is used to build setup.iss which is then fed to the Inno Setup compiler
+; The variables used below come from the qmake project files
 
 [Setup]
 AppId              = {{174A4547-917E-4BAF-9F25-FCE545CCD487}
@@ -14,7 +14,7 @@ OutputBaseFilename = \"$${INSTALLER_FILENAME}\"
 Compression        = lzma
 SolidCompression   = yes
 
-// Set two additional directives if we are building a 64-bit installer
+; Set two additional directives if we are building a 64-bit installer
 !!IF equals(ARCH, 64)
 ArchitecturesAllowed            = x64
 ArchitecturesInstallIn64BitMode = x64
