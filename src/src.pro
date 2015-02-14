@@ -76,12 +76,12 @@ win32 {
 
 # Files and settings specific to the Mac build
 macx {
-    ICON = data/nitroshare.icns
+    ICON             = data/nitroshare.icns
     QMAKE_INFO_PLIST = data/Info.plist
 }
 
 # Files and settings specific to the Linux build
-unix:!macx {
+linux-* {
     # Check for the packages needed to build the appindicator class
     CONFIG += link_pkgconfig
     packagesExist(gtk+-2.0 appindicator-0.1 libnotify) {
