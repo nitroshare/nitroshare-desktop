@@ -12,7 +12,7 @@ TEMPLATE = aux
 
 # Define the filename of the main executable and installer
 EXE_FILENAME       = $${PROJECT_NAME}.exe
-INSTALLER_FILENAME = $${PROJECT_NAME}-$${PROJECT_VERSION}-win$${ARCH}.exe
+INSTALLER_FILENAME = $${PROJECT_NAME}-$${PROJECT_VERSION}-win$${ARCH}
 
 # Generate the setup.iss setup script
 setup_iss.input    = setup.iss.in
@@ -20,13 +20,11 @@ setup_iss.output   = $${OUT}/setup.iss
 QMAKE_SUBSTITUTES += setup_iss
 
 # Target for gathering the required Qt libraries
-windeployqt.commands = windeployqt $${DESTDIR}/$${EXE_FILENAME}
+qtlibs.commands = windeployqt $${DESTDIR}/$${EXE_FILENAME}
 
 # Target for generating the Windows installer (depends on the Qt libraries)
-exe_installer.commands = iscc setup.iss
-exe_installer.depends  = windeployqt
+exe.commands = iscc setup.iss
+exe.depends  = qtlibs
 
-# Add the two extra targets
-QMAKE_EXTRA_TARGETS += \
-    windeployqt \
-    exe_installer
+# Add the exe target
+QMAKE_EXTRA_TARGETS += exe

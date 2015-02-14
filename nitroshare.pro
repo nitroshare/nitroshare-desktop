@@ -9,8 +9,18 @@ TEMPLATE = subdirs
 # Add the directory containing the source code
 SUBDIRS  = src
 
-# Add the directory for the current platform
-# (The last line is for Linux)
-win32:SUBDIRS      += windows
-macx:SUBDIRS       += mac
-unix:!macx:SUBDIRS += linux
+# Add the directory and targets for the current platform
+win32 {
+    SUBDIRS             += windows
+    exe.target           = exe
+    exe.CONFIG           = recursive
+    QMAKE_EXTRA_TARGETS += exe
+}
+
+macx {
+    SUBDIRS += mac
+}
+
+linux-* {
+    SUBDIRS += linux
+}
