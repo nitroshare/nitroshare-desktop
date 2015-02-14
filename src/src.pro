@@ -8,8 +8,8 @@ QT      += network widgets
 CONFIG += c++11
 
 # Generate the config.h file and add its path for inclusion
-config_h.input  = config.h.in
-config_h.output = $${INCLUDE_DIR}/config.h
+config_h.input     = config.h.in
+config_h.output    = $${INCLUDE_DIR}/config.h
 QMAKE_SUBSTITUTES += config_h
 INCLUDEPATH       += $${INCLUDE_DIR}
 
@@ -70,7 +70,8 @@ RESOURCES += \
 
 # Files and settings specific to the Windows build
 win32 {
-    RC_FILE = resource.rc
+    RC_FILE         = resource.rc
+    RC_INCLUDEPATH += $${INCLUDE_DIR}
 }
 
 # Files and settings specific to the Mac build

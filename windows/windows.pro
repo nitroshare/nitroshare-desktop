@@ -15,8 +15,8 @@ EXE_FILENAME       = $${PROJECT_NAME}.exe
 INSTALLER_FILENAME = $${PROJECT_NAME}-$${PROJECT_VERSION}-win$${ARCH}.exe
 
 # Generate the setup.iss setup script
-setup_iss.input  = setup.iss.in
-setup_iss.output = $${OUT}/setup.iss
+setup_iss.input    = setup.iss.in
+setup_iss.output   = $${OUT}/setup.iss
 QMAKE_SUBSTITUTES += setup_iss
 
 # Target for gathering the required Qt libraries
