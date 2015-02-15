@@ -66,7 +66,7 @@ Device* DeviceDialog::getDevice(DeviceModel &model)
     }
 }
 
-void DeviceDialog::toggleOkButton(const QItemSelection &selected, const QItemSelection &deselected)
+void DeviceDialog::toggleOkButton(const QItemSelection &, const QItemSelection &)
 {
     bool itemSelected(ui->deviceView->selectionModel()->hasSelection());
     ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(itemSelected);

@@ -50,6 +50,7 @@ QString Platform::currentOSName()
     case Linux:
         return QObject::tr("linux");
     case Unknown:
+    default:
         return QObject::tr("unknown");
     }
 }

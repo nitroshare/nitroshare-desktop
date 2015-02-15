@@ -54,6 +54,8 @@ void SocketReceiver::processPacket(const QByteArray &data)
     case FileData:
         processFileData(data);
         break;
+    case Finished:
+        break;
     }
 }
 

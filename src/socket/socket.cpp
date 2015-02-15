@@ -57,7 +57,7 @@ void Socket::processRead()
     forever {
         // If the size of the packet is not yet known attempt to read it
         if(!mBufferSize) {
-            if(mBuffer.size() >= sizeof(mBufferSize)) {
+            if(static_cast<size_t>(mBuffer.size()) >= sizeof(mBufferSize)) {
                 // memcpy must be used in order to avoid alignment issues
                 memcpy(&mBufferSize, mBuffer.constData(), sizeof(mBufferSize));
                 mBufferSize = qFromLittleEndian(mBufferSize);
