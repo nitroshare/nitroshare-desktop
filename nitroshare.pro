@@ -38,8 +38,12 @@ macx {
     BUNDLE_FILENAME = $${PROJECT_NAME}.app
     IMAGE_FILENAME  = $${PROJECT_NAME}-$${PROJECT_VERSION}-osx.dmg
 
-    # Add the Qt libraries to the app bundle
-    qtlibs.commands = macdeployqt $${DESTDIR}/$${BUNDLE_FILENAME}
+    # Targets for gathering the required Qt libraries and building the dmg
+    qtlibs.commands      = macdeployqt $${DESTDIR}/$${BUNDLE_FILENAME}
+    qtlibs.depends       = src
+    dmg.commands         = @echo TODO
+    dmg.depends          = qtlibs
+    QMAKE_EXTRA_TARGETS += qtlibs dmg
 }
 
 # Add files that are specific to the Linux build
