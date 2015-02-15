@@ -27,7 +27,7 @@ Name: \"english\"; MessagesFile: \"compiler:Default.isl\"
 Name: \"desktopicon\"; Description: \"{cm:CreateDesktopIcon}\"; GroupDescription: \"{cm:AdditionalIcons}\"; Flags: unchecked
 
 [Files]
-Source: \"$${DESTDIR}\\*\"; DestDir: \"{app}\"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: \"$$absolute_path($${DESTDIR})\\*\"; DestDir: \"{app}\"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
 Name: \"{group}\\$${PROJECT_TITLE}\"; Filename: \"{app}\\$${EXE_FILENAME}\"
