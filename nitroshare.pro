@@ -2,8 +2,9 @@ include(nitroshare.pri)
 
 # The project currently consists of a single subdir
 # (Soon this will be expanded as functionality is broken up)
-TEMPLATE = subdirs
-SUBDIRS  = src
+TEMPLATE   = subdirs
+SUBDIRS    = src
+src.target = src
 
 # Add targets that are specific to the Windows build
 win32 {
@@ -25,6 +26,7 @@ win32 {
 
     # Targets for gathering the required Qt libraries and building the exe
     qtlibs.commands      = windeployqt $${DESTDIR}/$${EXE_FILENAME}
+    qtlibs.depends       = src
     exe.commands         = iscc $${OUT}/setup.iss
     exe.depends          = qtlibs
     QMAKE_EXTRA_TARGETS += qtlibs exe
@@ -32,7 +34,12 @@ win32 {
 
 # Add targets that are specific to the Mac build
 macx {
-    # ...
+    # Define the name of the bundle and disk image produced
+    BUNDLE_FILENAME = $${PROJECT_NAME}.app
+    IMAGE_FILENAME  = $${PROJECT_NAME}-$${PROJECT_VERSION}-osx.dmg
+
+    # Add the Qt libraries to the app bundle
+    qtlibs.commands = macdeployqt $${DESTDIR}/$${BUNDLE_FILENAME}
 }
 
 # Add files that are specific to the Linux build

@@ -100,6 +100,6 @@ linux-* {
 }
 
 # Setup the target for the main executable
-TARGET      = nitroshare
+TARGET      = $${PROJECT_NAME}
 target.path = $${PREFIX}/bin
 INSTALLS   += target
