@@ -43,9 +43,13 @@ The instructions below describe the build process for each of the supported plat
         qmake
         make
 
-3. The NitroShare binary will be in the `out` directory and can be run with:
+3. The NitroShare binary will be in the `out/install` directory and can be run with:
 
         out/nitroshare
+
+4. To create a binary Debian package, run the following command:
+
+        debuild -b
 
 #### Windows 7, 8, & 8.1
 
@@ -53,8 +57,11 @@ The instructions below describe the build process for each of the supported plat
 
     - [Visual Studio Express 2013 for Windows Desktop](http://go.microsoft.com/?linkid=9832280&clcid=0x409) [requires sign-in]
     - [Qt Online Installer for Windows](http://www.qt.io/download-open-source/)
+    - [Inno Setup](http://www.jrsoftware.org/isinfo.php) [optional]
 
-2. Ensure that the `bin` directory for Qt has been added to the `PATH` environment variable.
+   Note: the last tool is only required if you wish to build a Windows EXE installer.
+
+2. Ensure that the `bin` directory for Qt (and the installation directory of Inno Setup, if applicable) has been added to the `PATH` environment variable.
 
 3. Open the appropriate command prompt for Visual C++. In Visual C++ 2013, these shortcuts are labeled as follows:
 
@@ -66,9 +73,13 @@ The instructions below describe the build process for each of the supported plat
         qmake
         nmake
 
-5. The NitroShare binary will be in the `out` directory and can be run with:
+5. The NitroShare binary will be in the `out\install` directory and can be run with:
 
-        out\nitroshare.exe
+        out\install\nitroshare.exe
+
+6. To create a Windows EXE installer, run the following command:
+
+        nmake exe
 
 > **Important:** By default, Visual C++ 2013 will build a binary that will not run on Windows XP. To avoid this behavior, ensure that the following environment variables are set before running `nmake`:
 >
@@ -89,6 +100,10 @@ The instructions below describe the build process for each of the supported plat
         qmake
         make
 
-4. The NitroShare bundle will be in the `out` directory and can be run with:
+4. The NitroShare bundle will be in the `out/install` directory and can be run with:
 
-        open out/nitroshare.app
+        open out/install/nitroshare.app
+
+5. To create a compressed disk image (DMG), run the following command:
+
+        make dmg
