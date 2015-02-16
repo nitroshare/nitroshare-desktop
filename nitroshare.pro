@@ -75,7 +75,7 @@ macx {
 linux-* {
     desktop_file.path  = $${PREFIX}/share/applications
     desktop_file.files = dist/nitroshare.desktop
-    icon_file.path     = $${PREFIX}/share/pixmaps
-    icon_file.files    = dist/nitroshare.svg
-    INSTALLS          += desktop_file icon_file
+    icons.path         = $${PREFIX}/share/icons
+    icons.files        = dist/icons/*
+    INSTALLS          += desktop_file icons
 }
