@@ -38,12 +38,19 @@ macx {
     BUNDLE_FILENAME = $${PROJECT_NAME}.app
     IMAGE_FILENAME  = $${PROJECT_NAME}-$${PROJECT_VERSION}-osx.dmg
 
-    # Targets for gathering the required Qt libraries and building the dmg
-    qtlibs.commands      = macdeployqt $${DESTDIR}/$${BUNDLE_FILENAME}
-    qtlibs.depends       = src
-    dmg.commands         = @echo TODO
-    dmg.depends          = qtlibs
-    QMAKE_EXTRA_TARGETS += qtlibs dmg
+    # Target for gathering the required Qt libraries
+    qtlibs.commands = macdeployqt $${DESTDIR}/$${BUNDLE_FILENAME}
+    qtlibs.depends  = src
+
+    # Target for creating the symlink to /Applications
+    appsymlink.commands = ln -s /Applications $${DESTDIR}
+
+    # Target for creating the DMG
+    dmg.commands = hdiutil create -srcfolder $${DESTDIR} -volname $${PROJECT_TITLE} -fs HFS+ -size 30m $${IMAGE_FILENAME}
+    dmg.depends  = qtlibs appsymlink
+
+    # Add the new targets
+    QMAKE_EXTRA_TARGETS += qtlibs appsymlink dmg
 }
 
 # Add files that are specific to the Linux build
