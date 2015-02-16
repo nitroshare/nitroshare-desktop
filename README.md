@@ -45,10 +45,11 @@ The instructions below describe the build process for each of the supported plat
 
 3. The NitroShare binary will be in the `out/install` directory and can be run with:
 
-        out/nitroshare
+        out/install/nitroshare
 
-4. To create a binary Debian package, run the following command:
+4. To create a binary Debian package, ensure that the `devscripts` package is installed and run the following command:
 
+        sudo apt-get install devscripts
         debuild -b
 
 #### Windows 7, 8, & 8.1
