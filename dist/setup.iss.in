@@ -10,7 +10,7 @@ DefaultDirName     = \"{pf}\\$${PROJECT_TITLE}\"
 DefaultGroupName   = \"$${PROJECT_TITLE}\"
 LicenseFile        = ..\\LICENSE.txt
 OutputDir          = .
-OutputBaseFilename = \"$${INSTALLER_FILENAME}\"
+OutputBaseFilename = \"$${INSTALLER_NAME}\"
 Compression        = lzma
 SolidCompression   = yes
 

@@ -17,19 +17,29 @@ win32 {
 
     # Define the filename of the main executable and installer
     EXE_FILENAME       = $${PROJECT_NAME}.exe
-    INSTALLER_FILENAME = $${PROJECT_NAME}-$${PROJECT_VERSION}-win$${ARCH}
+    INSTALLER_NAME     = $${PROJECT_NAME}-$${PROJECT_VERSION}-win$${ARCH}
+    INSTALLER_FILENAME = $${INSTALLER_NAME}.exe
 
     # Generate the setup.iss setup script
     setup_iss.input    = dist/setup.iss.in
     setup_iss.output   = $${OUT}/setup.iss
     QMAKE_SUBSTITUTES += setup_iss
 
-    # Targets for gathering the required Qt libraries and building the exe
+    # Target for copying the required Qt libraries to the installation directory
+    # Note: no target is needed since the command is idempotent and fairly quick
     qtlibs.commands      = windeployqt $${DESTDIR}/$${EXE_FILENAME}
     qtlibs.depends       = src
-    exe.commands         = iscc $${OUT}/setup.iss
-    exe.depends          = qtlibs
-    QMAKE_EXTRA_TARGETS += qtlibs exe
+    QMAKE_EXTRA_TARGETS += qtlibs
+
+    # Target for creating the installer
+    installer.target     = $${OUT}/$${INSTALLER_FILENAME}
+    installer.commands   = iscc $${OUT}/setup.iss
+    installer.depends    = qtlibs
+    QMAKE_EXTRA_TARGETS += installer
+
+    # Alias target for building the installer
+    exe.depends          = installer
+    QMAKE_EXTRA_TARGETS += exe
 }
 
 # Add targets that are specific to the Mac build
@@ -48,14 +58,12 @@ macx {
     appsymlink.target    = $${DESTDIR}/Applications
     appsymlink.commands  = ln -s /Applications $${DESTDIR}/Applications
     QMAKE_EXTRA_TARGETS += appsymlink
-    QMAKE_CLEAN         += $${DESTDIR}/Applications
 
     # Target for creating the disk image
     image.target         = $${OUT}/$${IMAGE_FILENAME}
     image.commands       = hdiutil create -srcfolder $${DESTDIR} -volname $${PROJECT_TITLE} -fs HFS+ -size 30m $${OUT}/$${IMAGE_FILENAME}
     image.depends        = qtlibs appsymlink
     QMAKE_EXTRA_TARGETS += image
-    QMAKE_CLEAN         += $${OUT}/$${IMAGE_FILENAME}
 
     # Alias target for building the DMG
     dmg.depends          = image
