@@ -2,7 +2,7 @@ include(../nitroshare.pri)
 
 # Build an application and specify the required Qt modules
 TEMPLATE = app
-QT      += network widgets
+QT      += network widgets svg
 
 # Some compilers require a flag to enable C++11
 CONFIG += c++11

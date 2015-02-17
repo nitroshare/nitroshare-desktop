@@ -62,7 +62,9 @@ macx {
 
     # Target for creating the disk image
     image.target         = $${OUT}/$${IMAGE_FILENAME}
-    image.commands       = hdiutil create -srcfolder $${DESTDIR} -volname $${PROJECT_TITLE} -fs HFS+ -size 30m $${OUT}/$${IMAGE_FILENAME}
+    image.commands       = \
+        test -e $${OUT}/$${IMAGE_FILENAME} && rm $${OUT}/$${IMAGE_FILENAME}; \
+        hdiutil create -srcfolder $${DESTDIR} -volname $${PROJECT_TITLE} -fs HFS+ -size 30m $${OUT}/$${IMAGE_FILENAME}
     image.depends        = qtlibs appsymlink
     QMAKE_EXTRA_TARGETS += image
 
