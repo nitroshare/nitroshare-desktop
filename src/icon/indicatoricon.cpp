@@ -34,7 +34,7 @@ void triggerQAction(GtkMenu *, gpointer data)
 }
 
 IndicatorIcon::IndicatorIcon()
-    : mIndicator(app_indicator_new("nitroshare", "nitroshare", APP_INDICATOR_CATEGORY_APPLICATION_STATUS)),
+    : mIndicator(app_indicator_new("nitroshare", "nitroshare-indicator", APP_INDICATOR_CATEGORY_APPLICATION_STATUS)),
       mMenu(gtk_menu_new())
 {
     notify_init("nitroshare");
@@ -76,7 +76,7 @@ void IndicatorIcon::showMessage(const QString &message)
     NotifyNotification *notification(notify_notification_new(
         "NitroShare Notification",
         message.toUtf8().constData(),
-        "nitroshare"
+        "nitroshare-indicator"
     ));
 
     notify_notification_show(notification, nullptr);
