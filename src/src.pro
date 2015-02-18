@@ -66,7 +66,7 @@ FORMS += \
     transfer/transferwindow.ui
 
 RESOURCES += \
-    resources.qrc
+    data/resources.qrc
 
 # Files and settings specific to the Windows build
 win32 {

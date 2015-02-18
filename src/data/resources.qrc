@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/data">
+        <file>nitroshare.svg</file>
+        <file>desktop.png</file>
+    </qresource>
+</RCC>
