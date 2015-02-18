@@ -8,7 +8,7 @@ Homepage: https://github.com/nitroshare/nitroshare
 
 Package: nitroshare
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, libqt5svg5
+Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: Cross-platform network file transfer application
  NitroShare is designed to make transferring any file to any device as painless
  as possible. Network discovery is completely automatic, allowing files and
