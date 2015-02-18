@@ -20,6 +20,15 @@ ArchitecturesAllowed            = x64
 ArchitecturesInstallIn64BitMode = x64
 !!ENDIF
 
+; Check to see if the Visual C++ runtime is being included
+#define VCRFilename(str Architecture) \\
+    \"$$absolute_path($${DESTDIR})\\vcredist_\" + Architecture + \".exe\"
+#if FileExists(VCRFilename(\"x86\"))
+#define VCRArch \"x86\"
+#elif FileExists(VCRFilename(\"x64\"))
+#define VCRArch \"x64\"
+#endif
+
 [Languages]
 Name: \"english\"; MessagesFile: \"compiler:Default.isl\"
 
@@ -27,12 +36,21 @@ Name: \"english\"; MessagesFile: \"compiler:Default.isl\"
 Name: \"desktopicon\"; Description: \"{cm:CreateDesktopIcon}\"; GroupDescription: \"{cm:AdditionalIcons}\"; Flags: unchecked
 
 [Files]
-Source: \"$$absolute_path($${DESTDIR})\\*\"; DestDir: \"{app}\"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: \"$$absolute_path($${DESTDIR})\\*\"; DestDir: \"{app}\"; Excludes: \"\\vcredist_x??.exe\"; Flags: ignoreversion recursesubdirs createallsubdirs
+
+; Include the VC++ runtime in the installer
+#if VCRArch
+Source: \"{#VCRFilename(VCRArch)}\"; DestDir: \"{tmp}\"; Flags: deleteafterinstall
+#endif
 
 [Icons]
 Name: \"{group}\\$${PROJECT_TITLE}\"; Filename: \"{app}\\$${EXE_FILENAME}\"
 Name: \"{commondesktop}\\$${PROJECT_TITLE}\"; Filename: \"{app}\\$${EXE_FILENAME}\"; Tasks: desktopicon
 
 [Run]
-Filename: "{app}\\$${PROJECT_TITLE}"; Description: "{cm:LaunchProgram,{#StringChange(\"$${PROJECT_TITLE}\", '&', '&&')}}"; Flags: nowait postinstall skipifsilent
+Filename: \"{app}\\$${PROJECT_TITLE}\"; Description: \"{cm:LaunchProgram,{#StringChange(\"$${PROJECT_TITLE}\", \'&\', \'&&\')}}\"; Flags: nowait postinstall skipifsilent
 
+; Install the VC++ runtime (silently)
+#if VCRArch
+Filename: \"{tmp}\\vcredist_{#VCRArch}.exe\"; Parameters: \"/q\";
+#endif
