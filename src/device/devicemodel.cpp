@@ -133,8 +133,9 @@ QVariant DeviceModel::data(const QModelIndex &index, int role) const
             }
         case Qt::DecorationRole:
             if(index.column() == DeviceModelPrivate::ColumnName) {
-                return QVariant::fromValue(QIcon(":/data/desktop.png"));
+                return QVariant::fromValue(QIcon(":/img/desktop.svg"));
             }
+            break;
         case Qt::UserRole:
             return QVariant::fromValue(device);
         }

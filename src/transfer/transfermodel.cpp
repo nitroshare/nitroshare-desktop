@@ -78,6 +78,7 @@ QVariant TransferModel::data(const QModelIndex &index, int role) const
                     return QVariant::fromValue(QApplication::style()->standardIcon(QStyle::SP_ArrowDown));
                 }
             }
+            break;
         case Qt::UserRole:
             return QVariant::fromValue(transfer);
         }
