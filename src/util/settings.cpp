@@ -52,19 +52,19 @@ const QMap<Settings::Key, Setting> keys {
     DEFINE_SETTING(BroadcastTimeout, { return 30 * 1000; }),
     DEFINE_SETTING(DeviceName, { return QHostInfo::localHostName(); }),
     DEFINE_SETTING(DeviceUUID, { return QUuid::createUuid(); }),
-    DEFINE_SETTING(ShowTrayIcon, {
-        if(Platform::currentOS() == Platform::Windows) {
-            return true;
-        } else {
-            return false;
-        }
-    }),
     DEFINE_SETTING(TransferBuffer, { return 65536; }),
     DEFINE_SETTING(TransferDirectory, {
         return QStandardPaths::writableLocation(QStandardPaths::DesktopLocation);
     }),
     DEFINE_SETTING(TransferPort, { return 40818; }),
-    DEFINE_SETTING(TransferTimeout, { return 30 * 1000; })
+    DEFINE_SETTING(TransferTimeout, { return 30 * 1000; }),
+    DEFINE_SETTING(TrayIcon, {
+        if(Platform::currentOS() == Platform::Mac) {
+            return ":/img/icon-dark.svg";
+        } else {
+            return ":/img/icon-light.svg";
+        }
+    })
 };
 
 Q_GLOBAL_STATIC(Settings, settings)

@@ -39,11 +39,11 @@ public:
         BroadcastTimeout,
         DeviceName,
         DeviceUUID,
-        ShowTrayIcon,
         TransferBuffer,
         TransferDirectory,
         TransferPort,
-        TransferTimeout
+        TransferTimeout,
+        TrayIcon
     };
 
     template <class T>
