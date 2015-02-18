@@ -22,14 +22,13 @@
  * IN THE SOFTWARE.
  **/
 
-#include "../util/settings.h"
 #include "trayicon.h"
 
 TrayIcon::TrayIcon()
 {
     mTrayIcon.setContextMenu(&mMenu);
 
-    mTrayIcon.setIcon(QIcon(Settings::get<QString>(Settings::TrayIcon)));
+    mTrayIcon.setIcon(QIcon(":/img/icon.svg"));
     mTrayIcon.setToolTip(tr("NitroShare"));
 
     mTrayIcon.show();

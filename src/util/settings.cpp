@@ -57,14 +57,7 @@ const QMap<Settings::Key, Setting> keys {
         return QStandardPaths::writableLocation(QStandardPaths::DesktopLocation);
     }),
     DEFINE_SETTING(TransferPort, { return 40818; }),
-    DEFINE_SETTING(TransferTimeout, { return 30 * 1000; }),
-    DEFINE_SETTING(TrayIcon, {
-        if(Platform::currentOS() == Platform::Mac) {
-            return ":/img/icon-dark.svg";
-        } else {
-            return ":/img/icon-light.svg";
-        }
-    })
+    DEFINE_SETTING(TransferTimeout, { return 30 * 1000; })
 };
 
 Q_GLOBAL_STATIC(Settings, settings)

@@ -1,7 +1,6 @@
 <RCC>
     <qresource prefix="/">
-        <file>img/icon-dark.svg</file>
-        <file>img/icon-light.svg</file>
+        <file>img/icon.svg</file>
         <file>desktop.png</file>
     </qresource>
 </RCC>
