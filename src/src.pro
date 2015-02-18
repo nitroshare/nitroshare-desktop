@@ -66,18 +66,18 @@ FORMS += \
     transfer/transferwindow.ui
 
 RESOURCES += \
-    data/resources.qrc
+    data/resource.qrc
 
 # Files and settings specific to the Windows build
 win32 {
-    RC_FILE         = resource.rc
+    RC_FILE         = data/resource.rc
     RC_INCLUDEPATH += $${INCLUDE_DIR}
 }
 
 # Files and settings specific to the Mac build
 macx {
-    ICON             = data/nitroshare.icns
-    QMAKE_INFO_PLIST = data/Info.plist
+    ICON             = data/icon/nitroshare.icns
+    QMAKE_INFO_PLIST = data/misc/Info.plist
 }
 
 # Files and settings specific to the Linux build

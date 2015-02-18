@@ -14,7 +14,7 @@
    <string>NitroShare - Transfers</string>
   </property>
   <property name="windowIcon">
-   <iconset>:/data/nitroshare.svg</iconset>
+   <iconset>:/img/logo.svg</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QHBoxLayout" name="horizontalLayout_2">

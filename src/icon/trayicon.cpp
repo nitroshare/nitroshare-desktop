@@ -28,7 +28,7 @@ TrayIcon::TrayIcon()
 {
     mTrayIcon.setContextMenu(&mMenu);
 
-    mTrayIcon.setIcon(QIcon(":/img/icon.svg"));
+    mTrayIcon.setIcon(QIcon(":/img/tray.svg"));
     mTrayIcon.setToolTip(tr("NitroShare"));
 
     mTrayIcon.show();

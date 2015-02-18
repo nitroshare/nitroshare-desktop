@@ -2,7 +2,7 @@
 
 #include "config.h"
 
-APP_ICON ICON DISCARDABLE "data/nitroshare.ico"
+APP_ICON ICON DISCARDABLE "icon/nitroshare.ico"
 
 // Build a comma-separated version
 #define PROJECT_VERSION_RC \
