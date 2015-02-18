@@ -18,5 +18,9 @@
     <string>APPL</string>
     <key>CFBundleSignature</key>
 	<string>????</string>
+    <key>LSApplicationCategoryType</key>
+    <string>public.app-category.utilities</string>
+    <key>LSMinimumSystemVersion</key>
+    <string>10.7.0</string>
 </dict>
 </plist>
