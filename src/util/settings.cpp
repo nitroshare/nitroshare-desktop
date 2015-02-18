@@ -24,8 +24,6 @@
 
 #include <QHostInfo>
 #include <QMap>
-#include <QMutex>
-#include <QMutexLocker>
 #include <QStandardPaths>
 #include <QUuid>
 
@@ -61,11 +59,9 @@ const QMap<Settings::Key, Setting> keys {
 };
 
 Q_GLOBAL_STATIC(Settings, settings)
-Q_GLOBAL_STATIC_WITH_ARGS(QMutex, mutex, (QMutex::Recursive))
 
 QVariant Settings::loadValue(Key key)
 {
-    QMutexLocker locker(mutex);
     Setting setting(keys.value(key));
 
     if(!settings->contains(setting.name)) {
@@ -77,7 +73,6 @@ QVariant Settings::loadValue(Key key)
 
 void Settings::storeValue(Key key, const QVariant &value, bool initializing)
 {
-    QMutexLocker locker(mutex);
     settings->setValue(keys.value(key).name, value);
 
     if(!initializing) {
