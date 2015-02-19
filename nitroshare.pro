@@ -56,7 +56,9 @@ macx {
 
     # Target for creating the symlink to /Applications
     appsymlink.target    = $${DESTDIR}/Applications
-    appsymlink.commands  = ln -s /Applications $${DESTDIR}/Applications
+    appsymlink.commands  = \
+        rm -f $${DESTDIR}/Applications; \
+        ln -s /Applications $${DESTDIR}/Applications
     appsymlink.depends   = src
     QMAKE_EXTRA_TARGETS += appsymlink
 
