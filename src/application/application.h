@@ -26,7 +26,6 @@
 #define NS_APPLICATION_H
 
 #include <QModelIndex>
-#include <QSharedPointer>
 
 #include "../device/device.h"
 #include "../device/devicemodel.h"
@@ -42,7 +41,8 @@ class Application : public QObject
 
 public:
 
-    Application();
+    explicit Application(QObject *parent = nullptr);
+    virtual ~Application();
 
 private Q_SLOTS:
 
@@ -51,6 +51,9 @@ private Q_SLOTS:
 
     void sendFiles();
     void sendDirectory();
+
+    void about();
+    void aboutQt();
 
 private:
 
@@ -61,7 +64,7 @@ private:
     TransferServer mTransferServer;
     TransferWindow mTransferWindow;
 
-    QSharedPointer<Icon> mIcon;
+    Icon *mIcon;
 
     qint64 mStartTime;
 };

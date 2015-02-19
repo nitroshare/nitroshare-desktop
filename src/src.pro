@@ -15,6 +15,7 @@ INCLUDEPATH       += $${INCLUDE_DIR}
 
 # Files common to all platforms
 HEADERS += \
+    application/aboutdialog.h \
     application/application.h \
     device/device.h \
     device/devicedialog.h \
@@ -39,6 +40,7 @@ HEADERS += \
     util/settings.h
 
 SOURCES += \
+    application/aboutdialog.cpp \
     application/application.cpp \
     device/device.cpp \
     device/devicedialog.cpp \
@@ -61,6 +63,7 @@ SOURCES += \
     main.cpp
 
 FORMS += \
+    application/aboutdialog.ui \
     device/devicedialog.ui \
     transfer/transferwindow.ui
 
