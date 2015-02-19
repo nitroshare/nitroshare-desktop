@@ -54,9 +54,7 @@ The instructions below describe the build process for each of the supported plat
     - [Visual Studio Express 2013 for Windows Desktop](http://go.microsoft.com/?linkid=9832280&clcid=0x409) [requires sign-in]
     - [Qt Online Installer for Windows](http://www.qt.io/download-open-source/)
 
-   Note: the last tool is only required if you wish to build a Windows EXE installer.
-
-2. Ensure that the `bin` directory for Qt (and the installation directory of Inno Setup, if applicable) has been added to the `PATH` environment variable.
+2. Ensure that the `bin` directory for Qt has been added to the `PATH` environment variable.
 
 3. Open the appropriate command prompt for Visual C++. In Visual C++ 2013, these shortcuts are labeled as follows:
 
@@ -101,14 +99,14 @@ The instructions below describe the steps necessary to create installers or pack
 
 #### Ubuntu
 
-Ensure that the `devscripts` package is installed and build the package by running the following command:
+Ensure that the `devscripts` package is installed and build the package by running the following commands:
 
     sudo apt-get install devscripts
     debuild -b
 
 #### Windows
 
-Building the installers for 32 and 64-bit editions of Windows requires [Inno Setup](http://www.jrsoftware.org/isinfo.php).
+Building the installers for 32 and 64-bit editions of Windows requires [Inno Setup](http://www.jrsoftware.org/isinfo.php). You also need to ensure that the Inno Setup installation directory is added to the `PATH` environment variable.
 
 > **Important:** The Express editions of Visual C++ do not include the redistributable installers. You will need to download the appropriate installers for the x86 and x64 architectures. (The Visual C++ 2013 Redistributable can be downloaded [here](http://www.microsoft.com/en-us/download/details.aspx?id=40784).) Locate the Visual C++ `redist` directory and create a directory inside named "1033". Place the two installers inside this directory.
 
