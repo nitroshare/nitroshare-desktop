@@ -110,6 +110,10 @@ Building the installers for 32 and 64-bit editions of Windows requires [Inno Set
 
 > **Important:** The Express editions of Visual C++ do not include the redistributable installers. You will need to download the appropriate installers for the x86 and x64 architectures. (The Visual C++ 2013 Redistributable can be downloaded [here](http://www.microsoft.com/en-us/download/details.aspx?id=40784).) Locate the Visual C++ `redist` directory and create a directory inside named "1033". Place the two installers inside this directory.
 
+Run the following command to build a Windows EXE installer:
+
+    nmake exe
+
 #### OS X
 
 Run the following command to build a compressed disk image:
