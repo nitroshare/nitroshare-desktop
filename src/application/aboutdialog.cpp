@@ -89,6 +89,9 @@ AboutDialog::~AboutDialog()
 
 void AboutDialog::toggleTextBrowser(bool checked)
 {
+    // Avoid flickering by disabling screen updates
+    setUpdatesEnabled(false);
+
     if(sender()->objectName() == "btnLicense") {
         ui->textBrowser->setText(LICENSE);
         ui->btnCredits->setChecked(false);
@@ -99,4 +102,6 @@ void AboutDialog::toggleTextBrowser(bool checked)
 
     ui->textBrowser->setVisible(checked);
     ui->wdtContent->setVisible(!checked);
+
+    setUpdatesEnabled(true);
 }
