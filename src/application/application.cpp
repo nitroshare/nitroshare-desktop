@@ -29,6 +29,7 @@
 #include "../device/devicedialog.h"
 #include "../icon/trayicon.h"
 #include "application.h"
+#include "aboutdialog.h"
 
 #ifdef BUILD_APPINDICATOR
 #include "../icon/indicatoricon.h"
@@ -97,10 +98,7 @@ void Application::sendDirectory()
 
 void Application::about()
 {
-    if (!mAboutDialog)
-        mAboutDialog = new AboutDialog(&mTransferWindow);
-
-    mAboutDialog->open();
+    AboutDialog().exec();
 }
 
 void Application::aboutQt()

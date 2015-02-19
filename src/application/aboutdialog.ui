@@ -241,7 +241,7 @@
    <sender>btnClose</sender>
    <signal>clicked()</signal>
    <receiver>AboutDialog</receiver>
-   <slot>close()</slot>
+   <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>438</x>

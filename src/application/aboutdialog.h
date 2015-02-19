@@ -40,9 +40,6 @@ public:
     explicit AboutDialog(QWidget *parent = 0);
     ~AboutDialog();
 
-protected:
-    void timerEvent(QTimerEvent * event);
-
 private Q_SLOTS:
     void onCreditsOrLicenceChecked(bool checked);
 

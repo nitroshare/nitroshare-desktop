@@ -25,10 +25,8 @@
 #ifndef NS_APPLICATION_H
 #define NS_APPLICATION_H
 
-#include <QPointer>
 #include <QSharedPointer>
 
-#include "aboutdialog.h"
 #include "../device/device.h"
 #include "../device/devicemodel.h"
 #include "../filesystem/bundle.h"
@@ -65,7 +63,6 @@ private:
     TransferWindow mTransferWindow;
 
     QSharedPointer<Icon> mIcon;
-    QPointer<AboutDialog> mAboutDialog;
 };
 
 #endif // NS_APPLICATION_H
