@@ -96,11 +96,21 @@ AboutDialog::AboutDialog(QWidget *parent) :
             this, &AboutDialog::onCreditsOrLicenceChecked);
     connect(ui->btnLicense, &QPushButton::clicked,
             this, &AboutDialog::onCreditsOrLicenceChecked);
+
+    startTimer(5*60000);
 }
 
 AboutDialog::~AboutDialog()
 {
     delete ui;
+}
+
+void AboutDialog::timerEvent(QTimerEvent *event)
+{
+    if (!isVisible()) {
+        deleteLater();
+        killTimer(event->timerId());
+    }
 }
 
 void AboutDialog::onCreditsOrLicenceChecked(bool checked)
