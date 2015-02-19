@@ -28,7 +28,6 @@
 #include <QDialog>
 #include <QItemSelection>
 
-#include "device.h"
 #include "devicemodel.h"
 
 namespace Ui {
@@ -41,12 +40,12 @@ class DeviceDialog : public QDialog
 
 public:
 
-    explicit DeviceDialog(DeviceModel &model);
+    explicit DeviceDialog(DeviceModel *model);
     virtual ~DeviceDialog();
 
-    Device* selectedDevice() const;
+    QModelIndex selectedDeviceIndex() const;
 
-    static Device* getDevice(DeviceModel &model);
+    static QModelIndex getDevice(DeviceModel *model);
 
 private Q_SLOTS:
 

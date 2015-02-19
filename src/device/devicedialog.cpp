@@ -27,12 +27,12 @@
 #include "devicedialog.h"
 #include "ui_devicedialog.h"
 
-DeviceDialog::DeviceDialog(DeviceModel &model)
+DeviceDialog::DeviceDialog(DeviceModel *model)
     : ui(new Ui::DeviceDialog)
 {
     ui->setupUi(this);
 
-    ui->deviceView->setModel(&model);
+    ui->deviceView->setModel(model);
     ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
 
     connect(ui->deviceView->selectionModel(), &QItemSelectionModel::selectionChanged,
@@ -44,25 +44,20 @@ DeviceDialog::~DeviceDialog()
     delete ui;
 }
 
-Device* DeviceDialog::selectedDevice() const
+QModelIndex DeviceDialog::selectedDeviceIndex() const
 {
     QModelIndexList selection(ui->deviceView->selectionModel()->selectedIndexes());
-
-    if(selection.count()) {
-        return selection.at(0).data(Qt::UserRole).value<Device*>();
-    } else {
-        return nullptr;
-    }
+    return selection.count() ? selection.at(0) : QModelIndex();
 }
 
-Device* DeviceDialog::getDevice(DeviceModel &model)
+QModelIndex DeviceDialog::getDevice(DeviceModel *model)
 {
     DeviceDialog deviceDialog(model);
 
     if(deviceDialog.exec() == QDialog::Accepted) {
-        return deviceDialog.selectedDevice();
+        return deviceDialog.selectedDeviceIndex();
     } else {
-        return nullptr;
+        return QModelIndex();
     }
 }
 

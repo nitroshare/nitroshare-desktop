@@ -17,7 +17,6 @@ INCLUDEPATH       += $${INCLUDE_DIR}
 HEADERS += \
     application/application.h \
     device/device.h \
-    device/device_p.h \
     device/devicedialog.h \
     device/devicelistener.h \
     device/devicemodel.h \

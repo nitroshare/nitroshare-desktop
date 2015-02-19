@@ -25,6 +25,7 @@
 #ifndef NS_APPLICATION_H
 #define NS_APPLICATION_H
 
+#include <QModelIndex>
 #include <QSharedPointer>
 
 #include "../device/device.h"
@@ -45,8 +46,8 @@ public:
 
 private Q_SLOTS:
 
-    void notifyDeviceAdded(const Device *device);
-    void notifyDeviceRemoved(const Device *device);
+    void notifyDevicesAdded(const QModelIndex &parent, int first, int last);
+    void notifyDevicesRemoved(const QModelIndex &parent, int first, int last);
 
     void sendFiles();
     void sendDirectory();

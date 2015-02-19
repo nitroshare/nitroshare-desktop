@@ -34,6 +34,9 @@
 #include "../util/platform.h"
 #endif
 
+// Enable QHostAddress to be used in a QVariant
+Q_DECLARE_METATYPE(QHostAddress)
+
 Application::Application()
     : mTransferWindow(&mTransferModel),
 #ifdef BUILD_APPINDICATOR
@@ -43,8 +46,8 @@ Application::Application()
       mIcon(new TrayIcon)
 #endif
 {
-    connect(&mDeviceModel, &DeviceModel::deviceAdded, this, &Application::notifyDeviceAdded);
-    connect(&mDeviceModel, &DeviceModel::deviceRemoved, this, &Application::notifyDeviceRemoved);
+    connect(&mDeviceModel, &DeviceModel::rowsInserted, this, &Application::notifyDevicesAdded);
+    connect(&mDeviceModel, &DeviceModel::rowsRemoved, this, &Application::notifyDevicesRemoved);
     connect(&mTransferServer, &TransferServer::newTransfer, &mTransferModel, &TransferModel::add);
 
     mIcon->addAction(tr("Send Files..."), this, SLOT(sendFiles()));
@@ -55,14 +58,22 @@ Application::Application()
     mIcon->addAction(tr("Exit"), QApplication::instance(), SLOT(quit()));
 }
 
-void Application::notifyDeviceAdded(const Device *device)
+void Application::notifyDevicesAdded(const QModelIndex &, int first, int last)
 {
-    mIcon->showMessage(tr("%1 has joined.").arg(device->name()));
+    for(int row = first; row <= last; ++row) {
+        mIcon->showMessage(tr("%1 has joined.").arg(
+            mDeviceModel.data(mDeviceModel.index(row, 0), DeviceModel::NameRole).toString()
+        ));
+    }
 }
 
-void Application::notifyDeviceRemoved(const Device *device)
+void Application::notifyDevicesRemoved(const QModelIndex &, int first, int last)
 {
-    mIcon->showMessage(tr("%1 has left.").arg(device->name()));
+    for(int row = first; row <= last; ++row) {
+        mIcon->showMessage(tr("%1 has left.").arg(
+            mDeviceModel.data(mDeviceModel.index(row, 0), DeviceModel::NameRole).toString()
+        ));
+    }
 }
 
 void Application::sendFiles()
@@ -94,9 +105,14 @@ void Application::sendDirectory()
 
 void Application::sendBundle(BundlePointer bundle)
 {
-    Device *device(DeviceDialog::getDevice(mDeviceModel));
-    if(device) {
-        Transfer *transfer = new Transfer(device, bundle);
+    QModelIndex index = DeviceDialog::getDevice(&mDeviceModel);
+    if(index.isValid()) {
+        QString deviceName = index.data(DeviceModel::NameRole).value<QString>();
+        QHostAddress address = index.data(DeviceModel::AddressRole).value<QHostAddress>();
+        quint16 port = index.data(DeviceModel::PortRole).value<quint16>();
+
+        // The constructor used below creates an outgoing transfer
+        Transfer *transfer = new Transfer(deviceName, address, port, bundle);
         mTransferModel.add(transfer);
     }
 }

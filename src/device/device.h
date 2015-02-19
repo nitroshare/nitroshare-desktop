@@ -26,109 +26,53 @@
 #define NS_DEVICE_H
 
 #include <QHostAddress>
-#include <QObject>
-#include <QSharedPointer>
+#include <QVariantMap>
 
-class DevicePrivate;
-
-/**
- * @brief Device discovered through broadcast
- *
- * A device is considered "expired" if a packet has not been received from the
- * device after a configurable amount of time has elapsed.
- */
 class Device : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QString uuid READ uuid CONSTANT)
-    Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
-    Q_PROPERTY(QString operatingSystem READ operatingSystem WRITE setOperatingSystem)
-    Q_PROPERTY(QHostAddress address READ address)
-    Q_PROPERTY(quint16 port READ port)
-    Q_PROPERTY(bool expired READ expired)
 
 public:
 
-    /**
-     * @brief Create a new device
-     * @param uuid the device UUID
-     */
-    explicit Device(const QString &uuid);
+    Device();
 
-    /**
-     * @brief Destroy the device
-     */
-    virtual ~Device();
+    QString uuid() const {
+        return mData.value("uuid").toString();
+    }
 
-    /**
-     * @brief Retrieve the UUID of the device
-     * @return device UUID
-     */
-    QString uuid() const;
+    QString version() const {
+        return mData.value("version").toString();
+    }
 
-    /**
-     * @brief Retrieve the name of the device
-     * @return device name
-     */
-    QString name() const;
+    QString name() const {
+        return mData.value("name").toString();
+    }
 
-    /**
-     * @brief Set the name of the device
-     * @param device name
-     */
-    void setName(const QString &name);
+    QString operatingSystem() const {
+        return mData.value("operating_system").toString();
+    }
 
-    /**
-     * @brief Retrieve the operating system of the device
-     * @return device operating system
-     */
-    QString operatingSystem() const;
+    QHostAddress address() const {
+        return mAddress;
+    }
 
-    /**
-     * @brief Set the operating system of the device
-     * @param device operating system
-     */
-    void setOperatingSystem(const QString &operatingSystem);
+    quint16 port() const {
+        return mData.value("port").toInt();
+    }
 
-    /**
-     * @brief Retrieve the address for connecting to the device
-     * @return device address
-     */
-    QHostAddress address() const;
-
-    /**
-     * @brief Retrieve the port for connecting to the device
-     * @return device port
-     */
-    quint16 port() const;
-
-    /**
-     * @brief Retrieve the expiration status of the device
-     * @return true if the device has expired
-     */
     bool expired() const;
-
-    /**
-     * @brief Update the device address and port
-     * @param address device address
-     * @param port device port
-     *
-     * This method will update the timestamp used to determine if the device
-     * has expired.
-     */
-    void update(const QHostAddress &address, quint16 port);
+    void update(const QVariantMap &data, const QHostAddress &address);
 
 Q_SIGNALS:
 
-    /**
-     * @brief Indicate that the name of the device has changed
-     * @param name device name
-     */
-    void nameChanged(const QString &name);
+    void dataChanged();
 
 private:
 
-    DevicePrivate * const d;
+    QVariantMap mData;
+    QHostAddress mAddress;
+
+    qint64 mLastPing;
 };
 
 #endif // NS_DEVICE_H

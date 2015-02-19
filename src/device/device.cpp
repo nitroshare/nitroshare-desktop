@@ -26,72 +26,27 @@
 
 #include "../util/settings.h"
 #include "device.h"
-#include "device_p.h"
 
-DevicePrivate::DevicePrivate(const QString &uuid)
-    : uuid(uuid),
-      name(uuid),
-      operatingSystem(QObject::tr("unknown")),
-      port(0),
-      lastPing(0)
+Device::Device()
+    : mLastPing(0)
 {
-}
-
-Device::Device(const QString &uuid)
-    : d(new DevicePrivate(uuid))
-{
-}
-
-Device::~Device()
-{
-    delete d;
-}
-
-QString Device::uuid() const
-{
-    return d->uuid;
-}
-
-QString Device::name() const
-{
-    return d->name;
-}
-
-void Device::setName(const QString &name)
-{
-    d->name = name;
-    emit nameChanged(d->name);
-}
-
-QString Device::operatingSystem() const
-{
-    return d->operatingSystem;
-}
-
-void Device::setOperatingSystem(const QString &operatingSystem)
-{
-    d->operatingSystem = operatingSystem;
-}
-
-QHostAddress Device::address() const
-{
-    return d->address;
-}
-
-quint16 Device::port() const
-{
-    return d->port;
 }
 
 bool Device::expired() const
 {
-    return QDateTime::currentMSecsSinceEpoch() - d->lastPing >=
+    return QDateTime::currentMSecsSinceEpoch() - mLastPing >=
             Settings::get<qint64>(Settings::BroadcastTimeout);
 }
 
-void Device::update(const QHostAddress &address, quint16 port)
+void Device::update(const QVariantMap &data, const QHostAddress &address)
 {
-    d->address = address;
-    d->port = port;
-    d->lastPing = QDateTime::currentMSecsSinceEpoch();
+    bool changed = mData != data || mAddress != address;
+
+    mData = data;
+    mAddress = address;
+    mLastPing = QDateTime::currentMSecsSinceEpoch();
+
+    if(changed) {
+        emit dataChanged();
+    }
 }

@@ -25,9 +25,9 @@
 #ifndef NS_TRANSFER_H
 #define NS_TRANSFER_H
 
+#include <QHostAddress>
 #include <QTcpSocket>
 
-#include "../device/device.h"
 #include "../filesystem/bundle.h"
 
 class TransferPrivate;
@@ -86,11 +86,13 @@ public:
 
     /**
      * @brief Create a new transfer for sending a bundle
-     * @param device device to send the bundle to
+     * @param deviceName name of the device
+     * @param address address of device
+     * @param port port of device
      * @param bundle bundle to send to the specified device
      * @param parent parent QObject
      */
-    Transfer(const Device *device, BundlePointer bundle, QObject *parent = nullptr);
+    Transfer(const QString &deviceName, const QHostAddress &address, quint16 port, BundlePointer bundle, QObject *parent = nullptr);
 
     /**
      * @brief Retrieve the direction of the transfer (sending or receiving)

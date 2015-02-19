@@ -59,6 +59,8 @@ public:
 private Q_SLOTS:
 
     void processPing(const QJsonObject &object, const QHostAddress &address);
+    void update();
+
     void settingChanged(Settings::Key key);
 
 private:

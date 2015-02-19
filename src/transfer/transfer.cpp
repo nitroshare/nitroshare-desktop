@@ -103,13 +103,13 @@ Transfer::Transfer(qintptr socketDescriptor, QObject *parent)
     d->socket->start();
 }
 
-Transfer::Transfer(const Device *device, BundlePointer bundle, QObject *parent)
+Transfer::Transfer(const QString &deviceName, const QHostAddress &address, quint16 port, BundlePointer bundle, QObject *parent)
     : QObject(parent),
-      d(new TransferPrivate(new SocketSender(device, bundle), this))
+      d(new TransferPrivate(new SocketSender(address, port, bundle), this))
 {
     d->direction = Send;
     d->state = Connecting;
-    d->deviceName = device->name();
+    d->deviceName = deviceName;
 
     d->socket->start();
 }

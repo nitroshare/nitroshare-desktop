@@ -25,9 +25,7 @@
 #ifndef NS_DEVICEMODEL_H
 #define NS_DEVICEMODEL_H
 
-#include <QAbstractTableModel>
-
-#include "device.h"
+#include <QAbstractItemModel>
 
 class DeviceModelPrivate;
 
@@ -38,16 +36,50 @@ class DeviceModelPrivate;
  * interfaces. Once a packet is received, it is examined and an instance of
  * the Device class is created to represent the device.
  */
-class DeviceModel : public QAbstractTableModel
+class DeviceModel : public QAbstractItemModel
 {
     Q_OBJECT
 
 public:
 
     /**
+     * @brief Roles for retrieving device data from the model
+     */
+    enum Roles {
+        /// Unique identifier
+        UUIDRole = Qt::UserRole,
+        /// Application version
+        VersionRole,
+        /// Descriptive name
+        NameRole,
+        /// Operating system
+        OperatingSystemRole,
+        /// Transfer address
+        AddressRole,
+        /// Transfer port
+        PortRole,
+    };
+
+    /**
      * @brief Create a device model
      */
     DeviceModel();
+
+    /**
+     * @brief Retrieve an index by position
+     * @param row row to retrieve
+     * @param column column to retrieve
+     * @param parent parent index
+     * @return model index
+     */
+    virtual QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const;
+
+    /**
+     * @brief Retrieve the parent of the specified index
+     * @param index index to retrieve
+     * @return parent index
+     */
+    virtual QModelIndex parent(const QModelIndex &child) const;
 
     /**
      * @brief Retrieve the number of rows in the model
@@ -78,41 +110,13 @@ public:
      * @param role role to retrieve
      * @return retrieved data
      */
-   virtual QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
+    virtual QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
 
     /**
-     * @brief Find a device by its UUID
-     * @param uuid device UUID
-     * @return device if found, otherwise nullptr
+     * @brief Retrieve names of all roles
+     * @return hash of role names
      */
-    Device* find(const QString &uuid);
-
-Q_SIGNALS:
-
-    /**
-     * @brief Indicate that a device has been added to the model
-     * @param device device added
-     *
-     * The pointer is only guaranteed to exist for the duration of the slots
-     * connected to this signal and should not be stored.
-     */
-    void deviceAdded(Device *device);
-
-    /**
-     * @brief Indicate that a device has been removed from the model
-     * @param device device removed
-     *
-     * The pointer is only guaranteed to exist for the duration of the slots
-     * connected to this signal and should not be stored.
-     */
-    void deviceRemoved(Device *device);
-
-public Q_SLOTS:
-
-    /**
-     * @brief Update the model, removing expired devices
-     */
-    void update();
+    virtual QHash<int, QByteArray> roleNames() const;
 
 private:
 

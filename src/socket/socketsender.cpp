@@ -27,9 +27,9 @@
 #include "../util/settings.h"
 #include "socketsender.h"
 
-SocketSender::SocketSender(const Device *device, BundlePointer bundle)
-    : mAddress(device->address()),
-      mPort(device->port()),
+SocketSender::SocketSender(const QHostAddress &address, quint16 port, BundlePointer bundle)
+    : mAddress(address),
+      mPort(port),
       mBundle(bundle)
 {
     // As soon as the connection succeeds, write the first packet

@@ -27,7 +27,6 @@
 
 #include <QHostAddress>
 
-#include "../device/device.h"
 #include "../filesystem/bundle.h"
 #include "socket.h"
 
@@ -37,7 +36,7 @@ class SocketSender : public Socket
 
 public:
 
-    SocketSender(const Device *device, BundlePointer bundle);
+    SocketSender(const QHostAddress &address, quint16 port, BundlePointer bundle);
 
 private:
 
