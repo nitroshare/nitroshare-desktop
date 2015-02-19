@@ -62,10 +62,10 @@ void DeviceListener::sendPings()
     // initializer instead of converting a QVariantMap
 
     QJsonObject object(QJsonObject::fromVariantMap({
-        { "version", PROJECT_VERSION },
         { "uuid", Settings::get<QString>(Settings::DeviceUUID) },
         { "name", Settings::get<QString>(Settings::DeviceName) },
         { "operating_system", Platform::currentOSName() },
+        { "version", PROJECT_VERSION },
         { "port", Settings::get<quint16>(Settings::TransferPort) }
     }));
 
