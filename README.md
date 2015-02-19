@@ -26,7 +26,7 @@ In order to use [application indicators](https://unity.ubuntu.com/projects/appin
 * libappindicator
 * libnotify
 
-### Build Instructions
+### Building the Application
 
 The instructions below describe the build process for each of the supported platforms.
 
@@ -47,18 +47,12 @@ The instructions below describe the build process for each of the supported plat
 
         out/install/nitroshare
 
-4. To create a binary Debian package, ensure that the `devscripts` package is installed and run the following command:
-
-        sudo apt-get install devscripts
-        debuild -b
-
 #### Windows 7, 8, & 8.1
 
 1. Download and install the following tools:
 
     - [Visual Studio Express 2013 for Windows Desktop](http://go.microsoft.com/?linkid=9832280&clcid=0x409) [requires sign-in]
     - [Qt Online Installer for Windows](http://www.qt.io/download-open-source/)
-    - [Inno Setup](http://www.jrsoftware.org/isinfo.php) [optional]
 
    Note: the last tool is only required if you wish to build a Windows EXE installer.
 
@@ -78,16 +72,12 @@ The instructions below describe the build process for each of the supported plat
 
         out\install\nitroshare.exe
 
-6. To create a Windows EXE installer, run the following command:
-
-        nmake exe
-
 > **Important:** By default, Visual C++ 2013 will build a binary that will not run on Windows XP. To avoid this behavior, ensure that the following environment variables are set before running `nmake`:
 >
 >     set CL=/D_USING_V110_SDK71_
 >     set LINK=/SUBSYSTEM:WINDOWS,5.01
 
-#### OS X 10.6, 10.7, & 10.8
+#### OS X 10.7, 10.8, 10.9, & 10.10
 
 1. Download and install the following tools:
 
@@ -105,6 +95,25 @@ The instructions below describe the build process for each of the supported plat
 
         open out/install/nitroshare.app
 
-5. To create a compressed disk image (DMG), run the following command:
+### Building the Installers and Packages
 
-        make dmg
+The instructions below describe the steps necessary to create installers or packages on each of the supported platforms.
+
+#### Ubuntu
+
+Ensure that the `devscripts` package is installed and build the package by running the following command:
+
+    sudo apt-get install devscripts
+    debuild -b
+
+#### Windows
+
+Building the installers for 32 and 64-bit editions of Windows requires [Inno Setup](http://www.jrsoftware.org/isinfo.php).
+
+> **Important:** The Express editions of Visual C++ do not include the redistributable installers. You will need to download the appropriate installers for the x86 and x64 architectures. (The Visual C++ 2013 Redistributable can be downloaded [here](http://www.microsoft.com/en-us/download/details.aspx?id=40784).) Locate the Visual C++ `redist` directory and create a directory inside named "1033". Place the two installers inside this directory.
+
+#### OS X
+
+Run the following command to build a compressed disk image:
+
+    make dmg
