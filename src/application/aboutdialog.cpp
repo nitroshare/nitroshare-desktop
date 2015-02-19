@@ -89,19 +89,20 @@ AboutDialog::~AboutDialog()
 
 void AboutDialog::toggleTextBrowser(bool checked)
 {
-    // Avoid flickering by disabling screen updates
-    setUpdatesEnabled(false);
+    if(!checked && (ui->btnCredits->isChecked() || ui->btnLicense->isChecked())) {
+        return;
+    }
 
-    if(sender()->objectName() == "btnLicense") {
+    if(sender()->objectName() == "btnCredits") {
+        ui->textBrowser->setText(CREDITS);
+        ui->btnCredits->setChecked(checked);
+        ui->btnLicense->setChecked(false);
+    } else if(sender()->objectName() == "btnLicense") {
         ui->textBrowser->setText(LICENSE);
         ui->btnCredits->setChecked(false);
-    } else if(sender()->objectName() == "btnCredits") {
-        ui->textBrowser->setText(CREDITS);
-        ui->btnLicense->setChecked(false);
+        ui->btnLicense->setChecked(checked);
     }
 
     ui->textBrowser->setVisible(checked);
     ui->wdtContent->setVisible(!checked);
-
-    setUpdatesEnabled(true);
 }
