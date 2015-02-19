@@ -24,6 +24,7 @@
 
 #include <QApplication>
 #include <QFileDialog>
+#include <QMessageBox>
 
 #include "../device/devicedialog.h"
 #include "../icon/trayicon.h"
@@ -34,8 +35,7 @@
 #include "../util/platform.h"
 #endif
 
-Application::Application()
-    : mTransferWindow(&mTransferModel),
+Application::Application(QObject *parent) : QObject(parent), mTransferWindow(&mTransferModel),
 #ifdef BUILD_APPINDICATOR
       mIcon(Platform::isUnity() ? static_cast<Icon *>(new IndicatorIcon) :
                                   static_cast<Icon *>(new TrayIcon))
@@ -51,6 +51,9 @@ Application::Application()
     mIcon->addAction(tr("Send Directory..."), this, SLOT(sendDirectory()));
     mIcon->addSeparator();
     mIcon->addAction(tr("View Transfers..."), &mTransferWindow, SLOT(show()));
+    mIcon->addSeparator();
+    mIcon->addAction(tr("About"), this, SLOT(about()));
+    mIcon->addAction(tr("About Qt"), this, SLOT(aboutQt()));
     mIcon->addSeparator();
     mIcon->addAction(tr("Exit"), QApplication::instance(), SLOT(quit()));
 }
@@ -90,6 +93,19 @@ void Application::sendDirectory()
         bundle->addDirectory(path);
         sendBundle(bundle);
     }
+}
+
+void Application::about()
+{
+    if (!mAboutDialog)
+        mAboutDialog = new AboutDialog(&mTransferWindow);
+
+    mAboutDialog->open();
+}
+
+void Application::aboutQt()
+{
+    QMessageBox::aboutQt(&mTransferWindow);
 }
 
 void Application::sendBundle(BundlePointer bundle)

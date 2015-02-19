@@ -22,26 +22,31 @@
  * IN THE SOFTWARE.
  **/
 
-#include <QApplication>
+#ifndef ABOUTDIALOG_H
+#define ABOUTDIALOG_H
 
-#include "application/application.h"
-#include "config.h"
+#include <QDialog>
+#include <QString>
 
-int main(int argc, char **argv)
-{
-    QApplication app(argc, argv);
-    app.setQuitOnLastWindowClosed(false);
-
-    // Set up application properties
-    app.setApplicationDisplayName(PROJECT_TITLE);
-    app.setApplicationName(PROJECT_TITLE);
-    app.setApplicationVersion(PROJECT_VERSION);
-    app.setOrganizationDomain(PROJECT_DOMAIN);
-    app.setOrganizationName(PROJECT_AUTHOR);
-
-    // Create the tray icon that runs the application
-    Application nitroshare(&app);
-    Q_UNUSED(nitroshare);
-
-    app.exec();
+namespace Ui {
+class AboutDialog;
 }
+
+class AboutDialog : public QDialog
+{
+    Q_OBJECT
+
+public:
+    explicit AboutDialog(QWidget *parent = 0);
+    ~AboutDialog();
+
+private Q_SLOTS:
+    void onCreditsOrLicenceChecked(bool checked);
+
+private:
+    Ui::AboutDialog *ui;
+    static const QString LICENSE;
+    static const QString CREDITS;
+};
+
+#endif // ABOUTDIALOG_H
