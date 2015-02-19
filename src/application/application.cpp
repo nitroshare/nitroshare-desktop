@@ -23,10 +23,12 @@
  **/
 
 #include <QApplication>
+#include <QDateTime>
 #include <QFileDialog>
 
 #include "../device/devicedialog.h"
 #include "../icon/trayicon.h"
+#include "../util/settings.h"
 #include "application.h"
 
 #ifdef BUILD_APPINDICATOR
@@ -41,10 +43,11 @@ Application::Application()
     : mTransferWindow(&mTransferModel),
 #ifdef BUILD_APPINDICATOR
       mIcon(Platform::isUnity() ? static_cast<Icon *>(new IndicatorIcon) :
-                                  static_cast<Icon *>(new TrayIcon))
+                                  static_cast<Icon *>(new TrayIcon)),
 #else
-      mIcon(new TrayIcon)
+      mIcon(new TrayIcon),
 #endif
+      mStartTime(QDateTime::currentMSecsSinceEpoch())
 {
     connect(&mDeviceModel, &DeviceModel::rowsInserted, this, &Application::notifyDevicesAdded);
     connect(&mDeviceModel, &DeviceModel::rowsRemoved, this, &Application::notifyDevicesRemoved);
@@ -60,10 +63,13 @@ Application::Application()
 
 void Application::notifyDevicesAdded(const QModelIndex &, int first, int last)
 {
-    for(int row = first; row <= last; ++row) {
-        mIcon->showMessage(tr("%1 has joined.").arg(
-            mDeviceModel.data(mDeviceModel.index(row, 0), DeviceModel::NameRole).toString()
-        ));
+    // Only display notifications if current uptime exceeds the broadcast timeout
+    if(QDateTime::currentMSecsSinceEpoch() - mStartTime > Settings::get<qint64>(Settings::BroadcastTimeout)) {
+        for(int row = first; row <= last; ++row) {
+            mIcon->showMessage(tr("%1 has joined.").arg(
+                mDeviceModel.data(mDeviceModel.index(row, 0), DeviceModel::NameRole).toString()
+            ));
+        }
     }
 }
 

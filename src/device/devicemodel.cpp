@@ -60,9 +60,11 @@ void DeviceModelPrivate::processPing(const QJsonObject &object, const QHostAddre
 
     // Attempt to find an existing device with the UUID
     Device *device = nullptr;
-    for(int i = 0; i < devices.count(); ++i) {
-        if(devices.at(i)->uuid() == uuid) {
-            device = devices.at(i);
+    int index = 0;
+
+    for(; index < devices.count(); ++index) {
+        if(devices.at(index)->value("uuid") == uuid) {
+            device = devices.at(index);
         }
     }
 
@@ -73,18 +75,17 @@ void DeviceModelPrivate::processPing(const QJsonObject &object, const QHostAddre
         created = true;
     }
 
-    device->update(object.toVariantMap(), address);
+    // Update the device and check to see if anything important has changed
+    bool changed = device->update(object.toVariantMap(), address);
 
-    // If a new device was created, add it and watch for changes
+    // Add the device if it was created, and otherwise, check to see
+    // if something changed and emit the appropriate signal if so
     if(created) {
         q->beginInsertRows(QModelIndex(), devices.count(), devices.count());
         devices.append(device);
         q->endInsertRows();
-
-        connect(device, &Device::dataChanged, [this, device]() {
-            int index = devices.indexOf(device);
-            emit q->dataChanged(q->index(index, 0), q->index(index, ColumnCount));
-        });
+    } else if(changed) {
+        emit q->dataChanged(q->index(index, 0), q->index(index, ColumnCount));
     }
 }
 
@@ -94,7 +95,7 @@ void DeviceModelPrivate::update()
     for(int i = devices.count() - 1; i >= 0; --i) {
         Device *device = devices.at(i);
 
-        if(device->expired()) {
+        if(device->isExpired()) {
             q->beginRemoveRows(QModelIndex(), i, i);
             devices.removeAt(i);
             q->endRemoveRows();
@@ -159,9 +160,9 @@ QVariant DeviceModel::data(const QModelIndex &index, int role) const
     case Qt::DisplayRole:
         switch(index.column()) {
         case DeviceModelPrivate::ColumnName:
-            return device->name();
+            return device->value("name");
         case DeviceModelPrivate::ColumnOperatingSystem:
-            return device->operatingSystem();
+            return device->value("operating_system");
         }
         break;
     case Qt::DecorationRole:
@@ -170,17 +171,17 @@ QVariant DeviceModel::data(const QModelIndex &index, int role) const
         }
         break;
     case UUIDRole:
-        return device->uuid();
-    case VersionRole:
-        return device->version();
+        return device->value("uuid");
     case NameRole:
-        return device->name();
+        return device->value("name");
     case OperatingSystemRole:
-        return device->operatingSystem();
+        return device->value("operating_system");
+    case VersionRole:
+        return device->value("version");
     case AddressRole:
         return QVariant::fromValue(device->address());
     case PortRole:
-        return device->port();
+        return device->value("port");
     }
 
     return QVariant();

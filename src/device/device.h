@@ -28,51 +28,27 @@
 #include <QHostAddress>
 #include <QVariantMap>
 
-class Device : public QObject
+class Device
 {
-    Q_OBJECT
-
 public:
 
-    Device();
-
-    QString uuid() const {
-        return mData.value("uuid").toString();
-    }
-
-    QString version() const {
-        return mData.value("version").toString();
-    }
-
-    QString name() const {
-        return mData.value("name").toString();
-    }
-
-    QString operatingSystem() const {
-        return mData.value("operating_system").toString();
+    QVariant value(const QString &key) const {
+        return mData.value(key);
     }
 
     QHostAddress address() const {
         return mAddress;
     }
 
-    quint16 port() const {
-        return mData.value("port").toInt();
-    }
-
-    bool expired() const;
-    void update(const QVariantMap &data, const QHostAddress &address);
-
-Q_SIGNALS:
-
-    void dataChanged();
+    bool isExpired() const;
+    bool update(const QVariantMap &data, const QHostAddress &address);
 
 private:
 
     QVariantMap mData;
     QHostAddress mAddress;
 
-    qint64 mLastPing;
+    qint64 mLastPing = 0;
 };
 
 #endif // NS_DEVICE_H

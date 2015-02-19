@@ -62,6 +62,8 @@ private:
     TransferWindow mTransferWindow;
 
     QSharedPointer<Icon> mIcon;
+
+    qint64 mStartTime;
 };
 
 #endif // NS_APPLICATION_H

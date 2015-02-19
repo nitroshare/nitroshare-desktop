@@ -48,12 +48,12 @@ public:
     enum Roles {
         /// Unique identifier
         UUIDRole = Qt::UserRole,
-        /// Application version
-        VersionRole,
         /// Descriptive name
         NameRole,
         /// Operating system
         OperatingSystemRole,
+        /// Application version
+        VersionRole,
         /// Transfer address
         AddressRole,
         /// Transfer port
