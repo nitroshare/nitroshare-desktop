@@ -22,21 +22,22 @@
  * IN THE SOFTWARE.
  **/
 
-#ifndef NS_SOCKETSENDER_H
-#define NS_SOCKETSENDER_H
+#ifndef NS_TRANSFERSENDER_H
+#define NS_TRANSFERSENDER_H
 
+#include <QFile>
 #include <QHostAddress>
 
 #include "../filesystem/bundle.h"
-#include "socket.h"
+#include "transfer.h"
 
-class SocketSender : public Socket
+class TransferSender : public Transfer
 {
     Q_OBJECT
 
 public:
 
-    SocketSender(const QHostAddress &address, quint16 port, BundlePointer bundle);
+    TransferSender(const QString &deviceName, const QHostAddress &address, quint16 port, BundlePointer bundle);
 
 private:
 
@@ -48,18 +49,18 @@ private:
     void writeFileHeader();
     void writeFileData();
 
-    // Data needed to connect to the receiver and send files
+    // Information needed to connect to the remote host
     QHostAddress mAddress;
     quint16 mPort;
     BundlePointer mBundle;
 
-    // Iterator pointing to the file currently being written
+    // Points to the file currently being transferred
     Bundle::const_iterator mIterator;
 
-    // Data for the file currently being written
+    // Data needed for the file currently being written
     QFile mFile;
     qint64 mFileBytesRemaining;
     QByteArray mFileBuffer;
 };
 
-#endif // NS_SOCKETSENDER_H
+#endif // NS_TRANSFERSENDER_H

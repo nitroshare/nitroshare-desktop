@@ -28,15 +28,31 @@
 
 #include "transfermodel.h"
 #include "transfermodel_p.h"
+#include "transferreceiver.h"
+#include "transfersender.h"
 
-TransferModelPrivate::TransferModelPrivate(QObject *parent)
-    : QObject(parent)
+TransferModelPrivate::TransferModelPrivate(TransferModel *transferModel)
+    : QObject(transferModel),
+      q(transferModel)
 {
 }
 
 TransferModelPrivate::~TransferModelPrivate()
 {
     qDeleteAll(transfers);
+}
+
+void TransferModelPrivate::add(Transfer *transfer)
+{
+    // Whenever the transfer changes, emit the appropriate signal
+    connect(transfer, &Transfer::dataChanged, [this, transfer]() {
+        int index = transfers.indexOf(transfer);
+        emit q->dataChanged(q->index(index, 0), q->index(index, ColumnCount));
+    });
+
+    q->beginInsertRows(QModelIndex(), transfers.count(), transfers.count());
+    transfers.append(transfer);
+    q->endInsertRows();
 }
 
 TransferModel::TransferModel()
@@ -56,32 +72,43 @@ int TransferModel::columnCount(const QModelIndex &parent) const
 
 QVariant TransferModel::data(const QModelIndex &index, int role) const
 {
-    if(index.row() < d->transfers.count() && index.column() < TransferModelPrivate::ColumnCount) {
-        Transfer *transfer = d->transfers.at(index.row());
+    if(!index.isValid() || index.model() != this) {
+        return QVariant();
+    }
 
-        switch(role) {
-        case Qt::DisplayRole:
-            switch(index.column()) {
-            case TransferModelPrivate::ColumnDeviceName:
-                return transfer->deviceName();
-            case TransferModelPrivate::ColumnProgress:
-                return transfer->progress();
-            case TransferModelPrivate::ColumnState:
-                return transfer->state();
-            }
-        case Qt::DecorationRole:
-            if(index.column() == TransferModelPrivate::ColumnDeviceName) {
-                switch(transfer->direction()) {
-                case Transfer::Send:
-                    return QVariant::fromValue(QApplication::style()->standardIcon(QStyle::SP_ArrowUp));
-                case Transfer::Receive:
-                    return QVariant::fromValue(QApplication::style()->standardIcon(QStyle::SP_ArrowDown));
-                }
-            }
-            break;
-        case Qt::UserRole:
-            return QVariant::fromValue(transfer);
+    Transfer *transfer = d->transfers.at(index.row());
+
+    switch(role) {
+    case Qt::DisplayRole:
+        switch(index.column()) {
+        case TransferModelPrivate::ColumnDeviceName:
+            return transfer->deviceName();
+        case TransferModelPrivate::ColumnProgress:
+            return transfer->progress();
+        case TransferModelPrivate::ColumnState:
+            return transfer->state();
         }
+        break;
+    case Qt::DecorationRole:
+        if(index.column() == TransferModelPrivate::ColumnDeviceName) {
+            switch(transfer->direction()) {
+            case Send:
+                return QApplication::style()->standardIcon(QStyle::SP_ArrowUp);
+            case Receive:
+                return QApplication::style()->standardIcon(QStyle::SP_ArrowDown);
+            }
+        }
+        break;
+    case DeviceNameRole:
+        return transfer->deviceName();
+    case ProgressRole:
+        return transfer->progress();
+    case DirectionRole:
+        return transfer->direction();
+    case StateRole:
+        return transfer->state();
+    case ErrorRole:
+        return transfer->error();
     }
 
     return QVariant();
@@ -89,49 +116,55 @@ QVariant TransferModel::data(const QModelIndex &index, int role) const
 
 QVariant TransferModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-    if(orientation == Qt::Horizontal && role == Qt::DisplayRole) {
-        switch(section) {
-        case TransferModelPrivate::ColumnDeviceName:
-            return tr("Device Name");
-        case TransferModelPrivate::ColumnProgress:
-            return tr("Progress");
-        case TransferModelPrivate::ColumnState:
-            return tr("Status");
-        }
+    if(orientation != Qt::Horizontal || role != Qt::DisplayRole) {
+        return QAbstractTableModel::headerData(section, orientation, role);
+    }
+
+    switch(section) {
+    case TransferModelPrivate::ColumnDeviceName:
+        return tr("Device Name");
+    case TransferModelPrivate::ColumnProgress:
+        return tr("Progress");
+    case TransferModelPrivate::ColumnState:
+        return tr("Status");
     }
 
     return QVariant();
 }
 
-QModelIndex TransferModel::indexOf(Transfer *transfer, int column) const
+QHash<int, QByteArray> TransferModel::roleNames() const
 {
-    return index(d->transfers.indexOf(transfer), column);
+    return {
+        {DeviceNameRole, "device_name"},
+        {ProgressRole, "progress"},
+        {DirectionRole, "direction"},
+        {StateRole, "state"},
+        {ErrorRole, "error"}
+    };
 }
 
-void TransferModel::add(Transfer *transfer)
+void TransferModel::addReceiver(qintptr socketDescriptor)
 {
-    // Whenever properties of the transfer change, emit the appropriate signal
-    connect(transfer, &Transfer::deviceNameChanged, [this, transfer]() {
-        QModelIndex index = indexOf(transfer, TransferModelPrivate::ColumnDeviceName);
-        emit dataChanged(index, index);
-    });
+    d->add(new TransferReceiver(socketDescriptor));
+}
 
-    connect(transfer, &Transfer::progressChanged, [this, transfer]() {
-        QModelIndex index = indexOf(transfer, TransferModelPrivate::ColumnProgress);
-        emit dataChanged(index, index);
-    });
+void TransferModel::addSender(const QString &deviceName, const QHostAddress &address, quint16 port, BundlePointer bundle)
+{
+    d->add(new TransferSender(deviceName, address, port, bundle));
+}
 
-    connect(transfer, &Transfer::stateChanged, [this, transfer]() {
-        QModelIndex index = indexOf(transfer, TransferModelPrivate::ColumnState);
-        emit dataChanged(index, index);
-    });
+void TransferModel::cancel(int index)
+{
+    if(index > 0 && index < d->transfers.count()) {
+        d->transfers.at(index)->cancel();
+    }
+}
 
-    beginInsertRows(QModelIndex(), d->transfers.count(), d->transfers.count());
-    d->transfers.append(transfer);
-    endInsertRows();
-
-    // This needs to come after inserting the transfer so that it will have a valid index
-    emit transferAdded(transfer);
+void TransferModel::restart(int index)
+{
+    if(index > 0 && index < d->transfers.count()) {
+        d->transfers.at(index)->start();
+    }
 }
 
 void TransferModel::clear()
@@ -140,13 +173,12 @@ void TransferModel::clear()
     for(int i = d->transfers.count() - 1; i >= 0; --i) {
         Transfer *transfer = d->transfers.at(i);
 
-        if(transfer->state() == Transfer::Canceled || transfer->state() == Transfer::Failed ||
-                transfer->state() == Transfer::Succeeded) {
+        // Remove only items that are finished
+        if(transfer->state() == Canceled || transfer->state() == Failed || transfer->state() == Succeeded) {
             beginRemoveRows(QModelIndex(), i, i);
             d->transfers.removeAt(i);
             endRemoveRows();
 
-            emit transferRemoved(transfer);
             delete transfer;
         }
     }

@@ -54,7 +54,7 @@ Application::Application(QObject *parent)
 {
     connect(&mDeviceModel, &DeviceModel::rowsInserted, this, &Application::notifyDevicesAdded);
     connect(&mDeviceModel, &DeviceModel::rowsRemoved, this, &Application::notifyDevicesRemoved);
-    connect(&mTransferServer, &TransferServer::newTransfer, &mTransferModel, &TransferModel::add);
+    connect(&mTransferServer, &TransferServer::newTransfer, &mTransferModel, &TransferModel::addReceiver);
 
     mIcon->addAction(tr("Send Files..."), this, SLOT(sendFiles()));
     mIcon->addAction(tr("Send Directory..."), this, SLOT(sendDirectory()));
@@ -138,8 +138,6 @@ void Application::sendBundle(BundlePointer bundle)
         QHostAddress address = index.data(DeviceModel::AddressRole).value<QHostAddress>();
         quint16 port = index.data(DeviceModel::PortRole).value<quint16>();
 
-        // The constructor used below creates an outgoing transfer
-        Transfer *transfer = new Transfer(deviceName, address, port, bundle);
-        mTransferModel.add(transfer);
+        mTransferModel.addSender(deviceName, address, port, bundle);
     }
 }

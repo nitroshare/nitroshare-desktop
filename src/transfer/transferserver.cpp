@@ -24,11 +24,13 @@
 
 #include "transferserver.h"
 
-TransferServer::TransferServer()
+TransferServer::TransferServer(QObject *parent)
+    : QTcpServer(parent)
 {
     connect(Settings::instance(), &Settings::settingChanged, this, &TransferServer::settingChanged);
 
     // TODO: listen() can fail without notifying the user
+
     reload();
 }
 
@@ -41,7 +43,7 @@ void TransferServer::settingChanged(Settings::Key key)
 
 void TransferServer::incomingConnection(qintptr socketDescriptor)
 {
-    emit newTransfer(new Transfer(socketDescriptor));
+    emit newTransfer(socketDescriptor);
 }
 
 void TransferServer::reload()

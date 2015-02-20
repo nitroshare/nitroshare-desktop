@@ -26,8 +26,9 @@
 #define NS_TRANSFERMODEL_H
 
 #include <QAbstractTableModel>
+#include <QHostAddress>
 
-#include "transfer.h"
+#include "../filesystem/bundle.h"
 
 class TransferModelPrivate;
 
@@ -42,8 +43,52 @@ class TransferModelPrivate;
 class TransferModel : public QAbstractTableModel
 {
     Q_OBJECT
+    Q_ENUMS(Direction)
+    Q_ENUMS(State)
 
 public:
+
+    /**
+     * @brief Roles for retrieving data from the model
+     */
+    enum Roles {
+        /// Name of other device
+        DeviceNameRole = Qt::UserRole,
+        /// Progress of transfer
+        ProgressRole,
+        /// Direction of transfer
+        DirectionRole,
+        /// State of transfer
+        StateRole,
+        /// Error encountered during transfer
+        ErrorRole
+    };
+
+    /**
+     * @brief Direction of transfer
+     */
+    enum Direction {
+        /// Transfer is sending files
+        Send,
+        /// Transfer is receiving files
+        Receive
+    };
+
+    /**
+     * @brief State of transfer
+     */
+    enum State {
+        /// Connecting to remote host
+        Connecting,
+        /// File transfer in progress
+        InProgress,
+        /// Transfer was canceled
+        Canceled,
+        /// Transfer failed
+        Failed,
+        /// Transfer succeeded
+        Succeeded
+    };
 
     /**
      * @brief Create a transfer model
@@ -82,42 +127,40 @@ public:
     virtual QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
 
     /**
-     * @brief Retrieve the index of the specified transfer
-     * @param transfer transfer to retrieve the index of
-     * @param column column to set the index to
-     * @return index of the transfer
+     * @brief Retrieve names of all roles
+     * @return hash of role names
      */
-    QModelIndex indexOf(Transfer *transfer, int column) const;
-
-Q_SIGNALS:
-
-    /**
-     * @brief Indicate that a transfer has been added to the model
-     * @param transfer transfer added
-     *
-     * The pointer is only guaranteed to exist for the duration of the slots
-     * connected to this signal and should not be stored.
-     */
-    void transferAdded(Transfer *transfer);
-
-    /**
-     * @brief Indicate that a transfer has been removed from the model
-     * @param transfer transfer removed
-     *
-     * The pointer is only guaranteed to exist for the duration of the slots
-     * connected to this signal and should not be stored.
-     */
-    void transferRemoved(Transfer *transfer);
+    virtual QHash<int, QByteArray> roleNames() const;
 
 public Q_SLOTS:
 
     /**
-     * @brief Add a transfer to the model
-     * @param transfer transfer to add
-     *
-     * The model takes ownership of the transfer and starts it.
+     * @brief Create a new transfer for receiving files
+     * @param socketDescriptor socket descriptor
+     * @param parent parent QObject
      */
-    void add(Transfer *transfer);
+    void addReceiver(qintptr socketDescriptor);
+
+    /**
+     * @brief Create a new transfer for sending files
+     * @param deviceName name of the device
+     * @param address address of device
+     * @param port port of device
+     * @param bundle bundle to send to the specified device
+    */
+    void addSender(const QString &deviceName, const QHostAddress &address, quint16 port, BundlePointer bundle);
+
+    /**
+     * @brief Cancel the specified transfer
+     * @param index item index
+     */
+    void cancel(int index);
+
+    /**
+     * @brief Restart the specified transfer
+     * @param index item index
+     */
+    void restart(int index);
 
     /**
      * @brief Remove all finished transfers from the model
@@ -127,6 +170,7 @@ public Q_SLOTS:
 private:
 
     TransferModelPrivate *const d;
+    friend class TransferModelPrivate;
 };
 
 #endif // NS_TRANSFERMODEL_H

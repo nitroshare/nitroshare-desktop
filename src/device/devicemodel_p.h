@@ -27,6 +27,7 @@
 
 #include <QHostAddress>
 #include <QJsonObject>
+#include <QList>
 #include <QTimer>
 
 #include "../util/settings.h"

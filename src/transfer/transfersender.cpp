@@ -22,23 +22,24 @@
  * IN THE SOFTWARE.
  **/
 
-#include <QVariantMap>
-
 #include "../util/settings.h"
-#include "socketsender.h"
+#include "transfersender.h"
 
-SocketSender::SocketSender(const QHostAddress &address, quint16 port, BundlePointer bundle)
-    : mAddress(address),
+TransferSender::TransferSender(const QString &deviceName, const QHostAddress &address, quint16 port, BundlePointer bundle)
+    : Transfer(TransferModel::Send),
+      mAddress(address),
       mPort(port),
       mBundle(bundle)
 {
-    // As soon as the connection succeeds, write the first packet
-    connect(this, &SocketSender::connected, [this]() {
+    mDeviceName = deviceName;
+
+    // As soon as the connection completes, begin writing packets
+    connect(&mSocket, &QTcpSocket::connected, [this]() {
         writeNextPacket();
     });
 }
 
-void SocketSender::initialize()
+void TransferSender::initialize()
 {
     mTransferBytesTotal = mBundle->totalSize();
     mIterator = mBundle->constBegin();
@@ -49,21 +50,20 @@ void SocketSender::initialize()
 
     mFileBuffer.resize(Settings::get<int>(Settings::TransferBuffer));
 
-    // If this succeeds, connected will be emitted and writeNextPacket called
-    connectToHost(mAddress, mPort);
+    mSocket.connectToHost(mAddress, mPort);
 }
 
-void SocketSender::processPacket(const QByteArray &)
+void TransferSender::processPacket(const QByteArray &)
 {
-    // Any data received here is completely unexpected
-    throw tr("Unexpected data received");
+    // Any data received here is an error and should be treated as such
+    abortWithError(tr("Unexpected data received"));
 }
 
-void SocketSender::writeNextPacket()
+void TransferSender::writeNextPacket()
 {
     // This is invoked when there is no data waiting to be written
     // Depending on the current state, send the next packet
-    switch(mState) {
+    switch(mProtocolState) {
     case TransferHeader:
         writeTransferHeader();
         break;
@@ -74,11 +74,11 @@ void SocketSender::writeNextPacket()
         writeFileData();
         break;
     case Finished:
-        emit success();
+        finish();
     }
 }
 
-void SocketSender::writeTransferHeader()
+void TransferSender::writeTransferHeader()
 {
     // Due to poor translation between 64-bit integers in C++ and JSON,
     // it is necessary to send large integers as strings
@@ -90,15 +90,16 @@ void SocketSender::writeTransferHeader()
     });
 
     // The next packet will be the first file header
-    mState = FileHeader;
+    mProtocolState = FileHeader;
 }
 
-void SocketSender::writeFileHeader()
+void TransferSender::writeFileHeader()
 {
     // Set the filename and attempt to open the file
     mFile.setFileName(mIterator->absoluteFilename());
     if(!mFile.open(QIODevice::ReadOnly)) {
-        throw tr("Unable to open %1").arg(mIterator->absoluteFilename());
+        abortWithError(tr("Unable to open %1").arg(mIterator->absoluteFilename()));
+        return;
     }
 
     // Obtain the file size and write the file header
@@ -109,10 +110,10 @@ void SocketSender::writeFileHeader()
     });
 
     // The next packet will be the first chunk from the file
-    mState = FileData;
+    mProtocolState = FileData;
 }
 
-void SocketSender::writeFileData()
+void TransferSender::writeFileData()
 {
     // Read the next chunk of data from the file - no more than either the size
     // of the buffer or the amount of data remaining in the file
@@ -121,7 +122,8 @@ void SocketSender::writeFileData()
 
     // Ensure that a valid number of bytes were read
     if(bytesRead <= 0) {
-         throw tr("Unable to read from %1").arg(mFile.fileName());
+         abortWithError(tr("Unable to read from %1").arg(mFile.fileName()));
+         return;
     }
 
     // Write a packet containing the data that was just read
@@ -132,7 +134,7 @@ void SocketSender::writeFileData()
     mTransferBytes += bytesRead;
 
     // Provide a progress update
-    emitProgress();
+    calculateProgress();
 
     // If there are no bytes remaining in the file, move on to the next file
     // or indicate that the transfer has completed (emit success after write completes)
@@ -141,9 +143,9 @@ void SocketSender::writeFileData()
         ++mIterator;
 
         if(mIterator == mBundle->constEnd()) {
-            mState = Finished;
+            mProtocolState = Finished;
         } else {
-            mState = FileHeader;
+            mProtocolState = FileHeader;
         }
     }
 }

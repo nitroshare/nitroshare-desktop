@@ -22,21 +22,21 @@
  * IN THE SOFTWARE.
  **/
 
-#ifndef NS_SOCKETRECEIVER_H
-#define NS_SOCKETRECEIVER_H
+#ifndef NS_TRANSFERRECEIVER_H
+#define NS_TRANSFERRECEIVER_H
 
 #include <QDir>
 #include <QFile>
 
-#include "socket.h"
+#include "transfer.h"
 
-class SocketReceiver : public Socket
+class TransferReceiver : public Transfer
 {
     Q_OBJECT
 
 public:
 
-    SocketReceiver(qintptr socketDescriptor);
+    explicit TransferReceiver(qintptr socketDescriptor);
 
 private:
 
@@ -48,15 +48,15 @@ private:
     void processFileHeader(const QByteArray &data);
     void processFileData(const QByteArray &data);
 
-    // Number of files remaining to be transferred
-    qint32 mTransferFilesRemaining;
-
     // Directory to write files to
     QDir mRoot;
 
-    // Data for the file currently being read
+    // Number of files remaining to be transferred
+    qint32 mTransferFilesRemaining;
+
+    // Data needed for the file currently being read
     QFile mFile;
     qint64 mFileBytesRemaining;
 };
 
-#endif // NS_SOCKETRECEIVER_H
+#endif // NS_TRANSFERRECEIVER_H

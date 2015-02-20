@@ -27,138 +27,91 @@
 
 #include <QHostAddress>
 #include <QTcpSocket>
+#include <QVariantMap>
 
 #include "../filesystem/bundle.h"
+#include "transfermodel.h"
 
-class TransferPrivate;
-
-/**
- * @brief Transfer currently in progress
- *
- * A transfer is initiated either by the user attempting to send a file or by
- * an incoming TCP connection. The connection is processed asynchronously.
- */
 class Transfer : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(Direction direction READ direction CONSTANT)
-    Q_PROPERTY(State state READ state NOTIFY stateChanged)
-    Q_PROPERTY(QString deviceName READ deviceName NOTIFY deviceNameChanged)
-    Q_PROPERTY(int progress READ progress NOTIFY progressChanged)
-    Q_PROPERTY(QString error READ error)
-    Q_ENUMS(Direction)
-    Q_ENUMS(Status)
 
 public:
 
-    /**
-     * @brief Direction of the transfer
-     */
-    enum Direction {
-        /// Files are being sent
-        Send,
-        /// Files are being received
-        Receive
-    };
+    // "explicit" is not needed here since this class is abstract
+    Transfer(TransferModel::Direction direction);
 
-    /**
-     * @brief State of the transfer
-     */
-    enum State {
-        /// Connection is in progress
-        Connecting,
-        /// Transfer is currently in progress
-        InProgress,
-        /// Transfer was canceled
-        Canceled,
-        /// Transfer failed to complete
-        Failed,
-        /// Transfer completed successfully
-        Succeeded
-    };
+    QString deviceName() const {
+        return mDeviceName;
+    }
 
-    /**
-     * @brief Create a new transfer for receiving files
-     * @param socketDescriptor socket descriptor
-     * @param parent parent QObject
-     */
-    Transfer(qintptr socketDescriptor, QObject *parent = nullptr);
+    int progress() const {
+        return mProgress;
+    }
 
-    /**
-     * @brief Create a new transfer for sending a bundle
-     * @param deviceName name of the device
-     * @param address address of device
-     * @param port port of device
-     * @param bundle bundle to send to the specified device
-     * @param parent parent QObject
-     */
-    Transfer(const QString &deviceName, const QHostAddress &address, quint16 port, BundlePointer bundle, QObject *parent = nullptr);
+    TransferModel::Direction direction() const {
+        return mDirection;
+    }
 
-    /**
-     * @brief Retrieve the direction of the transfer (sending or receiving)
-     * @return transfer direction
-     */
-    Direction direction() const;
+    TransferModel::State state() const {
+        return mState;
+    }
 
-    /**
-     * @brief Retrieve the state of the transfer
-     * @return transfer state
-     */
-    State state() const;
+    QString error() const {
+        return mError;
+    }
 
-    /**
-     * @brief Retrieve the name of the connected device
-     * @return name of the device
-     */
-    QString deviceName() const;
-
-    /**
-     * @brief Retrieve the progress of the transfer
-     * @return transfer progress between 0 and 100
-     */
-    int progress() const;
-
-    /**
-     * @brief Retrieve the error message (if any)
-     * @return error message or empty string if none
-     */
-    QString error() const;
+    void start();
+    void cancel();
 
 Q_SIGNALS:
 
-    /**
-     * @brief Indicate that the connected device name has changed
-     * @param deviceName name of the device
-     */
-    void deviceNameChanged(const QString &deviceName);
+    void dataChanged();
 
-    /**
-     * @brief Indicate that the progress of the transfer has changed
-     * @param progress transfer progress between 0 and 100
-     */
-    void progressChanged(int progress);
+private Q_SLOTS:
 
-    /**
-     * @brief Indicate that the state of the transfer has changed
-     * @param state state of the transfer
-     */
-    void stateChanged(State state);
+    void onConnected();
+    void onReadyRead();
+    void onBytesWritten();
+    void onError(QAbstractSocket::SocketError error);
 
-public Q_SLOTS:
+protected:
 
-    /**
-     * @brief Cancel the transfer
-     */
-    void cancel();
+    virtual void initialize() = 0;
+    virtual void processPacket(const QByteArray &data) = 0;
+    virtual void writeNextPacket() = 0;
 
-    /**
-     * @brief Start the transfer again
-     */
-    void restart();
+    void writePacket(const QByteArray &data);
+    void writePacket(const QVariantMap &map);
+
+    void calculateProgress();
+    void abortWithError(const QString &message);
+    void finish();
+
+    QTcpSocket mSocket;
+
+    enum {
+        TransferHeader,
+        FileHeader,
+        FileData,
+        Finished
+    } mProtocolState;
+
+    QString mDeviceName;
+
+    qint64 mTransferBytes;
+    qint64 mTransferBytesTotal;
 
 private:
 
-    TransferPrivate * const d;
+    const TransferModel::Direction mDirection;
+    TransferModel::State mState;
+    QString mError;
+
+    int mProgress;
+
+    QByteArray mBuffer;
+    qint32 mBufferSize;
 };
 
 #endif // NS_TRANSFER_H

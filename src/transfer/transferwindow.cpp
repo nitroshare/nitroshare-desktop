@@ -22,8 +22,6 @@
  * IN THE SOFTWARE.
  **/
 
-#include <QIcon>
-#include <QModelIndex>
 #include <QPushButton>
 
 #include "transferdelegate.h"
@@ -41,7 +39,7 @@ TransferWindow::TransferWindow(TransferModel *model)
     ui->transferView->setItemDelegate(new TransferDelegate(this));
 
     connect(ui->clear, &QPushButton::clicked, mModel, &TransferModel::clear);
-    connect(mModel, &TransferModel::transferAdded, this, &TransferWindow::add);
+    connect(mModel, &TransferModel::rowsInserted, this, &TransferWindow::onRowsInserted);
 }
 
 TransferWindow::~TransferWindow()
@@ -49,35 +47,9 @@ TransferWindow::~TransferWindow()
     delete ui;
 }
 
-void TransferWindow::add(Transfer *transfer)
+void TransferWindow::onRowsInserted(const QModelIndex &, int first, int last)
 {
-    connect(transfer, &Transfer::stateChanged, [this, transfer](Transfer::State state) {
-        QModelIndex index = mModel->indexOf(transfer, TransferModelPrivate::ColumnState);
-
-        switch(state) {
-        case Transfer::Connecting:
-        case Transfer::InProgress:
-        {
-            QPushButton *button = new QPushButton(tr("Cancel"));
-            connect(button, &QPushButton::clicked, transfer, &Transfer::cancel);
-
-            ui->transferView->setIndexWidget(index, button);
-            break;
-        }
-        case Transfer::Canceled:
-        case Transfer::Failed:
-        case Transfer::Succeeded:
-        {
-            QPushButton *button = new QPushButton(tr("Restart"));
-            connect(button, &QPushButton::clicked, transfer, &Transfer::restart);
-
-            ui->transferView->setIndexWidget(index, button);
-            break;
-        }
-        default:
-        {
-            ui->transferView->setIndexWidget(index, nullptr);
-        }
-        }
-    });
+    // TODO: do something with the new transfer
+    Q_UNUSED(first)
+    Q_UNUSED(last)
 }

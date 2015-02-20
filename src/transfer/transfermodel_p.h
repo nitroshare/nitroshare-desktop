@@ -29,6 +29,7 @@
 #include <QObject>
 
 #include "transfer.h"
+#include "transfermodel.h"
 
 class TransferModelPrivate : public QObject
 {
@@ -43,8 +44,12 @@ public:
         ColumnCount
     };
 
-    explicit TransferModelPrivate(QObject *parent);
+    explicit TransferModelPrivate(TransferModel *transferModel);
     virtual ~TransferModelPrivate();
+
+    void add(Transfer *transfer);
+
+    TransferModel * const q;
 
     QList<Transfer*> transfers;
 };

@@ -28,23 +28,36 @@
 #include <QTcpServer>
 
 #include "../util/settings.h"
-#include "transfer.h"
 
+/**
+ * @brief Server listening for incomming connections
+ *
+ * This class listens for connection requests from other clients and emits the
+ * newTransfer signal when one is received.
+ */
 class TransferServer : public QTcpServer
 {
     Q_OBJECT
 
 public:
 
-    TransferServer();
-
-    void start();
+    /**
+     * @brief Create a new transfer server
+     * @param parent parent QObject
+     */
+    explicit TransferServer(QObject *parent = nullptr);
 
 Q_SIGNALS:
 
-    void newTransfer(Transfer *transfer);
+    /**
+     * @brief Indicate a new connection attempt
+     * @param socketDescriptor socket descriptor
+     */
+    void newTransfer(qintptr socketDescriptor);
 
 private Q_SLOTS:
+
+    // TODO: what follows below shouldn't be public
 
     void settingChanged(Settings::Key key);
 

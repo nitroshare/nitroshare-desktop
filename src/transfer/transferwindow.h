@@ -27,7 +27,6 @@
 
 #include <QMainWindow>
 
-#include "transfer.h"
 #include "transfermodel.h"
 
 namespace Ui {
@@ -45,7 +44,7 @@ public:
 
 public Q_SLOTS:
 
-    void add(Transfer *transfer);
+    void onRowsInserted(const QModelIndex &parent, int first, int last);
 
 private:
 

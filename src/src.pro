@@ -26,14 +26,12 @@ HEADERS += \
     filesystem/fileinfo.h \
     icon/icon.h \
     icon/trayicon.h \
-    socket/socket.h \
-    socket/socketreceiver.h \
-    socket/socketsender.h \
     transfer/transfer.h \
-    transfer/transfer_p.h \
     transfer/transferdelegate.h \
     transfer/transfermodel.h \
     transfer/transfermodel_p.h \
+    transfer/transferreceiver.h \
+    transfer/transfersender.h \
     transfer/transferserver.h \
     transfer/transferwindow.h \
     util/platform.h \
@@ -50,12 +48,11 @@ SOURCES += \
     filesystem/fileinfo.cpp \
     icon/icon.cpp \
     icon/trayicon.cpp \
-    socket/socket.cpp \
-    socket/socketreceiver.cpp \
-    socket/socketsender.cpp \
     transfer/transfer.cpp \
     transfer/transferdelegate.cpp \
     transfer/transfermodel.cpp \
+    transfer/transferreceiver.cpp \
+    transfer/transfersender.cpp \
     transfer/transferserver.cpp \
     transfer/transferwindow.cpp \
     util/platform.cpp \

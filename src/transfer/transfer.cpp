@@ -22,146 +22,171 @@
  * IN THE SOFTWARE.
  **/
 
-#include "../socket/socketreceiver.h"
-#include "../socket/socketsender.h"
+#include <cstring>
+
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QtEndian>
+
 #include "transfer.h"
-#include "transfer_p.h"
 
-TransferPrivate::TransferPrivate(Socket *socket, Transfer *transfer)
-    : QObject(transfer),
-      q(transfer),
-      socket(socket),
-      progress(0)
+Transfer::Transfer(TransferModel::Direction direction)
+    : mDirection(direction)
 {
-    connect(socket, &Socket::connected, this, &TransferPrivate::processConnect);
+    connect(&mSocket, &QTcpSocket::connected, this, &Transfer::onConnected);
+    connect(&mSocket, &QTcpSocket::readyRead, this, &Transfer::onReadyRead);
+    connect(&mSocket, &QTcpSocket::bytesWritten, this, &Transfer::onBytesWritten);
 
-    // The static_cast<> is necessary since error() is overloaded
-    connect(socket, static_cast<void (Socket::*)(QAbstractSocket::SocketError)>(&Socket::error),
-            this, &TransferPrivate::processError);
-
-    connect(socket, &Socket::deviceName, this, &TransferPrivate::setDeviceName);
-    connect(socket, &Socket::progress, this, &TransferPrivate::setProgress);
-    connect(socket, &Socket::transferError, this, &TransferPrivate::setError);
-    connect(socket, &Socket::success, this, &TransferPrivate::setSuccess);
+    // The error() method is overloaded (sigh) so we need to be very explicit here
+    connect(&mSocket, static_cast<void (QTcpSocket::*)(QAbstractSocket::SocketError)>(&QTcpSocket::error), this, &Transfer::onError);
 }
 
-TransferPrivate::~TransferPrivate()
+void Transfer::start()
 {
-    delete socket;
-}
-
-void TransferPrivate::processConnect()
-{
-    // Only SocketSender instances will invoke this slot since
-    // SocketReceiver instances begin in the connected state
-    emit q->stateChanged(state = Transfer::InProgress);
-}
-
-void TransferPrivate::processError()
-{
-    // We only deal with errors that occur during Connecting and InProgress
-    // states since errors no longer matter in any of the other states
-    if(state == Transfer::Connecting || state == Transfer::InProgress) {
-        error = socket->errorString();
-        emit q->stateChanged(state = Transfer::Failed);
+    // Ensure that the transfer is not in progress before starting it
+    if(mState == TransferModel::Connecting || mState == TransferModel::InProgress) {
+        qWarning("Cannot start a transfer that is in progress");
+        return;
     }
-}
 
-void TransferPrivate::setDeviceName(const QString &value)
-{
-    emit q->deviceNameChanged(deviceName = value);
-}
+    // Reset all of the state variables to proper default values
+    mProtocolState = TransferHeader;
 
-void TransferPrivate::setProgress(int value)
-{
-    emit q->progressChanged(progress = value);
-}
+    mTransferBytes = 0;
+    mTransferBytesTotal = 0;
 
-void TransferPrivate::setError(const QString &value)
-{
-    // Change the state before disconnecting to ensure that any
-    // errors that arise from aborting the connection are ignored
-    error = value;
-    emit q->stateChanged(state = Transfer::Failed);
-    socket->abort();
-}
+    // The state is already in progress for a receiving transfer
+    mState = mDirection == TransferModel::Send ? TransferModel::Connecting : TransferModel::InProgress;
 
-void TransferPrivate::setSuccess()
-{
-    emit q->stateChanged(state = Transfer::Succeeded);
-    socket->abort();
-}
+    mProgress = 0;
 
-Transfer::Transfer(qintptr socketDescriptor, QObject *parent)
-    : QObject(parent),
-      d(new TransferPrivate(new SocketReceiver(socketDescriptor), this))
-{
-    d->direction = Receive;
-    d->state = InProgress;
-    d->deviceName = tr("[unknown]");
+    mBuffer.clear();
+    mBufferSize = 0;
 
-    d->socket->start();
-}
-
-Transfer::Transfer(const QString &deviceName, const QHostAddress &address, quint16 port, BundlePointer bundle, QObject *parent)
-    : QObject(parent),
-      d(new TransferPrivate(new SocketSender(address, port, bundle), this))
-{
-    d->direction = Send;
-    d->state = Connecting;
-    d->deviceName = deviceName;
-
-    d->socket->start();
-}
-
-Transfer::Direction Transfer::direction() const
-{
-    return d->direction;
-}
-
-Transfer::State Transfer::state() const
-{
-    return d->state;
-}
-
-QString Transfer::deviceName() const
-{
-    return d->deviceName;
-}
-
-int Transfer::progress() const
-{
-    return d->progress;
-}
-
-QString Transfer::error() const
-{
-    return d->error;
+    // Have the subclass begin the transfer
+    initialize();
 }
 
 void Transfer::cancel()
 {
-    if(d->state == Canceled || d->state == Failed || d->state == Succeeded) {
-        qWarning("Cannot cancel a transfer that has finished");
+    // Ensure that the transfer is actually progress before trying to abort it
+    if(mState == TransferModel::Canceled || mState == TransferModel::Failed || mState == TransferModel::Succeeded) {
+        qWarning("Cannot cancel a transfer that has completed");
         return;
     }
 
-    emit stateChanged(d->state = Transfer::Canceled);
-    d->socket->abort();
+    mSocket.abort();
+
+    mState = TransferModel::Canceled;
+    emit dataChanged();
 }
 
-void Transfer::restart()
+void Transfer::onConnected()
 {
-    if(d->direction == Receive) {
-        qWarning("Cannot restart a transfer that receives files");
-        return;
+    mState = TransferModel::InProgress;
+    emit dataChanged();
+}
+
+void Transfer::onReadyRead()
+{
+    // Add all of the new data to the buffer
+    mBuffer.append(mSocket.readAll());
+
+    // Process as many packets as can be read from the buffer
+    forever {
+        // If the size of the packet is not yet known attempt to read it
+        if(!mBufferSize) {
+            if(static_cast<size_t>(mBuffer.size()) >= sizeof(mBufferSize)) {
+                // memcpy must be used in order to avoid alignment issues
+                memcpy(&mBufferSize, mBuffer.constData(), sizeof(mBufferSize));
+                mBufferSize = qFromLittleEndian(mBufferSize);
+                mBuffer.remove(0, sizeof(mBufferSize));
+            } else {
+                break;
+            }
+        }
+
+        // At this point, the size of the packet is known,
+        // check if the specified number of bytes are available
+        if(mBuffer.size() >= mBufferSize) {
+            QByteArray data = mBuffer.left(mBufferSize);
+            mBuffer.remove(0, mBufferSize);
+            mBufferSize = 0;
+
+            // Pass the packet along to the child class
+            processPacket(data);
+        } else {
+            break;
+        }
+    };
+}
+
+void Transfer::onBytesWritten()
+{
+    // This slot is invoked after data has been written - only write more
+    // packets if there is no data still waiting to be written
+    if(!mSocket.bytesToWrite()) {
+        writeNextPacket();
+    }
+}
+
+void Transfer::onError(QAbstractSocket::SocketError)
+{
+    // Errors are only meaningful during the Connecting and InProgress states
+    if(mState == TransferModel::Connecting || mState == TransferModel::InProgress) {
+        abortWithError(mSocket.errorString());
+    }
+}
+
+void Transfer::writePacket(const QByteArray &data)
+{
+    // Write the length of the data and its contents
+    qint32 packetSize = qToLittleEndian(data.length());
+    mSocket.write(reinterpret_cast<const char*>(&packetSize), sizeof(packetSize));
+    mSocket.write(data);
+}
+
+void Transfer::writePacket(const QVariantMap &map)
+{
+    // Create a JSON string from the map and write it
+    QJsonObject object = QJsonObject::fromVariantMap(map);
+    writePacket(QJsonDocument(object).toJson(QJsonDocument::Compact));
+}
+
+void Transfer::calculateProgress()
+{
+    // Store the old value to avoid emiting the dataChanged signal more often than necessary
+    int oldProgress = mProgress;
+
+    // Calculate the current progress in the range 0-100,
+    // being careful to avoid a division by 0 error
+    if(mTransferBytesTotal) {
+        double n = static_cast<double>(mTransferBytes),
+               d = static_cast<double>(mTransferBytesTotal);
+        mProgress = static_cast<int>((n / d) * 100.0);
+    } else {
+        mProgress = 0;
     }
 
-    if(d->state == Connecting || d->state == InProgress) {
-        qWarning("Cannot restart a transfer in progress");
-        return;
+    if(mProgress != oldProgress) {
+        emit dataChanged();
     }
+}
 
-    // We know that d->socket is a SocketSender*
-    qobject_cast<SocketSender*>(d->socket)->start();
+void Transfer::abortWithError(const QString &message)
+{
+    // This method is (thankfully) idempotent
+    mSocket.abort();
+
+    mError = message;
+    mState = TransferModel::Failed;
+    emit dataChanged();
+}
+
+void Transfer::finish()
+{
+    mSocket.abort();
+
+    mState = TransferModel::Succeeded;
+    emit dataChanged();
 }
