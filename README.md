@@ -1,5 +1,7 @@
 ## NitroShare
 
+[![Join the chat at https://gitter.im/nitroshare/nitroshare-desktop](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/nitroshare/nitroshare-desktop?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 A cross-platform network file transfer application designed to make transferring any file to any device as painless as possible.
 
 ### Features
