@@ -4,7 +4,7 @@ Priority: extra
 Maintainer: Nathan Osman <nathan@quickmediasolutions.com>
 Build-Depends: debhelper (>= 9), qt5-default (>= 5.1), libqt5svg5-dev, libgtk2.0-dev, libappindicator-dev, libnotify-dev
 Standards-Version: 3.9.5
-Homepage: https://github.com/nitroshare/nitroshare
+Homepage: https://github.com/nitroshare/nitroshare-desktop
 
 Package: nitroshare
 Architecture: any
