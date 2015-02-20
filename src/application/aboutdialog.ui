@@ -167,9 +167,9 @@
   </connection>
   <connection>
    <sender>btnCredits</sender>
-   <signal>toggled(bool)</signal>
+   <signal>clicked(bool)</signal>
    <receiver>AboutDialog</receiver>
-   <slot>toggleTextBrowser(bool)</slot>
+   <slot>onCreditsOrLicenceClicked(bool)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>52</x>
@@ -183,9 +183,9 @@
   </connection>
   <connection>
    <sender>btnLicense</sender>
-   <signal>toggled(bool)</signal>
+   <signal>clicked(bool)</signal>
    <receiver>AboutDialog</receiver>
-   <slot>toggleTextBrowser(bool)</slot>
+   <slot>onCreditsOrLicenceClicked(bool)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>142</x>
@@ -199,6 +199,6 @@
   </connection>
  </connections>
  <slots>
-  <slot>toggleTextBrowser(bool)</slot>
+  <slot>onCreditsOrLicenceClicked(bool)</slot>
  </slots>
 </ui>

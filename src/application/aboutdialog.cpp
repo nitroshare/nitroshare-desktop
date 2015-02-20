@@ -87,20 +87,14 @@ AboutDialog::~AboutDialog()
     delete ui;
 }
 
-void AboutDialog::toggleTextBrowser(bool checked)
+void AboutDialog::onCreditsOrLicenceClicked(bool checked)
 {
-    if(!checked && (ui->btnCredits->isChecked() || ui->btnLicense->isChecked())) {
-        return;
-    }
-
-    if(sender()->objectName() == "btnCredits") {
-        ui->textBrowser->setText(CREDITS);
-        ui->btnCredits->setChecked(checked);
-        ui->btnLicense->setChecked(false);
-    } else if(sender()->objectName() == "btnLicense") {
+    if (sender()->objectName() == "btnLicense") {
         ui->textBrowser->setText(LICENSE);
         ui->btnCredits->setChecked(false);
-        ui->btnLicense->setChecked(checked);
+    } else if (sender()->objectName() == "btnCredits") {
+        ui->textBrowser->setText(CREDITS);
+        ui->btnLicense->setChecked(false);
     }
 
     ui->textBrowser->setVisible(checked);

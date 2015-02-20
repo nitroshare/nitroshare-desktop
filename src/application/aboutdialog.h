@@ -42,7 +42,7 @@ public:
 
 private Q_SLOTS:
 
-    void toggleTextBrowser(bool checked);
+    void onCreditsOrLicenceClicked(bool checked);
 
 private:
 
