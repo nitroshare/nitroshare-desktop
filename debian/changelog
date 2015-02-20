@@ -1,11 +1,10 @@
 nitroshare (0.3) unstable; urgency=low
 
-  * Switched to CMake from qmake
   * Updated to Qt 5.x from 4.x
   * Removed configuration wizard
   * Network discovery fully automated
-  * Transfers now take place in a separate thread
   * Limit removed on size of transferred files
+  * Added the ability to restart transfers after completion
 
  -- Nathan Osman <nathan@quickmediasolutions.com>  Wed, 28 Jan 2015 11:48:47 -0800
- 
+
