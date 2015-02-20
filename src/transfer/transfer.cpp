@@ -39,32 +39,9 @@ Transfer::Transfer(TransferModel::Direction direction)
 
     // The error() method is overloaded (sigh) so we need to be very explicit here
     connect(&mSocket, static_cast<void (QTcpSocket::*)(QAbstractSocket::SocketError)>(&QTcpSocket::error), this, &Transfer::onError);
-}
 
-void Transfer::start()
-{
-    // Ensure that the transfer is not in progress before starting it
-    if(mState == TransferModel::Connecting || mState == TransferModel::InProgress) {
-        qWarning("Cannot start a transfer that is in progress");
-        return;
-    }
-
-    // Reset all of the state variables to proper default values
-    mProtocolState = TransferHeader;
-
-    mTransferBytes = 0;
-    mTransferBytesTotal = 0;
-
-    // The state is already in progress for a receiving transfer
-    mState = mDirection == TransferModel::Send ? TransferModel::Connecting : TransferModel::InProgress;
-
-    mProgress = 0;
-
-    mBuffer.clear();
-    mBufferSize = 0;
-
-    // Have the subclass begin the transfer
-    initialize();
+    // Set all of the transfer members to proper initial values
+    reset();
 }
 
 void Transfer::cancel()
@@ -79,6 +56,18 @@ void Transfer::cancel()
 
     mState = TransferModel::Canceled;
     emit dataChanged();
+}
+
+void Transfer::restart()
+{
+    // Ensure that the transfer is not in progress before restarting it
+    if(mState == TransferModel::Connecting || mState == TransferModel::InProgress) {
+        qWarning("Cannot start a transfer that is in progress");
+        return;
+    }
+
+    reset();
+    start();
 }
 
 void Transfer::onConnected()
@@ -189,4 +178,21 @@ void Transfer::finish()
 
     mState = TransferModel::Succeeded;
     emit dataChanged();
+}
+
+void Transfer::reset()
+{
+    // Reset all of the state variables to proper default values
+    mProtocolState = TransferHeader;
+
+    mTransferBytes = 0;
+    mTransferBytesTotal = 0;
+
+    // The state is already in progress for a receiving transfer
+    mState = mDirection == TransferModel::Send ? TransferModel::Connecting : TransferModel::InProgress;
+
+    mProgress = 0;
+
+    mBuffer.clear();
+    mBufferSize = 0;
 }

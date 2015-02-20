@@ -38,9 +38,10 @@ public:
 
     explicit TransferReceiver(qintptr socketDescriptor);
 
+    virtual void start();
+
 private:
 
-    virtual void initialize();
     virtual void processPacket(const QByteArray &data);
     virtual void writeNextPacket();
 

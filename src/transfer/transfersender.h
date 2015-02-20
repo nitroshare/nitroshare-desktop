@@ -39,9 +39,10 @@ public:
 
     TransferSender(const QString &deviceName, const QHostAddress &address, quint16 port, BundlePointer bundle);
 
+    virtual void start();
+
 private:
 
-    virtual void initialize();
     virtual void processPacket(const QByteArray &data);
     virtual void writeNextPacket();
 

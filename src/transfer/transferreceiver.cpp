@@ -36,7 +36,7 @@ TransferReceiver::TransferReceiver(qintptr socketDescriptor)
     mSocket.setSocketDescriptor(socketDescriptor);
 }
 
-void TransferReceiver::initialize()
+void TransferReceiver::start()
 {
     // The socket is already connected at this point
 }

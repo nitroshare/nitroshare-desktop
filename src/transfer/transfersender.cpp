@@ -39,7 +39,7 @@ TransferSender::TransferSender(const QString &deviceName, const QHostAddress &ad
     });
 }
 
-void TransferSender::initialize()
+void TransferSender::start()
 {
     mTransferBytesTotal = mBundle->totalSize();
     mIterator = mBundle->constBegin();

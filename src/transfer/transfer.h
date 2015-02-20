@@ -61,8 +61,10 @@ public:
         return mError;
     }
 
-    void start();
+    virtual void start() = 0;
+
     void cancel();
+    void restart();
 
 Q_SIGNALS:
 
@@ -77,7 +79,6 @@ private Q_SLOTS:
 
 protected:
 
-    virtual void initialize() = 0;
     virtual void processPacket(const QByteArray &data) = 0;
     virtual void writeNextPacket() = 0;
 
@@ -103,6 +104,8 @@ protected:
     qint64 mTransferBytesTotal;
 
 private:
+
+    void reset();
 
     const TransferModel::Direction mDirection;
     TransferModel::State mState;

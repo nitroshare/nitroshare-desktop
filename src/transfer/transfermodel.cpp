@@ -44,15 +44,17 @@ TransferModelPrivate::~TransferModelPrivate()
 
 void TransferModelPrivate::add(Transfer *transfer)
 {
+    q->beginInsertRows(QModelIndex(), transfers.count(), transfers.count());
+    transfers.append(transfer);
+    q->endInsertRows();
+
     // Whenever the transfer changes, emit the appropriate signal
     connect(transfer, &Transfer::dataChanged, [this, transfer]() {
         int index = transfers.indexOf(transfer);
         emit q->dataChanged(q->index(index, 0), q->index(index, ColumnCount));
     });
 
-    q->beginInsertRows(QModelIndex(), transfers.count(), transfers.count());
-    transfers.append(transfer);
-    q->endInsertRows();
+    transfer->start();
 }
 
 TransferModel::TransferModel()
@@ -163,7 +165,7 @@ void TransferModel::cancel(int index)
 void TransferModel::restart(int index)
 {
     if(index > 0 && index < d->transfers.count()) {
-        d->transfers.at(index)->start();
+        d->transfers.at(index)->restart();
     }
 }
 
