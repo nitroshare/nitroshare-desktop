@@ -11,10 +11,11 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>NitroShare - Transfers</string>
+   <string>Transfers</string>
   </property>
   <property name="windowIcon">
-   <iconset>:/img/logo.svg</iconset>
+   <iconset resource="../data/resource.qrc">
+    <normaloff>:/img/logo.svg</normaloff>:/img/logo.svg</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -67,6 +68,8 @@
    </layout>
   </widget>
  </widget>
- <resources/>
+ <resources>
+  <include location="../data/resource.qrc"/>
+ </resources>
  <connections/>
 </ui>
