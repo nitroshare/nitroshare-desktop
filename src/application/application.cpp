@@ -53,7 +53,7 @@ Application::Application(QObject *parent)
       mStartTime(QDateTime::currentMSecsSinceEpoch())
 {
     connect(&mDeviceModel, &DeviceModel::rowsInserted, this, &Application::notifyDevicesAdded);
-    connect(&mDeviceModel, &DeviceModel::rowsRemoved, this, &Application::notifyDevicesRemoved);
+    connect(&mDeviceModel, &DeviceModel::rowsAboutToBeRemoved, this, &Application::notifyDevicesRemoved);
     connect(&mTransferServer, &TransferServer::newTransfer, &mTransferModel, &TransferModel::addReceiver);
 
     mIcon->addAction(tr("Send Files..."), this, SLOT(sendFiles()));
