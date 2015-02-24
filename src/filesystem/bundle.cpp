@@ -45,7 +45,10 @@ void Bundle::addDirectory(const QString &path)
     QDir root(path);
     QStack<QString> stack;
 
+    // Push the root path on the stack and then go up one level so that
+    // the relative filenames will include the name of the directory
     stack.push(root.absolutePath());
+    root.cdUp();
 
     while(stack.count()) {
         QString tos = stack.pop();
