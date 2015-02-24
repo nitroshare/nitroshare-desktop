@@ -29,15 +29,14 @@
 #include "config.h"
 #include "ui_aboutdialog.h"
 
-const QString CREDITS = QStringLiteral(
+const QString Credits =
     "<html><head><meta name='qrichtext' content='1'/></head><body>"
     "<table><tr><td>Created By:</td>"
     "<td><a href='mailto:nathan@quickmediasolutions.com'>Nathan Osman</a></td></tr>"
     "<tr><td></td><td><a href='mailto:daniel.samrocha@gmail.com'>Daniel San</a>"
-    "</td></tr></table></body></html>"
-);
+    "</td></tr></table></body></html>";
 
-const QString LICENSE = QStringLiteral(
+const QString License =
     "The MIT License (MIT)\n\n"
 
     "Permission is hereby granted, free of charge, to any person obtaining a copy"
@@ -56,8 +55,7 @@ const QString LICENSE = QStringLiteral(
     "AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER"
     "LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING"
     "FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS"
-    "IN THE SOFTWARE."
-);
+    "IN THE SOFTWARE.";
 
 AboutDialog::AboutDialog(QWidget *parent)
     : QDialog(parent),
@@ -90,10 +88,10 @@ AboutDialog::~AboutDialog()
 void AboutDialog::onCreditsOrLicenceClicked(bool checked)
 {
     if (sender()->objectName() == "btnLicense") {
-        ui->textBrowser->setText(LICENSE);
+        ui->textBrowser->setText(License);
         ui->btnCredits->setChecked(false);
     } else if (sender()->objectName() == "btnCredits") {
-        ui->textBrowser->setText(CREDITS);
+        ui->textBrowser->setText(Credits);
         ui->btnLicense->setChecked(false);
     }
 
