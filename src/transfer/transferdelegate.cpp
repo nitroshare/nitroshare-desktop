@@ -26,6 +26,10 @@
 #include <QStyleOptionProgressBar>
 
 #include "transferdelegate.h"
+#include "transfermodel.h"
+
+// Padding between a cell border and its contents
+const int CellPadding = 2;
 
 TransferDelegate::TransferDelegate(QObject *parent)
     : QStyledItemDelegate(parent)
@@ -35,18 +39,22 @@ TransferDelegate::TransferDelegate(QObject *parent)
 void TransferDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option,
                              const QModelIndex &index) const
 {
-    if(index.column() == 1) {
-        int progress = index.data().toInt();
+    switch(index.column()) {
+    case TransferModel::ColumnProgress:
+        {
+            int progress = index.data(TransferModel::ProgressRole).toInt();
 
-        QStyleOptionProgressBar progressBar;
-        progressBar.maximum = 100;
-        progressBar.progress = progress;
-        progressBar.rect = option.rect.adjusted(2, 2, -2, -2);
-        progressBar.text = QString("%1%").arg(progress);
-        progressBar.textVisible = true;
+            QStyleOptionProgressBar progressBar;
+            progressBar.maximum = 100;
+            progressBar.progress = progress;
+            progressBar.rect = option.rect.adjusted(CellPadding, CellPadding, -CellPadding, -CellPadding);
+            progressBar.text = QString("%1%").arg(progress);
+            progressBar.textVisible = true;
 
-        QApplication::style()->drawControl(QStyle::CE_ProgressBar, &progressBar, painter);
-    } else {
+            QApplication::style()->drawControl(QStyle::CE_ProgressBar, &progressBar, painter);
+        }
+        break;
+    default:
         QStyledItemDelegate::paint(painter, option, index);
     }
 }
