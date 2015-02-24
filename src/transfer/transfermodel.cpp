@@ -51,7 +51,7 @@ void TransferModelPrivate::add(Transfer *transfer)
     // Whenever the transfer changes, emit the appropriate signal
     connect(transfer, &Transfer::dataChanged, [this, transfer]() {
         int index = transfers.indexOf(transfer);
-        emit q->dataChanged(q->index(index, 0), q->index(index, ColumnCount));
+        emit q->dataChanged(q->index(index, 0), q->index(index, ColumnCount - 1));
     });
 
     transfer->start();
