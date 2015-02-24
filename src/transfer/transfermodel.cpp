@@ -23,6 +23,7 @@
  **/
 
 #include <QApplication>
+#include <QBrush>
 #include <QIcon>
 #include <QStyle>
 
@@ -109,6 +110,19 @@ QVariant TransferModel::data(const QModelIndex &index, int role) const
                 return QApplication::style()->standardIcon(QStyle::SP_ArrowUp);
             case Receive:
                 return QApplication::style()->standardIcon(QStyle::SP_ArrowDown);
+            }
+        }
+        break;
+    case Qt::ForegroundRole:
+        if(index.column() == ColumnState) {
+            switch(transfer->state()) {
+            case Canceled:
+            case Failed:
+                return QBrush(Qt::darkRed);
+            case Succeeded:
+                return QBrush(Qt::darkGreen);
+            default:
+                break;
             }
         }
         break;
