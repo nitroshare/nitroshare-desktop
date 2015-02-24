@@ -121,7 +121,7 @@ void TransferSender::writeFileData()
             qMin(mFileBytesRemaining, static_cast<qint64>(mFileBuffer.size())));
 
     // Ensure that a valid number of bytes were read
-    if(bytesRead <= 0) {
+    if(bytesRead <= 0 && mFileBytesRemaining) {
          abortWithError(tr("Unable to read from %1").arg(mFile.fileName()));
          return;
     }
