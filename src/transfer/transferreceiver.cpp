@@ -79,7 +79,7 @@ void TransferReceiver::processTransferHeader(const QByteArray &data)
     // TODO: do more error checking here
 
     mDeviceName = object.value("name").toString();
-    emit dataChanged();
+    emit dataChanged({TransferModel::DeviceNameRole});
 
     mTransferBytesTotal = object.value("size").toString().toLongLong();
     mTransferFilesRemaining = object.value("count").toString().toLongLong();

@@ -55,7 +55,7 @@ void Transfer::cancel()
     mSocket.abort();
 
     mState = TransferModel::Canceled;
-    emit dataChanged();
+    emit dataChanged({TransferModel::StateRole});
 }
 
 void Transfer::restart()
@@ -73,7 +73,7 @@ void Transfer::restart()
 void Transfer::onConnected()
 {
     mState = TransferModel::InProgress;
-    emit dataChanged();
+    emit dataChanged({TransferModel::StateRole});
 }
 
 void Transfer::onReadyRead()
@@ -158,7 +158,7 @@ void Transfer::calculateProgress()
     }
 
     if(mProgress != oldProgress) {
-        emit dataChanged();
+        emit dataChanged({TransferModel::ProgressRole});
     }
 }
 
@@ -169,7 +169,7 @@ void Transfer::abortWithError(const QString &message)
 
     mError = message;
     mState = TransferModel::Failed;
-    emit dataChanged();
+    emit dataChanged({TransferModel::StateRole, TransferModel::ErrorRole});
 }
 
 void Transfer::finish()
@@ -177,7 +177,7 @@ void Transfer::finish()
     mSocket.abort();
 
     mState = TransferModel::Succeeded;
-    emit dataChanged();
+    emit dataChanged({TransferModel::StateRole});
 }
 
 void Transfer::reset()
@@ -195,4 +195,7 @@ void Transfer::reset()
 
     mBuffer.clear();
     mBufferSize = 0;
+
+    // For simplicity, signal that all roles have changed
+    emit dataChanged();
 }

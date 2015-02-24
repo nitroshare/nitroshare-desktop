@@ -50,9 +50,9 @@ void TransferModelPrivate::add(Transfer *transfer)
     q->endInsertRows();
 
     // Whenever the transfer changes, emit the appropriate signal
-    connect(transfer, &Transfer::dataChanged, [this, transfer]() {
+    connect(transfer, &Transfer::dataChanged, [this, transfer](const QVector<int> &roles) {
         int index = transfers.indexOf(transfer);
-        emit q->dataChanged(q->index(index, 0), q->index(index, TransferModel::ColumnCount - 1));
+        emit q->dataChanged(q->index(index, 0), q->index(index, TransferModel::ColumnCount - 1), roles);
     });
 
     transfer->start();

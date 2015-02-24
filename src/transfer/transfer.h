@@ -68,7 +68,7 @@ public:
 
 Q_SIGNALS:
 
-    void dataChanged();
+    void dataChanged(const QVector<int> &roles = QVector<int>());
 
 private Q_SLOTS:
 

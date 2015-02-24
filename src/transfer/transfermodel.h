@@ -51,7 +51,7 @@ public:
     /**
      * @brief Columns displayed in model views
      */
-    enum {
+    enum Column {
         /// Name of other device
         ColumnDeviceName = 0,
         /// Progress of transfer
@@ -65,7 +65,7 @@ public:
     /**
      * @brief Roles for retrieving data from the model
      */
-    enum {
+    enum Role {
         /// Name of other device
         DeviceNameRole = Qt::UserRole,
         /// Progress of transfer
