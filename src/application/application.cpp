@@ -114,10 +114,12 @@ void Application::notifyTransferChanged(const QModelIndex &topLeft, const QModel
                 mIcon->showMessage(tr("Transfer with %1 failed.").arg(
                     index.data(TransferModel::DeviceNameRole).toString()
                 ));
+                break;
             case TransferModel::Succeeded:
                 mIcon->showMessage(tr("Transfer with %1 succeeded.").arg(
                     index.data(TransferModel::DeviceNameRole).toString()
                 ));
+                break;
             }
         }
     }
