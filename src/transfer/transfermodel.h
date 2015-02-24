@@ -49,9 +49,23 @@ class TransferModel : public QAbstractTableModel
 public:
 
     /**
+     * @brief Columns displayed in model views
+     */
+    enum {
+        /// Name of other device
+        ColumnDeviceName = 0,
+        /// Progress of transfer
+        ColumnProgress,
+        /// State of transfer
+        ColumnState,
+        /// Total number of columns
+        ColumnCount
+    };
+
+    /**
      * @brief Roles for retrieving data from the model
      */
-    enum Roles {
+    enum {
         /// Name of other device
         DeviceNameRole = Qt::UserRole,
         /// Progress of transfer

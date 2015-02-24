@@ -51,7 +51,7 @@ void TransferModelPrivate::add(Transfer *transfer)
     // Whenever the transfer changes, emit the appropriate signal
     connect(transfer, &Transfer::dataChanged, [this, transfer]() {
         int index = transfers.indexOf(transfer);
-        emit q->dataChanged(q->index(index, 0), q->index(index, ColumnCount - 1));
+        emit q->dataChanged(q->index(index, 0), q->index(index, TransferModel::ColumnCount - 1));
     });
 
     transfer->start();
@@ -69,7 +69,7 @@ int TransferModel::rowCount(const QModelIndex &parent) const
 
 int TransferModel::columnCount(const QModelIndex &parent) const
 {
-    return parent.isValid() ? 0 : TransferModelPrivate::ColumnCount;
+    return parent.isValid() ? 0 : ColumnCount;
 }
 
 QVariant TransferModel::data(const QModelIndex &index, int role) const
@@ -83,16 +83,27 @@ QVariant TransferModel::data(const QModelIndex &index, int role) const
     switch(role) {
     case Qt::DisplayRole:
         switch(index.column()) {
-        case TransferModelPrivate::ColumnDeviceName:
+        case ColumnDeviceName:
             return transfer->deviceName();
-        case TransferModelPrivate::ColumnProgress:
-            return transfer->progress();
-        case TransferModelPrivate::ColumnState:
-            return transfer->state();
+        case ColumnProgress:
+            return QString("%1%").arg(transfer->progress());
+        case ColumnState:
+            switch(transfer->state()) {
+            case Connecting:
+                return tr("Connecting");
+            case InProgress:
+                return tr("In Progress");
+            case Canceled:
+                return tr("Canceled");
+            case Failed:
+                return tr("Failed: %1").arg(transfer->error());
+            case Succeeded:
+                return tr("Succeeded");
+            }
         }
         break;
     case Qt::DecorationRole:
-        if(index.column() == TransferModelPrivate::ColumnDeviceName) {
+        if(index.column() == ColumnDeviceName) {
             switch(transfer->direction()) {
             case Send:
                 return QApplication::style()->standardIcon(QStyle::SP_ArrowUp);
@@ -123,11 +134,11 @@ QVariant TransferModel::headerData(int section, Qt::Orientation orientation, int
     }
 
     switch(section) {
-    case TransferModelPrivate::ColumnDeviceName:
+    case ColumnDeviceName:
         return tr("Device Name");
-    case TransferModelPrivate::ColumnProgress:
+    case ColumnProgress:
         return tr("Progress");
-    case TransferModelPrivate::ColumnState:
+    case ColumnState:
         return tr("Status");
     }
 
