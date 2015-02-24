@@ -54,6 +54,7 @@ Application::Application(QObject *parent)
 {
     connect(&mDeviceModel, &DeviceModel::rowsInserted, this, &Application::notifyDevicesAdded);
     connect(&mDeviceModel, &DeviceModel::rowsAboutToBeRemoved, this, &Application::notifyDevicesRemoved);
+    connect(&mTransferModel, &TransferModel::dataChanged, this, &Application::notifyTransferChanged);
     connect(&mTransferServer, &TransferServer::newTransfer, &mTransferModel, &TransferModel::addReceiver);
 
     mIcon->addAction(tr("Send Files..."), this, SLOT(sendFiles()));
@@ -90,6 +91,35 @@ void Application::notifyDevicesRemoved(const QModelIndex &, int first, int last)
         mIcon->showMessage(tr("%1 has left.").arg(
             mDeviceModel.data(mDeviceModel.index(row, 0), DeviceModel::NameRole).toString()
         ));
+    }
+}
+
+void Application::notifyTransferChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles)
+{
+    // Display notifications if one of the following happens:
+    // - the device name is known (receiving only)
+    // - transfer fails or succeeds
+    for(int row = topLeft.row(); row <= bottomRight.row(); ++row) {
+
+        QModelIndex index = mTransferModel.index(row, 0);
+        if(roles.contains(TransferModel::DeviceNameRole)) {
+
+            mIcon->showMessage(tr("Receiving transfer from %1.").arg(
+                index.data(TransferModel::DeviceNameRole).toString()
+            ));
+        } else if(roles.contains(TransferModel::StateRole)) {
+
+            switch(index.data(TransferModel::StateRole).toInt()) {
+            case TransferModel::Failed:
+                mIcon->showMessage(tr("Transfer with %1 failed.").arg(
+                    index.data(TransferModel::DeviceNameRole).toString()
+                ));
+            case TransferModel::Succeeded:
+                mIcon->showMessage(tr("Transfer with %1 succeeded.").arg(
+                    index.data(TransferModel::DeviceNameRole).toString()
+                ));
+            }
+        }
     }
 }
 

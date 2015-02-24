@@ -48,6 +48,7 @@ private Q_SLOTS:
 
     void notifyDevicesAdded(const QModelIndex &parent, int first, int last);
     void notifyDevicesRemoved(const QModelIndex &parent, int first, int last);
+    void notifyTransferChanged(const QModelIndex & topLeft, const QModelIndex & bottomRight, const QVector<int> &roles);
 
     void sendFiles();
     void sendDirectory();
