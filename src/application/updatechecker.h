@@ -50,6 +50,10 @@ public:
 
     UpdateChecker();
 
+Q_SIGNALS:
+
+    void newVersion(const QUrl &url);
+
 private Q_SLOTS:
 
     void checkForUpdates();

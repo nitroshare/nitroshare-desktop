@@ -22,11 +22,16 @@
  * IN THE SOFTWARE.
  **/
 
+#include <QJsonArray>
 #include <QJsonDocument>
+#include <QJsonDocument>
+#include <QJsonValue>
 #include <QNetworkReply>
 #include <QNetworkRequest>
 
+#include "../util/jsonvalidator.h"
 #include "../util/platform.h"
+#include "../util/version.h"
 #include "config.h"
 #include "updatechecker.h"
 
@@ -75,13 +80,27 @@ void UpdateChecker::onFinished(QNetworkReply *reply)
 
             // Begin extracting data from the JSON returned
             QJsonDocument document = QJsonDocument::fromJson(reply->readAll());
+            QJsonArray array;
+            QJsonObject object;
 
-            // TODO: Process JSON
-            Q_UNUSED(document)
+            // Verify the JSON and check the version number
+            if(JsonValidator::isArray(document, array) &&
+                    array.count() &&
+                    JsonValidator::isObject(array.at(0), object) &&
+                    JsonValidator::objectContains(object, {"version", "url"})) {
 
-            // If control reaches this point, an error occurred decoding the JSON
-            qWarning("Malformed JSON received from update server.");
+                Version currentVersion(PROJECT_VERSION);
+                Version newestVersion(object.value("version").toString());
 
+                // Compare the versions
+                if(newestVersion > currentVersion) {
+                    emit newVersion(QUrl(object.value("url").toString()));
+                    return;
+                }
+
+            } else {
+                qWarning("Malformed JSON received from update server.");
+            }
         } else if(mRedirectsRemaining) {
 
             // Use the original URL to resolve the new location, decrement
