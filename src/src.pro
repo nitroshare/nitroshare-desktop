@@ -17,6 +17,7 @@ INCLUDEPATH       += $${INCLUDE_DIR}
 HEADERS += \
     application/aboutdialog.h \
     application/application.h \
+    application/updatechecker.h \
     device/device.h \
     device/devicedialog.h \
     device/devicelistener.h \
@@ -40,6 +41,7 @@ HEADERS += \
 SOURCES += \
     application/aboutdialog.cpp \
     application/application.cpp \
+    application/updatechecker.cpp \
     device/device.cpp \
     device/devicedialog.cpp \
     device/devicelistener.cpp \
