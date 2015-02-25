@@ -43,7 +43,8 @@ public:
         TransferDirectory,
         TransferPort,
         TransferTimeout,
-        TrayIcon
+        TrayIcon,
+        UpdateInterval
     };
 
     template <class T>

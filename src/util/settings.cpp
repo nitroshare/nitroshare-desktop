@@ -44,10 +44,15 @@ struct Setting
         } \
     }
 
+// Convenience for specifying times
+const int Second = 1000;
+const int Minute = 60 * Second;
+const int Hour = 60 * Minute;
+
 const QMap<Settings::Key, Setting> keys {
-    DEFINE_SETTING(BroadcastInterval, { return 5 * 1000; }),
+    DEFINE_SETTING(BroadcastInterval, { return 5 * Second; }),
     DEFINE_SETTING(BroadcastPort, { return 40816; }),
-    DEFINE_SETTING(BroadcastTimeout, { return 30 * 1000; }),
+    DEFINE_SETTING(BroadcastTimeout, { return 30 * Second; }),
     DEFINE_SETTING(DeviceName, { return QHostInfo::localHostName(); }),
     DEFINE_SETTING(DeviceUUID, { return QUuid::createUuid(); }),
     DEFINE_SETTING(TransferBuffer, { return 65536; }),
@@ -55,7 +60,8 @@ const QMap<Settings::Key, Setting> keys {
         return QStandardPaths::writableLocation(QStandardPaths::DesktopLocation);
     }),
     DEFINE_SETTING(TransferPort, { return 40818; }),
-    DEFINE_SETTING(TransferTimeout, { return 30 * 1000; })
+    DEFINE_SETTING(TransferTimeout, { return 30 * Second; }),
+    DEFINE_SETTING(UpdateInterval, { return 24 * Hour; })
 };
 
 Q_GLOBAL_STATIC(Settings, settings)
