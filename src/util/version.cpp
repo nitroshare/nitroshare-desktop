@@ -22,24 +22,22 @@
  * IN THE SOFTWARE.
  **/
 
-#include <QStringList>
+#include <QRegExp>
 
 #include "version.h"
+
+// Match any version in the format "xx.yy.zz"
+const QRegExp VersionPattern("^(\\d+).(\\d+).(\\d+)$");
 
 Version::Version(const QString &versionString)
     : mMajor(0),
       mMinor(0),
       mPatch(0)
 {
-    // Split into components and assign them to the correct member
-    QStringList components = versionString.split('.');
-
-    mMajor = components.at(0).toInt();
-    if(components.count() > 1) {
-        mMinor = components.at(1).toInt();
-    }
-    if(components.count() > 2) {
-        mPatch = components.at(2).toInt();
+    if(!VersionPattern.indexIn(versionString)) {
+        mMajor = VersionPattern.cap(1).toInt();
+        mMinor = VersionPattern.cap(2).toInt();
+        mPatch = VersionPattern.cap(3).toInt();
     }
 }
 
