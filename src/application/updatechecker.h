@@ -25,7 +25,9 @@
 #ifndef NS_UPDATECHECKER_H
 #define NS_UPDATECHECKER_H
 
+#include <QNetworkAccessManager>
 #include <QTimer>
+#include <QUrl>
 
 #include "../util/settings.h"
 
@@ -51,13 +53,19 @@ public:
 private Q_SLOTS:
 
     void checkForUpdates();
+
+    void onFinished(QNetworkReply *reply);
     void onSettingChanged(Settings::Key key);
 
 private:
 
+    void sendRequest(const QUrl &url);
     void reload();
 
     QTimer mTimer;
+    QNetworkAccessManager mManager;
+
+    int mRedirectsRemaining;
 };
 
 #endif // NS_UPDATECHECKER_H

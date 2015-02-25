@@ -22,33 +22,103 @@
  * IN THE SOFTWARE.
  **/
 
+#include <QJsonDocument>
+#include <QNetworkReply>
+#include <QNetworkRequest>
+
+#include "../util/platform.h"
+#include "config.h"
 #include "updatechecker.h"
+
+// URL used for querying the API for new versions
+const QUrl UpdateUrl = QUrl("http://nitroshare.co/api/1.0/versions/latest");
+
+// Maximum number of redirects that may be processed
+const int MaxRedirects = 2;
 
 UpdateChecker::UpdateChecker()
 {
     connect(&mTimer, &QTimer::timeout, this, &UpdateChecker::checkForUpdates);
+    connect(&mManager, &QNetworkAccessManager::finished, this, &UpdateChecker::onFinished);
     connect(Settings::instance(), &Settings::settingChanged, this, &UpdateChecker::onSettingChanged);
 
-    // Trigger an update check immediately
-    checkForUpdates();
-
-    // Set the timer and start it
+    // Use a single-shot timer to ensure that it is only
+    // started after an update check has completed
+    mTimer.setSingleShot(true);
     reload();
-    mTimer.start();
+
+    // Check for an update right away
+    checkForUpdates();
 }
 
 void UpdateChecker::checkForUpdates()
 {
-    // TODO
+    // Reset the number of redirects and begin the request
+    mRedirectsRemaining = MaxRedirects;
+    sendRequest(UpdateUrl);
+}
+
+void UpdateChecker::onFinished(QNetworkReply *reply)
+{
+    // Before doing anything else, indicate that we're done with the reply
+    reply->deleteLater();
+
+    // Now, one of three things must have happened:
+    // - there was an error
+    // - the request succeeded and we parse the JSON
+    // - the server is redirecting us to a new URL
+    if(reply->error() == QNetworkReply::NoError) {
+
+        // Check if a redirect URL was supplied
+        QUrl newUrl = reply->attribute(QNetworkRequest::RedirectionTargetAttribute).toUrl();
+        if(newUrl.isValid()) {
+
+            // Begin extracting data from the JSON returned
+            QJsonDocument document = QJsonDocument::fromJson(reply->readAll());
+
+            // TODO: Process JSON
+            Q_UNUSED(document)
+
+            // If control reaches this point, an error occurred decoding the JSON
+            qWarning("Malformed JSON received from update server.");
+
+        } else if(mRedirectsRemaining) {
+
+            // Use the original URL to resolve the new location, decrement
+            // the number of redirects remaining, and immediately return
+            sendRequest(reply->url().resolved(newUrl));
+            --mRedirectsRemaining;
+            return;
+
+        } else {
+            qWarning("Maximum number of redirects exceeded while checking for updates.");
+        }
+    } else {
+        qWarning("Unable to check for updates.");
+    }
+
+    // Schedule the next check
+    mTimer.start();
 }
 
 void UpdateChecker::onSettingChanged(Settings::Key key)
 {
     if(key == Settings::UpdateInterval) {
-        mTimer.stop();
         reload();
-        mTimer.start();
     }
+}
+
+void UpdateChecker::sendRequest(const QUrl &url)
+{
+    QNetworkRequest request(url);
+
+    // Help the server out a bit by providing version and OS
+    request.setRawHeader("User-Agent", QString("NitroShare %1 - %2")
+        .arg(PROJECT_VERSION)
+        .arg(Platform::currentOSName()).toUtf8()
+    );
+
+    mManager.get(request);
 }
 
 void UpdateChecker::reload()
