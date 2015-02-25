@@ -35,6 +35,7 @@ HEADERS += \
     transfer/transfersender.h \
     transfer/transferserver.h \
     transfer/transferwindow.h \
+    util/jsonvalidator.h \
     util/platform.h \
     util/settings.h \
     util/version.h
@@ -58,6 +59,7 @@ SOURCES += \
     transfer/transfersender.cpp \
     transfer/transferserver.cpp \
     transfer/transferwindow.cpp \
+    util/jsonvalidator.cpp \
     util/platform.cpp \
     util/settings.cpp \
     util/version.cpp \
