@@ -38,7 +38,7 @@ HEADERS += \
     util/jsonvalidator.h \
     util/platform.h \
     util/settings.h \
-    util/version.h
+    util/versionnumber.h
 
 SOURCES += \
     application/aboutdialog.cpp \
@@ -62,7 +62,7 @@ SOURCES += \
     util/jsonvalidator.cpp \
     util/platform.cpp \
     util/settings.cpp \
-    util/version.cpp \
+    util/versionnumber.cpp \
     main.cpp
 
 FORMS += \

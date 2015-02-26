@@ -31,7 +31,7 @@
 
 #include "../util/jsonvalidator.h"
 #include "../util/platform.h"
-#include "../util/version.h"
+#include "../util/versionnumber.h"
 #include "config.h"
 #include "updatechecker.h"
 
@@ -92,11 +92,8 @@ void UpdateChecker::onFinished(QNetworkReply *reply)
                     JsonValidator::objectContains(object, "version", version) &&
                     JsonValidator::objectContains(object, "url", url)) {
 
-                Version currentVersion(PROJECT_VERSION);
-                Version newestVersion(version);
-
-                // Compare the versions
-                if(newestVersion > currentVersion) {
+                // Compare the newest version to the current version
+                if(VersionNumber::isGreaterThan(version, PROJECT_VERSION)) {
                     emit newVersion(version, QUrl(url));
                     return;
                 }

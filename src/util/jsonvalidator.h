@@ -31,14 +31,17 @@
 #include <QJsonValue>
 
 /**
- * @brief Validator for JSON documents
+ * @brief Validation for JSON documents
  *
  * There are many classes that need to ensure that JSON data received from an
- * external source contains expected data. This class exists to fill the need.
+ * external source contains the expected data. This class exists to fill that
+ * need.
  *
  * The validation methods accept a reference to the expected type and return a
- * boolean indicating success or failure. This allows the method calls to be
- * chained in an if statement like so:
+ * boolean indicating whether the provided data could be converted to that
+ * type. Because a boolean is returned, multiple checks can be performed
+ * within a single "if" statement joined with the logical and operator. For
+ * example:
  *
  *     QJsonDocument doc = ...
  *     QJsonValue value;
@@ -54,6 +57,10 @@
  *
  *         //...
  *     }
+ *
+ * One of the important things to note about this class is the fact that it
+ * attempts to perform the conversion before indicating success or failure.
+ * Therefore, the destination variable may be modified, even after failure.
  */
 class JsonValidator
 {

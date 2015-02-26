@@ -22,36 +22,37 @@
  * IN THE SOFTWARE.
  **/
 
-#ifndef NS_VERSION_H
-#define NS_VERSION_H
+#include <QStringList>
 
-#include <QString>
+#include "versionnumber.h"
 
-/**
- * @brief Representation of a version number
- *
- * This class provides a quick and dirty means of comparing version numbers.
- * Simply create an instance of this class and use the comparison operators.
- */
-class Version
+bool VersionNumber::isGreaterThan(const QString &version1, const QString &version2)
 {
-public:
+    QStringList components1 = version1.split('.');
+    QStringList components2 = version2.split('.');
 
-    explicit Version(const QString &versionString);
-    Version(int major, int minor, int patch);
+    for(int i = 0; i < components1.count(); ++i) {
 
-    bool operator==(const Version &other) const;
-    bool operator!=(const Version &other) const;
-    bool operator<(const Version &other) const;
-    bool operator>(const Version &other) const;
-    bool operator>=(const Version &other) const;
-    bool operator<=(const Version &other) const;
+        // If the second version doesn't contain this
+        // many items, then the first is greater
+        if(i == components2.count()) {
+            return true;
+        }
 
-private:
+        // Convert the two components to integers
+        int num1 = components1.at(i).toInt();
+        int num2 = components2.at(i).toInt();
 
-    int mMajor;
-    int mMinor;
-    int mPatch;
-};
+        if(num1 > num2) {
+            return true;
+        } else if (num1 < num2) {
+            return false;
+        }
 
-#endif // NS_VERSION_H
+        // Continue to the next component if the two are equal
+    }
+
+    // If we reach this point, either the two versions are equal or the second
+    // version contains more components - either way, the first is not greater
+    return false;
+}
