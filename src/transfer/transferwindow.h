@@ -33,6 +33,16 @@ namespace Ui {
     class TransferWindow;
 }
 
+/**
+ * @brief Displays a list of all transfers in the model
+ *
+ * Given a TransferModel, this class will present a window that allows the
+ * user to view the transfers that are currently in progress. In addition,
+ * the user can cancel transfers in progress and restart failed transfers.
+ *
+ * A custom delegate is used to render the progress bar in the appropriate
+ * column as well as the status messages.
+ */
 class TransferWindow : public QMainWindow
 {
     Q_OBJECT
@@ -44,7 +54,7 @@ public:
 
 public Q_SLOTS:
 
-    void onRowsInserted(const QModelIndex &parent, int first, int last);
+    void onDataChanged(const QModelIndex & topLeft, const QModelIndex & bottomRight,  const QVector<int> &roles);
 
 private:
 

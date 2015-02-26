@@ -23,6 +23,7 @@
  **/
 
 #include <QApplication>
+#include <QPainter>
 #include <QStyleOptionProgressBar>
 
 #include "transferdelegate.h"

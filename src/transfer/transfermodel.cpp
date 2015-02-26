@@ -154,6 +154,8 @@ QVariant TransferModel::headerData(int section, Qt::Orientation orientation, int
         return tr("Progress");
     case ColumnState:
         return tr("Status");
+    case ColumnAction:
+        return tr("Action");
     }
 
     return QVariant();
@@ -182,14 +184,14 @@ void TransferModel::addSender(const QString &deviceName, const QHostAddress &add
 
 void TransferModel::cancel(int index)
 {
-    if(index > 0 && index < d->transfers.count()) {
+    if(index >= 0 && index < d->transfers.count()) {
         d->transfers.at(index)->cancel();
     }
 }
 
 void TransferModel::restart(int index)
 {
-    if(index > 0 && index < d->transfers.count()) {
+    if(index >= 0 && index < d->transfers.count()) {
         d->transfers.at(index)->restart();
     }
 }

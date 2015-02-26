@@ -22,10 +22,10 @@
  * IN THE SOFTWARE.
  **/
 
+#include <QPersistentModelIndex>
 #include <QPushButton>
 
 #include "transferdelegate.h"
-#include "transfermodel_p.h"
 #include "transferwindow.h"
 #include "ui_transferwindow.h"
 
@@ -39,7 +39,7 @@ TransferWindow::TransferWindow(TransferModel *model)
     ui->transferView->setItemDelegate(new TransferDelegate(this));
 
     connect(ui->clear, &QPushButton::clicked, mModel, &TransferModel::clear);
-    connect(mModel, &TransferModel::rowsInserted, this, &TransferWindow::onRowsInserted);
+    connect(mModel, &TransferModel::dataChanged, this, &TransferWindow::onDataChanged);
 }
 
 TransferWindow::~TransferWindow()
@@ -47,9 +47,43 @@ TransferWindow::~TransferWindow()
     delete ui;
 }
 
-void TransferWindow::onRowsInserted(const QModelIndex &, int first, int last)
+void TransferWindow::onDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight,  const QVector<int> &roles)
 {
-    // TODO: do something with the new transfer
-    Q_UNUSED(first)
-    Q_UNUSED(last)
+    for(int row=topLeft.row(); row <= bottomRight.row(); ++row) {
+
+        // If the state role changed, check to see what it was set to
+        if(roles.contains(TransferModel::StateRole)) {
+            switch(mModel->index(row, 0).data(TransferModel::StateRole).toInt()) {
+            case TransferModel::Connecting:
+            case TransferModel::InProgress:
+                {
+                    QPushButton * button = new QPushButton(tr("Cancel"));
+                    QPersistentModelIndex index(mModel->index(row, 0));
+
+                    // Cancel the transfer when the button is clicked
+                    connect(button, &QPushButton::clicked, [this, index]() {
+                        mModel->cancel(index.row());
+                    });
+
+                    ui->transferView->setIndexWidget(mModel->index(row, TransferModel::ColumnAction), button);
+                }
+                break;
+            case TransferModel::Canceled:
+            case TransferModel::Failed:
+            case TransferModel::Succeeded:
+                {
+                    QPushButton * button = new QPushButton(tr("Restart"));
+                    QPersistentModelIndex index(mModel->index(row, 0));
+
+                    // Restart the transfer when the button is clicked
+                    connect(button, &QPushButton::clicked, [this, index]() {
+                        mModel->restart(index.row());
+                    });
+
+                    ui->transferView->setIndexWidget(mModel->index(row, TransferModel::ColumnAction), button);
+                }
+                break;
+            }
+        }
+    }
 }

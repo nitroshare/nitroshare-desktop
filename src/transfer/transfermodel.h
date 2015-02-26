@@ -58,6 +58,8 @@ public:
         ColumnProgress,
         /// State of transfer
         ColumnState,
+        /// Action that can be taken for the transfer
+        ColumnAction,
         /// Total number of columns
         ColumnCount
     };
