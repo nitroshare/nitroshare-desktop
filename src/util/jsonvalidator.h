@@ -64,6 +64,7 @@ public:
     static bool isObject(const QJsonValue &value, QJsonObject &object);
 
     static bool objectContains(const QJsonObject &object, const QString &key, QString &value);
+    static bool objectContains(const QJsonObject &object, const QString &key, qint32 &value);
     static bool objectContains(const QJsonObject &object, const QString &key, qint64 &value);
 };
 

@@ -48,6 +48,12 @@ bool JsonValidator::objectContains(const QJsonObject &object, const QString &key
     return object.contains(key);
 }
 
+bool JsonValidator::objectContains(const QJsonObject &object, const QString &key, qint32 &value)
+{
+    value = object.value(key).toString().toInt();
+    return object.contains(key);
+}
+
 bool JsonValidator::objectContains(const QJsonObject &object, const QString &key, qint64 &value)
 {
     value = object.value(key).toString().toLongLong();

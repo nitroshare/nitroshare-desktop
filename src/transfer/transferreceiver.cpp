@@ -23,9 +23,8 @@
  **/
 
 #include <QJsonDocument>
-#include <QJsonObject>
-#include <QJsonValue>
 
+#include "../util/jsonvalidator.h"
 #include "../util/settings.h"
 #include "transferreceiver.h"
 
@@ -67,65 +66,57 @@ void TransferReceiver::writeNextPacket()
 void TransferReceiver::processTransferHeader(const QByteArray &data)
 {
     QJsonDocument document = QJsonDocument::fromJson(data);
+    QJsonObject object;
 
-    // Ensure that the transfer header was readable
-    if(document.isEmpty()) {
+    if(JsonValidator::isObject(document, object) &&
+            JsonValidator::objectContains(object, "name", mDeviceName) &&
+            JsonValidator::objectContains(object, "size", mTransferBytesTotal) &&
+            JsonValidator::objectContains(object, "count", mTransferFilesRemaining)) {
+
+        emit dataChanged({TransferModel::DeviceNameRole});
+
+        // The next packet will be the first file header
+        mProtocolState = FileHeader;
+    } else {
+
         abortWithError(tr("Unable to read transfer header"));
-        return;
     }
-
-    QJsonObject object = document.object();
-
-    // TODO: do more error checking here
-
-    mDeviceName = object.value("name").toString();
-    emit dataChanged({TransferModel::DeviceNameRole});
-
-    mTransferBytesTotal = object.value("size").toString().toLongLong();
-    mTransferFilesRemaining = object.value("count").toString().toLongLong();
-
-    // The next packet will be the first file header
-    mProtocolState = FileHeader;
 }
 
 void TransferReceiver::processFileHeader(const QByteArray &data)
 {
     QJsonDocument document = QJsonDocument::fromJson(data);
+    QJsonObject object;
+    QString name;
 
-    // Ensure that the file header was readable
-    if(document.isEmpty()) {
-        abortWithError(tr("Unable to read file header"));
-        return;
-    }
+    if(JsonValidator::isObject(document, object) &&
+            JsonValidator::objectContains(object, "name", name) &&
+            JsonValidator::objectContains(object, "size", mFileBytesRemaining)) {
 
-    QJsonObject object = document.object();
+        FileInfo info(mRoot, name);
 
-    // Obtain the filename
-    QString filename = object.value("name").toString();
-    FileInfo info(mRoot, filename);
+        // Ensure that the path exists
+        QDir path(QFileInfo(info.absoluteFilename()).path());
+        if(!path.exists()) {
+            if(!path.mkpath(".")) {
+                abortWithError(tr("Unable to create %1").arg(path.absolutePath()));
+                return;
+            }
+        }
 
-    // Ensure that the path exists
-    QDir path(QFileInfo(info.absoluteFilename()).path());
-    if(!path.exists()) {
-        if(!path.mkpath(".")) {
-            abortWithError(tr("Unable to create %1").arg(path.absolutePath()));
+        // Abort if the file can't be opened
+        mFile.setFileName(info.absoluteFilename());
+        if(!mFile.open(QIODevice::WriteOnly)) {
+            abortWithError(tr("Unable to open %1").arg(mFile.fileName()));
             return;
         }
+
+        // The next packet will be the first chunk from the file
+        mProtocolState = FileData;
+    } else {
+
+        abortWithError(tr("Unable to read file header"));
     }
-
-    // TODO: do more error checking here
-
-    mFile.setFileName(info.absoluteFilename());
-    mFileBytesRemaining = object.value("size").toString().toLongLong();
-
-    // Abort if the file can't be opened
-    if(!mFile.open(QIODevice::WriteOnly)) {
-        abortWithError(tr("Unable to open %1").arg(mFile.fileName()));
-        return;
-    }
-
-    // The next packet will be the first chunk from the file
-    mProtocolState = FileData;
 }
 
 void TransferReceiver::processFileData(const QByteArray &data)
