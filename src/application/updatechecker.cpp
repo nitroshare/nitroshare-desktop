@@ -82,19 +82,22 @@ void UpdateChecker::onFinished(QNetworkReply *reply)
             QJsonDocument document = QJsonDocument::fromJson(reply->readAll());
             QJsonArray array;
             QJsonObject object;
+            QString version;
+            QString url;
 
             // Verify the JSON and check the version number
             if(JsonValidator::isArray(document, array) &&
                     array.count() &&
                     JsonValidator::isObject(array.at(0), object) &&
-                    JsonValidator::objectContains(object, {"version", "url"})) {
+                    JsonValidator::objectContains(object, "version", version) &&
+                    JsonValidator::objectContains(object, "url", url)) {
 
                 Version currentVersion(PROJECT_VERSION);
-                Version newestVersion(object.value("version").toString());
+                Version newestVersion(version);
 
                 // Compare the versions
                 if(newestVersion > currentVersion) {
-                    emit newVersion(QUrl(object.value("url").toString()));
+                    emit newVersion(QUrl(url));
                     return;
                 }
 

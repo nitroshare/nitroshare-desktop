@@ -42,12 +42,14 @@ bool JsonValidator::isObject(const QJsonValue &value, QJsonObject &object)
     return value.isObject();
 }
 
-bool JsonValidator::objectContains(const QJsonObject &object, std::initializer_list<QString> values)
+bool JsonValidator::objectContains(const QJsonObject &object, const QString &key, QString &value)
 {
-    for(const QString *value = values.begin(); value != values.end(); ++value) {
-        if(!object.contains(*value)) {
-            return false;
-        }
-    }
-    return true;
+    value = object.value(key).toString();
+    return object.contains(key);
+}
+
+bool JsonValidator::objectContains(const QJsonObject &object, const QString &key, qint64 &value)
+{
+    value = object.value(key).toString().toLongLong();
+    return object.contains(key);
 }

@@ -25,8 +25,6 @@
 #ifndef NS_JSONVALIDATOR_H
 #define NS_JSONVALIDATOR_H
 
-#include <initializer_list>
-
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -45,12 +43,16 @@
  *     QJsonDocument doc = ...
  *     QJsonValue value;
  *     QJsonArray array;
+ *     QString item1;
+ *     qint64 item2;
  *
- *     if(validator.isArray(doc, array, false) &&
+ *     if(validator.isArray(doc, array) &&
+ *             array.count() &&
  *             validator.isObject(array.at(0), object) &&
- *             validator.objectContains(object, {"item1", "item2"})) {
+ *             validator.objectContains(object, "item1", item1) &&
+ *             validator.objectContains(object, "item2", item2) {
  *
- *         // it is now guaranteed that object contains item1 and item2
+ *         //...
  *     }
  */
 class JsonValidator
@@ -61,7 +63,8 @@ public:
     static bool isObject(const QJsonDocument &document, QJsonObject &object);
     static bool isObject(const QJsonValue &value, QJsonObject &object);
 
-    static bool objectContains(const QJsonObject &object, std::initializer_list<QString> values);
+    static bool objectContains(const QJsonObject &object, const QString &key, QString &value);
+    static bool objectContains(const QJsonObject &object, const QString &key, qint64 &value);
 };
 
 #endif // NS_JSONVALIDATOR_H
