@@ -52,7 +52,7 @@ public:
 
 Q_SIGNALS:
 
-    void newVersion(const QUrl &url);
+    void newVersion(const QString &version, const QUrl &url);
 
 private Q_SLOTS:
 

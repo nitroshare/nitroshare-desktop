@@ -97,7 +97,7 @@ void UpdateChecker::onFinished(QNetworkReply *reply)
 
                 // Compare the versions
                 if(newestVersion > currentVersion) {
-                    emit newVersion(QUrl(url));
+                    emit newVersion(version, QUrl(url));
                     return;
                 }
 

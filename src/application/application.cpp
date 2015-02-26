@@ -24,6 +24,7 @@
 
 #include <QApplication>
 #include <QDateTime>
+#include <QDesktopServices>
 #include <QFileDialog>
 #include <QMessageBox>
 
@@ -56,6 +57,7 @@ Application::Application(QObject *parent)
     connect(&mDeviceModel, &DeviceModel::rowsAboutToBeRemoved, this, &Application::notifyDevicesRemoved);
     connect(&mTransferModel, &TransferModel::dataChanged, this, &Application::notifyTransferChanged);
     connect(&mTransferServer, &TransferServer::newTransfer, &mTransferModel, &TransferModel::addReceiver);
+    connect(&mUpdateChecker, &UpdateChecker::newVersion, this, &Application::notifyNewVersion);
 
     mIcon->addAction(tr("Send Files..."), this, SLOT(sendFiles()));
     mIcon->addAction(tr("Send Directory..."), this, SLOT(sendDirectory()));
@@ -122,6 +124,17 @@ void Application::notifyTransferChanged(const QModelIndex &topLeft, const QModel
                 break;
             }
         }
+    }
+}
+
+void Application::notifyNewVersion(const QString &version, const QUrl &url)
+{
+    if(QMessageBox::question(nullptr, tr("New Version"),
+            tr("Version %1 of NitroShare is now available. Would you like to download it?")
+                    .arg(version)) == QMessageBox::Yes) {
+
+        // Simply open the URL in the user's default browser
+        QDesktopServices::openUrl(url);
     }
 }
 
