@@ -59,6 +59,7 @@ public Q_SLOTS:
 
 private:
 
+    void updateProgressBar(int row);
     void updateButton(int row);
 
     Ui::TransferWindow *const ui;

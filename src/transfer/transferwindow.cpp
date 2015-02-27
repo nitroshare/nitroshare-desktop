@@ -23,9 +23,9 @@
  **/
 
 #include <QPersistentModelIndex>
+#include <QProgressBar>
 #include <QPushButton>
 
-#include "transferdelegate.h"
 #include "transferwindow.h"
 #include "ui_transferwindow.h"
 
@@ -36,7 +36,6 @@ TransferWindow::TransferWindow(TransferModel *model)
     ui->setupUi(this);
 
     ui->transferView->setModel(mModel);
-    ui->transferView->setItemDelegate(new TransferDelegate(this));
 
     connect(ui->clear, &QPushButton::clicked, mModel, &TransferModel::clear);
     connect(mModel, &TransferModel::rowsInserted, this, &TransferWindow::onRowsInserted);
@@ -51,6 +50,13 @@ TransferWindow::~TransferWindow()
 void TransferWindow::onRowsInserted(const QModelIndex &, int first, int last)
 {
     for(int row = first; row <= last; ++row) {
+
+        // Create a progress box for displaying progress
+        QProgressBar *progressBar = new QProgressBar;
+        progressBar->setMinimum(0);
+        progressBar->setMaximum(100);
+        ui->transferView->setIndexWidget(mModel->index(row, TransferModel::ProgressColumn), progressBar);
+
         updateButton(row);
     }
 }
@@ -58,10 +64,28 @@ void TransferWindow::onRowsInserted(const QModelIndex &, int first, int last)
 void TransferWindow::onDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight,  const QVector<int> &roles)
 {
     for(int row = topLeft.row(); row <= bottomRight.row(); ++row) {
+
+        // Update the progress box if its value has changed
+        if(roles.contains(TransferModel::ProgressRole) || roles.empty()) {
+            updateProgressBar(row);
+        }
+
+        // Update the button if the state has changed
         if(roles.contains(TransferModel::StateRole) || roles.isEmpty()) {
             updateButton(row);
         }
     }
+}
+
+void TransferWindow::updateProgressBar(int row)
+{
+    // Retrieve the progress bar
+    QModelIndex index = mModel->index(row, TransferModel::ProgressColumn);
+    QProgressBar *progressBar = qobject_cast<QProgressBar*>(ui->transferView->indexWidget(index));
+
+    // Set its progress
+    int progress = index.data(TransferModel::ProgressRole).toInt();
+    progressBar->setValue(progress);
 }
 
 void TransferWindow::updateButton(int row)

@@ -28,7 +28,6 @@ HEADERS += \
     icon/icon.h \
     icon/trayicon.h \
     transfer/transfer.h \
-    transfer/transferdelegate.h \
     transfer/transfermodel.h \
     transfer/transfermodel_p.h \
     transfer/transferreceiver.h \
@@ -53,7 +52,6 @@ SOURCES += \
     icon/icon.cpp \
     icon/trayicon.cpp \
     transfer/transfer.cpp \
-    transfer/transferdelegate.cpp \
     transfer/transfermodel.cpp \
     transfer/transferreceiver.cpp \
     transfer/transfersender.cpp \
