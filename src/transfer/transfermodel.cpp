@@ -84,11 +84,11 @@ QVariant TransferModel::data(const QModelIndex &index, int role) const
     switch(role) {
     case Qt::DisplayRole:
         switch(index.column()) {
-        case ColumnDeviceName:
+        case DeviceNameColumn:
             return transfer->deviceName();
-        case ColumnProgress:
+        case ProgressColumn:
             return QString("%1%").arg(transfer->progress());
-        case ColumnState:
+        case StateColumn:
             switch(transfer->state()) {
             case Connecting:
                 return tr("Connecting");
@@ -104,7 +104,7 @@ QVariant TransferModel::data(const QModelIndex &index, int role) const
         }
         break;
     case Qt::DecorationRole:
-        if(index.column() == ColumnDeviceName) {
+        if(index.column() == DeviceNameColumn) {
             switch(transfer->direction()) {
             case Send:
                 return QApplication::style()->standardIcon(QStyle::SP_ArrowUp);
@@ -114,7 +114,7 @@ QVariant TransferModel::data(const QModelIndex &index, int role) const
         }
         break;
     case Qt::ForegroundRole:
-        if(index.column() == ColumnState) {
+        if(index.column() == StateColumn) {
             switch(transfer->state()) {
             case Canceled:
             case Failed:
@@ -148,13 +148,13 @@ QVariant TransferModel::headerData(int section, Qt::Orientation orientation, int
     }
 
     switch(section) {
-    case ColumnDeviceName:
+    case DeviceNameColumn:
         return tr("Device Name");
-    case ColumnProgress:
+    case ProgressColumn:
         return tr("Progress");
-    case ColumnState:
+    case StateColumn:
         return tr("Status");
-    case ColumnAction:
+    case ActionColumn:
         return tr("Action");
     }
 

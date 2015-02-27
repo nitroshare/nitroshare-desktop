@@ -65,7 +65,7 @@ void TransferWindow::onDataChanged(const QModelIndex &topLeft, const QModelIndex
                         mModel->cancel(index.row());
                     });
 
-                    ui->transferView->setIndexWidget(mModel->index(row, TransferModel::ColumnAction), button);
+                    ui->transferView->setIndexWidget(mModel->index(row, TransferModel::ActionColumn), button);
                 }
                 break;
             case TransferModel::Canceled:
@@ -80,7 +80,7 @@ void TransferWindow::onDataChanged(const QModelIndex &topLeft, const QModelIndex
                         mModel->restart(index.row());
                     });
 
-                    ui->transferView->setIndexWidget(mModel->index(row, TransferModel::ColumnAction), button);
+                    ui->transferView->setIndexWidget(mModel->index(row, TransferModel::ActionColumn), button);
                 }
                 break;
             }

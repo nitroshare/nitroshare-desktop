@@ -41,7 +41,7 @@ void TransferDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opti
                              const QModelIndex &index) const
 {
     switch(index.column()) {
-    case TransferModel::ColumnProgress:
+    case TransferModel::ProgressColumn:
         {
             int progress = index.data(TransferModel::ProgressRole).toInt();
 

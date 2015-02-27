@@ -25,7 +25,7 @@
 #ifndef NS_DEVICEMODEL_H
 #define NS_DEVICEMODEL_H
 
-#include <QAbstractItemModel>
+#include <QAbstractTableModel>
 
 class DeviceModelPrivate;
 
@@ -36,24 +36,34 @@ class DeviceModelPrivate;
  * interfaces. Once a packet is received, it is examined and an instance of
  * the Device class is created to represent the device.
  */
-class DeviceModel : public QAbstractItemModel
+class DeviceModel : public QAbstractTableModel
 {
     Q_OBJECT
 
 public:
 
     /**
+     * @brief Columns displayed in model views
+     */
+    enum Column {
+        /// Device name
+        NameColumn = 0,
+        /// Device operating system
+        OperatingSystemColumn,
+        /// Total number of columns
+        ColumnCount
+    };
+
+    /**
      * @brief Roles for retrieving device data from the model
      */
-    enum Roles {
+    enum Role {
         /// Unique identifier
         UUIDRole = Qt::UserRole,
         /// Descriptive name
         NameRole,
         /// Operating system
         OperatingSystemRole,
-        /// Application version
-        VersionRole,
         /// Transfer address
         AddressRole,
         /// Transfer port
@@ -64,22 +74,6 @@ public:
      * @brief Create a device model
      */
     DeviceModel();
-
-    /**
-     * @brief Retrieve an index by position
-     * @param row row to retrieve
-     * @param column column to retrieve
-     * @param parent parent index
-     * @return model index
-     */
-    virtual QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const;
-
-    /**
-     * @brief Retrieve the parent of the specified index
-     * @param index index to retrieve
-     * @return parent index
-     */
-    virtual QModelIndex parent(const QModelIndex &child) const;
 
     /**
      * @brief Retrieve the number of rows in the model

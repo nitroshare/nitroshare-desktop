@@ -22,36 +22,57 @@
  * IN THE SOFTWARE.
  **/
 
-#include <QJsonDocument>
 #include <QNetworkInterface>
 #include <QSet>
 
+#include "../util/json.h"
 #include "../util/platform.h"
-#include "config.h"
 #include "devicelistener.h"
 
 DeviceListener::DeviceListener()
 {
     connect(&mTimer, &QTimer::timeout, this, &DeviceListener::sendPings);
     connect(&mSocket, &QUdpSocket::readyRead, this, &DeviceListener::processPings);
-    connect(Settings::instance(), &Settings::settingChanged, this, &DeviceListener::settingChanged);
+    connect(Settings::instance(), &Settings::settingChanged, this, &DeviceListener::onSettingChanged);
 
     reload();
+
+    // Immediately announce the device on the network and start the timer
     sendPings();
+    mTimer.start();
 }
 
 void DeviceListener::processPings()
 {
     while(mSocket.hasPendingDatagrams()) {
+
+        // Capture both the data and the address
         QByteArray data;
         QHostAddress address;
 
         data.resize(mSocket.pendingDatagramSize());
         mSocket.readDatagram(data.data(), data.size(), &address);
 
-        QJsonDocument document(QJsonDocument::fromJson(data));
-        if(!document.isEmpty()) {
-            emit pingReceived(document.object(), address);
+        // Extract the data from the packet
+        QJsonDocument document = QJsonDocument::fromJson(data);
+        QJsonObject object;
+        QString uuid;
+        QString name;
+        QString operatingSystemName;
+        int port;
+
+        if(Json::isObject(document, object) &&
+                Json::objectContains(object, "uuid", uuid) &&
+                Json::objectContains(object, "name", name) &&
+                Json::objectContains(object, "operating_system", operatingSystemName) &&
+                Json::objectContains(object, "port", port)) {
+
+            // Double-check that the port is valid and convert the operating system
+            if(port > 0 && port < 65536) {
+
+                Platform::OperatingSystem operatingSystem = Platform::operatingSystemForName(operatingSystemName);
+                emit pingReceived(uuid, name, operatingSystem, address, port);
+            }
         }
     }
 }
@@ -65,13 +86,12 @@ void DeviceListener::sendPings()
         { "uuid", Settings::get<QString>(Settings::DeviceUUID) },
         { "name", Settings::get<QString>(Settings::DeviceName) },
         { "operating_system", Platform::operatingSystemName() },
-        { "version", PROJECT_VERSION },
-        { "port", Settings::get<quint16>(Settings::TransferPort) }
+        { "port", QString::number(Settings::get<quint16>(Settings::TransferPort)) }
     }));
 
-    QByteArray data(QJsonDocument(object).toJson(QJsonDocument::Compact));
+    // Build a list of all unique addresses (since we are
+    // sending broadcast packets, these will always be IPv4)
     QSet<QHostAddress> addresses;
-
     foreach(QNetworkInterface interface, QNetworkInterface::allInterfaces()) {
         if(interface.flags() & QNetworkInterface::CanBroadcast) {
             foreach(QNetworkAddressEntry entry, interface.addressEntries()) {
@@ -82,12 +102,14 @@ void DeviceListener::sendPings()
         }
     }
 
+    // Build the packet and send it on all of the addresses
+    QByteArray data(QJsonDocument(object).toJson(QJsonDocument::Compact));
     foreach(QHostAddress address, addresses) {
         mSocket.writeDatagram(data, address, mSocket.localPort());
     }
 }
 
-void DeviceListener::settingChanged(Settings::Key key)
+void DeviceListener::onSettingChanged(Settings::Key key)
 {
     if(key == Settings::BroadcastInterval || key == Settings::BroadcastPort) {
         reload();
@@ -96,10 +118,10 @@ void DeviceListener::settingChanged(Settings::Key key)
 
 void DeviceListener::reload()
 {
-    mTimer.stop();
+    // The timer is automatically restarted after setting the interval
     mTimer.setInterval(Settings::get<int>(Settings::BroadcastInterval));
-    mTimer.start();
 
+    // Close the socket if it is open and bind to the configured port
     mSocket.close();
     mSocket.bind(Settings::get<quint16>(Settings::BroadcastPort), QUdpSocket::ShareAddress);
 }

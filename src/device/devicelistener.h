@@ -26,12 +26,19 @@
 #define NS_DEVICELISTENER_H
 
 #include <QHostAddress>
-#include <QJsonObject>
 #include <QTimer>
 #include <QUdpSocket>
 
+#include "../util/platform.h"
 #include "../util/settings.h"
 
+/**
+ * @brief Device broadcast emitter and receiver
+ *
+ * This class listens for incoming broadcast packets and sends them out over
+ * all active network interfaces at a configurable interval. When receiving
+ * packets, the address is captured for later use when sending transfers.
+ */
 class DeviceListener : public QObject
 {
     Q_OBJECT
@@ -42,14 +49,15 @@ public:
 
 Q_SIGNALS:
 
-    void pingReceived(const QJsonObject &object, const QHostAddress &address);
+    void pingReceived(const QString &uuid, const QString &name, Platform::OperatingSystem operatingSystem,
+                      const QHostAddress &address, quint16 port);
 
 private Q_SLOTS:
 
     void processPings();
     void sendPings();
 
-    void settingChanged(Settings::Key key);
+    void onSettingChanged(Settings::Key key);
 
 private:
 

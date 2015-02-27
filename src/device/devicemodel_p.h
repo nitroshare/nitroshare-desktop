@@ -26,7 +26,6 @@
 #define NS_DEVICEMODELPRIVATE_H
 
 #include <QHostAddress>
-#include <QJsonObject>
 #include <QList>
 #include <QTimer>
 
@@ -41,12 +40,6 @@ class DeviceModelPrivate : public QObject
 
 public:
 
-    enum {
-        ColumnName = 0,
-        ColumnOperatingSystem,
-        ColumnCount
-    };
-
     explicit DeviceModelPrivate(DeviceModel *deviceModel);
     virtual ~DeviceModelPrivate();
 
@@ -59,7 +52,8 @@ public:
 
 private Q_SLOTS:
 
-    void processPing(const QJsonObject &object, const QHostAddress &address);
+    void processPing(const QString &uuid, const QString &name, Platform::OperatingSystem operatingSystem,
+                     const QHostAddress &address, quint16 port);
     void update();
 
     void settingChanged(Settings::Key key);

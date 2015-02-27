@@ -24,8 +24,8 @@
 
 #include <QIcon>
 
+#include "../util/platform.h"
 #include "../util/settings.h"
-#include "config.h"
 #include "devicemodel.h"
 #include "devicemodel_p.h"
 
@@ -41,6 +41,7 @@ DeviceModelPrivate::DeviceModelPrivate(DeviceModel *deviceModel)
     connect(Settings::instance(), &Settings::settingChanged, this, &DeviceModelPrivate::settingChanged);
 
     reload();
+    timer.start();
 }
 
 DeviceModelPrivate::~DeviceModelPrivate()
@@ -48,35 +49,33 @@ DeviceModelPrivate::~DeviceModelPrivate()
     qDeleteAll(devices);
 }
 
-void DeviceModelPrivate::processPing(const QJsonObject &object, const QHostAddress &address)
+void DeviceModelPrivate::processPing(const QString &uuid, const QString &name, Platform::OperatingSystem operatingSystem,
+                                     const QHostAddress &address, quint16 port)
 {
-    QString uuid = object.value("uuid").toString();
-
-    // Ensure that the UUID is present and does not match the current
-    // device since we will receive our own broadcast packets
-    if(uuid.isEmpty() || uuid == Settings::get<QString>(Settings::DeviceUUID)) {
+    // Ensure that the UUID does not match this device
+    // since we will receive our own broadcast packets
+    if(uuid == Settings::get<QString>(Settings::DeviceUUID)) {
         return;
     }
 
     // Attempt to find an existing device with the UUID
     Device *device = nullptr;
-    int index = 0;
+    int row = 0;
 
-    for(; index < devices.count(); ++index) {
-        if(devices.at(index)->value("uuid") == uuid) {
-            device = devices.at(index);
+    for(; row < devices.count(); ++row) {
+        if(devices.at(row)->uuid() == uuid) {
+            device = devices.at(row);
         }
     }
 
     // Create a new device if one does not yet exist with the UUID
-    bool created = false;
-    if(!device) {
-        device = new Device;
-        created = true;
+    bool created = static_cast<bool>(!device);
+    if(created) {
+        device = new Device(uuid);
     }
 
     // Update the device and check to see if anything important has changed
-    bool changed = device->update(object.toVariantMap(), address);
+    bool changed = device->update(name, operatingSystem, address, port);
 
     // Add the device if it was created, and otherwise, check to see
     // if something changed and emit the appropriate signal if so
@@ -85,19 +84,20 @@ void DeviceModelPrivate::processPing(const QJsonObject &object, const QHostAddre
         devices.append(device);
         q->endInsertRows();
     } else if(changed) {
-        emit q->dataChanged(q->index(index, 0), q->index(index, ColumnCount));
+        emit q->dataChanged(q->index(row, 0), q->index(row, DeviceModel::ColumnCount));
     }
 }
 
 void DeviceModelPrivate::update()
 {
     // Iterate over the list in reverse to preserve indices when items are removed
-    for(int i = devices.count() - 1; i >= 0; --i) {
-        Device *device = devices.at(i);
+    for(int row = devices.count() - 1; row >= 0; --row) {
+        Device *device = devices.at(row);
 
-        if(device->isExpired()) {
-            q->beginRemoveRows(QModelIndex(), i, i);
-            devices.removeAt(i);
+        // Remove the device if it has timed out
+        if(device->hasTimedOut()) {
+            q->beginRemoveRows(QModelIndex(), row, row);
+            devices.removeAt(row);
             q->endRemoveRows();
 
             delete device;
@@ -114,28 +114,12 @@ void DeviceModelPrivate::settingChanged(Settings::Key key)
 
 void DeviceModelPrivate::reload()
 {
-    timer.stop();
     timer.setInterval(Settings::get<int>(Settings::BroadcastTimeout));
-    timer.start();
 }
 
 DeviceModel::DeviceModel()
     : d(new DeviceModelPrivate(this))
 {
-}
-
-QModelIndex DeviceModel::index(int row, int column, const QModelIndex &parent) const
-{
-    if(row < 0 || column < 0 || row >= rowCount() || column >= columnCount() || parent.isValid()) {
-        return QModelIndex();
-    }
-
-    return createIndex(row, column);
-}
-
-QModelIndex DeviceModel::parent(const QModelIndex &) const
-{
-    return QModelIndex();
 }
 
 int DeviceModel::rowCount(const QModelIndex &parent) const
@@ -145,7 +129,7 @@ int DeviceModel::rowCount(const QModelIndex &parent) const
 
 int DeviceModel::columnCount(const QModelIndex &parent) const
 {
-    return parent.isValid() ? 0 : DeviceModelPrivate::ColumnCount;
+    return parent.isValid() ? 0 : ColumnCount;
 }
 
 QVariant DeviceModel::data(const QModelIndex &index, int role) const
@@ -159,29 +143,27 @@ QVariant DeviceModel::data(const QModelIndex &index, int role) const
     switch(role) {
     case Qt::DisplayRole:
         switch(index.column()) {
-        case DeviceModelPrivate::ColumnName:
-            return device->value("name");
-        case DeviceModelPrivate::ColumnOperatingSystem:
-            return device->value("operating_system");
+        case NameColumn:
+            return device->name();
+        case OperatingSystemColumn:
+            return Platform::operatingSystemFriendlyName(device->operatingSystem());
         }
         break;
     case Qt::DecorationRole:
-        if(index.column() == DeviceModelPrivate::ColumnName) {
+        if(index.column() == NameColumn) {
             return QIcon(":/img/desktop.svg");
         }
         break;
     case UUIDRole:
-        return device->value("uuid");
+        return device->uuid();
     case NameRole:
-        return device->value("name");
+        return device->name();
     case OperatingSystemRole:
-        return device->value("operating_system");
-    case VersionRole:
-        return device->value("version");
+        return device->operatingSystem();
     case AddressRole:
         return QVariant::fromValue(device->address());
     case PortRole:
-        return device->value("port");
+        return device->port();
     }
 
     return QVariant();
@@ -194,9 +176,9 @@ QVariant DeviceModel::headerData(int section, Qt::Orientation orientation, int r
     }
 
     switch(section) {
-    case DeviceModelPrivate::ColumnName:
+    case NameColumn:
         return tr("Device Name");
-    case DeviceModelPrivate::ColumnOperatingSystem:
+    case OperatingSystemColumn:
         return tr("Operating System");
     }
 
@@ -207,7 +189,6 @@ QHash<int, QByteArray> DeviceModel::roleNames() const
 {
     return {
         {UUIDRole, "uuid"},
-        {VersionRole, "version"},
         {NameRole, "name"},
         {OperatingSystemRole, "operating_system"},
         {AddressRole, "address"},

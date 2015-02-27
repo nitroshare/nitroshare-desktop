@@ -26,27 +26,32 @@
 #define NS_DEVICE_H
 
 #include <QHostAddress>
-#include <QVariantMap>
+
+#include "../util/platform.h"
 
 class Device
 {
 public:
 
-    QVariant value(const QString &key) const {
-        return mData.value(key);
-    }
+    explicit Device(const QString &uuid);
 
-    QHostAddress address() const {
-        return mAddress;
-    }
+    QString uuid() const { return mUuid; }
+    QString name() const { return mName; }
+    Platform::OperatingSystem operatingSystem() const { return mOperatingSystem; }
+    QHostAddress address() const { return mAddress; }
+    quint16 port() const { return mPort; }
 
-    bool isExpired() const;
-    bool update(const QVariantMap &data, const QHostAddress &address);
+    bool hasTimedOut() const;
+    bool update(const QString &name, Platform::OperatingSystem operatingSystem, const QHostAddress &address, quint16 port);
 
 private:
 
-    QVariantMap mData;
+    const QString mUuid;
+
+    QString mName;
+    Platform::OperatingSystem mOperatingSystem;
     QHostAddress mAddress;
+    quint16 mPort;
 
     qint64 mLastPing = 0;
 };

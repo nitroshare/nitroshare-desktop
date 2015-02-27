@@ -53,13 +53,13 @@ public:
      */
     enum Column {
         /// Name of other device
-        ColumnDeviceName = 0,
+        DeviceNameColumn = 0,
         /// Progress of transfer
-        ColumnProgress,
+        ProgressColumn,
         /// State of transfer
-        ColumnState,
+        StateColumn,
         /// Action that can be taken for the transfer
-        ColumnAction,
+        ActionColumn,
         /// Total number of columns
         ColumnCount
     };

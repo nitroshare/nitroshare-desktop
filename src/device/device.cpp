@@ -27,23 +27,26 @@
 #include "../util/settings.h"
 #include "device.h"
 
-bool Device::isExpired() const
+Device::Device(const QString &uuid)
+    : mUuid(uuid)
 {
-    return QDateTime::currentMSecsSinceEpoch() - mLastPing >
-            Settings::get<qint64>(Settings::BroadcastTimeout);
 }
 
-bool Device::update(const QVariantMap &data, const QHostAddress &address)
+bool Device::hasTimedOut() const
 {
-    // Examing certain values for changes
-    bool changed = data.value("version") != value("version") ||
-            data.value("name") != value("name") ||
-            data.value("port") != value("port") ||
-            mAddress != address;
+    return QDateTime::currentMSecsSinceEpoch() - mLastPing > Settings::get<qint64>(Settings::BroadcastTimeout);
+}
 
-    mData = data;
+bool Device::update(const QString &name, Platform::OperatingSystem operatingSystem, const QHostAddress &address, quint16 port)
+{
+    // Check for any changes
+    bool changed = name != mName || operatingSystem != mOperatingSystem || address != mAddress || port != mPort;
+
+    // Store the new values
+    mName = name;
+    mOperatingSystem = operatingSystem;
     mAddress = address;
-    mLastPing = QDateTime::currentMSecsSinceEpoch();
+    mPort = port;
 
     return changed;
 }
