@@ -29,9 +29,9 @@
 #include <QNetworkReply>
 #include <QNetworkRequest>
 
-#include "../util/jsonvalidator.h"
+#include "../util/json.h"
 #include "../util/platform.h"
-#include "../util/versionnumber.h"
+#include "../util/version.h"
 #include "config.h"
 #include "updatechecker.h"
 
@@ -86,14 +86,14 @@ void UpdateChecker::onFinished(QNetworkReply *reply)
             QString url;
 
             // Verify the JSON and check the version number
-            if(JsonValidator::isArray(document, array) &&
+            if(Json::isArray(document, array) &&
                     array.count() &&
-                    JsonValidator::isObject(array.at(0), object) &&
-                    JsonValidator::objectContains(object, "version", version) &&
-                    JsonValidator::objectContains(object, "url", url)) {
+                    Json::isObject(array.at(0), object) &&
+                    Json::objectContains(object, "version", version) &&
+                    Json::objectContains(object, "url", url)) {
 
                 // Compare the newest version to the current version
-                if(VersionNumber::isGreaterThan(version, PROJECT_VERSION)) {
+                if(Version::isGreaterThan(version, PROJECT_VERSION)) {
                     emit newVersion(version, QUrl(url));
                     return;
                 }
@@ -132,9 +132,13 @@ void UpdateChecker::sendRequest(const QUrl &url)
     QNetworkRequest request(url);
 
     // Help the server out a bit by providing version and OS
-    request.setRawHeader("User-Agent", QString("NitroShare %1 - %2")
-        .arg(PROJECT_VERSION)
-        .arg(Platform::currentOSName()).toUtf8()
+    request.setRawHeader(
+        "User-Agent",
+        QString("NitroShare %1 - %2 %3")
+            .arg(PROJECT_VERSION)
+            .arg(Platform::operatingSystemName())
+            .arg(Platform::architectureName())
+            .toUtf8()
     );
 
     mManager.get(request);

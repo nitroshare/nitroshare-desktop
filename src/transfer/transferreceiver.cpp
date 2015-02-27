@@ -24,7 +24,7 @@
 
 #include <QJsonDocument>
 
-#include "../util/jsonvalidator.h"
+#include "../util/json.h"
 #include "../util/settings.h"
 #include "transferreceiver.h"
 
@@ -68,10 +68,10 @@ void TransferReceiver::processTransferHeader(const QByteArray &data)
     QJsonDocument document = QJsonDocument::fromJson(data);
     QJsonObject object;
 
-    if(JsonValidator::isObject(document, object) &&
-            JsonValidator::objectContains(object, "name", mDeviceName) &&
-            JsonValidator::objectContains(object, "size", mTransferBytesTotal) &&
-            JsonValidator::objectContains(object, "count", mTransferFilesRemaining)) {
+    if(Json::isObject(document, object) &&
+            Json::objectContains(object, "name", mDeviceName) &&
+            Json::objectContains(object, "size", mTransferBytesTotal) &&
+            Json::objectContains(object, "count", mTransferFilesRemaining)) {
 
         emit dataChanged({TransferModel::DeviceNameRole});
 
@@ -89,9 +89,9 @@ void TransferReceiver::processFileHeader(const QByteArray &data)
     QJsonObject object;
     QString name;
 
-    if(JsonValidator::isObject(document, object) &&
-            JsonValidator::objectContains(object, "name", name) &&
-            JsonValidator::objectContains(object, "size", mFileBytesRemaining)) {
+    if(Json::isObject(document, object) &&
+            Json::objectContains(object, "name", name) &&
+            Json::objectContains(object, "size", mFileBytesRemaining)) {
 
         FileInfo info(mRoot, name);
 

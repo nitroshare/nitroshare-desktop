@@ -22,8 +22,8 @@
  * IN THE SOFTWARE.
  **/
 
-#ifndef NS_JSONVALIDATOR_H
-#define NS_JSONVALIDATOR_H
+#ifndef NS_JSON_H
+#define NS_JSON_H
 
 #include <QJsonArray>
 #include <QJsonDocument>
@@ -31,7 +31,7 @@
 #include <QJsonValue>
 
 /**
- * @brief Validation for JSON documents
+ * @brief Validation methods for JSON documents
  *
  * There are many classes that need to ensure that JSON data received from an
  * external source contains the expected data. This class exists to fill that
@@ -44,16 +44,15 @@
  * example:
  *
  *     QJsonDocument doc = ...
- *     QJsonValue value;
  *     QJsonArray array;
  *     QString item1;
  *     qint64 item2;
  *
- *     if(validator.isArray(doc, array) &&
+ *     if(JSON::isArray(doc, array) &&
  *             array.count() &&
- *             validator.isObject(array.at(0), object) &&
- *             validator.objectContains(object, "item1", item1) &&
- *             validator.objectContains(object, "item2", item2) {
+ *             JSON::isObject(array.at(0), object) &&
+ *             JSON::objectContains(object, "item1", item1) &&
+ *             JSON::objectContains(object, "item2", item2) {
  *
  *         //...
  *     }
@@ -62,7 +61,7 @@
  * attempts to perform the conversion before indicating success or failure.
  * Therefore, the destination variable may be modified, even after failure.
  */
-class JsonValidator
+class Json
 {
 public:
 
@@ -75,4 +74,4 @@ public:
     static bool objectContains(const QJsonObject &object, const QString &key, qint64 &value);
 };
 
-#endif // NS_JSONVALIDATOR_H
+#endif // NS_JSON_H

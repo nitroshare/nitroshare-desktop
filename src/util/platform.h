@@ -27,6 +27,20 @@
 
 #include <QString>
 
+/**
+ * @brief Platform information methods
+ *
+ * Some of the application functionality depends on platform-specific code.
+ * Rather than depending on #define statements throughout the source code,
+ * this class provides methods that can be invoked during runtime to determine
+ * information about the current platform.
+ *
+ * It is important to note that the information provided by the first two
+ * methods is determined during compile-time. Therefore, running an x86 build
+ * of the application on 64-bit Windows will still cause currentArchitecture()
+ * to indicate x86. This is considered expected behavior since it will cause
+ * the update checker to retrieve updates for the same architecture.
+ */
 class Platform
 {
 public:
@@ -34,13 +48,64 @@ public:
     enum OperatingSystem {
         Unknown,
         Windows,
-        Mac,
+        OSX,
         Linux
     };
 
-    static OperatingSystem currentOS();
-    static QString currentOSName();
+    enum Architecture {
+        x86,
+        x64
+    };
 
+    /**
+     * @brief Retrieve the current operating system
+     * @return one of OperatingSystem
+     */
+    static OperatingSystem currentOperatingSystem();
+
+    /**
+     * @brief Retrieve the current CPU architecture
+     * @return one of Architecture
+     */
+    static Architecture currentArchitecture();
+
+    /**
+     * @brief Retrieve the machine-friendly name of an OperatingSystem
+     * @param operatingSystem one of OperatingSystem
+     * @return operating system name
+     *
+     * If operatingSystem is not supplied, the name of the current operating
+     * system is returned.
+     */
+    static QString operatingSystemName(OperatingSystem operatingSystem = currentOperatingSystem());
+
+    /**
+     * @brief Retrieve the human-friendly name of an OperatingSystem
+     * @param operatingSystem one of OperatingSystem
+     * @return operating system friendly name
+     */
+    static QString operatingSystemFriendlyName(OperatingSystem operatingSystem = currentOperatingSystem());
+
+    /**
+     * @brief Retrieve the machine-friendly name of an Architecture
+     * @param architecture one of Architecture
+     * @return architecture name
+     */
+    static QString architectureName(Architecture architecture = currentArchitecture());
+
+    /**
+     * @brief Retrieve the corresponding OperatingSystem for a name
+     * @param name operating system name
+     * @return one of OperatingSystem
+     */
+    static OperatingSystem operatingSystemForName(const QString &name);
+
+    /**
+     * @brief Determine if the current platform is Unity
+     * @return true if running under Unity
+     *
+     * This method determines the current desktop environment during runtime.
+     */
     static bool isUnity();
 };
 

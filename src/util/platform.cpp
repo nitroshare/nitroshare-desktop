@@ -27,12 +27,12 @@
 
 #include "platform.h"
 
-Platform::OperatingSystem Platform::currentOS()
+Platform::OperatingSystem Platform::currentOperatingSystem()
 {
 #if defined(Q_OS_WIN32)
     return Windows;
-#elif defined(Q_OS_MAC)
-    return Mac;
+#elif defined(Q_OS_MACX)
+    return OSX;
 #elif defined(Q_OS_LINUX)
     return Linux;
 #else
@@ -40,26 +40,75 @@ Platform::OperatingSystem Platform::currentOS()
 #endif
 }
 
-QString Platform::currentOSName()
+Platform::Architecture Platform::currentArchitecture()
 {
-    switch(currentOS()) {
+    // Note: Qt doesn't provide a define for 64-bit operating systems, so we
+    // need to do this ourselves: __x86_64__ works on everything but MSVC++
+#if defined(Q_OS_WIN64) || defined(__x86_64__)
+    return x64;
+#else
+    return x86;
+#endif
+}
+
+QString Platform::operatingSystemName(OperatingSystem operatingSystem)
+{
+    switch(operatingSystem) {
     case Windows:
-        return QObject::tr("windows");
-    case Mac:
-        return QObject::tr("mac");
+        return "windows";
+    case OSX:
+        return "osx";
     case Linux:
-        return QObject::tr("linux");
-    case Unknown:
+        return "linux";
     default:
-        return QObject::tr("unknown");
+        return "unknown";
+    }
+}
+
+QString Platform::operatingSystemFriendlyName(OperatingSystem operatingSystem)
+{
+    switch(operatingSystem) {
+    case Windows:
+        return QObject::tr("Windows");
+    case OSX:
+        return QObject::tr("OS X");
+    case Linux:
+        return QObject::tr("Linux");
+    default:
+        return QObject::tr("Unknown");
+    }
+}
+
+Platform::OperatingSystem Platform::operatingSystemForName(const QString &name)
+{
+    if(name == "windows") {
+        return Windows;
+    } else if(name == "osx") {
+        return OSX;
+    } else if(name == "linux") {
+        return Linux;
+    } else {
+        return Unknown;
+    }
+}
+
+QString Platform::architectureName(Architecture architecture)
+{
+    switch(architecture) {
+    case x86:
+        return "x86";
+    case x64:
+        return "x64";
+    default:
+        return "unknown";
     }
 }
 
 bool Platform::isUnity()
 {
-    if(currentOS() == Linux) {
-        return QProcessEnvironment::systemEnvironment()
-                .value("XDG_CURRENT_DESKTOP").toLower() == "unity";
+    // Only check the environment variable when running under Linux
+    if(currentOperatingSystem() == Linux) {
+        return QProcessEnvironment::systemEnvironment().value("XDG_CURRENT_DESKTOP").toLower() == "unity";
     } else {
         return false;
     }

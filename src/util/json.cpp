@@ -22,22 +22,40 @@
  * IN THE SOFTWARE.
  **/
 
-#ifndef NS_VERSIONNUMBER_H
-#define NS_VERSIONNUMBER_H
+#include "json.h"
 
-#include <QString>
-
-/**
- * @brief Comparison for version numbers
- *
- * This class provides a method for comparing software version numbers. The
- * version numbers themselves are expected to be in the format "x.y.z...".
- */
-class VersionNumber
+bool Json::isArray(const QJsonDocument &document, QJsonArray &array)
 {
-public:
+    array = document.array();
+    return document.isArray();
+}
 
-    static bool isGreaterThan(const QString &version1, const QString &version2);
-};
+bool Json::isObject(const QJsonDocument &document, QJsonObject &object)
+{
+    object = document.object();
+    return document.isObject();
+}
 
-#endif // NS_VERSIONNUMBER_H
+bool Json::isObject(const QJsonValue &value, QJsonObject &object)
+{
+    object = value.toObject();
+    return value.isObject();
+}
+
+bool Json::objectContains(const QJsonObject &object, const QString &key, QString &value)
+{
+    value = object.value(key).toString();
+    return object.contains(key);
+}
+
+bool Json::objectContains(const QJsonObject &object, const QString &key, qint32 &value)
+{
+    value = object.value(key).toString().toInt();
+    return object.contains(key);
+}
+
+bool Json::objectContains(const QJsonObject &object, const QString &key, qint64 &value)
+{
+    value = object.value(key).toString().toLongLong();
+    return object.contains(key);
+}

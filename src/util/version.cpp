@@ -24,9 +24,9 @@
 
 #include <QStringList>
 
-#include "versionnumber.h"
+#include "version.h"
 
-bool VersionNumber::isGreaterThan(const QString &version1, const QString &version2)
+bool Version::isGreaterThan(const QString &version1, const QString &version2)
 {
     QStringList components1 = version1.split('.');
     QStringList components2 = version2.split('.');

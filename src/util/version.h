@@ -22,40 +22,22 @@
  * IN THE SOFTWARE.
  **/
 
-#include "jsonvalidator.h"
+#ifndef NS_VERSION_H
+#define NS_VERSION_H
 
-bool JsonValidator::isArray(const QJsonDocument &document, QJsonArray &array)
-{
-    array = document.array();
-    return document.isArray();
-}
+#include <QString>
 
-bool JsonValidator::isObject(const QJsonDocument &document, QJsonObject &object)
+/**
+ * @brief Comparison method for version numbers
+ *
+ * This class provides a method for comparing software version numbers. The
+ * version numbers themselves are expected to be in the format "x.y.z...".
+ */
+class Version
 {
-    object = document.object();
-    return document.isObject();
-}
+public:
 
-bool JsonValidator::isObject(const QJsonValue &value, QJsonObject &object)
-{
-    object = value.toObject();
-    return value.isObject();
-}
+    static bool isGreaterThan(const QString &version1, const QString &version2);
+};
 
-bool JsonValidator::objectContains(const QJsonObject &object, const QString &key, QString &value)
-{
-    value = object.value(key).toString();
-    return object.contains(key);
-}
-
-bool JsonValidator::objectContains(const QJsonObject &object, const QString &key, qint32 &value)
-{
-    value = object.value(key).toString().toInt();
-    return object.contains(key);
-}
-
-bool JsonValidator::objectContains(const QJsonObject &object, const QString &key, qint64 &value)
-{
-    value = object.value(key).toString().toLongLong();
-    return object.contains(key);
-}
+#endif // NS_VERSION_H

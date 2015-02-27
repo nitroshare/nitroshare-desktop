@@ -35,10 +35,10 @@ HEADERS += \
     transfer/transfersender.h \
     transfer/transferserver.h \
     transfer/transferwindow.h \
-    util/jsonvalidator.h \
+    util/json.h \
     util/platform.h \
     util/settings.h \
-    util/versionnumber.h
+    util/version.h
 
 SOURCES += \
     application/aboutdialog.cpp \
@@ -59,10 +59,10 @@ SOURCES += \
     transfer/transfersender.cpp \
     transfer/transferserver.cpp \
     transfer/transferwindow.cpp \
-    util/jsonvalidator.cpp \
+    util/json.cpp \
     util/platform.cpp \
     util/settings.cpp \
-    util/versionnumber.cpp \
+    util/version.cpp \
     main.cpp
 
 FORMS += \

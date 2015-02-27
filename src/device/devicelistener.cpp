@@ -64,7 +64,7 @@ void DeviceListener::sendPings()
     QJsonObject object(QJsonObject::fromVariantMap({
         { "uuid", Settings::get<QString>(Settings::DeviceUUID) },
         { "name", Settings::get<QString>(Settings::DeviceName) },
-        { "operating_system", Platform::currentOSName() },
+        { "operating_system", Platform::operatingSystemName() },
         { "version", PROJECT_VERSION },
         { "port", Settings::get<quint16>(Settings::TransferPort) }
     }));
