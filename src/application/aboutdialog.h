@@ -31,6 +31,9 @@ namespace Ui {
     class AboutDialog;
 }
 
+/**
+ * @brief Simple about dialog describing the application
+ */
 class AboutDialog : public QDialog
 {
     Q_OBJECT

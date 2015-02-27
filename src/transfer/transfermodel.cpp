@@ -58,6 +58,18 @@ void TransferModelPrivate::add(Transfer *transfer)
     transfer->start();
 }
 
+void TransferModelPrivate::remove(Transfer *transfer)
+{
+    // We need the index of the transfer for the removal signals
+    int row = transfers.indexOf(transfer);
+
+    emit q->beginRemoveRows(QModelIndex(), row, row);
+    transfers.removeAt(row);
+    emit q->endRemoveRows();
+
+    delete transfer;
+}
+
 TransferModel::TransferModel()
     : d(new TransferModelPrivate(this))
 {
@@ -184,16 +196,39 @@ void TransferModel::addSender(const QString &deviceName, const QHostAddress &add
 
 void TransferModel::cancel(int index)
 {
-    if(index >= 0 && index < d->transfers.count()) {
-        d->transfers.at(index)->cancel();
+    if(index < 0 || index >= d->transfers.count()) {
+        qWarning("Invalid index supplied.");
+        return;
     }
+
+    d->transfers.at(index)->cancel();
 }
 
 void TransferModel::restart(int index)
 {
-    if(index >= 0 && index < d->transfers.count()) {
-        d->transfers.at(index)->restart();
+    if(index < 0 || index >= d->transfers.count()) {
+        qWarning("Invalid index supplied.");
+        return;
     }
+
+    d->transfers.at(index)->restart();
+}
+
+void TransferModel::dismiss(int index)
+{
+    if(index < 0 || index >= d->transfers.count()) {
+        qWarning("Invalid index supplied.");
+        return;
+    }
+
+    // Retrieve the transfer and ensure it is not in progress
+    Transfer *transfer = d->transfers.at(index);
+    if(transfer->state() == TransferModel::Connecting || transfer->state() == TransferModel::InProgress) {
+        qWarning("Cannot dismiss a transfer that is currently in progress.");
+        return;
+    }
+
+    d->remove(transfer);
 }
 
 void TransferModel::clear()
@@ -204,11 +239,7 @@ void TransferModel::clear()
 
         // Remove only items that are finished
         if(transfer->state() == Canceled || transfer->state() == Failed || transfer->state() == Succeeded) {
-            beginRemoveRows(QModelIndex(), i, i);
-            d->transfers.removeAt(i);
-            endRemoveRows();
-
-            delete transfer;
+            d->remove(transfer);
         }
     }
 }

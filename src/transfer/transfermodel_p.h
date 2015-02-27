@@ -41,6 +41,7 @@ public:
     virtual ~TransferModelPrivate();
 
     void add(Transfer *transfer);
+    void remove(Transfer *transfer);
 
     TransferModel * const q;
 

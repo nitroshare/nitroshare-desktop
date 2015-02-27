@@ -42,7 +42,7 @@ class Application : public QObject
 
 public:
 
-    explicit Application(QObject *parent = nullptr);
+    Application();
     virtual ~Application();
 
 private Q_SLOTS:

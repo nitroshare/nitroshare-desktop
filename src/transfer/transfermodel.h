@@ -179,6 +179,12 @@ public Q_SLOTS:
     void restart(int index);
 
     /**
+     * @brief Dismiss the specified trasfer
+     * @param index item index
+     */
+    void dismiss(int index);
+
+    /**
      * @brief Remove all finished transfers from the model
      */
     void clear();

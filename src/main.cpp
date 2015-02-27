@@ -40,7 +40,7 @@ int main(int argc, char **argv)
     app.setOrganizationName(PROJECT_AUTHOR);
 
     // Create the tray icon that runs the application
-    Application nitroshare(&app);
+    Application nitroshare;
     Q_UNUSED(nitroshare);
 
     app.exec();

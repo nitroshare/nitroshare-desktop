@@ -49,41 +49,47 @@ TransferWindow::~TransferWindow()
 
 void TransferWindow::onDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight,  const QVector<int> &roles)
 {
-    for(int row=topLeft.row(); row <= bottomRight.row(); ++row) {
+    for(int row = topLeft.row(); row <= bottomRight.row(); ++row) {
 
-        // If the state role changed, check to see what it was set to
+        // We only care about state changes
         if(roles.contains(TransferModel::StateRole)) {
-            switch(mModel->index(row, 0).data(TransferModel::StateRole).toInt()) {
-            case TransferModel::Connecting:
-            case TransferModel::InProgress:
-                {
-                    QPushButton * button = new QPushButton(tr("Cancel"));
-                    QPersistentModelIndex index(mModel->index(row, 0));
 
-                    // Cancel the transfer when the button is clicked
-                    connect(button, &QPushButton::clicked, [this, index]() {
-                        mModel->cancel(index.row());
-                    });
+            // Create the button and persistent model index used to reference the row
+            QPushButton *button = new QPushButton;
+            QPersistentModelIndex index(mModel->index(row, 0));
 
-                    ui->transferView->setIndexWidget(mModel->index(row, TransferModel::ActionColumn), button);
-                }
-                break;
-            case TransferModel::Canceled:
-            case TransferModel::Failed:
-            case TransferModel::Succeeded:
-                {
-                    QPushButton * button = new QPushButton(tr("Restart"));
-                    QPersistentModelIndex index(mModel->index(row, 0));
+            // The title and action for the button depend on the direction and state
+            int direction = index.data(TransferModel::DirectionRole).toInt();
+            int state = index.data(TransferModel::StateRole).toInt();
 
-                    // Restart the transfer when the button is clicked
-                    connect(button, &QPushButton::clicked, [this, index]() {
-                        mModel->restart(index.row());
-                    });
+            // Display:
+            // - a cancel button for transfers in progress
+            // - a restart button for failed and canceled transfers being sent
+            // - a dismiss button for everything else
+            if(state == TransferModel::Connecting || state == TransferModel::InProgress) {
 
-                    ui->transferView->setIndexWidget(mModel->index(row, TransferModel::ActionColumn), button);
-                }
-                break;
+                button->setText(tr("Cancel"));
+                connect(button, &QPushButton::clicked, [this, index]() {
+                    mModel->cancel(index.row());
+                });
+
+            } else if(direction == TransferModel::Send && (state == TransferModel::Canceled || state == TransferModel::Failed)) {
+
+                button->setText(tr("Restart"));
+                connect(button, &QPushButton::clicked, [this, index]() {
+                    mModel->restart(index.row());
+                });
+
+            } else {
+
+                button->setText(tr("Dismiss"));
+                connect(button, &QPushButton::clicked, [this, index]() {
+                    mModel->dismiss(index.row());
+                });
             }
+
+            // Insert the button into the table
+            ui->transferView->setIndexWidget(mModel->index(row, TransferModel::ActionColumn), button);
         }
     }
 }

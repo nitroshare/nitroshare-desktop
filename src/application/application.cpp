@@ -42,9 +42,8 @@
 // Enable QHostAddress to be used in a QVariant
 Q_DECLARE_METATYPE(QHostAddress)
 
-Application::Application(QObject *parent)
-    : QObject(parent),
-      mTransferWindow(&mTransferModel),
+Application::Application()
+    : mTransferWindow(&mTransferModel),
 #ifdef BUILD_APPINDICATOR
       mIcon(Platform::isUnity() ? static_cast<Icon *>(new IndicatorIcon) :
                                   static_cast<Icon *>(new TrayIcon)),
