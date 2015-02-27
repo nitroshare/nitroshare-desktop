@@ -48,5 +48,8 @@ bool Device::update(const QString &name, Platform::OperatingSystem operatingSyst
     mAddress = address;
     mPort = port;
 
+    // Update the last ping
+    mLastPing = QDateTime::currentMSecsSinceEpoch();
+
     return changed;
 }
