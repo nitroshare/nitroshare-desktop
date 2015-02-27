@@ -60,6 +60,12 @@ void Transfer::cancel()
 
 void Transfer::restart()
 {
+    // Ensure that the transfer is sending data
+    if(mDirection == TransferModel::Receive) {
+        qWarning("Cannot restart a transfer that receives files.");
+        return;
+    }
+
     // Ensure that the transfer is not in progress before restarting it
     if(mState == TransferModel::Connecting || mState == TransferModel::InProgress) {
         qWarning("Cannot start a transfer that is in progress");
@@ -190,6 +196,7 @@ void Transfer::reset()
 
     // The state is already in progress for a receiving transfer
     mState = mDirection == TransferModel::Send ? TransferModel::Connecting : TransferModel::InProgress;
+    mError.clear();
 
     mProgress = 0;
 

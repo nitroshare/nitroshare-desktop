@@ -54,9 +54,12 @@ public:
 
 public Q_SLOTS:
 
-    void onDataChanged(const QModelIndex & topLeft, const QModelIndex & bottomRight,  const QVector<int> &roles);
+    void onRowsInserted(const QModelIndex &parent, int first, int last);
+    void onDataChanged(const QModelIndex & topLeft, const QModelIndex & bottomRight, const QVector<int> &roles);
 
 private:
+
+    void updateButton(int row);
 
     Ui::TransferWindow *const ui;
     TransferModel *const mModel;
