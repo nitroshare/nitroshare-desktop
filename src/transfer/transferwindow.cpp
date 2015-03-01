@@ -36,6 +36,10 @@ TransferWindow::TransferWindow(TransferModel *model)
     ui->setupUi(this);
 
     ui->transferView->setModel(mModel);
+    ui->transferView->setColumnWidth(TransferModel::DeviceNameColumn, 130);
+    ui->transferView->setColumnWidth(TransferModel::ProgressColumn, 200);
+    ui->transferView->setColumnWidth(TransferModel::StateColumn, 200);
+    ui->transferView->setStyleSheet("QTableView::item { padding: 4px; }");
 
     connect(ui->clear, &QPushButton::clicked, mModel, &TransferModel::clear);
     connect(mModel, &TransferModel::rowsInserted, this, &TransferWindow::onRowsInserted);
