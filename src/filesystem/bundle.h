@@ -26,7 +26,6 @@
 #define NS_BUNDLE_H
 
 #include <QList>
-#include <QSharedPointer>
 
 #include "fileinfo.h"
 
@@ -45,7 +44,5 @@ private:
 
     qint64 mTotalSize;
 };
-
-typedef QSharedPointer<Bundle> BundlePointer;
 
 #endif // NS_BUNDLE_H

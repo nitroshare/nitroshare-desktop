@@ -25,9 +25,6 @@
 #ifndef NS_APPLICATION_H
 #define NS_APPLICATION_H
 
-#include <QModelIndex>
-
-#include "../device/device.h"
 #include "../device/devicemodel.h"
 #include "../filesystem/bundle.h"
 #include "../icon/icon.h"
@@ -49,9 +46,7 @@ private Q_SLOTS:
 
     void notifyDevicesAdded(const QModelIndex &parent, int first, int last);
     void notifyDevicesRemoved(const QModelIndex &parent, int first, int last);
-
-    void notifyTransferChanged(const QModelIndex & topLeft, const QModelIndex & bottomRight, const QVector<int> &roles);
-
+    void notifyTransfersChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles);
     void notifyNewVersion(const QString &version, const QUrl &url);
 
     void sendFiles();
@@ -62,7 +57,7 @@ private Q_SLOTS:
 
 private:
 
-    void sendBundle(BundlePointer bundle);
+    void sendBundle(const Bundle *bundle);
 
     DeviceModel mDeviceModel;
     TransferModel mTransferModel;

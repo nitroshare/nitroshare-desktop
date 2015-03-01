@@ -164,7 +164,7 @@ public Q_SLOTS:
      * @param port port of device
      * @param bundle bundle to send to the specified device
     */
-    void addSender(const QString &deviceName, const QHostAddress &address, quint16 port, BundlePointer bundle);
+    void addSender(const QString &deviceName, const QHostAddress &address, quint16 port, const Bundle *bundle);
 
     /**
      * @brief Cancel the specified transfer

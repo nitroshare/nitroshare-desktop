@@ -189,7 +189,7 @@ void TransferModel::addReceiver(qintptr socketDescriptor)
     d->add(new TransferReceiver(socketDescriptor));
 }
 
-void TransferModel::addSender(const QString &deviceName, const QHostAddress &address, quint16 port, BundlePointer bundle)
+void TransferModel::addSender(const QString &deviceName, const QHostAddress &address, quint16 port, const Bundle *bundle)
 {
     d->add(new TransferSender(deviceName, address, port, bundle));
 }

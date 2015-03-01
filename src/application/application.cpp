@@ -54,7 +54,7 @@ Application::Application()
 {
     connect(&mDeviceModel, &DeviceModel::rowsInserted, this, &Application::notifyDevicesAdded);
     connect(&mDeviceModel, &DeviceModel::rowsAboutToBeRemoved, this, &Application::notifyDevicesRemoved);
-    connect(&mTransferModel, &TransferModel::dataChanged, this, &Application::notifyTransferChanged);
+    connect(&mTransferModel, &TransferModel::dataChanged, this, &Application::notifyTransfersChanged);
     connect(&mTransferServer, &TransferServer::newTransfer, &mTransferModel, &TransferModel::addReceiver);
     connect(&mUpdateChecker, &UpdateChecker::newVersion, this, &Application::notifyNewVersion);
 
@@ -95,7 +95,7 @@ void Application::notifyDevicesRemoved(const QModelIndex &, int first, int last)
     }
 }
 
-void Application::notifyTransferChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles)
+void Application::notifyTransfersChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles)
 {
     // Display notifications if one of the following happens:
     // - the device name is known (receiving only)
@@ -132,7 +132,7 @@ void Application::notifyNewVersion(const QString &version, const QUrl &url)
             tr("Version %1 of NitroShare is now available. Would you like to download it?")
                     .arg(version)) == QMessageBox::Yes) {
 
-        // Simply open the URL in the user's default browser
+        // Open the URL in the user's default browser
         QDesktopServices::openUrl(url);
     }
 }
@@ -142,7 +142,7 @@ void Application::sendFiles()
     QStringList filenames(QFileDialog::getOpenFileNames(nullptr, tr("Select Files")));
 
     if(filenames.length()) {
-        BundlePointer bundle(new Bundle);
+        Bundle *bundle = new Bundle;
 
         foreach(QString filename, filenames) {
             bundle->addFile(filename);
@@ -157,7 +157,7 @@ void Application::sendDirectory()
     QString path(QFileDialog::getExistingDirectory(nullptr, tr("Select Directory")));
 
     if(!path.isNull()) {
-        BundlePointer bundle(new Bundle);
+        Bundle *bundle = new Bundle;
 
         bundle->addDirectory(path);
         sendBundle(bundle);
@@ -174,7 +174,7 @@ void Application::aboutQt()
     QMessageBox::aboutQt(nullptr);
 }
 
-void Application::sendBundle(BundlePointer bundle)
+void Application::sendBundle(const Bundle *bundle)
 {
     QModelIndex index = DeviceDialog::getDevice(&mDeviceModel);
     if(index.isValid()) {

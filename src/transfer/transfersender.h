@@ -37,7 +37,8 @@ class TransferSender : public Transfer
 
 public:
 
-    TransferSender(const QString &deviceName, const QHostAddress &address, quint16 port, BundlePointer bundle);
+    TransferSender(const QString &deviceName, const QHostAddress &address, quint16 port, const Bundle *bundle);
+    virtual ~TransferSender();
 
     virtual void start();
 
@@ -51,9 +52,9 @@ private:
     void writeFileData();
 
     // Information needed to connect to the remote host
-    QHostAddress mAddress;
-    quint16 mPort;
-    BundlePointer mBundle;
+    const QHostAddress mAddress;
+    const quint16 mPort;
+    const Bundle *mBundle;
 
     // Points to the file currently being transferred
     Bundle::const_iterator mIterator;

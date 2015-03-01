@@ -25,7 +25,7 @@
 #include "../util/settings.h"
 #include "transfersender.h"
 
-TransferSender::TransferSender(const QString &deviceName, const QHostAddress &address, quint16 port, BundlePointer bundle)
+TransferSender::TransferSender(const QString &deviceName, const QHostAddress &address, quint16 port, const Bundle *bundle)
     : Transfer(TransferModel::Send),
       mAddress(address),
       mPort(port),
@@ -37,6 +37,11 @@ TransferSender::TransferSender(const QString &deviceName, const QHostAddress &ad
     connect(&mSocket, &QTcpSocket::connected, [this]() {
         writeNextPacket();
     });
+}
+
+TransferSender::~TransferSender()
+{
+    delete mBundle;
 }
 
 void TransferSender::start()
