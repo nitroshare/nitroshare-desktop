@@ -36,10 +36,9 @@ TransferWindow::TransferWindow(TransferModel *model)
     ui->setupUi(this);
 
     ui->transferView->setModel(mModel);
-    ui->transferView->setColumnWidth(TransferModel::DeviceNameColumn, 130);
-    ui->transferView->setColumnWidth(TransferModel::ProgressColumn, 200);
+    ui->transferView->setColumnWidth(TransferModel::DeviceNameColumn, 150);
+    ui->transferView->setColumnWidth(TransferModel::ProgressColumn, 150);
     ui->transferView->setColumnWidth(TransferModel::StateColumn, 200);
-    ui->transferView->setStyleSheet("QTableView::item { padding: 4px; }");
 
     connect(ui->clear, &QPushButton::clicked, mModel, &TransferModel::clear);
     connect(mModel, &TransferModel::rowsInserted, this, &TransferWindow::onRowsInserted);
@@ -59,6 +58,7 @@ void TransferWindow::onRowsInserted(const QModelIndex &, int first, int last)
         QProgressBar *progressBar = new QProgressBar;
         progressBar->setMinimum(0);
         progressBar->setMaximum(100);
+        progressBar->setAutoFillBackground(true);
         ui->transferView->setIndexWidget(mModel->index(row, TransferModel::ProgressColumn), progressBar);
 
         updateButton(row);
