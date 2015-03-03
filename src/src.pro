@@ -37,8 +37,7 @@ HEADERS += \
     transfer/transferwindow.h \
     util/json.h \
     util/platform.h \
-    util/settings.h \
-    util/version.h
+    util/settings.h
 
 SOURCES += \
     application/aboutdialog.cpp \
@@ -60,7 +59,6 @@ SOURCES += \
     util/json.cpp \
     util/platform.cpp \
     util/settings.cpp \
-    util/version.cpp \
     main.cpp
 
 FORMS += \

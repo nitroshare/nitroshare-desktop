@@ -28,15 +28,15 @@
 #include <QJsonValue>
 #include <QNetworkReply>
 #include <QNetworkRequest>
+#include <QVariantMap>
 
 #include "../util/json.h"
 #include "../util/platform.h"
-#include "../util/version.h"
 #include "config.h"
 #include "updatechecker.h"
 
 // URL used for querying the API for new versions
-const QUrl UpdateUrl = QUrl("http://nitroshare.co/api/1.0/versions/latest");
+const QUrl UpdateUrl = QUrl("http://nitroshare.net/api/1.0/updates/");
 
 // Maximum number of redirects that may be processed
 const int MaxRedirects = 2;
@@ -76,7 +76,7 @@ void UpdateChecker::onFinished(QNetworkReply *reply)
 
         // Check if a redirect URL was supplied
         QUrl newUrl = reply->attribute(QNetworkRequest::RedirectionTargetAttribute).toUrl();
-        if(newUrl.isValid()) {
+        if(!newUrl.isValid()) {
 
             // Begin extracting data from the JSON returned
             QJsonDocument document = QJsonDocument::fromJson(reply->readAll());
@@ -85,22 +85,31 @@ void UpdateChecker::onFinished(QNetworkReply *reply)
             QString version;
             QString url;
 
-            // Verify the JSON and check the version number
-            if(Json::isArray(document, array) &&
-                    array.count() &&
-                    Json::isObject(array.at(0), object) &&
-                    Json::objectContains(object, "version", version) &&
-                    Json::objectContains(object, "url", url)) {
+            // Verify that an array was received
+            if(Json::isArray(document, array)) {
 
-                // Compare the newest version to the current version
-                if(Version::isGreaterThan(version, PROJECT_VERSION)) {
-                    emit newVersion(version, QUrl(url));
+                // Check to see if a new version exists
+                if(array.count()) {
+
+                    // A new version exists, extract the version and URL
+                    if(Json::isObject(array.at(0), object) &&
+                            Json::objectContains(object, "version", version) &&
+                            Json::objectContains(object, "url", url)) {
+
+                        // Indicate that a new version was released
+                        emit newVersion(version, QUrl(url));
+                        return;
+                    }
+
+                } else {
+
+                    // No new version, just return
                     return;
                 }
-
-            } else {
-                qWarning("Malformed JSON received from update server.");
             }
+
+            qWarning("Malformed JSON received from update server.");
+
         } else if(mRedirectsRemaining) {
 
             // Use the original URL to resolve the new location, decrement
@@ -130,18 +139,19 @@ void UpdateChecker::onSettingChanged(Settings::Key key)
 void UpdateChecker::sendRequest(const QUrl &url)
 {
     QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
-    // Help the server out a bit by providing version and OS
-    request.setRawHeader(
-        "User-Agent",
-        QString("NitroShare %1 - %2 %3")
-            .arg(PROJECT_VERSION)
-            .arg(Platform::operatingSystemName())
-            .arg(Platform::architectureName())
-            .toUtf8()
-    );
+    // In order for the API to provide the correct update URL,
+    // we need to provide the current version, OS, and CPU architecture
+    QVariantMap data = {
+        { "version", PROJECT_VERSION },
+        { "operating_system", Platform::operatingSystemName() },
+        { "architecture", Platform::architectureName() }
+    };
 
-    mManager.get(request);
+    // Include the information in the request
+    QJsonObject object = QJsonObject::fromVariantMap(data);
+    mManager.post(request, QJsonDocument(object).toJson());
 }
 
 void UpdateChecker::reload()
