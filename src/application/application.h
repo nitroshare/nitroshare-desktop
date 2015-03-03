@@ -25,8 +25,8 @@
 #ifndef NS_APPLICATION_H
 #define NS_APPLICATION_H
 
+#include "../bundle/bundle.h"
 #include "../device/devicemodel.h"
-#include "../filesystem/bundle.h"
 #include "../icon/icon.h"
 #include "../transfer/transfermodel.h"
 #include "../transfer/transferserver.h"

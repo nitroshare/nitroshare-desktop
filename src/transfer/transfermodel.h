@@ -28,7 +28,7 @@
 #include <QAbstractTableModel>
 #include <QHostAddress>
 
-#include "../filesystem/bundle.h"
+#include "../bundle/bundle.h"
 
 class TransferModelPrivate;
 

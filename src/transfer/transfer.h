@@ -29,7 +29,7 @@
 #include <QTcpSocket>
 #include <QVariantMap>
 
-#include "../filesystem/bundle.h"
+#include "../bundle/bundle.h"
 #include "transfermodel.h"
 
 class Transfer : public QObject

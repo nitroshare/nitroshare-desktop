@@ -22,6 +22,7 @@
  * IN THE SOFTWARE.
  **/
 
+#include "../bundle/bundle_p.h"
 #include "../util/settings.h"
 #include "transfersender.h"
 
@@ -47,7 +48,7 @@ TransferSender::~TransferSender()
 void TransferSender::start()
 {
     mTransferBytesTotal = mBundle->totalSize();
-    mIterator = mBundle->constBegin();
+    mIterator = mBundle->d->items.constBegin();
 
     if(mFile.isOpen()) {
         mFile.close();
@@ -110,7 +111,7 @@ void TransferSender::writeFileHeader()
     // Obtain the file size and write the file header
     mFileBytesRemaining = mFile.size();
     writePacket({
-        { "name", mIterator->filename() },
+        { "name", mIterator->relativeFilename() },
         { "size", QString::number(mFileBytesRemaining) }
     });
 
@@ -147,7 +148,7 @@ void TransferSender::writeFileData()
         mFile.close();
         ++mIterator;
 
-        if(mIterator == mBundle->constEnd()) {
+        if(mIterator == mBundle->d->items.constEnd()) {
             mProtocolState = Finished;
         } else {
             mProtocolState = FileHeader;

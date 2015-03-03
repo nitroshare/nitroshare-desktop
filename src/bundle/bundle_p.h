@@ -22,44 +22,19 @@
  * IN THE SOFTWARE.
  **/
 
-#include <QDir>
-#include <QStack>
+#ifndef NS_BUNDLEPRIVATE_H
+#define NS_BUNDLEPRIVATE_H
 
-#include "bundle.h"
+#include <QList>
 
-Bundle::Bundle()
-    : mTotalSize(0)
+#include "bundleitem.h"
+
+class BundlePrivate
 {
-}
+public:
 
-void Bundle::addFile(const QString &filename)
-{
-    QFileInfo info(filename);
+    QList<BundleItem> items;
+    qint64 totalSize = 0;
+};
 
-    append(FileInfo(info));
-    mTotalSize += info.size();
-}
-
-void Bundle::addDirectory(const QString &path)
-{
-    QDir root(path);
-    QStack<QString> stack;
-
-    // Push the root path on the stack and then go up one level so that
-    // the relative filenames will include the name of the directory
-    stack.push(root.absolutePath());
-    root.cdUp();
-
-    while(stack.count()) {
-        QString tos = stack.pop();
-
-        foreach(QFileInfo info, QDir(tos).entryInfoList(QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot)) {
-            if(info.isDir()) {
-                stack.push(info.absoluteFilePath());
-            } else {
-                append(FileInfo(root, info));
-                mTotalSize += info.size();
-            }
-        }
-    }
-}
+#endif // NS_BUNDLEPRIVATE_H

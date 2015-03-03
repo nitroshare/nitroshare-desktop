@@ -93,10 +93,11 @@ void TransferReceiver::processFileHeader(const QByteArray &data)
             Json::objectContains(object, "name", name) &&
             Json::objectContains(object, "size", mFileBytesRemaining)) {
 
-        FileInfo info(mRoot, name);
+        // Determine the absolute filename
+        QString filename = mRoot.absoluteFilePath(name);
 
         // Ensure that the path exists
-        QDir path(QFileInfo(info.absoluteFilename()).path());
+        QDir path(QFileInfo(filename).path());
         if(!path.exists()) {
             if(!path.mkpath(".")) {
                 abortWithError(tr("Unable to create %1").arg(path.absolutePath()));
@@ -105,9 +106,9 @@ void TransferReceiver::processFileHeader(const QByteArray &data)
         }
 
         // Abort if the file can't be opened
-        mFile.setFileName(info.absoluteFilename());
+        mFile.setFileName(filename);
         if(!mFile.open(QIODevice::WriteOnly)) {
-            abortWithError(tr("Unable to open %1").arg(mFile.fileName()));
+            abortWithError(tr("Unable to open %1").arg(filename));
             return;
         }
 

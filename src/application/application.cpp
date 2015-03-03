@@ -178,6 +178,8 @@ void Application::sendBundle(const Bundle *bundle)
 {
     QModelIndex index = DeviceDialog::getDevice(&mDeviceModel);
     if(index.isValid()) {
+
+        // Obtain the information needed to connect to the device
         QString deviceName = index.data(DeviceModel::NameRole).value<QString>();
         QHostAddress address = index.data(DeviceModel::AddressRole).value<QHostAddress>();
         quint16 port = index.data(DeviceModel::PortRole).value<quint16>();

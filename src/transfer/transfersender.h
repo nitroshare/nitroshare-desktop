@@ -27,8 +27,10 @@
 
 #include <QFile>
 #include <QHostAddress>
+#include <QList>
 
-#include "../filesystem/bundle.h"
+#include "../bundle/bundle.h"
+#include "../bundle/bundleitem.h"
 #include "transfer.h"
 
 class TransferSender : public Transfer
@@ -56,8 +58,8 @@ private:
     const quint16 mPort;
     const Bundle *mBundle;
 
-    // Points to the file currently being transferred
-    Bundle::const_iterator mIterator;
+    // Points to the item currently being transferred
+    QList<BundleItem>::const_iterator mIterator;
 
     // Data needed for the file currently being written
     QFile mFile;

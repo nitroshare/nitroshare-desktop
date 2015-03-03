@@ -18,13 +18,14 @@ HEADERS += \
     application/aboutdialog.h \
     application/application.h \
     application/updatechecker.h \
+    bundle/bundle.h \
+    bundle/bundle_p.h \
+    bundle/bundleitem.h \
     device/device.h \
     device/devicedialog.h \
     device/devicelistener.h \
     device/devicemodel.h \
     device/devicemodel_p.h \
-    filesystem/bundle.h \
-    filesystem/fileinfo.h \
     icon/icon.h \
     icon/trayicon.h \
     transfer/transfer.h \
@@ -43,12 +44,11 @@ SOURCES += \
     application/aboutdialog.cpp \
     application/application.cpp \
     application/updatechecker.cpp \
+    bundle/bundle.cpp \
     device/device.cpp \
     device/devicedialog.cpp \
     device/devicelistener.cpp \
     device/devicemodel.cpp \
-    filesystem/bundle.cpp \
-    filesystem/fileinfo.cpp \
     icon/icon.cpp \
     icon/trayicon.cpp \
     transfer/transfer.cpp \

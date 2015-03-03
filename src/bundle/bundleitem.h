@@ -22,27 +22,38 @@
  * IN THE SOFTWARE.
  **/
 
-#ifndef NS_BUNDLE_H
-#define NS_BUNDLE_H
+#ifndef NS_BUNDLEITEM_H
+#define NS_BUNDLEITEM_H
 
-#include <QList>
+#include <QDateTime>
+#include <QDir>
+#include <QFileInfo>
 
-#include "fileinfo.h"
-
-class Bundle : public QList<FileInfo>
+/**
+ * @brief An item to be transferred
+ *
+ * This class maintains information about a file or directory to be
+ * transferred. Currently, this includes the file's name, creation, and
+ * modification times.
+ */
+class BundleItem
 {
 public:
 
-    Bundle();
+    explicit BundleItem(const QFileInfo &info) : BundleItem(QDir(info.path()), info) {}
+    BundleItem(const QDir &root, const QFileInfo &info) : mRoot(root), mInfo(info) {}
 
-    void addFile(const QString &filename);
-    void addDirectory(const QString &path);
+    QString relativeFilename() const { return mRoot.relativeFilePath(absoluteFilename()); }
+    QString absoluteFilename() const { return mInfo.absoluteFilePath(); }
 
-    qint64 totalSize() const { return mTotalSize; }
+    qint64 createdTime() const { return mInfo.created().toMSecsSinceEpoch(); }
+    qint64 lastModifiedTime() const { return mInfo.lastModified().toMSecsSinceEpoch(); }
+    qint64 lastReadTime() const { return mInfo.lastRead().toMSecsSinceEpoch(); }
 
 private:
 
-    qint64 mTotalSize;
+    QDir mRoot;
+    QFileInfo mInfo;
 };
 
-#endif // NS_BUNDLE_H
+#endif // NS_BUNDLEITEM_H
