@@ -55,6 +55,7 @@ Application::Application()
     connect(&mDeviceModel, &DeviceModel::rowsInserted, this, &Application::notifyDevicesAdded);
     connect(&mDeviceModel, &DeviceModel::rowsAboutToBeRemoved, this, &Application::notifyDevicesRemoved);
     connect(&mTransferModel, &TransferModel::dataChanged, this, &Application::notifyTransfersChanged);
+    connect(&mTransferServer, &TransferServer::error, this, &Application::notifyError);
     connect(&mTransferServer, &TransferServer::newTransfer, &mTransferModel, &TransferModel::addReceiver);
     connect(&mUpdateChecker, &UpdateChecker::newVersion, this, &Application::notifyNewVersion);
 
@@ -67,11 +68,19 @@ Application::Application()
     mIcon->addAction(tr("About Qt..."), this, SLOT(aboutQt()));
     mIcon->addSeparator();
     mIcon->addAction(tr("Exit"), QApplication::instance(), SLOT(quit()));
+
+    // Start the server
+    mTransferServer.start();
 }
 
 Application::~Application()
 {
     delete mIcon;
+}
+
+void Application::notifyError(const QString &message)
+{
+    QMessageBox::critical(nullptr, tr("Error"), message);
 }
 
 void Application::notifyDevicesAdded(const QModelIndex &, int first, int last)

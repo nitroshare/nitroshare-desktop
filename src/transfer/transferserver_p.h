@@ -22,53 +22,31 @@
  * IN THE SOFTWARE.
  **/
 
-#ifndef NS_APPLICATION_H
-#define NS_APPLICATION_H
+#ifndef NS_TRANSFERSERVERPRIVATE_H
+#define NS_TRANSFERSERVERPRIVATE_H
 
-#include "../bundle/bundle.h"
-#include "../device/devicemodel.h"
-#include "../icon/icon.h"
-#include "../transfer/transfermodel.h"
-#include "../transfer/transferserver.h"
-#include "../transfer/transferwindow.h"
-#include "updatechecker.h"
+#include <QTcpServer>
 
-class Application : public QObject
+#include "../util/settings.h"
+#include "transferserver.h"
+
+class TransferServerPrivate : public QTcpServer
 {
     Q_OBJECT
 
 public:
 
-    Application();
-    virtual ~Application();
+    explicit TransferServerPrivate(TransferServer *transferServer);
 
 private Q_SLOTS:
 
-    void notifyDevicesAdded(const QModelIndex &parent, int first, int last);
-    void notifyDevicesRemoved(const QModelIndex &parent, int first, int last);
-    void notifyTransfersChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles);
-    void notifyError(const QString &message);
-    void notifyNewVersion(const QString &version, const QUrl &url);
-
-    void sendFiles();
-    void sendDirectory();
-
-    void about();
-    void aboutQt();
+    void onSettingChanged(Settings::Key key);
 
 private:
 
-    void sendBundle(const Bundle *bundle);
+    virtual void incomingConnection(qintptr socketDescriptor);
 
-    DeviceModel mDeviceModel;
-    TransferModel mTransferModel;
-    TransferServer mTransferServer;
-    TransferWindow mTransferWindow;
-    UpdateChecker mUpdateChecker;
-
-    Icon *mIcon;
-
-    qint64 mStartTime;
+    TransferServer *const q;
 };
 
-#endif // NS_APPLICATION_H
+#endif // NS_TRANSFERSERVERPRIVATE_H
