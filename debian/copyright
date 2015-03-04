@@ -1,7 +1,7 @@
 Format: http://dep.debian.net/deps/dep5
 Upstream-Name: nitroshare
 Upstream-Contact: Nathan Osman <nathan@quickmediasolutions.com>
-Source: https://github.com/nitroshare/nitroshare
+Source: https://github.com/nitroshare/nitroshare-desktop
 
 Files: *
 Copyright: 2015 Nathan Osman <admin@quickmediasolutions.com>
