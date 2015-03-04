@@ -34,6 +34,7 @@ HEADERS += \
     transfer/transferreceiver.h \
     transfer/transfersender.h \
     transfer/transferserver.h \
+    transfer/transferserver_p.h \
     transfer/transferwindow.h \
     util/json.h \
     util/platform.h \
