@@ -70,6 +70,11 @@ FORMS += \
 RESOURCES += \
     data/resource.qrc
 
+OTHER_FILES += \
+    data/misc/Info.plist \
+    data/resource.rc \
+    config.h.in
+
 # Files and settings specific to the Windows build
 win32 {
     RC_FILE         = data/resource.rc
