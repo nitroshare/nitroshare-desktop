@@ -60,7 +60,6 @@ const QMap<Settings::Key, Setting> keys {
         return QStandardPaths::writableLocation(QStandardPaths::DesktopLocation);
     }),
     DEFINE_SETTING(TransferPort, { return 40818; }),
-    DEFINE_SETTING(TransferTimeout, { return 30 * Second; }),
     DEFINE_SETTING(UpdateInterval, { return 24 * Hour; })
 };
 

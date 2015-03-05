@@ -42,7 +42,6 @@ public:
         TransferBuffer,
         TransferDirectory,
         TransferPort,
-        TransferTimeout,
         TrayIcon,
         UpdateInterval
     };
