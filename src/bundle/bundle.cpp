@@ -72,10 +72,15 @@ void Bundle::addDirectory(const QString &path)
         QString tos = stack.pop();
 
         foreach(QFileInfo info, QDir(tos).entryInfoList(QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot)) {
+
+            // Add the item to the bundle
+            d->items.append(BundleItem(root, info));
+
+            // If the item is a directory, add it to the stack
+            // Otherwise, add its size to the total
             if(info.isDir()) {
                 stack.push(info.absoluteFilePath());
             } else {
-                d->items.append(BundleItem(root, info));
                 d->totalSize += info.size();
             }
         }

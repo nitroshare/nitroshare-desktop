@@ -33,7 +33,7 @@
  * @brief An item to be transferred
  *
  * This class maintains information about a file or directory to be
- * transferred. Currently, this includes the file's name, creation, and
+ * transferred. Currently, this includes the item's name, creation, and
  * modification times.
  */
 class BundleItem
@@ -46,9 +46,11 @@ public:
     QString relativeFilename() const { return mRoot.relativeFilePath(absoluteFilename()); }
     QString absoluteFilename() const { return mInfo.absoluteFilePath(); }
 
-    qint64 createdTime() const { return mInfo.created().toMSecsSinceEpoch(); }
-    qint64 lastModifiedTime() const { return mInfo.lastModified().toMSecsSinceEpoch(); }
-    qint64 lastReadTime() const { return mInfo.lastRead().toMSecsSinceEpoch(); }
+    bool isDir() const { return mInfo.isDir(); }
+
+    qint64 created() const { return mInfo.created().toMSecsSinceEpoch(); }
+    qint64 lastModified() const { return mInfo.lastModified().toMSecsSinceEpoch(); }
+    qint64 lastRead() const { return mInfo.lastRead().toMSecsSinceEpoch(); }
 
 private:
 
