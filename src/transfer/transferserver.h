@@ -25,17 +25,19 @@
 #ifndef NS_TRANSFERSERVER_H
 #define NS_TRANSFERSERVER_H
 
-#include <QTcpServer>
+#include <QObject>
 
-#include "../util/settings.h"
+class TransferServerPrivate;
 
 /**
  * @brief Server listening for incomming connections
  *
  * This class listens for connection requests from other clients and emits the
- * newTransfer signal when one is received.
+ * newTransfer signal when one is received. The port used for listening is
+ * configurable and an error will be raised if the port is in use. The server
+ * will not begin listening until the start()
  */
-class TransferServer : public QTcpServer
+class TransferServer : public QObject
 {
     Q_OBJECT
 
@@ -50,22 +52,27 @@ public:
 Q_SIGNALS:
 
     /**
+     * @brief Indicate an error
+     * @param message description of the error
+     */
+    void error(const QString &message);
+
+    /**
      * @brief Indicate a new connection attempt
      * @param socketDescriptor socket descriptor
      */
     void newTransfer(qintptr socketDescriptor);
 
-private Q_SLOTS:
+public Q_SLOTS:
 
-    // TODO: what follows below shouldn't be public
-
-    void settingChanged(Settings::Key key);
+    /**
+     * @brief Start the server
+     */
+    void start();
 
 private:
 
-    void incomingConnection(qintptr socketDescriptor);
-
-    void reload();
+    TransferServerPrivate *const d;
 };
 
 #endif // NS_TRANSFERSERVER_H

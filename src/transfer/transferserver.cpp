@@ -23,31 +23,38 @@
  **/
 
 #include "transferserver.h"
+#include "transferserver_p.h"
 
-TransferServer::TransferServer(QObject *parent)
-    : QTcpServer(parent)
+TransferServerPrivate::TransferServerPrivate(TransferServer *transferServer)
+    : QTcpServer(transferServer),
+      q(transferServer)
 {
-    connect(Settings::instance(), &Settings::settingChanged, this, &TransferServer::settingChanged);
-
-    // TODO: listen() can fail without notifying the user
-
-    reload();
 }
 
-void TransferServer::settingChanged(Settings::Key key)
+void TransferServerPrivate::onSettingChanged(Settings::Key key)
 {
-    if(key == Settings::TransferPort) {
-        reload();
+    if(key == Settings::TransferPort && isListening()) {
+        close();
+        q->start();
     }
 }
 
-void TransferServer::incomingConnection(qintptr socketDescriptor)
+void TransferServerPrivate::incomingConnection(qintptr socketDescriptor)
 {
-    emit newTransfer(socketDescriptor);
+    emit q->newTransfer(socketDescriptor);
 }
 
-void TransferServer::reload()
+TransferServer::TransferServer(QObject *parent)
+    : QObject(parent),
+      d(new TransferServerPrivate(this))
 {
-    close();
-    listen(QHostAddress::Any, Settings::get<quint16>(Settings::TransferPort));
+}
+
+void TransferServer::start()
+{
+    // Indicate an error if the port is unavailable
+    quint16 port = Settings::get<quint16>(Settings::TransferPort);
+    if(!d->listen(QHostAddress::Any, port)) {
+        emit error(tr("Unable to listen on port %1").arg(port));
+    }
 }

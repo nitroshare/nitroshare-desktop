@@ -29,19 +29,23 @@
 #include <QItemSelection>
 
 #include "devicemodel.h"
+#include "ui_devicedialog.h"
 
-namespace Ui {
-    class DeviceDialog;
-}
-
-class DeviceDialog : public QDialog
+/**
+ * @brief Dialog for selecting a device
+ *
+ * Given a DeviceModel instance, this dialog will display the devices
+ * currently in the model and allow the user to select one. It is not
+ * necessary to create an instance of the dialog in order to obtain a
+ * selection from the user - simply use the getDevice() static method.
+ */
+class DeviceDialog : public QDialog, public Ui::DeviceDialog
 {
     Q_OBJECT
 
 public:
 
     explicit DeviceDialog(DeviceModel *model);
-    virtual ~DeviceDialog();
 
     QModelIndex selectedDeviceIndex() const;
 
@@ -50,10 +54,6 @@ public:
 private Q_SLOTS:
 
     void toggleOkButton(const QItemSelection &selected, const QItemSelection &deselected);
-
-private:
-
-    Ui::DeviceDialog *ui;
 };
 
 #endif // NS_DEVICEDIALOG_H

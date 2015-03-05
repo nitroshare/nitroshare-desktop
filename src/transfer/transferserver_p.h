@@ -22,51 +22,31 @@
  * IN THE SOFTWARE.
  **/
 
-#ifndef NS_TRANSFERSENDER_H
-#define NS_TRANSFERSENDER_H
+#ifndef NS_TRANSFERSERVERPRIVATE_H
+#define NS_TRANSFERSERVERPRIVATE_H
 
-#include <QFile>
-#include <QHostAddress>
-#include <QList>
+#include <QTcpServer>
 
-#include "../bundle/bundle.h"
-#include "../bundle/bundleitem.h"
-#include "transfer.h"
+#include "../util/settings.h"
+#include "transferserver.h"
 
-class TransferSender : public Transfer
+class TransferServerPrivate : public QTcpServer
 {
     Q_OBJECT
 
 public:
 
-    TransferSender(const QString &deviceName, const QHostAddress &address, quint16 port, const Bundle *bundle);
-    virtual ~TransferSender();
+    explicit TransferServerPrivate(TransferServer *transferServer);
 
-    virtual void start();
+private Q_SLOTS:
+
+    void onSettingChanged(Settings::Key key);
 
 private:
 
-    virtual void processPacket(const QByteArray &data);
-    virtual void writeNextPacket();
+    virtual void incomingConnection(qintptr socketDescriptor);
 
-    void writeTransferHeader();
-    void writeItemHeader();
-    void writeItemData();
-
-    void nextItem();
-
-    // Information needed to connect to the remote host
-    const QHostAddress mAddress;
-    const quint16 mPort;
-    const Bundle *mBundle;
-
-    // Points to the item currently being transferred
-    QList<BundleItem>::const_iterator mIterator;
-
-    // Data needed for the file currently being written
-    QFile mFile;
-    qint64 mFileBytesRemaining;
-    QByteArray mFileBuffer;
+    TransferServer *const q;
 };
 
-#endif // NS_TRANSFERSENDER_H
+#endif // NS_TRANSFERSERVERPRIVATE_H

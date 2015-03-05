@@ -46,14 +46,16 @@ private:
     virtual void writeNextPacket();
 
     void processTransferHeader(const QByteArray &data);
-    void processFileHeader(const QByteArray &data);
-    void processFileData(const QByteArray &data);
+    void processItemHeader(const QByteArray &data);
+    void processItemData(const QByteArray &data);
+
+    void nextItem();
 
     // Directory to write files to
     QDir mRoot;
 
-    // Number of files remaining to be transferred
-    qint32 mTransferFilesRemaining;
+    // Number of items remaining to be transferred
+    qint32 mTransferItemsRemaining;
 
     // Data needed for the file currently being read
     QFile mFile;

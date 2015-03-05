@@ -41,25 +41,11 @@ public:
     // "explicit" is not needed here since this class is abstract
     Transfer(TransferModel::Direction direction);
 
-    QString deviceName() const {
-        return mDeviceName;
-    }
-
-    int progress() const {
-        return mProgress;
-    }
-
-    TransferModel::Direction direction() const {
-        return mDirection;
-    }
-
-    TransferModel::State state() const {
-        return mState;
-    }
-
-    QString error() const {
-        return mError;
-    }
+    QString deviceName() const { return mDeviceName; }
+    int progress() const { return mProgress; }
+    TransferModel::Direction direction() const { return mDirection; }
+    TransferModel::State state() const { return mState; }
+    QString error() const { return mError; }
 
     virtual void start() = 0;
 
@@ -93,8 +79,8 @@ protected:
 
     enum {
         TransferHeader,
-        FileHeader,
-        FileData,
+        ItemHeader,
+        ItemData,
         Finished
     } mProtocolState;
 

@@ -25,28 +25,22 @@
 #include <QPushButton>
 
 #include "devicedialog.h"
-#include "ui_devicedialog.h"
 
 DeviceDialog::DeviceDialog(DeviceModel *model)
-    : ui(new Ui::DeviceDialog)
 {
-    ui->setupUi(this);
+    setupUi(this);
 
-    ui->deviceView->setModel(model);
-    ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
+    deviceView->setModel(model);
 
-    connect(ui->deviceView->selectionModel(), &QItemSelectionModel::selectionChanged,
+    // Disable the OK button until the user makes a selection
+    buttonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
+    connect(deviceView->selectionModel(), &QItemSelectionModel::selectionChanged,
             this, &DeviceDialog::toggleOkButton);
-}
-
-DeviceDialog::~DeviceDialog()
-{
-    delete ui;
 }
 
 QModelIndex DeviceDialog::selectedDeviceIndex() const
 {
-    QModelIndexList selection(ui->deviceView->selectionModel()->selectedIndexes());
+    QModelIndexList selection(deviceView->selectionModel()->selectedIndexes());
     return selection.count() ? selection.at(0) : QModelIndex();
 }
 
@@ -54,6 +48,8 @@ QModelIndex DeviceDialog::getDevice(DeviceModel *model)
 {
     DeviceDialog deviceDialog(model);
 
+    // Check the return value since the user may have made
+    // a valid selection but clicked the cancel button
     if(deviceDialog.exec() == QDialog::Accepted) {
         return deviceDialog.selectedDeviceIndex();
     } else {
@@ -63,6 +59,7 @@ QModelIndex DeviceDialog::getDevice(DeviceModel *model)
 
 void DeviceDialog::toggleOkButton(const QItemSelection &, const QItemSelection &)
 {
-    bool itemSelected(ui->deviceView->selectionModel()->hasSelection());
-    ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(itemSelected);
+    // The OK button is only enabled after the user has made a selection
+    bool itemSelected(deviceView->selectionModel()->hasSelection());
+    buttonBox->button(QDialogButtonBox::Ok)->setEnabled(itemSelected);
 }

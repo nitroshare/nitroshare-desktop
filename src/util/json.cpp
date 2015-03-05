@@ -42,9 +42,9 @@ bool Json::isObject(const QJsonValue &value, QJsonObject &object)
     return value.isObject();
 }
 
-bool Json::objectContains(const QJsonObject &object, const QString &key, QString &value)
+bool Json::objectContains(const QJsonObject &object, const QString &key, bool &value)
 {
-    value = object.value(key).toString();
+    value = object.value(key).toBool();
     return object.contains(key);
 }
 
@@ -57,5 +57,11 @@ bool Json::objectContains(const QJsonObject &object, const QString &key, qint32 
 bool Json::objectContains(const QJsonObject &object, const QString &key, qint64 &value)
 {
     value = object.value(key).toString().toLongLong();
+    return object.contains(key);
+}
+
+bool Json::objectContains(const QJsonObject &object, const QString &key, QString &value)
+{
+    value = object.value(key).toString();
     return object.contains(key);
 }
