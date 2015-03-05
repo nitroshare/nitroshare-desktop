@@ -177,9 +177,10 @@ void TransferReceiver::nextItem()
     if(!mTransferItemsRemaining) {
 
         // Write the "success" packet
-        writePacket({
+        QVariantMap packet = {
             { "success", true }
-        });
+        };
+        writePacket(packet);
 
         mProtocolState = Finished;
     } else {
