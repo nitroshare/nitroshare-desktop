@@ -69,9 +69,10 @@ public:
     static bool isObject(const QJsonDocument &document, QJsonObject &object);
     static bool isObject(const QJsonValue &value, QJsonObject &object);
 
-    static bool objectContains(const QJsonObject &object, const QString &key, QString &value);
+    static bool objectContains(const QJsonObject &object, const QString &key, bool &value);
     static bool objectContains(const QJsonObject &object, const QString &key, qint32 &value);
     static bool objectContains(const QJsonObject &object, const QString &key, qint64 &value);
+    static bool objectContains(const QJsonObject &object, const QString &key, QString &value);
 };
 
 #endif // NS_JSON_H
