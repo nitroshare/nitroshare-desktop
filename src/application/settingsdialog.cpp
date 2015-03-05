@@ -36,8 +36,6 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     ui->setupUi(this);
 
     ui->tabWidget->setTabEnabled(2, false);
-    ui->lblTransferTimeout->hide();
-    ui->spnBoxTransferTimeout->hide();
 
     // General
     ui->lnEdtdeviceName->setText(Settings::get<QString>(Settings::DeviceName));
@@ -47,7 +45,6 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     ui->spnBoxBuffer->setValue(Settings::get<int>(Settings::TransferBuffer));
     ui->lnEdtDirectory->setText(Settings::get<QString>(Settings::TransferDirectory));
     ui->spnBoxTransferPort->setValue(Settings::get<quint16>(Settings::TransferPort));
-    ui->spnBoxTransferTimeout->setValue(Settings::get<int>(Settings::TransferTimeout) / Settings::Second);
 
     // Broadcast
     ui->spnBoxBroadcastPort->setValue(Settings::get<quint16>(Settings::BroadcastPort));
@@ -73,7 +70,6 @@ void SettingsDialog::accept()
     Settings::set(Settings::TransferDirectory, ui->lnEdtDirectory->text());
     Settings::set(Settings::TransferPort, ui->spnBoxTransferPort->value());
     Settings::set(Settings::TransferBuffer, ui->spnBoxBuffer->value());
-    Settings::set(Settings::TransferTimeout, ui->spnBoxTransferTimeout->value() * Settings::Second);
 
     // Broadcast
     Settings::set(Settings::BroadcastPort, ui->spnBoxBroadcastPort->value());

@@ -29,7 +29,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -178,23 +178,6 @@
          </property>
         </widget>
        </item>
-       <item row="3" column="0">
-        <widget class="QLabel" name="lblTransferTimeout">
-         <property name="text">
-          <string>Timeout (s):</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="2">
-        <widget class="QSpinBox" name="spnBoxTransferTimeout">
-         <property name="minimum">
-          <number>1</number>
-         </property>
-         <property name="maximum">
-          <number>65536</number>
-         </property>
-        </widget>
-       </item>
       </layout>
      </widget>
      <widget class="QWidget" name="tab_3">
@@ -326,38 +309,6 @@
     <hint type="destinationlabel">
      <x>285</x>
      <y>129</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>chkBoxAdvanced</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>lblTransferTimeout</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>285</x>
-     <y>213</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>45</x>
-     <y>177</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>chkBoxAdvanced</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>spnBoxTransferTimeout</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>285</x>
-     <y>213</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>317</x>
-     <y>177</y>
     </hint>
    </hints>
   </connection>
