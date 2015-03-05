@@ -57,7 +57,10 @@ Application::Application()
     connect(&mTransferModel, &TransferModel::dataChanged, this, &Application::notifyTransfersChanged);
     connect(&mTransferServer, &TransferServer::error, this, &Application::notifyError);
     connect(&mTransferServer, &TransferServer::newTransfer, &mTransferModel, &TransferModel::addReceiver);
+
+#ifdef BUILD_UPDATECHECKER
     connect(&mUpdateChecker, &UpdateChecker::newVersion, this, &Application::notifyNewVersion);
+#endif
 
     mIcon->addAction(tr("Send Files..."), this, SLOT(sendFiles()));
     mIcon->addAction(tr("Send Directory..."), this, SLOT(sendDirectory()));
@@ -135,6 +138,7 @@ void Application::notifyTransfersChanged(const QModelIndex &topLeft, const QMode
     }
 }
 
+#ifdef BUILD_UPDATECHECKER
 void Application::notifyNewVersion(const QString &version, const QUrl &url)
 {
     if(QMessageBox::question(nullptr, tr("New Version"),
@@ -145,6 +149,7 @@ void Application::notifyNewVersion(const QString &version, const QUrl &url)
         QDesktopServices::openUrl(url);
     }
 }
+#endif
 
 void Application::sendFiles()
 {

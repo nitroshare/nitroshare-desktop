@@ -31,7 +31,10 @@
 #include "../transfer/transfermodel.h"
 #include "../transfer/transferserver.h"
 #include "../transfer/transferwindow.h"
+
+#ifdef BUILD_UPDATECHECKER
 #include "updatechecker.h"
+#endif
 
 class Application : public QObject
 {
@@ -48,7 +51,10 @@ private Q_SLOTS:
     void notifyDevicesRemoved(const QModelIndex &parent, int first, int last);
     void notifyTransfersChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles);
     void notifyError(const QString &message);
+
+#ifdef BUILD_UPDATECHECKER
     void notifyNewVersion(const QString &version, const QUrl &url);
+#endif
 
     void sendFiles();
     void sendDirectory();
@@ -64,7 +70,10 @@ private:
     TransferModel mTransferModel;
     TransferServer mTransferServer;
     TransferWindow mTransferWindow;
+
+#ifdef BUILD_UPDATECHECKER
     UpdateChecker mUpdateChecker;
+#endif
 
     Icon *mIcon;
 

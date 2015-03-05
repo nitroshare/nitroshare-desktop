@@ -17,7 +17,6 @@ INCLUDEPATH       += $${INCLUDE_DIR}
 HEADERS += \
     application/aboutdialog.h \
     application/application.h \
-    application/updatechecker.h \
     bundle/bundle.h \
     bundle/bundle_p.h \
     bundle/bundleitem.h \
@@ -43,7 +42,6 @@ HEADERS += \
 SOURCES += \
     application/aboutdialog.cpp \
     application/application.cpp \
-    application/updatechecker.cpp \
     bundle/bundle.cpp \
     device/device.cpp \
     device/devicedialog.cpp \
@@ -74,6 +72,13 @@ OTHER_FILES += \
     data/misc/Info.plist \
     data/resource.rc \
     config.h.in
+
+# Include the update-checking code if requested
+updatechecker {
+    DEFINES += BUILD_UPDATECHECKER
+    HEADERS += application/updatechecker.h
+    SOURCES += application/updatechecker.cpp
+}
 
 # Files and settings specific to the Windows build
 win32 {
