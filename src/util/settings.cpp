@@ -65,6 +65,19 @@ const QMap<Settings::Key, Setting> keys {
 
 Q_GLOBAL_STATIC(Settings, settings)
 
+Settings * Settings::instance()
+{
+    return settings;
+}
+
+void Settings::reset()
+{
+    for(QMap<Settings::Key, Setting>::const_iterator iterator = keys.constBegin();
+            iterator != keys.constEnd(); ++iterator) {
+        storeValue(iterator.key(), iterator.value().initialize(), false);
+    }
+}
+
 QVariant Settings::loadValue(Key key)
 {
     Setting setting(keys.value(key));
@@ -83,9 +96,4 @@ void Settings::storeValue(Key key, const QVariant &value, bool initializing)
     if(!initializing) {
         emit settings->settingChanged(key);
     }
-}
-
-Settings * Settings::instance()
-{
-    return settings;
 }

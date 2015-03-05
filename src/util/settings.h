@@ -46,14 +46,13 @@ public:
         UpdateInterval
     };
 
-    template <class T>
-    static T get(Key key) {
-        return loadValue(key).value<T>();
-    }
+    static Settings * instance();
 
+    template <class T>
+    static T get(Key key) { return loadValue(key).value<T>(); }
     static void set(Key key, const QVariant &value) { storeValue(key, value, false); }
 
-    static Settings * instance();
+    static void reset();
 
 Q_SIGNALS:
 
