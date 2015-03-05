@@ -43,7 +43,7 @@ public:
     void add(Transfer *transfer);
     void remove(Transfer *transfer);
 
-    TransferModel * const q;
+    TransferModel *const q;
 
     QList<Transfer*> transfers;
 };
