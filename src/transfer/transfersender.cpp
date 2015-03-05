@@ -22,7 +22,11 @@
  * IN THE SOFTWARE.
  **/
 
+#include <QJsonDocument>
+#include <QJsonObject>
+
 #include "../bundle/bundle_p.h"
+#include "../util/json.h"
 #include "../util/settings.h"
 #include "transfersender.h"
 
@@ -60,10 +64,30 @@ void TransferSender::start()
     mSocket.connectToHost(mAddress, mPort);
 }
 
-void TransferSender::processPacket(const QByteArray &)
+void TransferSender::processPacket(const QByteArray &data)
 {
-    // Any data received here is an error and should be treated as such
-    abortWithError(tr("Unexpected data received"));
+    // The only time a packet should be received is after
+    // the transfer has finished, acknowledging success
+    if(mProtocolState != Finished) {
+        abortWithError(tr("Unexpected data received"));
+    } else {
+
+        QJsonDocument document = QJsonDocument::fromJson(data);
+        QJsonObject object;
+        bool success;
+
+        // Check to see if the receiver indicated success
+        if(Json::isObject(document, object) &&
+                Json::objectContains(object, "success", success) &&
+                success) {
+
+            finish();
+        } else {
+
+            // TODO: replace with error from receiving device
+            abortWithError(tr("Receiving device indicated failure"));
+        }
+    }
 }
 
 void TransferSender::writeNextPacket()
@@ -81,7 +105,7 @@ void TransferSender::writeNextPacket()
         writeItemData();
         break;
     case Finished:
-        finish();
+        break;
     }
 }
 

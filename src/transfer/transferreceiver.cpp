@@ -60,7 +60,8 @@ void TransferReceiver::processPacket(const QByteArray &data)
 
 void TransferReceiver::writeNextPacket()
 {
-    // This should never be invoked since no data is written
+    // This is only ever invoked after success
+    finish();
 }
 
 void TransferReceiver::processTransferHeader(const QByteArray &data)
@@ -174,7 +175,13 @@ void TransferReceiver::nextItem()
 
     // Check to see if there are any more items remaining
     if(!mTransferItemsRemaining) {
-        finish();
+
+        // Write the "success" packet
+        writePacket({
+            { "success", true }
+        });
+
+        mProtocolState = Finished;
     } else {
         mProtocolState = ItemHeader;
     }
