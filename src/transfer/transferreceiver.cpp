@@ -47,11 +47,11 @@ void TransferReceiver::processPacket(const QByteArray &data)
     case TransferHeader:
         processTransferHeader(data);
         break;
-    case FileHeader:
-        processFileHeader(data);
+    case ItemHeader:
+        processItemHeader(data);
         break;
-    case FileData:
-        processFileData(data);
+    case ItemData:
+        processItemData(data);
         break;
     case Finished:
         break;
@@ -71,56 +71,83 @@ void TransferReceiver::processTransferHeader(const QByteArray &data)
     if(Json::isObject(document, object) &&
             Json::objectContains(object, "name", mDeviceName) &&
             Json::objectContains(object, "size", mTransferBytesTotal) &&
-            Json::objectContains(object, "count", mTransferFilesRemaining)) {
+            Json::objectContains(object, "count", mTransferItemsRemaining)) {
 
         emit dataChanged({TransferModel::DeviceNameRole});
 
         // The next packet will be the first file header
-        mProtocolState = FileHeader;
+        mProtocolState = ItemHeader;
     } else {
 
         abortWithError(tr("Unable to read transfer header"));
     }
 }
 
-void TransferReceiver::processFileHeader(const QByteArray &data)
+void TransferReceiver::processItemHeader(const QByteArray &data)
 {
     QJsonDocument document = QJsonDocument::fromJson(data);
     QJsonObject object;
     QString name;
+    bool directory;
+    qint64 created;
+    qint64 lastModified;
+    qint64 lastRead;
 
+    // Read the contents of the header
     if(Json::isObject(document, object) &&
             Json::objectContains(object, "name", name) &&
-            Json::objectContains(object, "size", mFileBytesRemaining)) {
+            Json::objectContains(object, "directory", directory) &&
+            Json::objectContains(object, "created", created) &&
+            Json::objectContains(object, "last_modified", lastModified) &&
+            Json::objectContains(object, "last_read", lastRead)) {
 
-        // Determine the absolute filename
+        // TODO: created, lastModified, and lastRead are unused
+
+        // Determine the absolute filename of the item
         QString filename = mRoot.absoluteFilePath(name);
 
-        // Ensure that the path exists
-        QDir path(QFileInfo(filename).path());
-        if(!path.exists()) {
-            if(!path.mkpath(".")) {
-                abortWithError(tr("Unable to create %1").arg(path.absolutePath()));
+        // If the item is a directory, attempt to create it
+        // Otherwise, open the file for writing since the directory should exist
+        if(directory) {
+
+            if(!QDir(filename).mkpath(".")) {
+                abortWithError(tr("Unable to create %1").arg(filename));
                 return;
             }
-        }
 
-        // Abort if the file can't be opened
-        mFile.setFileName(filename);
-        if(!mFile.open(QIODevice::WriteOnly)) {
-            abortWithError(tr("Unable to open %1").arg(filename));
-            return;
-        }
+            // Move to the next item
+            nextItem();
 
-        // The next packet will be the first chunk from the file
-        mProtocolState = FileData;
+        } else {
+
+            // Ensure that the size was included
+            if(!Json::objectContains(object, "size", mFileBytesRemaining)) {
+                abortWithError(tr("File size is missing from header"));
+                return;
+            }
+
+            // Abort if the file can't be opened
+            mFile.setFileName(filename);
+            if(!mFile.open(QIODevice::WriteOnly)) {
+                abortWithError(tr("Unable to open %1").arg(filename));
+                return;
+            }
+
+            // If the file is non-empty, switch states
+            // Otherwise close the file and move to the next item
+            if(mFileBytesRemaining) {
+                mProtocolState = ItemData;
+            } else {
+                mFile.close();
+                nextItem();
+            }
+        }
     } else {
-
         abortWithError(tr("Unable to read file header"));
     }
 }
 
-void TransferReceiver::processFileData(const QByteArray &data)
+void TransferReceiver::processItemData(const QByteArray &data)
 {
     // Write the data to the file
     mFile.write(data);
@@ -136,12 +163,19 @@ void TransferReceiver::processFileData(const QByteArray &data)
     // next file or indicate that the transfer has completed
     if(mFileBytesRemaining <= 0) {
         mFile.close();
-        mTransferFilesRemaining -= 1;
+        nextItem();
+    }
+}
 
-        if(!mTransferFilesRemaining) {
-            finish();
-        } else {
-            mProtocolState = FileHeader;
-        }
+void TransferReceiver::nextItem()
+{
+    // Decrement the number of items remaining
+    mTransferItemsRemaining -= 1;
+
+    // Check to see if there are any more items remaining
+    if(!mTransferItemsRemaining) {
+        finish();
+    } else {
+        mProtocolState = ItemHeader;
     }
 }

@@ -79,8 +79,8 @@ protected:
 
     enum {
         TransferHeader,
-        FileHeader,
-        FileData,
+        ItemHeader,
+        ItemData,
         Finished
     } mProtocolState;
 

@@ -50,8 +50,10 @@ private:
     virtual void writeNextPacket();
 
     void writeTransferHeader();
-    void writeFileHeader();
-    void writeFileData();
+    void writeItemHeader();
+    void writeItemData();
+
+    void nextItem();
 
     // Information needed to connect to the remote host
     const QHostAddress mAddress;

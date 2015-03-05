@@ -56,6 +56,7 @@ void TransferSender::start()
 
     mFileBuffer.resize(Settings::get<int>(Settings::TransferBuffer));
 
+    // Attempt to connect to the other device
     mSocket.connectToHost(mAddress, mPort);
 }
 
@@ -73,11 +74,11 @@ void TransferSender::writeNextPacket()
     case TransferHeader:
         writeTransferHeader();
         break;
-    case FileHeader:
-        writeFileHeader();
+    case ItemHeader:
+        writeItemHeader();
         break;
-    case FileData:
-        writeFileData();
+    case ItemData:
+        writeItemData();
         break;
     case Finished:
         finish();
@@ -87,7 +88,7 @@ void TransferSender::writeNextPacket()
 void TransferSender::writeTransferHeader()
 {
     // Due to poor translation between 64-bit integers in C++ and JSON,
-    // it is necessary to send large integers as strings
+    // it is necessary to send integers as strings
     writePacket({
         { "protocol", "1" },
         { "name", Settings::get<QString>(Settings::DeviceName) },
@@ -95,31 +96,52 @@ void TransferSender::writeTransferHeader()
         { "count", QString::number(mBundle->count()) }
     });
 
-    // The next packet will be the first file header
-    mProtocolState = FileHeader;
+    // The next packet will be the first item header
+    mProtocolState = ItemHeader;
 }
 
-void TransferSender::writeFileHeader()
+void TransferSender::writeItemHeader()
 {
-    // Set the filename and attempt to open the file
-    mFile.setFileName(mIterator->absoluteFilename());
-    if(!mFile.open(QIODevice::ReadOnly)) {
-        abortWithError(tr("Unable to open %1").arg(mIterator->absoluteFilename()));
-        return;
-    }
-
-    // Obtain the file size and write the file header
-    mFileBytesRemaining = mFile.size();
-    writePacket({
+    // Build the header describing the item
+    QVariantMap header = {
         { "name", mIterator->relativeFilename() },
-        { "size", QString::number(mFileBytesRemaining) }
-    });
+        { "directory", mIterator->isDir() },
+        { "created", mIterator->created() },
+        { "last_modified", mIterator->lastModified() },
+        { "last_read", mIterator->lastRead() }
+    };
 
-    // The next packet will be the first chunk from the file
-    mProtocolState = FileData;
+    // If the item is a directory, write the header and move to the next item
+    // Otherwise open the file and prepare for reading data
+    if(mIterator->isDir()) {
+        writePacket(header);
+        nextItem();
+    } else {
+
+        // Set the filename and attempt to open the file
+        mFile.setFileName(mIterator->absoluteFilename());
+        if(!mFile.open(QIODevice::ReadOnly)) {
+            abortWithError(tr("Unable to open %1").arg(mIterator->absoluteFilename()));
+            return;
+        }
+
+        // Obtain the file size, add it to the header, and send it
+        mFileBytesRemaining = mFile.size();
+        header.insert("size", QString::number(mFileBytesRemaining));
+        writePacket(header);
+
+        // If the file is non-empty, switch states
+        // Otherwise close the file and move to the next item
+        if(mFileBytesRemaining) {
+            mProtocolState = ItemData;
+        } else {
+            mFile.close();
+            nextItem();
+        }
+    }
 }
 
-void TransferSender::writeFileData()
+void TransferSender::writeItemData()
 {
     // Read the next chunk of data from the file - no more than either the size
     // of the buffer or the amount of data remaining in the file
@@ -142,16 +164,22 @@ void TransferSender::writeFileData()
     // Provide a progress update
     calculateProgress();
 
-    // If there are no bytes remaining in the file, move on to the next file
-    // or indicate that the transfer has completed (emit success after write completes)
+    // If there are no bytes remaining in the file close it and move on
     if(!mFileBytesRemaining) {
         mFile.close();
-        ++mIterator;
+        nextItem();
+    }
+}
 
-        if(mIterator == mBundle->d->items.constEnd()) {
-            mProtocolState = Finished;
-        } else {
-            mProtocolState = FileHeader;
-        }
+void TransferSender::nextItem()
+{
+    // Move to the next item
+    ++mIterator;
+
+    // Check to see if the "next item" actually exists or if we're done
+    if(mIterator == mBundle->d->items.constEnd()) {
+        mProtocolState = Finished;
+    } else {
+        mProtocolState = ItemHeader;
     }
 }
