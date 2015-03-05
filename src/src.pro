@@ -37,7 +37,8 @@ HEADERS += \
     transfer/transferwindow.h \
     util/json.h \
     util/platform.h \
-    util/settings.h
+    util/settings.h \
+    application/settingsdialog.h
 
 SOURCES += \
     application/aboutdialog.cpp \
@@ -59,12 +60,14 @@ SOURCES += \
     util/json.cpp \
     util/platform.cpp \
     util/settings.cpp \
-    main.cpp
+    main.cpp \
+    application/settingsdialog.cpp
 
 FORMS += \
     application/aboutdialog.ui \
     device/devicedialog.ui \
-    transfer/transferwindow.ui
+    transfer/transferwindow.ui \
+    application/settingsdialog.ui
 
 RESOURCES += \
     data/resource.qrc

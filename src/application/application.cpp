@@ -33,6 +33,7 @@
 #include "../util/settings.h"
 #include "application.h"
 #include "aboutdialog.h"
+#include "settingsdialog.h"
 
 #ifdef BUILD_APPINDICATOR
 #include "../icon/indicatoricon.h"
@@ -62,6 +63,8 @@ Application::Application()
     mIcon->addAction(tr("Send Directory..."), this, SLOT(sendDirectory()));
     mIcon->addSeparator();
     mIcon->addAction(tr("View Transfers..."), &mTransferWindow, SLOT(show()));
+    mIcon->addSeparator();
+    mIcon->addAction(tr("Settings"), this, SLOT(onSettings()));
     mIcon->addSeparator();
     mIcon->addAction(tr("About..."), this, SLOT(about()));
     mIcon->addAction(tr("About Qt..."), this, SLOT(aboutQt()));
@@ -162,6 +165,11 @@ void Application::sendDirectory()
         bundle->addDirectory(path);
         sendBundle(bundle);
     }
+}
+
+void Application::onSettings()
+{
+    SettingsDialog().exec();
 }
 
 void Application::about()

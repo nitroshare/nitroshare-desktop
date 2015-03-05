@@ -52,6 +52,7 @@ private Q_SLOTS:
     void sendFiles();
     void sendDirectory();
 
+    void onSettings();
     void about();
     void aboutQt();
 

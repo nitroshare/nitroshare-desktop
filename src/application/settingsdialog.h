@@ -22,52 +22,35 @@
  * IN THE SOFTWARE.
  **/
 
-#ifndef NS_SETTINGS_H
-#define NS_SETTINGS_H
+#ifndef SETTINGSDIALOG_H
+#define SETTINGSDIALOG_H
 
-#include <QSettings>
+#include <QDialog>
 
-class Settings : public QSettings
+namespace Ui {
+class SettingsDialog;
+}
+
+class SettingsDialog : public QDialog
 {
     Q_OBJECT
 
 public:
 
-    enum Key {
-        BroadcastInterval,
-        BroadcastPort,
-        BroadcastTimeout,
-        DeviceName,
-        DeviceUUID,
-        TransferBuffer,
-        TransferDirectory,
-        TransferPort,
-        TransferTimeout,
-        TrayIcon,
-        UpdateInterval
-    };
+    explicit SettingsDialog(QWidget *parent = 0);
+    ~SettingsDialog();
 
-    static const int Second;
-    static const int Minute;
-    static const int Hour;
+public Q_SLOTS:
 
-    template <class T>
-    static T get(Key key) {
-        return loadValue(key).value<T>();
-    }
+    virtual void accept();
 
-    static void set(Key key, const QVariant &value) { storeValue(key, value, false); }
+private Q_SLOTS:
 
-    static Settings * instance();
-
-Q_SIGNALS:
-
-    void settingChanged(Key key);
+    void onBtnSelectDirClicked();
+    void onChkBoxAdvancedClicked(bool clicked);
 
 private:
-
-    static QVariant loadValue(Key key);
-    static void storeValue(Key key, const QVariant &value, bool initializing);
+    Ui::SettingsDialog *ui;
 };
 
-#endif // NS_SETTINGS_H
+#endif // SETTINGSDIALOG_H
