@@ -27,29 +27,22 @@
 
 #include <QDialog>
 
-namespace Ui {
-    class AboutDialog;
-}
+#include "ui_aboutdialog.h"
 
 /**
  * @brief Simple about dialog describing the application
  */
-class AboutDialog : public QDialog
+class AboutDialog : public QDialog, public Ui::AboutDialog
 {
     Q_OBJECT
 
 public:
 
-    explicit AboutDialog(QWidget *parent = nullptr);
-    virtual ~AboutDialog();
+    AboutDialog();
 
 private Q_SLOTS:
 
     void onCreditsOrLicenceClicked(bool checked);
-
-private:
-
-    Ui::AboutDialog *ui;
 };
 
 #endif // NS_ABOUTDIALOG_H

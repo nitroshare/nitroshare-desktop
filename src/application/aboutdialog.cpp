@@ -27,7 +27,6 @@
 
 #include "aboutdialog.h"
 #include "config.h"
-#include "ui_aboutdialog.h"
 
 const QString Credits =
     "<html><head><meta name='qrichtext' content='1'/></head><body>"
@@ -57,44 +56,37 @@ const QString License =
     "FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS "
     "IN THE SOFTWARE.";
 
-AboutDialog::AboutDialog(QWidget *parent)
-    : QDialog(parent),
-      ui(new Ui::AboutDialog)
+AboutDialog::AboutDialog()
 {
-    ui->setupUi(this);
+    setupUi(this);
 
-    ui->lblLogo->setPixmap(QPixmap(":/img/logo.svg").scaled(128, 128));
+    lblLogo->setPixmap(QPixmap(":/img/logo.svg").scaled(128, 128));
 
-    QFont font = ui->lblProjectTitle->font();
+    QFont font = lblProjectTitle->font();
     font.setBold(true);
-    ui->lblProjectTitle->setFont(font);
-    ui->lblProjectTitle->setText(PROJECT_TITLE);
+    lblProjectTitle->setFont(font);
+    lblProjectTitle->setText(PROJECT_TITLE);
 
-    ui->lblVersion->setText(QString("Version %1").arg(PROJECT_VERSION));
-    ui->lblDescription->setText(PROJECT_DESCRIPTION);
+    lblVersion->setText(QString("Version %1").arg(PROJECT_VERSION));
+    lblDescription->setText(PROJECT_DESCRIPTION);
 
     QString websiteTxt("<html><head/><body><a href=\"%1\">%1</a></body></html>");
-    ui->lblWebsite->setText(websiteTxt.arg(PROJECT_WEBSITE));
-    ui->lblCopyright->setText(QString("Copyright (c) 2015 - %1").arg(PROJECT_AUTHOR));
+    lblWebsite->setText(websiteTxt.arg(PROJECT_WEBSITE));
+    lblCopyright->setText(QString("Copyright (c) 2015 - %1").arg(PROJECT_AUTHOR));
 
-    ui->textBrowser->hide();
-}
-
-AboutDialog::~AboutDialog()
-{
-    delete ui;
+    textBrowser->hide();
 }
 
 void AboutDialog::onCreditsOrLicenceClicked(bool checked)
 {
-    if (sender()->objectName() == "btnLicense") {
-        ui->textBrowser->setText(License);
-        ui->btnCredits->setChecked(false);
-    } else if (sender()->objectName() == "btnCredits") {
-        ui->textBrowser->setText(Credits);
-        ui->btnLicense->setChecked(false);
+    if(sender()->objectName() == "btnLicense") {
+        textBrowser->setText(License);
+        btnCredits->setChecked(false);
+    } else if(sender()->objectName() == "btnCredits") {
+        textBrowser->setText(Credits);
+        btnLicense->setChecked(false);
     }
 
-    ui->textBrowser->setVisible(checked);
-    ui->wdtContent->setVisible(!checked);
+    textBrowser->setVisible(checked);
+    wdtContent->setVisible(!checked);
 }

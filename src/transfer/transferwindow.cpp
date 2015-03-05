@@ -27,40 +27,35 @@
 #include <QPushButton>
 
 #include "transferwindow.h"
-#include "ui_transferwindow.h"
 
 TransferWindow::TransferWindow(TransferModel *model)
-    : ui(new Ui::TransferWindow),
-      mModel(model)
+    : mModel(model)
 {
-    ui->setupUi(this);
+    setupUi(this);
 
-    ui->transferView->setModel(mModel);
-    ui->transferView->setColumnWidth(TransferModel::DeviceNameColumn, 150);
-    ui->transferView->setColumnWidth(TransferModel::ProgressColumn, 150);
-    ui->transferView->setColumnWidth(TransferModel::StateColumn, 200);
+    transferView->setModel(mModel);
+    transferView->setColumnWidth(TransferModel::DeviceNameColumn, 150);
+    transferView->setColumnWidth(TransferModel::ProgressColumn, 150);
+    transferView->setColumnWidth(TransferModel::StateColumn, 200);
 
-    connect(ui->clear, &QPushButton::clicked, mModel, &TransferModel::clear);
+    connect(clear, &QPushButton::clicked, mModel, &TransferModel::clear);
     connect(mModel, &TransferModel::rowsInserted, this, &TransferWindow::onRowsInserted);
     connect(mModel, &TransferModel::dataChanged, this, &TransferWindow::onDataChanged);
-}
-
-TransferWindow::~TransferWindow()
-{
-    delete ui;
 }
 
 void TransferWindow::onRowsInserted(const QModelIndex &, int first, int last)
 {
     for(int row = first; row <= last; ++row) {
 
-        // Create a progress box for displaying progress
+        // Create a progress box for (surprise!) displaying progress
+        // It will remain in place as long as the row does
         QProgressBar *progressBar = new QProgressBar;
         progressBar->setMinimum(0);
         progressBar->setMaximum(100);
         progressBar->setAutoFillBackground(true);
-        ui->transferView->setIndexWidget(mModel->index(row, TransferModel::ProgressColumn), progressBar);
+        transferView->setIndexWidget(mModel->index(row, TransferModel::ProgressColumn), progressBar);
 
+        // Update the button displayed in the action column
         updateButton(row);
     }
 }
@@ -83,11 +78,11 @@ void TransferWindow::onDataChanged(const QModelIndex &topLeft, const QModelIndex
 
 void TransferWindow::updateProgressBar(int row)
 {
-    // Retrieve the progress bar
+    // Retrieve a pointer to the progress bar widget
     QModelIndex index = mModel->index(row, TransferModel::ProgressColumn);
-    QProgressBar *progressBar = qobject_cast<QProgressBar*>(ui->transferView->indexWidget(index));
+    QProgressBar *progressBar = qobject_cast<QProgressBar*>(transferView->indexWidget(index));
 
-    // Set its progress
+    // Retrieve the value from the model and update the control
     int progress = index.data(TransferModel::ProgressRole).toInt();
     progressBar->setValue(progress);
 }
@@ -129,5 +124,5 @@ void TransferWindow::updateButton(int row)
     }
 
     // Insert the button into the table
-    ui->transferView->setIndexWidget(mModel->index(row, TransferModel::ActionColumn), button);
+    transferView->setIndexWidget(mModel->index(row, TransferModel::ActionColumn), button);
 }

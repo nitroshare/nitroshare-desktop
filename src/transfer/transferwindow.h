@@ -28,10 +28,7 @@
 #include <QMainWindow>
 
 #include "transfermodel.h"
-
-namespace Ui {
-    class TransferWindow;
-}
+#include "ui_transferwindow.h"
 
 /**
  * @brief Displays a list of all transfers in the model
@@ -40,17 +37,16 @@ namespace Ui {
  * user to view the transfers that are currently in progress. In addition,
  * the user can cancel transfers in progress and restart failed transfers.
  *
- * A custom delegate is used to render the progress bar in the appropriate
- * column as well as the status messages.
+ * The window listens for changes to the model and inserts the appropriate
+ * widgets into cells in the table. The progress bar is updated as necessary.
  */
-class TransferWindow : public QMainWindow
+class TransferWindow : public QMainWindow, public Ui::TransferWindow
 {
     Q_OBJECT
 
 public:
 
     explicit TransferWindow(TransferModel *model);
-    virtual ~TransferWindow();
 
 public Q_SLOTS:
 
@@ -62,7 +58,6 @@ private:
     void updateProgressBar(int row);
     void updateButton(int row);
 
-    Ui::TransferWindow *const ui;
     TransferModel *const mModel;
 };
 
