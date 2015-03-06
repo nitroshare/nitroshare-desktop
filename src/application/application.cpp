@@ -89,7 +89,7 @@ void Application::notifyError(const QString &message)
 void Application::notifyDevicesAdded(const QModelIndex &, int first, int last)
 {
     // Only display notifications if current uptime exceeds the broadcast timeout
-    if(QDateTime::currentMSecsSinceEpoch() - mStartTime > Settings::get<qint64>(Settings::BroadcastTimeout)) {
+    if(QDateTime::currentMSecsSinceEpoch() - mStartTime > Settings::get(Settings::BroadcastTimeout).toInt()) {
         for(int row = first; row <= last; ++row) {
             mIcon->showMessage(tr("%1 has joined.").arg(
                 mDeviceModel.data(mDeviceModel.index(row, 0), DeviceModel::NameRole).toString()

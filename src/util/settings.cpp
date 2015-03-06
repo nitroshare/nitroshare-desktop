@@ -26,30 +26,47 @@
 #include <QMap>
 #include <QStandardPaths>
 #include <QUuid>
+#include <QVariant>
 
-#include "platform.h"
 #include "settings.h"
+#include "settings_p.h"
 
+// Assign consecutive numbers to the constants
+int Accumulator = 0;
+
+#define DECLARE_SETTING(x) \
+    const int Settings::x = Accumulator++;
+
+DECLARE_SETTING(BroadcastInterval)
+DECLARE_SETTING(BroadcastPort)
+DECLARE_SETTING(BroadcastTimeout)
+DECLARE_SETTING(DeviceName)
+DECLARE_SETTING(DeviceUUID)
+DECLARE_SETTING(TransferBuffer)
+DECLARE_SETTING(TransferDirectory)
+DECLARE_SETTING(TransferPort)
+DECLARE_SETTING(UpdateInterval)
+
+// For each setting, store its name and an initialization function
 struct Setting
 {
     QString name;
     QVariant (*initialize)();
 };
 
+// Macro used for inputting settings into the
 #define DEFINE_SETTING(x,y) \
     { \
-        Settings::x, { \
-            #x, \
-            []() -> QVariant y \
-        } \
+        Settings::x, { #x, []() -> QVariant y } \
     }
 
-// Convenience for specifying times
+// Convenience variables for specifying times
 const int Second = 1000;
 const int Minute = 60 * Second;
 const int Hour = 60 * Minute;
 
-const QMap<Settings::Key, Setting> keys {
+// Define all of the settings
+QMap<int, Setting> Keys = {
     DEFINE_SETTING(BroadcastInterval, { return 5 * Second; }),
     DEFINE_SETTING(BroadcastPort, { return 40816; }),
     DEFINE_SETTING(BroadcastTimeout, { return 30 * Second; }),
@@ -57,43 +74,86 @@ const QMap<Settings::Key, Setting> keys {
     DEFINE_SETTING(DeviceUUID, { return QUuid::createUuid(); }),
     DEFINE_SETTING(TransferBuffer, { return 65536; }),
     DEFINE_SETTING(TransferDirectory, {
-        return QStandardPaths::writableLocation(QStandardPaths::DesktopLocation);
+       return QStandardPaths::writableLocation(QStandardPaths::DesktopLocation);
     }),
     DEFINE_SETTING(TransferPort, { return 40818; }),
     DEFINE_SETTING(UpdateInterval, { return 24 * Hour; })
 };
 
-Q_GLOBAL_STATIC(Settings, settings)
+// Global settings instance
+Settings settings;
 
-Settings * Settings::instance()
+SettingsPrivate::SettingsPrivate(Settings *settings)
+    : q(settings)
 {
-    return settings;
+}
+
+QVariant SettingsPrivate::get(int key, bool initialize)
+{
+    // Retrieve the setting for the key and retrieve its current value
+    Setting setting = Keys.value(key);
+    QVariant value = settings.value(setting.name);
+
+    // If the value is NULL and we are allowed to initialize the variable, do so
+    if(value.isNull() && initialize) {
+        value = setting.initialize();
+        set(key, value, true);
+    }
+
+    return value;
+}
+
+void SettingsPrivate::set(int key, const QVariant &value, bool initializing)
+{
+    // This method is only invoked if:
+    // - the value was not set (initializing = true)
+    // - the value was set but is different (initializing = false)
+
+    // In either case, store the new value
+    settings.setValue(Keys.value(key).name, value);
+
+    // Only emit the changed signal if the key is not being initialized
+    if(!initializing) {
+        emit q->settingChanged(key);
+    }
+}
+
+Settings::Settings(QObject *parent)
+    : QObject(parent),
+      d(new SettingsPrivate(this))
+{
+}
+
+Settings::~Settings()
+{
+    delete d;
+}
+
+Settings *Settings::instance()
+{
+    return &settings;
 }
 
 void Settings::reset()
 {
-    for(QMap<Settings::Key, Setting>::const_iterator iterator = keys.constBegin();
-            iterator != keys.constEnd(); ++iterator) {
-        storeValue(iterator.key(), iterator.value().initialize(), false);
+    for(QMap<int, Setting>::const_iterator i = Keys.constBegin(); i != Keys.constEnd(); ++i) {
+        set(i.key(), i.value().initialize());
     }
 }
 
-QVariant Settings::loadValue(Key key)
+QVariant Settings::get(int key)
 {
-    Setting setting(keys.value(key));
-
-    if(!settings->contains(setting.name)) {
-        Settings::storeValue(key, setting.initialize(), true);
-    }
-
-    return settings->value(setting.name);
+    return instance()->d->get(key, true);
 }
 
-void Settings::storeValue(Key key, const QVariant &value, bool initializing)
+void Settings::set(int key, const QVariant &value)
 {
-    settings->setValue(keys.value(key).name, value);
+    // Attempt to retrieve the current value
+    QVariant currentValue = instance()->d->get(key, false);
 
-    if(!initializing) {
-        emit settings->settingChanged(key);
+    // Compare the current value to the new value
+    // and if they differ, set the new value
+    if(currentValue != value) {
+        instance()->d->set(key, value, false);
     }
 }

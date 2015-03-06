@@ -22,30 +22,25 @@
  * IN THE SOFTWARE.
  **/
 
-#ifndef NS_TRANSFERSERVERPRIVATE_H
-#define NS_TRANSFERSERVERPRIVATE_H
+#ifndef NS_SETTINGSPRIVATE_H
+#define NS_SETTINGSPRIVATE_H
 
-#include <QTcpServer>
+#include <QSettings>
 
-#include "transferserver.h"
+#include "settings.h"
 
-class TransferServerPrivate : public QTcpServer
+class SettingsPrivate
 {
-    Q_OBJECT
-
 public:
 
-    explicit TransferServerPrivate(TransferServer *transferServer);
+    explicit SettingsPrivate(Settings *settings);
 
-private Q_SLOTS:
+    QVariant get(int key, bool initialize);
+    void set(int key, const QVariant &value, bool initializing);
 
-    void onSettingChanged(int key);
+    Settings *const q;
 
-private:
-
-    virtual void incomingConnection(qintptr socketDescriptor);
-
-    TransferServer *const q;
+    QSettings settings;
 };
 
-#endif // NS_TRANSFERSERVERPRIVATE_H
+#endif // NS_SETTINGSPRIVATE_H

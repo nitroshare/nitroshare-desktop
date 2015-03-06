@@ -58,7 +58,7 @@ void TransferSender::start()
         mFile.close();
     }
 
-    mFileBuffer.resize(Settings::get<int>(Settings::TransferBuffer));
+    mFileBuffer.resize(Settings::get(Settings::TransferBuffer).toInt());
 
     // Attempt to connect to the other device
     mSocket.connectToHost(mAddress, mPort);
@@ -115,7 +115,7 @@ void TransferSender::writeTransferHeader()
     // it is necessary to send integers as strings
     writePacket({
         { "protocol", "1" },
-        { "name", Settings::get<QString>(Settings::DeviceName) },
+        { "name", Settings::get(Settings::DeviceName).toString() },
         { "size", QString::number(mTransferBytesTotal) },
         { "count", QString::number(mBundle->count()) }
     });

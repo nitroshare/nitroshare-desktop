@@ -27,6 +27,7 @@
 
 #include "../util/json.h"
 #include "../util/platform.h"
+#include "../util/settings.h"
 #include "devicelistener.h"
 
 DeviceListener::DeviceListener()
@@ -83,10 +84,10 @@ void DeviceListener::sendPings()
     // initializer instead of converting a QVariantMap
 
     QJsonObject object(QJsonObject::fromVariantMap({
-        { "uuid", Settings::get<QString>(Settings::DeviceUUID) },
-        { "name", Settings::get<QString>(Settings::DeviceName) },
+        { "uuid", Settings::get(Settings::DeviceUUID).toString() },
+        { "name", Settings::get(Settings::DeviceName).toString() },
         { "operating_system", Platform::operatingSystemName() },
-        { "port", QString::number(Settings::get<quint16>(Settings::TransferPort)) }
+        { "port", QString::number(Settings::get(Settings::TransferPort).toInt()) }
     }));
 
     // Build a list of all unique addresses (since we are
@@ -109,7 +110,7 @@ void DeviceListener::sendPings()
     }
 }
 
-void DeviceListener::onSettingChanged(Settings::Key key)
+void DeviceListener::onSettingChanged(int key)
 {
     if(key == Settings::BroadcastInterval || key == Settings::BroadcastPort) {
         reload();
@@ -119,9 +120,9 @@ void DeviceListener::onSettingChanged(Settings::Key key)
 void DeviceListener::reload()
 {
     // The timer is automatically restarted after setting the interval
-    mTimer.setInterval(Settings::get<int>(Settings::BroadcastInterval));
+    mTimer.setInterval(Settings::get(Settings::BroadcastInterval).toInt());
 
     // Close the socket if it is open and bind to the configured port
     mSocket.close();
-    mSocket.bind(Settings::get<quint16>(Settings::BroadcastPort), QUdpSocket::ShareAddress);
+    mSocket.bind(Settings::get(Settings::BroadcastPort).toInt(), QUdpSocket::ShareAddress);
 }

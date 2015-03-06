@@ -30,7 +30,6 @@
 #include <QUdpSocket>
 
 #include "../util/platform.h"
-#include "../util/settings.h"
 
 /**
  * @brief Device broadcast emitter and receiver
@@ -57,7 +56,7 @@ private Q_SLOTS:
     void processPings();
     void sendPings();
 
-    void onSettingChanged(Settings::Key key);
+    void onSettingChanged(int key);
 
 private:
 

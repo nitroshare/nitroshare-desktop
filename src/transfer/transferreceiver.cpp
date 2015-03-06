@@ -30,7 +30,7 @@
 
 TransferReceiver::TransferReceiver(qintptr socketDescriptor)
     : Transfer(TransferModel::Receive),
-      mRoot(Settings::get<QString>(Settings::TransferDirectory))
+      mRoot(Settings::get(Settings::TransferDirectory).toString())
 {
     mSocket.setSocketDescriptor(socketDescriptor);
 }
