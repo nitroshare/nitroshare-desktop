@@ -46,7 +46,7 @@ public:
 
 private:
 
-    virtual bool processPacket(const QByteArray &data);
+    virtual void processPacket(const QByteArray &data);
     virtual void writeNextPacket();
 
     void writeTransferHeader();

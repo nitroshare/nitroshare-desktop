@@ -65,7 +65,7 @@ private Q_SLOTS:
 
 protected:
 
-    virtual bool processPacket(const QByteArray &data) = 0;
+    virtual void processPacket(const QByteArray &data) = 0;
     virtual void writeNextPacket() = 0;
 
     void writePacket(const QByteArray &data);

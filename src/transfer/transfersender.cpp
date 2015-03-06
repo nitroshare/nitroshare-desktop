@@ -64,34 +64,31 @@ void TransferSender::start()
     mSocket.connectToHost(mAddress, mPort);
 }
 
-bool TransferSender::processPacket(const QByteArray &data)
+void TransferSender::processPacket(const QByteArray &data)
 {
-    // The only time a packet should be received is after
-    // the transfer has finished, acknowledging success
-    if(mProtocolState != Finished) {
-        abortWithError(tr("Unexpected data received"));
-    } else {
+    // If a packet is received, it must be either an acknowledgement
+    // of transfer or an error - determine which is the case
+    QJsonDocument document = QJsonDocument::fromJson(data);
+    QJsonObject object;
 
-        QJsonDocument document = QJsonDocument::fromJson(data);
-        QJsonObject object;
-        bool success;
+    if(Json::isObject(document, object)) {
 
-        // Check to see if the receiver indicated success
-        if(Json::isObject(document, object) &&
-                Json::objectContains(object, "success", success) &&
-                success) {
+        // If the packet contains an error message, then pass it along
+        // If the transfer has finished, then complete the transfer
+        // Otherwise, the packet is unexpected, which is its own error
+        QString error;
 
+        if(Json::objectContains(object, "error", error)) {
+            abortWithError(error);
+        } else if(mProtocolState == Finished) {
             finish();
-
         } else {
-
-            // TODO: replace with error from receiving device
-            abortWithError(tr("Receiving device indicated failure"));
+            abortWithError(tr("Unexpected packet received"));
         }
-    }
 
-    // We can return false since there should never be more packets
-    return false;
+    } else {
+        abortWithError(tr("Unable to read reply from remote device"));
+    }
 }
 
 void TransferSender::writeNextPacket()
@@ -118,7 +115,6 @@ void TransferSender::writeTransferHeader()
     // Due to poor translation between 64-bit integers in C++ and JSON,
     // it is necessary to send integers as strings
     writePacket({
-        { "protocol", "1" },
         { "name", Settings::get(Settings::DeviceName).toString() },
         { "size", QString::number(mTransferBytesTotal) },
         { "count", QString::number(mBundle->count()) }

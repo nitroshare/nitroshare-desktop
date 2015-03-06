@@ -42,13 +42,14 @@ public:
 
 private:
 
-    virtual bool processPacket(const QByteArray &data);
+    virtual void processPacket(const QByteArray &data);
     virtual void writeNextPacket();
 
-    bool processTransferHeader(const QByteArray &data);
-    bool processItemHeader(const QByteArray &data);
-    bool processItemData(const QByteArray &data);
+    void processTransferHeader(const QByteArray &data);
+    void processItemHeader(const QByteArray &data);
+    void processItemData(const QByteArray &data);
 
+    void sendError(const QString &message);
     void nextItem();
 
     // Directory to write files to
@@ -60,6 +61,9 @@ private:
     // Data needed for the file currently being read
     QFile mFile;
     qint64 mFileBytesRemaining;
+
+    // Error message pending
+    QString mError;
 };
 
 #endif // NS_TRANSFERRECEIVER_H

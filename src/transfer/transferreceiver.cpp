@@ -40,30 +40,36 @@ void TransferReceiver::start()
     // The socket is already connected at this point
 }
 
-bool TransferReceiver::processPacket(const QByteArray &data)
+void TransferReceiver::processPacket(const QByteArray &data)
 {
     // Depending on the state of the transfer, process the packet accordingly
     switch(mProtocolState){
     case TransferHeader:
-        return processTransferHeader(data);
+        processTransferHeader(data);
+        break;
     case ItemHeader:
-        return processItemHeader(data);
+        processItemHeader(data);
+        break;
     case ItemData:
-        return processItemData(data);
+        processItemData(data);
+        break;
     case Finished:
         break;
     }
-
-    return false;
 }
 
 void TransferReceiver::writeNextPacket()
 {
-    // This is only ever invoked after success
-    finish();
+    // The only time data is written to the socket is after
+    // the transfer has completed OR an error condition occurs
+    if(mError.isNull()) {
+        finish();
+    } else {
+        abortWithError(mError);
+    }
 }
 
-bool TransferReceiver::processTransferHeader(const QByteArray &data)
+void TransferReceiver::processTransferHeader(const QByteArray &data)
 {
     QJsonDocument document = QJsonDocument::fromJson(data);
     QJsonObject object;
@@ -77,16 +83,13 @@ bool TransferReceiver::processTransferHeader(const QByteArray &data)
 
         // The next packet will be the first file header
         mProtocolState = ItemHeader;
-        return true;
 
     } else {
-
         abortWithError(tr("Unable to read transfer header"));
-        return false;
     }
 }
 
-bool TransferReceiver::processItemHeader(const QByteArray &data)
+void TransferReceiver::processItemHeader(const QByteArray &data)
 {
     QJsonDocument document = QJsonDocument::fromJson(data);
     QJsonObject object;
@@ -114,8 +117,8 @@ bool TransferReceiver::processItemHeader(const QByteArray &data)
         if(directory) {
 
             if(!QDir(filename).mkpath(".")) {
-                abortWithError(tr("Unable to create %1").arg(filename));
-                return false;
+                sendError(tr("Unable to create %1").arg(filename));
+                return;
             }
 
             // Move to the next item
@@ -125,17 +128,15 @@ bool TransferReceiver::processItemHeader(const QByteArray &data)
 
             // Ensure that the size was included
             if(!Json::objectContains(object, "size", mFileBytesRemaining)) {
-
-                abortWithError(tr("File size is missing from header"));
-                return false;
+                sendError(tr("File size is missing from header"));
+                return;
             }
 
             // Abort if the file can't be opened
             mFile.setFileName(filename);
             if(!mFile.open(QIODevice::WriteOnly)) {
-
-                abortWithError(tr("Unable to open %1").arg(filename));
-                return false;
+                sendError(tr("Unable to open %1").arg(filename));
+                return;
             }
 
             // If the file is non-empty, switch states
@@ -147,16 +148,13 @@ bool TransferReceiver::processItemHeader(const QByteArray &data)
                 nextItem();
             }
         }
+
     } else {
-
-        abortWithError(tr("Unable to read file header"));
-        return false;
+        sendError(tr("Unable to read file header"));
     }
-
-    return true;
 }
 
-bool TransferReceiver::processItemData(const QByteArray &data)
+void TransferReceiver::processItemData(const QByteArray &data)
 {
     // Write the data to the file
     mFile.write(data);
@@ -174,8 +172,20 @@ bool TransferReceiver::processItemData(const QByteArray &data)
         mFile.close();
         nextItem();
     }
+}
 
-    return true;
+void TransferReceiver::sendError(const QString &message)
+{
+    // Send a packet with the error message
+    QVariantMap packet = {
+        { "error", message }
+    };
+    writePacket(packet);
+
+    // Store the error message and mark the transfer as finished
+    // This will cause all remaining packets to be discarded
+    mError = message;
+    mProtocolState = Finished;
 }
 
 void TransferReceiver::nextItem()
@@ -186,11 +196,8 @@ void TransferReceiver::nextItem()
     // Check to see if there are any more items remaining
     if(!mTransferItemsRemaining) {
 
-        // Write the "success" packet
-        QVariantMap packet = {
-            { "success", true }
-        };
-        writePacket(packet);
+        // Write the "success" packet (currently empty)
+        writePacket(QVariantMap());
 
         mProtocolState = Finished;
     } else {

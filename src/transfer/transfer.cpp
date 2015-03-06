@@ -109,8 +109,10 @@ void Transfer::onReadyRead()
             mBufferSize = 0;
 
             // Pass the packet along to the child class
-            // A return value of false indicates that no more packets should be received
-            if(!processPacket(data)) {
+            processPacket(data);
+
+            // If the connection terminated for some reason, exit the loop
+            if(!mSocket.isOpen()) {
                 break;
             }
         } else {
