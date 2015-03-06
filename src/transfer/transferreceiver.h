@@ -42,12 +42,12 @@ public:
 
 private:
 
-    virtual void processPacket(const QByteArray &data);
+    virtual bool processPacket(const QByteArray &data);
     virtual void writeNextPacket();
 
-    void processTransferHeader(const QByteArray &data);
-    void processItemHeader(const QByteArray &data);
-    void processItemData(const QByteArray &data);
+    bool processTransferHeader(const QByteArray &data);
+    bool processItemHeader(const QByteArray &data);
+    bool processItemData(const QByteArray &data);
 
     void nextItem();
 

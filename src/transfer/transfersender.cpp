@@ -64,7 +64,7 @@ void TransferSender::start()
     mSocket.connectToHost(mAddress, mPort);
 }
 
-void TransferSender::processPacket(const QByteArray &data)
+bool TransferSender::processPacket(const QByteArray &data)
 {
     // The only time a packet should be received is after
     // the transfer has finished, acknowledging success
@@ -82,12 +82,16 @@ void TransferSender::processPacket(const QByteArray &data)
                 success) {
 
             finish();
+
         } else {
 
             // TODO: replace with error from receiving device
             abortWithError(tr("Receiving device indicated failure"));
         }
     }
+
+    // We can return false since there should never be more packets
+    return false;
 }
 
 void TransferSender::writeNextPacket()
@@ -130,9 +134,9 @@ void TransferSender::writeItemHeader()
     QVariantMap header = {
         { "name", mIterator->relativeFilename() },
         { "directory", mIterator->isDir() },
-        { "created", mIterator->created() },
-        { "last_modified", mIterator->lastModified() },
-        { "last_read", mIterator->lastRead() }
+        { "created", QString::number(mIterator->created()) },
+        { "last_modified", QString::number(mIterator->lastModified()) },
+        { "last_read", QString::number(mIterator->lastRead()) }
     };
 
     // If the item is a directory, write the header and move to the next item

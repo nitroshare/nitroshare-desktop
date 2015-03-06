@@ -109,7 +109,10 @@ void Transfer::onReadyRead()
             mBufferSize = 0;
 
             // Pass the packet along to the child class
-            processPacket(data);
+            // A return value of false indicates that no more packets should be received
+            if(!processPacket(data)) {
+                break;
+            }
         } else {
             break;
         }
