@@ -44,6 +44,7 @@ HEADERS += \
 SOURCES += \
     application/aboutdialog.cpp \
     application/application.cpp \
+    application/settingsdialog.cpp \
     bundle/bundle.cpp \
     device/device.cpp \
     device/devicedialog.cpp \
@@ -64,6 +65,7 @@ SOURCES += \
 
 FORMS += \
     application/aboutdialog.ui \
+    application/settingsdialog.ui \
     device/devicedialog.ui \
     transfer/transferwindow.ui
 
