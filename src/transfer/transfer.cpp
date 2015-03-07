@@ -25,9 +25,10 @@
 #include <cstring>
 
 #include <QJsonDocument>
-#include <QJsonObject>
 #include <QtEndian>
+#include <QVariantMap>
 
+#include "../util/json.h"
 #include "transfer.h"
 
 Transfer::Transfer(TransferModel::Direction direction)
@@ -46,32 +47,34 @@ Transfer::Transfer(TransferModel::Direction direction)
 
 void Transfer::cancel()
 {
-    // Ensure that the transfer is actually progress before trying to abort it
-    if(mState == TransferModel::Canceled || mState == TransferModel::Failed || mState == TransferModel::Succeeded) {
+    // Ensure that the transfer is actually in progress before trying to cancel it
+    if(mState == TransferModel::Failed || mState == TransferModel::Succeeded) {
         qWarning("Cannot cancel a transfer that has completed");
         return;
     }
 
-    mSocket.abort();
-
-    mState = TransferModel::Canceled;
-    emit dataChanged({TransferModel::StateRole});
+    // Canceling a request is considered an "error" and is treated the same way
+    // Only attempt to report the error if the transfer isn't already finished
+    if(mProtocolState != ProtocolState::Finished) {
+        writeErrorPacket(tr("Transfer was canceled"));
+    }
 }
 
 void Transfer::restart()
 {
-    // Ensure that the transfer is sending data
+    // Ensure that the transfer is sending data and not receiving
     if(mDirection == TransferModel::Receive) {
-        qWarning("Cannot restart a transfer that receives files.");
+        qWarning("Cannot restart a transfer that receives files");
         return;
     }
 
     // Ensure that the transfer is not in progress before restarting it
     if(mState == TransferModel::Connecting || mState == TransferModel::InProgress) {
-        qWarning("Cannot start a transfer that is in progress");
+        qWarning("Cannot restart a transfer that is in progress");
         return;
     }
 
+    // Reset all of the transfer variables and start again
     reset();
     start();
 }
@@ -80,6 +83,9 @@ void Transfer::onConnected()
 {
     mState = TransferModel::InProgress;
     emit dataChanged({TransferModel::StateRole});
+
+    // Begin writing the first packet
+    writeNextPacket();
 }
 
 void Transfer::onReadyRead()
@@ -89,71 +95,109 @@ void Transfer::onReadyRead()
 
     // Process as many packets as can be read from the buffer
     forever {
+
+        // Quit the loop if the transfer has finished
+        if(mProtocolState == ProtocolState::Finished) {
+            break;
+        }
+
         // If the size of the packet is not yet known attempt to read it
         if(!mBufferSize) {
             if(static_cast<size_t>(mBuffer.size()) >= sizeof(mBufferSize)) {
+
                 // memcpy must be used in order to avoid alignment issues
+                // Also, the integer uses little endian byte order
+                // so convert it to the host format if necessary
                 memcpy(&mBufferSize, mBuffer.constData(), sizeof(mBufferSize));
                 mBufferSize = qFromLittleEndian(mBufferSize);
                 mBuffer.remove(0, sizeof(mBufferSize));
+
+                // A packet size of zero is an error
+                if(!mBufferSize) {
+                    writeErrorPacket(tr("Empty packet received"));
+                }
+
             } else {
                 break;
             }
         }
 
-        // At this point, the size of the packet is known,
-        // check if the specified number of bytes are available
+        // If the buffer contains enough data for the packet, then process it
         if(mBuffer.size() >= mBufferSize) {
-            QByteArray data = mBuffer.left(mBufferSize);
-            mBuffer.remove(0, mBufferSize);
-            mBufferSize = 0;
-
-            // Pass the packet along to the child class
-            processPacket(data);
-
-            // If the connection terminated for some reason, exit the loop
-            if(!mSocket.isOpen()) {
-                break;
-            }
+            processPacket();
         } else {
             break;
         }
-    };
+    }
 }
 
 void Transfer::onBytesWritten()
 {
-    // This slot is invoked after data has been written - only write more
-    // packets if there is no data still waiting to be written
+    // Wait until there is no more pending data to write
     if(!mSocket.bytesToWrite()) {
-        writeNextPacket();
+
+        // If the transfer finished, then report success or failure
+        // Otherwise, have the child class write the next packet
+        if(mProtocolState == ProtocolState::Finished) {
+
+            // Report the current status of the transfer
+            mState = mError.isNull() ? TransferModel::Succeeded : TransferModel::Failed;
+            emit dataChanged({TransferModel::StateRole});
+
+            // Close the socket
+            mSocket.abort();
+
+        } else {
+            writeNextPacket();
+        }
     }
 }
 
 void Transfer::onError(QAbstractSocket::SocketError)
 {
-    // Errors are only meaningful during the Connecting and InProgress states
+    // Errors are only meaningful during the Connecting and InProgress
     if(mState == TransferModel::Connecting || mState == TransferModel::InProgress) {
-        abortWithError(mSocket.errorString());
+
+        // Unlike other error conditions, a socket error indicates that the socket
+        // is closed and therefore we don't need to inform the remote device
+        mState = TransferModel::Failed;
+        emit dataChanged({TransferModel::StateRole});
     }
 }
 
-void Transfer::writePacket(const QByteArray &data)
+void Transfer::writeSuccessPacket()
 {
-    // Write the length of the data and its contents
-    qint32 packetSize = qToLittleEndian(data.length());
-    mSocket.write(reinterpret_cast<const char*>(&packetSize), sizeof(packetSize));
-    mSocket.write(data);
+    // A success packet contains absolutely no data
+    writePacket(PacketType::Success);
+    mProtocolState = ProtocolState::Finished;
 }
 
-void Transfer::writePacket(const QVariantMap &map)
+void Transfer::writeErrorPacket(const QString &message)
 {
-    // Create a JSON string from the map and write it
-    QJsonObject object = QJsonObject::fromVariantMap(map);
-    writePacket(QJsonDocument(object).toJson(QJsonDocument::Compact));
+    // Send the error as a UTF-8 encoded string
+    writePacket(PacketType::Error, message.toUtf8());
+
+    // Record the error message and emit the appropriate signal
+    mError = message;
+    emit dataChanged({TransferModel::ErrorRole});
+
+    // Indicate that the transfer has finished so that all future packets are ignored
+    mProtocolState = ProtocolState::Finished;
 }
 
-void Transfer::calculateProgress()
+void Transfer::writeJsonPacket(const QJsonObject &object)
+{
+    // Convert the JSON object to a byte array and send it
+    writePacket(PacketType::Json, QJsonDocument(object).toJson(QJsonDocument::Compact));
+}
+
+void Transfer::writeBinaryPacket(const QByteArray &data)
+{
+    // Pass the data along unmodified
+    writePacket(PacketType::Binary, data);
+}
+
+void Transfer::updateProgress()
 {
     // Store the old value to avoid emiting the dataChanged signal more often than necessary
     int oldProgress = mProgress;
@@ -173,28 +217,71 @@ void Transfer::calculateProgress()
     }
 }
 
-void Transfer::abortWithError(const QString &message)
+void Transfer::processPacket()
 {
-    // This method is (thankfully) idempotent
-    mSocket.abort();
+    // Grab the data from the front of the buffer
+    const char type = mBuffer.at(0);
+    QByteArray data = mBuffer.mid(1, mBufferSize - 1);
+    mBuffer.remove(0, mBufferSize);
+    mBufferSize = 0;
 
-    mError = message;
-    mState = TransferModel::Failed;
-    emit dataChanged({TransferModel::StateRole, TransferModel::ErrorRole});
+    // Process the data based on the type
+    switch(static_cast<PacketType>(type)) {
+    case PacketType::Success:
+    {
+        // Confirmation from the remote device that the transfer succeeded
+        mState = TransferModel::Succeeded;
+        emit dataChanged({TransferModel::StateRole});
+        break;
+    }
+    case PacketType::Error:
+    {
+        // An error occurred - grab the error message
+        mError = QString::fromUtf8(data);
+        mState = TransferModel::Failed;
+        emit dataChanged({TransferModel::ErrorRole, TransferModel::StateRole});
+        break;
+    }
+    case PacketType::Json:
+    {
+        // Verify the JSON is valid and pass it along
+        QJsonDocument document = QJsonDocument::fromJson(data);
+        if(document.isObject()) {
+            processJsonPacket(document.object());
+        } else {
+            writeErrorPacket(tr("Unable to read JSON packet"));
+        }
+        break;
+    }
+    case PacketType::Binary:
+    {
+        // Pass the packet along unmodified
+        processBinaryPacket(data);
+        break;
+    }
+    default:
+        // Any other type of packet is an error
+        writeErrorPacket(tr("Unrecognized packet received"));
+    }
 }
 
-void Transfer::finish()
+void Transfer::writePacket(PacketType type, const QByteArray &data)
 {
-    mSocket.abort();
+    // Write the size of the packet including its type
+    qint32 packetSize = qToLittleEndian(data.length() + 1);
+    mSocket.write(reinterpret_cast<const char*>(&packetSize), sizeof(packetSize));
 
-    mState = TransferModel::Succeeded;
-    emit dataChanged({TransferModel::StateRole});
+    // Write the packet type and the data (if provided)
+    mSocket.write(reinterpret_cast<const char*>(&type), 1);
+    if(data.length()) {
+        mSocket.write(data);
+    }
 }
 
 void Transfer::reset()
 {
-    // Reset all of the state variables to proper default values
-    mProtocolState = TransferHeader;
+    // Reset all of the state variables to their initial values
+    mProtocolState = ProtocolState::TransferHeader;
 
     mTransferBytes = 0;
     mTransferBytesTotal = 0;

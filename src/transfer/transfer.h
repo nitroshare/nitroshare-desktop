@@ -25,13 +25,27 @@
 #ifndef NS_TRANSFER_H
 #define NS_TRANSFER_H
 
-#include <QHostAddress>
+#include <QJsonObject>
 #include <QTcpSocket>
-#include <QVariantMap>
 
-#include "../bundle/bundle.h"
 #include "transfermodel.h"
 
+/**
+ * @brief A transfer between two devices
+ *
+ * This class facilitates the actual transfer of files and directories between
+ * devices. Data is exchanged using "packets", which are distinct pieces of
+ * information. Packets can contain metadata, file contents, or error message,
+ * for example.
+ *
+ * At the beginning of the transfer, the device name, number of items, and
+ * total size is sent. Then, for each item, its metadata and contents are
+ * transferred. Once this is complete, an acknowledgement packet is sent.
+ *
+ * At a lower level, a packet consists of a 32-bit signed integer indicating
+ * its size. The first byte of the packet indicates its type. Two types are
+ * currently used - JSON and binary data.
+ */
 class Transfer : public QObject
 {
     Q_OBJECT
@@ -65,31 +79,42 @@ private Q_SLOTS:
 
 protected:
 
-    virtual void processPacket(const QByteArray &data) = 0;
+    virtual void processJsonPacket(const QJsonObject &object) = 0;
+    virtual void processBinaryPacket(const QByteArray &data) = 0;
+
     virtual void writeNextPacket() = 0;
 
-    void writePacket(const QByteArray &data);
-    void writePacket(const QVariantMap &map);
+    void writeSuccessPacket();
+    void writeErrorPacket(const QString &message);
+    void writeJsonPacket(const QJsonObject &object);
+    void writeBinaryPacket(const QByteArray &data);
 
-    void calculateProgress();
-    void abortWithError(const QString &message);
-    void finish();
+    void updateProgress();
 
     QTcpSocket mSocket;
+    QString mDeviceName;
 
-    enum {
+    enum class ProtocolState {
         TransferHeader,
-        ItemHeader,
-        ItemData,
+        FileHeader,
+        FileData,
         Finished
     } mProtocolState;
-
-    QString mDeviceName;
 
     qint64 mTransferBytes;
     qint64 mTransferBytesTotal;
 
 private:
+
+    enum class PacketType : char {
+        Success = 0,
+        Error,
+        Json,
+        Binary
+    };
+
+    void processPacket();
+    void writePacket(PacketType type, const QByteArray &data = QByteArray());
 
     void reset();
 
