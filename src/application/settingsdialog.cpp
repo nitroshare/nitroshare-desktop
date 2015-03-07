@@ -38,18 +38,18 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     ui->tabWidget->setTabEnabled(2, false);
 
     // General
-    ui->lnEdtdeviceName->setText(Settings::get<QString>(Settings::DeviceName));
-    ui->spnBoxUpdateInterval->setValue(Settings::get<int>(Settings::UpdateInterval) / Settings::Hour);
+    ui->lnEdtdeviceName->setText(Settings::get(Settings::DeviceName).toString());
+    ui->spnBoxUpdateInterval->setValue(Settings::get(Settings::UpdateInterval).toInt() / Settings::Hour);
 
     // Transfer
-    ui->spnBoxBuffer->setValue(Settings::get<int>(Settings::TransferBuffer));
-    ui->lnEdtDirectory->setText(Settings::get<QString>(Settings::TransferDirectory));
-    ui->spnBoxTransferPort->setValue(Settings::get<quint16>(Settings::TransferPort));
+    ui->spnBoxBuffer->setValue(Settings::get(Settings::TransferBuffer).toInt());
+    ui->lnEdtDirectory->setText(Settings::get(Settings::TransferDirectory).toString());
+    ui->spnBoxTransferPort->setValue(Settings::get(Settings::TransferPort).toLongLong());
 
     // Broadcast
-    ui->spnBoxBroadcastPort->setValue(Settings::get<quint16>(Settings::BroadcastPort));
-    ui->spnBoxBroadcastTimeout->setValue(Settings::get<int>(Settings::BroadcastTimeout) / Settings::Second);
-    ui->spnBoxBroadcastInterval->setValue(Settings::get<int>(Settings::BroadcastInterval) / Settings::Second);
+    ui->spnBoxBroadcastPort->setValue(Settings::get(Settings::BroadcastPort).toLongLong());
+    ui->spnBoxBroadcastTimeout->setValue(Settings::get(Settings::BroadcastTimeout).toInt() / Settings::Second);
+    ui->spnBoxBroadcastInterval->setValue(Settings::get(Settings::BroadcastInterval).toInt() / Settings::Second);
 
     connect(ui->pshBtnSelectDir, &QPushButton::clicked,
             this, &SettingsDialog::onBtnSelectDirClicked);

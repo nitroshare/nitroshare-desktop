@@ -67,7 +67,7 @@ const int Settings::Hour = 60 * Minute;
 
 // Define all of the settings
 QMap<int, Setting> Keys = {
-    DEFINE_SETTING(BroadcastInterval, { return 5 * Second; }),
+    DEFINE_SETTING(BroadcastInterval, { return 5 * Settings::Second; }),
     DEFINE_SETTING(BroadcastPort, { return 40816; }),
     DEFINE_SETTING(BroadcastTimeout, { return 30 * Settings::Second; }),
     DEFINE_SETTING(DeviceName, { return QHostInfo::localHostName(); }),
