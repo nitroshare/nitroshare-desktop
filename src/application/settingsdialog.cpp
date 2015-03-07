@@ -25,6 +25,7 @@
 #include "settingsdialog.h"
 #include "ui_settingsdialog.h"
 
+#include <QMessageBox>
 #include <QFileDialog>
 
 #include "../util/settings.h"
@@ -77,6 +78,19 @@ void SettingsDialog::accept()
     Settings::set(Settings::BroadcastInterval, ui->spnBoxBroadcastInterval->value() * Settings::Second);
 
     QDialog::accept();
+}
+
+void SettingsDialog::onBtnResetClicked()
+{
+    QMessageBox::StandardButton response = QMessageBox::question(this,
+                                                                 "Reset settings",
+                                                                 "Are you sure you want to reset "
+                                                                 "all settings to their default "
+                                                                 "values? This cannot be undone.");
+    if (response == QMessageBox::Yes) {
+        Settings::reset();
+        this->reject();
+    }
 }
 
 void SettingsDialog::onBtnSelectDirClicked()

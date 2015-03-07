@@ -46,6 +46,7 @@ public Q_SLOTS:
 
 private Q_SLOTS:
 
+    void onBtnResetClicked();
     void onBtnSelectDirClicked();
     void onChkBoxAdvancedClicked(bool clicked);
 
