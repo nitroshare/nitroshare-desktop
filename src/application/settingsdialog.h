@@ -48,7 +48,6 @@ private Q_SLOTS:
 
     void onBtnResetClicked();
     void onBtnSelectDirClicked();
-    void onChkBoxAdvancedClicked(bool clicked);
 
 private:
     Ui::SettingsDialog *ui;

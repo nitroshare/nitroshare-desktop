@@ -36,8 +36,6 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    ui->tabWidget->setTabEnabled(2, false);
-
     // General
     ui->lnEdtdeviceName->setText(Settings::get(Settings::DeviceName).toString());
     ui->spnBoxUpdateInterval->setValue(Settings::get(Settings::UpdateInterval).toInt() / Settings::Hour);
@@ -99,9 +97,4 @@ void SettingsDialog::onBtnSelectDirClicked()
 
     if(!path.isNull())
         ui->lnEdtDirectory->setText(path);
-}
-
-void SettingsDialog::onChkBoxAdvancedClicked(bool clicked)
-{
-    ui->tabWidget->setTabEnabled(2, clicked);
 }
