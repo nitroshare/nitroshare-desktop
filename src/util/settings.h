@@ -25,47 +25,102 @@
 #ifndef NS_SETTINGS_H
 #define NS_SETTINGS_H
 
-#include <QSettings>
+#include <QObject>
+#include <QVariant>
 
-class Settings : public QSettings
+class SettingsPrivate;
+
+/**
+ * @brief Interface for storing and retrieving settings
+ *
+ * Access to settings that control behavior of the application is done through
+ * a global instance of this class. The global instance may be obtained
+ * through the instance() static method. From there, settings can be both
+ * retrieved and set. Settings are applied immediately.
+ */
+class Settings : public QObject
 {
     Q_OBJECT
 
 public:
 
-    enum Key {
-        BroadcastInterval,
-        BroadcastPort,
-        BroadcastTimeout,
-        DeviceName,
-        DeviceUUID,
-        TransferBuffer,
-        TransferDirectory,
-        TransferPort,
-        TrayIcon,
-        UpdateInterval
-    };
+    /**
+     * @brief Create a new settings instance
+     * @param parent parent QObject
+     *
+     * Instances of this class should not be instantiated. Instead, obtain a
+     * pointer to the global instance with the instance() static method.
+     */
+    explicit Settings(QObject *parent = nullptr);
 
-    static const int Second;
-    static const int Minute;
-    static const int Hour;
+    /**
+     * @brief Destroy the settings instance
+     */
+    virtual ~Settings();
 
-    static Settings * instance();
+    /// Time (in MS) between broadcast packets
+    static const int BroadcastInterval;
 
-    template <class T>
-    static T get(Key key) { return loadValue(key).value<T>(); }
-    static void set(Key key, const QVariant &value) { storeValue(key, value, false); }
+    /// Port for sending broadcast packets
+    static const int BroadcastPort;
 
+    /// Time (in MS) after receiving a device's last packet before considering the device offline
+    static const int BroadcastTimeout;
+
+    /// Descriptive name of the device
+    static const int DeviceName;
+
+    /// Unique GUID used to identify the device
+    static const int DeviceUUID;
+
+    /// Size (in bytes) of the buffer used for transferring file data
+    static const int TransferBuffer;
+
+    /// Directory for storing received files and directories
+    static const int TransferDirectory;
+
+    /// Port for receiving transfers
+    static const int TransferPort;
+
+    /// Interval between consecutive update checks
+    static const int UpdateInterval;
+
+    /**
+     * @brief Retrieve a pointer to the global settings instance
+     * @return pointer to the global instance
+     */
+    static Settings *instance();
+
+    /**
+     * @brief Retrieve the value of the specified key
+     * @param key key to retrieve the value of
+     * @return value for the specified key
+     */
+    static QVariant get(int key);
+
+    /**
+     * @brief Set the value of the specified key
+     * @param key key to set the value of
+     * @param value new value for the key
+     */
+    static void set(int key, const QVariant &value);
+
+    /**
+     * @brief Reset all settings to their default values
+     */
     static void reset();
 
 Q_SIGNALS:
 
-    void settingChanged(Key key);
+    /**
+     * @brief Indicate that a specific setting has changed value
+     * @param key key whose value has changed
+     */
+    void settingChanged(int key);
 
 private:
 
-    static QVariant loadValue(Key key);
-    static void storeValue(Key key, const QVariant &value, bool initializing);
+    SettingsPrivate *const d;
 };
 
 #endif // NS_SETTINGS_H

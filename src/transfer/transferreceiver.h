@@ -49,6 +49,7 @@ private:
     void processItemHeader(const QByteArray &data);
     void processItemData(const QByteArray &data);
 
+    void sendError(const QString &message);
     void nextItem();
 
     // Directory to write files to
@@ -60,6 +61,9 @@ private:
     // Data needed for the file currently being read
     QFile mFile;
     qint64 mFileBytesRemaining;
+
+    // Error message pending
+    QString mError;
 };
 
 #endif // NS_TRANSFERRECEIVER_H

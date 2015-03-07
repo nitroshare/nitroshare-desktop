@@ -110,6 +110,11 @@ void Transfer::onReadyRead()
 
             // Pass the packet along to the child class
             processPacket(data);
+
+            // If the connection terminated for some reason, exit the loop
+            if(!mSocket.isOpen()) {
+                break;
+            }
         } else {
             break;
         }

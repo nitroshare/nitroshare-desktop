@@ -54,7 +54,7 @@ void DeviceModelPrivate::processPing(const QString &uuid, const QString &name, P
 {
     // Ensure that the UUID does not match this device
     // since we will receive our own broadcast packets
-    if(uuid == Settings::get<QString>(Settings::DeviceUUID)) {
+    if(uuid == Settings::get(Settings::DeviceUUID).toString()) {
         return;
     }
 
@@ -105,7 +105,7 @@ void DeviceModelPrivate::update()
     }
 }
 
-void DeviceModelPrivate::settingChanged(Settings::Key key)
+void DeviceModelPrivate::settingChanged(int key)
 {
     if(key == Settings::BroadcastTimeout) {
         reload();
@@ -114,7 +114,7 @@ void DeviceModelPrivate::settingChanged(Settings::Key key)
 
 void DeviceModelPrivate::reload()
 {
-    timer.setInterval(Settings::get<int>(Settings::BroadcastTimeout));
+    timer.setInterval(Settings::get(Settings::BroadcastTimeout).toInt());
 }
 
 DeviceModel::DeviceModel()

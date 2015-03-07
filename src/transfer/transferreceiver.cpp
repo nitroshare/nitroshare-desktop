@@ -30,7 +30,7 @@
 
 TransferReceiver::TransferReceiver(qintptr socketDescriptor)
     : Transfer(TransferModel::Receive),
-      mRoot(Settings::get<QString>(Settings::TransferDirectory))
+      mRoot(Settings::get(Settings::TransferDirectory).toString())
 {
     mSocket.setSocketDescriptor(socketDescriptor);
 }
@@ -60,8 +60,13 @@ void TransferReceiver::processPacket(const QByteArray &data)
 
 void TransferReceiver::writeNextPacket()
 {
-    // This is only ever invoked after success
-    finish();
+    // The only time data is written to the socket is after
+    // the transfer has completed OR an error condition occurs
+    if(mError.isNull()) {
+        finish();
+    } else {
+        abortWithError(mError);
+    }
 }
 
 void TransferReceiver::processTransferHeader(const QByteArray &data)
@@ -78,8 +83,8 @@ void TransferReceiver::processTransferHeader(const QByteArray &data)
 
         // The next packet will be the first file header
         mProtocolState = ItemHeader;
-    } else {
 
+    } else {
         abortWithError(tr("Unable to read transfer header"));
     }
 }
@@ -112,7 +117,7 @@ void TransferReceiver::processItemHeader(const QByteArray &data)
         if(directory) {
 
             if(!QDir(filename).mkpath(".")) {
-                abortWithError(tr("Unable to create %1").arg(filename));
+                sendError(tr("Unable to create %1").arg(filename));
                 return;
             }
 
@@ -123,14 +128,14 @@ void TransferReceiver::processItemHeader(const QByteArray &data)
 
             // Ensure that the size was included
             if(!Json::objectContains(object, "size", mFileBytesRemaining)) {
-                abortWithError(tr("File size is missing from header"));
+                sendError(tr("File size is missing from header"));
                 return;
             }
 
             // Abort if the file can't be opened
             mFile.setFileName(filename);
             if(!mFile.open(QIODevice::WriteOnly)) {
-                abortWithError(tr("Unable to open %1").arg(filename));
+                sendError(tr("Unable to open %1").arg(filename));
                 return;
             }
 
@@ -143,8 +148,9 @@ void TransferReceiver::processItemHeader(const QByteArray &data)
                 nextItem();
             }
         }
+
     } else {
-        abortWithError(tr("Unable to read file header"));
+        sendError(tr("Unable to read file header"));
     }
 }
 
@@ -168,6 +174,20 @@ void TransferReceiver::processItemData(const QByteArray &data)
     }
 }
 
+void TransferReceiver::sendError(const QString &message)
+{
+    // Send a packet with the error message
+    QVariantMap packet = {
+        { "error", message }
+    };
+    writePacket(packet);
+
+    // Store the error message and mark the transfer as finished
+    // This will cause all remaining packets to be discarded
+    mError = message;
+    mProtocolState = Finished;
+}
+
 void TransferReceiver::nextItem()
 {
     // Decrement the number of items remaining
@@ -176,11 +196,8 @@ void TransferReceiver::nextItem()
     // Check to see if there are any more items remaining
     if(!mTransferItemsRemaining) {
 
-        // Write the "success" packet
-        QVariantMap packet = {
-            { "success", true }
-        };
-        writePacket(packet);
+        // Write the "success" packet (currently empty)
+        writePacket(QVariantMap());
 
         mProtocolState = Finished;
     } else {

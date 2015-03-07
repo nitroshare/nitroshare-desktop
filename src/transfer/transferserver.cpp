@@ -22,6 +22,7 @@
  * IN THE SOFTWARE.
  **/
 
+#include "../util/settings.h"
 #include "transferserver.h"
 #include "transferserver_p.h"
 
@@ -31,7 +32,7 @@ TransferServerPrivate::TransferServerPrivate(TransferServer *transferServer)
 {
 }
 
-void TransferServerPrivate::onSettingChanged(Settings::Key key)
+void TransferServerPrivate::onSettingChanged(int key)
 {
     if(key == Settings::TransferPort && isListening()) {
         close();
@@ -53,7 +54,7 @@ TransferServer::TransferServer(QObject *parent)
 void TransferServer::start()
 {
     // Indicate an error if the port is unavailable
-    quint16 port = Settings::get<quint16>(Settings::TransferPort);
+    quint16 port = Settings::get(Settings::TransferPort).toInt();
     if(!d->listen(QHostAddress::Any, port)) {
         emit error(tr("Unable to listen on port %1").arg(port));
     }
