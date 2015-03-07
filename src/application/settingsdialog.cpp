@@ -41,7 +41,7 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     ui->spnBoxUpdateInterval->setValue(Settings::get(Settings::UpdateInterval).toInt() / Settings::Hour);
 
     // Transfer
-    ui->spnBoxBuffer->setValue(Settings::get(Settings::TransferBuffer).toInt());
+    ui->spnBoxBuffer->setValue(Settings::get(Settings::TransferBuffer).toInt() / Settings::Kb);
     ui->lnEdtDirectory->setText(Settings::get(Settings::TransferDirectory).toString());
     ui->spnBoxTransferPort->setValue(Settings::get(Settings::TransferPort).toLongLong());
 
@@ -68,7 +68,7 @@ void SettingsDialog::accept()
     // Transfer
     Settings::set(Settings::TransferDirectory, ui->lnEdtDirectory->text());
     Settings::set(Settings::TransferPort, ui->spnBoxTransferPort->value());
-    Settings::set(Settings::TransferBuffer, ui->spnBoxBuffer->value());
+    Settings::set(Settings::TransferBuffer, ui->spnBoxBuffer->value() * Settings::Kb);
 
     // Broadcast
     Settings::set(Settings::BroadcastPort, ui->spnBoxBroadcastPort->value());
