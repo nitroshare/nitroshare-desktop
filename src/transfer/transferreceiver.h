@@ -42,14 +42,14 @@ public:
 
 private:
 
-    virtual void processPacket(const QByteArray &data);
+    virtual void processJsonPacket(const QJsonObject &object);
+    virtual void processBinaryPacket(const QByteArray &data);
+
     virtual void writeNextPacket();
 
-    void processTransferHeader(const QByteArray &data);
-    void processItemHeader(const QByteArray &data);
-    void processItemData(const QByteArray &data);
+    void processTransferHeader(const QJsonObject &object);
+    void processItemHeader(const QJsonObject &object);
 
-    void sendError(const QString &message);
     void nextItem();
 
     // Directory to write files to

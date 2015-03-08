@@ -26,15 +26,12 @@
 #define NS_TRANSFERMODELPRIVATE_H
 
 #include <QList>
-#include <QObject>
 
 #include "transfer.h"
 #include "transfermodel.h"
 
-class TransferModelPrivate : public QObject
+class TransferModelPrivate
 {
-    Q_OBJECT
-
 public:
 
     explicit TransferModelPrivate(TransferModel *transferModel);

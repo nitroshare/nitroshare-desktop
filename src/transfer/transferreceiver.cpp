@@ -22,8 +22,6 @@
  * IN THE SOFTWARE.
  **/
 
-#include <QJsonDocument>
-
 #include "../util/json.h"
 #include "../util/settings.h"
 #include "transferreceiver.h"
@@ -40,84 +38,120 @@ void TransferReceiver::start()
     // The socket is already connected at this point
 }
 
-void TransferReceiver::processPacket(const QByteArray &data)
+void TransferReceiver::processJsonPacket(const QJsonObject &object)
 {
-    // Depending on the state of the transfer, process the packet accordingly
-    switch(mProtocolState){
-    case TransferHeader:
-        processTransferHeader(data);
+    switch(mProtocolState) {
+    case ProtocolState::TransferHeader:
+        processTransferHeader(object);
         break;
-    case ItemHeader:
-        processItemHeader(data);
+    case ProtocolState::TransferItems:
+        processItemHeader(object);
         break;
-    case ItemData:
-        processItemData(data);
-        break;
-    case Finished:
-        break;
+    default:
+        writeErrorPacket(tr("Unexpected JSON packet received"));
+    }
+}
+
+void TransferReceiver::processBinaryPacket(const QByteArray &data)
+{
+    // Binary packets can only be received after the transfer header
+    // and after a file header - for sanity, we check the amount of
+    // data we're expecting to receive from the amount actually received
+
+    if(mProtocolState == ProtocolState::TransferItems) {
+
+        // The file will only be open if an item header was received prior
+        // This error is also triggered if more data for the previous file arrives
+        if(!mFile.isOpen()) {
+            writeErrorPacket(tr("Binary packet received before item header"));
+            return;
+        }
+
+        // Ensure that the size of the packet does not exceed the amount expected
+        if(data.size() > mFileBytesRemaining) {
+            writeErrorPacket(tr("Binary packet exceeds declared size"));
+            return;
+        }
+
+        // Write the data to the file
+        mFile.write(data);
+
+        // Update the number of bytes remaining for the file and the total transferred
+        mFileBytesRemaining -= data.size();
+        mTransferBytes += data.size();
+
+        // Provide a progress update
+        updateProgress();
+
+        // If all of the file has been received, move on to the next item
+        if(!mFileBytesRemaining) {
+            mFile.close();
+            nextItem();
+        }
+
+    } else {
+        writeErrorPacket(tr("Unexpected binary packet received"));
     }
 }
 
 void TransferReceiver::writeNextPacket()
 {
-    // The only time data is written to the socket is after
-    // the transfer has completed OR an error condition occurs
-    if(mError.isNull()) {
-        finish();
-    } else {
-        abortWithError(mError);
-    }
+    // No data is written after the success or error packet
 }
 
-void TransferReceiver::processTransferHeader(const QByteArray &data)
+void TransferReceiver::processTransferHeader(const QJsonObject &object)
 {
-    QJsonDocument document = QJsonDocument::fromJson(data);
-    QJsonObject object;
+    QString deviceName;
 
-    if(Json::isObject(document, object) &&
-            Json::objectContains(object, "name", mDeviceName) &&
+    if(Json::objectContains(object, "name", deviceName) &&
             Json::objectContains(object, "size", mTransferBytesTotal) &&
             Json::objectContains(object, "count", mTransferItemsRemaining)) {
 
+        // Indicate that the device name has changed
+        mDeviceName = deviceName;
         emit dataChanged({TransferModel::DeviceNameRole});
 
         // The next packet will be the first file header
-        mProtocolState = ItemHeader;
+        mProtocolState = ProtocolState::TransferItems;
 
     } else {
-        abortWithError(tr("Unable to read transfer header"));
+        writeErrorPacket(tr("Unable to read transfer header"));
     }
 }
 
-void TransferReceiver::processItemHeader(const QByteArray &data)
+void TransferReceiver::processItemHeader(const QJsonObject &object)
 {
-    QJsonDocument document = QJsonDocument::fromJson(data);
-    QJsonObject object;
+    // Before doing anything, ensure that the entire contents of
+    // the previous file were received and that the file was closed
+    if(mFile.isOpen()) {
+        writeErrorPacket(tr("Item header received before previous file contents"));
+        return;
+    }
+
     QString name;
     bool directory;
     qint64 created;
     qint64 lastModified;
     qint64 lastRead;
 
-    // Read the contents of the header
-    if(Json::isObject(document, object) &&
-            Json::objectContains(object, "name", name) &&
+    if(Json::objectContains(object, "name", name) &&
             Json::objectContains(object, "directory", directory) &&
             Json::objectContains(object, "created", created) &&
             Json::objectContains(object, "last_modified", lastModified) &&
             Json::objectContains(object, "last_read", lastRead)) {
 
-        // TODO: created, lastModified, and lastRead are unused
+        // TODO: created, lastModified, and lastRead are currently unused
 
         // Determine the absolute filename of the item
         QString filename = mRoot.absoluteFilePath(name);
 
         // If the item is a directory, attempt to create it
-        // Otherwise, open the file for writing since the directory should exist
+        // Otherwise, it's a file - open it for writing
         if(directory) {
 
+            // Ensure the directory exists
             if(!QDir(filename).mkpath(".")) {
-                sendError(tr("Unable to create %1").arg(filename));
+                writeErrorPacket(tr("Unable to create %1").arg(filename));
                 return;
             }
 
@@ -128,64 +162,28 @@ void TransferReceiver::processItemHeader(const QByteArray &data)
 
             // Ensure that the size was included
             if(!Json::objectContains(object, "size", mFileBytesRemaining)) {
-                sendError(tr("File size is missing from header"));
+                writeErrorPacket(tr("File size is missing from item header"));
                 return;
             }
 
             // Abort if the file can't be opened
             mFile.setFileName(filename);
             if(!mFile.open(QIODevice::WriteOnly)) {
-                sendError(tr("Unable to open %1").arg(filename));
+                writeErrorPacket(tr("Unable to open %1").arg(filename));
                 return;
             }
 
-            // If the file is non-empty, switch states
-            // Otherwise close the file and move to the next item
+            // If the file is empty, we'll never receive its contents (surprise!)
+            // Therefore, we must immediately close the file and move to the next item
             if(mFileBytesRemaining) {
-                mProtocolState = ItemData;
-            } else {
                 mFile.close();
                 nextItem();
             }
         }
 
     } else {
-        sendError(tr("Unable to read file header"));
+        writeErrorPacket(tr("Unable to read file header"));
     }
-}
-
-void TransferReceiver::processItemData(const QByteArray &data)
-{
-    // Write the data to the file
-    mFile.write(data);
-
-    // Update the number of bytes remaining for the file and the total transferred
-    mFileBytesRemaining -= data.size();
-    mTransferBytes += data.size();
-
-    // Provide a progress update
-    calculateProgress();
-
-    // If there are no more bytes to write to the file, move on the
-    // next file or indicate that the transfer has completed
-    if(mFileBytesRemaining <= 0) {
-        mFile.close();
-        nextItem();
-    }
-}
-
-void TransferReceiver::sendError(const QString &message)
-{
-    // Send a packet with the error message
-    QVariantMap packet = {
-        { "error", message }
-    };
-    writePacket(packet);
-
-    // Store the error message and mark the transfer as finished
-    // This will cause all remaining packets to be discarded
-    mError = message;
-    mProtocolState = Finished;
 }
 
 void TransferReceiver::nextItem()
@@ -193,14 +191,8 @@ void TransferReceiver::nextItem()
     // Decrement the number of items remaining
     mTransferItemsRemaining -= 1;
 
-    // Check to see if there are any more items remaining
+    // If no more items remain, then write the success packet
     if(!mTransferItemsRemaining) {
-
-        // Write the "success" packet (currently empty)
-        writePacket(QVariantMap());
-
-        mProtocolState = Finished;
-    } else {
-        mProtocolState = ItemHeader;
+        writeSuccessPacket();
     }
 }

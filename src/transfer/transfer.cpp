@@ -96,11 +96,6 @@ void Transfer::onReadyRead()
     // Process as many packets as can be read from the buffer
     forever {
 
-        // Quit the loop if the transfer has finished
-        if(mProtocolState == ProtocolState::Finished) {
-            break;
-        }
-
         // If the size of the packet is not yet known attempt to read it
         if(!mBufferSize) {
             if(static_cast<size_t>(mBuffer.size()) >= sizeof(mBufferSize)) {
@@ -144,8 +139,9 @@ void Transfer::onBytesWritten()
             mState = mError.isNull() ? TransferModel::Succeeded : TransferModel::Failed;
             emit dataChanged({TransferModel::StateRole});
 
-            // Close the socket
+            // Close the socket and make sure no files are open
             mSocket.abort();
+            mFile.close();
 
         } else {
             writeNextPacket();
@@ -162,6 +158,7 @@ void Transfer::onError(QAbstractSocket::SocketError)
         // is closed and therefore we don't need to inform the remote device
         mState = TransferModel::Failed;
         emit dataChanged({TransferModel::StateRole});
+        mFile.close();
     }
 }
 
@@ -212,6 +209,10 @@ void Transfer::updateProgress()
         mProgress = 0;
     }
 
+    // Ensure that the value falls within range
+    mProgress = qMin(qMax(mProgress, 0), 100);
+
+    // Only emit a signal if the value changes
     if(mProgress != oldProgress) {
         emit dataChanged({TransferModel::ProgressRole});
     }
@@ -232,6 +233,8 @@ void Transfer::processPacket()
         // Confirmation from the remote device that the transfer succeeded
         mState = TransferModel::Succeeded;
         emit dataChanged({TransferModel::StateRole});
+
+        mSocket.abort();
         break;
     }
     case PacketType::Error:
@@ -240,6 +243,9 @@ void Transfer::processPacket()
         mError = QString::fromUtf8(data);
         mState = TransferModel::Failed;
         emit dataChanged({TransferModel::ErrorRole, TransferModel::StateRole});
+
+        mSocket.abort();
+        mFile.close();
         break;
     }
     case PacketType::Json:

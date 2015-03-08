@@ -98,8 +98,6 @@ public:
         Connecting,
         /// File transfer in progress
         InProgress,
-        /// Transfer was canceled
-        Canceled,
         /// Transfer failed
         Failed,
         /// Transfer succeeded
@@ -108,8 +106,14 @@ public:
 
     /**
      * @brief Create a transfer model
+     * @param parent parent QObject
      */
-    TransferModel();
+    explicit TransferModel(QObject *parent = nullptr);
+
+    /**
+     * @brief Destroy the transfer model
+     */
+    virtual ~TransferModel();
 
     /**
      * @brief Retrieve the number of rows in the model

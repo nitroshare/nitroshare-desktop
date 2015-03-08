@@ -46,7 +46,9 @@ public:
 
 private:
 
-    virtual void processPacket(const QByteArray &data);
+    virtual void processJsonPacket(const QJsonObject &object);
+    virtual void processBinaryPacket(const QByteArray &data);
+
     virtual void writeNextPacket();
 
     void writeTransferHeader();
@@ -55,18 +57,13 @@ private:
 
     void nextItem();
 
-    // Information needed to connect to the remote host
     const QHostAddress mAddress;
     const quint16 mPort;
     const Bundle *mBundle;
 
-    // Points to the item currently being transferred
-    QList<BundleItem>::const_iterator mIterator;
+    QList<BundleItem>::const_iterator mCurrentItem;
 
-    // Data needed for the file currently being written
-    QFile mFile;
-    qint64 mFileBytesRemaining;
-    QByteArray mFileBuffer;
+    const int mBufferSize;
 };
 
 #endif // NS_TRANSFERSENDER_H

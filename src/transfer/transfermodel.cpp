@@ -33,8 +33,7 @@
 #include "transfersender.h"
 
 TransferModelPrivate::TransferModelPrivate(TransferModel *transferModel)
-    : QObject(transferModel),
-      q(transferModel)
+    : q(transferModel)
 {
 }
 
@@ -50,7 +49,7 @@ void TransferModelPrivate::add(Transfer *transfer)
     q->endInsertRows();
 
     // Whenever the transfer changes, emit the appropriate signal
-    connect(transfer, &Transfer::dataChanged, [this, transfer](const QVector<int> &roles) {
+    QObject::connect(transfer, &Transfer::dataChanged, [this, transfer](const QVector<int> &roles) {
         int index = transfers.indexOf(transfer);
         emit q->dataChanged(q->index(index, 0), q->index(index, TransferModel::ColumnCount - 1), roles);
     });
@@ -70,9 +69,15 @@ void TransferModelPrivate::remove(Transfer *transfer)
     delete transfer;
 }
 
-TransferModel::TransferModel()
-    : d(new TransferModelPrivate(this))
+TransferModel::TransferModel(QObject *parent)
+    : QAbstractTableModel(parent),
+      d(new TransferModelPrivate(this))
 {
+}
+
+TransferModel::~TransferModel()
+{
+    delete d;
 }
 
 int TransferModel::rowCount(const QModelIndex &parent) const
@@ -106,8 +111,6 @@ QVariant TransferModel::data(const QModelIndex &index, int role) const
                 return tr("Connecting");
             case InProgress:
                 return tr("In Progress");
-            case Canceled:
-                return tr("Canceled");
             case Failed:
                 return tr("Failed: %1").arg(transfer->error());
             case Succeeded:
@@ -128,7 +131,6 @@ QVariant TransferModel::data(const QModelIndex &index, int role) const
     case Qt::ForegroundRole:
         if(index.column() == StateColumn) {
             switch(transfer->state()) {
-            case Canceled:
             case Failed:
                 return QBrush(Qt::darkRed);
             case Succeeded:
@@ -238,7 +240,7 @@ void TransferModel::clear()
         Transfer *transfer = d->transfers.at(i);
 
         // Remove only items that are finished
-        if(transfer->state() == Canceled || transfer->state() == Failed || transfer->state() == Succeeded) {
+        if(transfer->state() == Failed || transfer->state() == Succeeded) {
             d->remove(transfer);
         }
     }

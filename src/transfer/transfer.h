@@ -25,6 +25,7 @@
 #ifndef NS_TRANSFER_H
 #define NS_TRANSFER_H
 
+#include <QFile>
 #include <QJsonObject>
 #include <QTcpSocket>
 
@@ -43,8 +44,8 @@
  * transferred. Once this is complete, an acknowledgement packet is sent.
  *
  * At a lower level, a packet consists of a 32-bit signed integer indicating
- * its size. The first byte of the packet indicates its type. Two types are
- * currently used - JSON and binary data.
+ * its size. The first byte of the packet indicates its type. Four types are
+ * currently used - success, error, JSON and binary packets.
  */
 class Transfer : public QObject
 {
@@ -96,13 +97,16 @@ protected:
 
     enum class ProtocolState {
         TransferHeader,
-        FileHeader,
-        FileData,
+        TransferItems,
+        Acknowledgement,
         Finished
     } mProtocolState;
 
     qint64 mTransferBytes;
     qint64 mTransferBytesTotal;
+
+    QFile mFile;
+    qint64 mFileBytesRemaining;
 
 private:
 

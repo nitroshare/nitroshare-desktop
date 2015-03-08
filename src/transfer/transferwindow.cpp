@@ -108,7 +108,7 @@ void TransferWindow::updateButton(int row)
             mModel->cancel(index.row());
         });
 
-    } else if(direction == TransferModel::Send && (state == TransferModel::Canceled || state == TransferModel::Failed)) {
+    } else if(direction == TransferModel::Send && state == TransferModel::Failed) {
 
         button->setText(tr("Restart"));
         connect(button, &QPushButton::clicked, [this, index]() {
