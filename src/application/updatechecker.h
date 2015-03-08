@@ -26,6 +26,7 @@
 #define NS_UPDATECHECKER_H
 
 #include <QNetworkAccessManager>
+#include <QPointer>
 #include <QTimer>
 #include <QUrl>
 
@@ -47,8 +48,24 @@ class UpdateChecker : public QObject
     Q_OBJECT
 
 public:
-
-    UpdateChecker();
+    /**
+     * @brief instance is based on:
+     * Qt5.4.1/5.4/Src/qtdeclarative/src/qmltest/quicktest.cpp - QTestRootObject
+     * @return a singleton instance to UpdateChecker
+     */
+    static UpdateChecker *instance()
+    {
+        if (!UpdateChecker::sUpdateChecker)
+            UpdateChecker::sUpdateChecker = new UpdateChecker;
+        return UpdateChecker::sUpdateChecker;
+    }
+    /**
+     * @brief deleteInstance
+     */
+    static void deleteInstance() {
+        if (UpdateChecker::sUpdateChecker)
+            UpdateChecker::sUpdateChecker->deleteLater();
+    }
 
 Q_SIGNALS:
 
@@ -59,10 +76,11 @@ private Q_SLOTS:
     void checkForUpdates();
 
     void onFinished(QNetworkReply *reply);
-    void onSettingChanged(Settings::Key key);
+    void onSettingChanged(int key);
 
 private:
 
+    UpdateChecker();
     void sendRequest(const QUrl &url);
     void reload();
 
@@ -70,6 +88,8 @@ private:
     QNetworkAccessManager mManager;
 
     int mRedirectsRemaining;
+
+    static QPointer<UpdateChecker> sUpdateChecker;
 };
 
 #endif // NS_UPDATECHECKER_H

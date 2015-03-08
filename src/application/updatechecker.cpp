@@ -41,6 +41,8 @@ const QUrl UpdateUrl = QUrl("http://nitroshare.net/api/1.0/updates/");
 // Maximum number of redirects that may be processed
 const int MaxRedirects = 2;
 
+QPointer<UpdateChecker> UpdateChecker::sUpdateChecker = nullptr;
+
 UpdateChecker::UpdateChecker()
 {
     connect(&mTimer, &QTimer::timeout, this, &UpdateChecker::checkForUpdates);
@@ -129,7 +131,7 @@ void UpdateChecker::onFinished(QNetworkReply *reply)
     mTimer.start();
 }
 
-void UpdateChecker::onSettingChanged(Settings::Key key)
+void UpdateChecker::onSettingChanged(int key)
 {
     if(key == Settings::UpdateInterval) {
         reload();
@@ -156,5 +158,5 @@ void UpdateChecker::sendRequest(const QUrl &url)
 
 void UpdateChecker::reload()
 {
-    mTimer.setInterval(Settings::get<int>(Settings::UpdateInterval));
+    mTimer.setInterval(Settings::get(Settings::UpdateInterval).toInt());
 }

@@ -53,10 +53,10 @@
          </property>
         </widget>
        </item>
-       <item row="3" column="0">
+       <item row="2" column="0">
         <widget class="QCheckBox" name="chkBoxCheckUpdates">
          <property name="enabled">
-          <bool>false</bool>
+          <bool>true</bool>
          </property>
          <property name="text">
           <string>Check for updates</string>
@@ -92,36 +92,20 @@
          </item>
         </layout>
        </item>
-       <item row="2" column="0">
-        <widget class="QCheckBox" name="chkBoxEnableTray">
+       <item row="3" column="0" colspan="2">
+        <widget class="QLabel" name="lblUpdateInterval">
          <property name="enabled">
-          <bool>false</bool>
-         </property>
-         <property name="text">
-          <string>Enable tray icon</string>
-         </property>
-         <property name="checkable">
           <bool>true</bool>
-         </property>
-         <property name="checked">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="0" colspan="2">
-        <widget class="QLabel" name="label_11">
-         <property name="enabled">
-          <bool>false</bool>
          </property>
          <property name="text">
           <string>Update interval (h):</string>
          </property>
         </widget>
        </item>
-       <item row="4" column="2">
+       <item row="3" column="2">
         <widget class="QSpinBox" name="spnBoxUpdateInterval">
          <property name="enabled">
-          <bool>false</bool>
+          <bool>true</bool>
          </property>
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -336,8 +320,8 @@
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>98</x>
-     <y>242</y>
+     <x>194</x>
+     <y>359</y>
     </hint>
     <hint type="destinationlabel">
      <x>236</x>
@@ -352,8 +336,8 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>98</x>
-     <y>242</y>
+     <x>194</x>
+     <y>359</y>
     </hint>
     <hint type="destinationlabel">
      <x>236</x>
@@ -368,12 +352,44 @@
    <slot>onBtnResetClicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>49</x>
-     <y>227</y>
+     <x>59</x>
+     <y>359</y>
     </hint>
     <hint type="destinationlabel">
      <x>199</x>
      <y>124</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>chkBoxCheckUpdates</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>spnBoxUpdateInterval</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>94</x>
+     <y>273</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>330</x>
+     <y>303</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>chkBoxCheckUpdates</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>lblUpdateInterval</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>94</x>
+     <y>273</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>97</x>
+     <y>303</y>
     </hint>
    </hints>
   </connection>

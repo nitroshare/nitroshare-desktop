@@ -40,6 +40,10 @@ public:
     explicit SettingsDialog(QWidget *parent = 0);
     ~SettingsDialog();
 
+Q_SIGNALS:
+
+    void configureUpdateChecker();
+
 public Q_SLOTS:
 
     virtual void accept();

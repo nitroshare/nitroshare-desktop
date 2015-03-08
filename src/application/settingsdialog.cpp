@@ -28,6 +28,10 @@
 #include <QMessageBox>
 #include <QFileDialog>
 
+#ifdef BUILD_UPDATECHECKER
+#include "updatechecker.h"
+#endif
+
 #include "../util/settings.h"
 
 SettingsDialog::SettingsDialog(QWidget *parent) :
@@ -38,7 +42,19 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
 
     // General
     ui->lnEdtdeviceName->setText(Settings::get(Settings::DeviceName).toString());
-    ui->spnBoxUpdateInterval->setValue(Settings::get(Settings::UpdateInterval).toInt() / Settings::Hour);
+
+#ifdef BUILD_UPDATECHECKER
+    int updateInterval = Settings::get(Settings::UpdateInterval).toInt();
+    bool checkForUpdates = (updateInterval != 0);
+    ui->lblUpdateInterval->setEnabled(checkForUpdates);
+    ui->spnBoxUpdateInterval->setEnabled(checkForUpdates);
+    ui->chkBoxCheckUpdates->setChecked(checkForUpdates);
+    ui->spnBoxUpdateInterval->setValue(updateInterval / Settings::Hour);
+#else
+    ui->chkBoxCheckUpdates->setVisible(false);
+    ui->lblUpdateInterval->setVisible(false);
+    ui->spnBoxUpdateInterval->setVisible(false);
+#endif
 
     // Transfer
     ui->spnBoxBuffer->setValue(Settings::get(Settings::TransferBuffer).toInt() / Settings::Kb);
@@ -63,7 +79,16 @@ void SettingsDialog::accept()
 {
     // General
     Settings::set(Settings::DeviceName, ui->lnEdtdeviceName->text());
-    Settings::set(Settings::UpdateInterval, ui->spnBoxUpdateInterval->value() * Settings::Hour);
+
+#ifdef BUILD_UPDATECHECKER
+    if (ui->chkBoxCheckUpdates->isChecked()) {
+        Settings::set(Settings::UpdateInterval, ui->spnBoxUpdateInterval->value() * Settings::Hour);
+        Q_EMIT configureUpdateChecker();
+    } else {
+        Settings::set(Settings::UpdateInterval, 0);
+        UpdateChecker::deleteInstance();
+    }
+#endif
 
     // Transfer
     Settings::set(Settings::TransferDirectory, ui->lnEdtDirectory->text());
@@ -87,13 +112,16 @@ void SettingsDialog::onBtnResetClicked()
                                                                  "values? This cannot be undone.");
     if (response == QMessageBox::Yes) {
         Settings::reset();
+#ifdef BUILD_UPDATECHECKER
+        Q_EMIT configureUpdateChecker();
+#endif
         this->reject();
     }
 }
 
 void SettingsDialog::onBtnSelectDirClicked()
 {
-    QString path(QFileDialog::getExistingDirectory(nullptr, tr("Select Directory")));
+    QString path(QFileDialog::getExistingDirectory(this, tr("Select Directory")));
 
     if(!path.isNull())
         ui->lnEdtDirectory->setText(path);
