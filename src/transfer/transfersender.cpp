@@ -95,6 +95,8 @@ void TransferSender::writeTransferHeader()
         { "size", QString::number(mTransferBytesTotal) },
         { "count", QString::number(mBundle->count()) }
     }));
+
+    mProtocolState = ProtocolState::TransferItems;
 }
 
 void TransferSender::writeItemHeader()
@@ -127,9 +129,8 @@ void TransferSender::writeItemHeader()
         header.insert("size", QString::number(mFileBytesRemaining));
         writeJsonPacket(header);
 
-        // If the file is empty, we'll never receive its contents (surprise!)
-        // Therefore, we must immediately close the file and move to the next item
-        if(mFileBytesRemaining) {
+        // If the file is empty, there's no need to send its contents
+        if(!mFileBytesRemaining) {
             mFile.close();
             nextItem();
         }
