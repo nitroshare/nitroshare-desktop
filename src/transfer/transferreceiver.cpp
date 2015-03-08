@@ -175,7 +175,7 @@ void TransferReceiver::processItemHeader(const QJsonObject &object)
 
             // If the file is empty, we'll never receive its contents (surprise!)
             // Therefore, we must immediately close the file and move to the next item
-            if(mFileBytesRemaining) {
+            if(!mFileBytesRemaining) {
                 mFile.close();
                 nextItem();
             }
