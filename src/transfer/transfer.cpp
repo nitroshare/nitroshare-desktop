@@ -96,6 +96,11 @@ void Transfer::onReadyRead()
     // Process as many packets as can be read from the buffer
     forever {
 
+        // If the transfer is finished, ignore packets
+        if(mProtocolState == ProtocolState::Finished) {
+            break;
+        }
+
         // If the size of the packet is not yet known attempt to read it
         if(!mBufferSize) {
             if(static_cast<size_t>(mBuffer.size()) >= sizeof(mBufferSize)) {
