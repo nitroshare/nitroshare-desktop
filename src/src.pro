@@ -65,8 +65,8 @@ SOURCES += \
 
 FORMS += \
     application/aboutdialog.ui \
-    application/settingsdialog.ui \
     device/devicedialog.ui \
+    settings/settingsdialog.ui \
     transfer/transferwindow.ui
 
 RESOURCES += \
