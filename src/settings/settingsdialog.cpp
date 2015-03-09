@@ -36,20 +36,26 @@ SettingsDialog::SettingsDialog()
 {
     setupUi(this);
 
+#ifndef BUILD_UPDATECHECKER
+    // Remove the update controls
+    delete updateCheckbox;
+    delete updateIntervalLabel;
+    delete updateIntervalSpinBox;
+#endif
+
     // Load the current values into the controls
     reload();
-
-    connect(pshBtnSelectDir, &QPushButton::clicked, this, &SettingsDialog::onBtnSelectDirClicked);
 }
 
 void SettingsDialog::accept()
 {
     // General tab
-    Settings::set(Settings::DeviceName, lnEdtdeviceName->text());
+    Settings::set(Settings::DeviceName, deviceNameEdit->text());
+    Settings::set(Settings::TransferDirectory, transferDirectoryEdit->text());
 
 #ifdef BUILD_UPDATECHECKER
-    if (chkBoxCheckUpdates->isChecked()) {
-        Settings::set(Settings::UpdateInterval, spnBoxUpdateInterval->value() * Settings::Hour);
+    if(updateCheckbox->isChecked()) {
+        Settings::set(Settings::UpdateInterval, updateIntervalSpinBox->value() * Settings::Hour);
         emit configureUpdateChecker();
     } else {
         Settings::set(Settings::UpdateInterval, 0);
@@ -57,30 +63,34 @@ void SettingsDialog::accept()
     }
 #endif
 
-    // Transfer tab
-    Settings::set(Settings::TransferDirectory, lnEdtDirectory->text());
-    Settings::set(Settings::TransferPort, spnBoxTransferPort->value());
-    Settings::set(Settings::TransferBuffer, spnBoxBuffer->value() * Settings::Kb);
+    // Transfer section
+    Settings::set(Settings::TransferPort, transferPortSpinBox->value());
+    Settings::set(Settings::TransferBuffer, transferBufferSpinBox->value() * Settings::Kb);
 
-    // Broadcast tab
-    Settings::set(Settings::BroadcastPort, spnBoxBroadcastPort->value());
-    Settings::set(Settings::BroadcastTimeout, spnBoxBroadcastTimeout->value() * Settings::Second);
-    Settings::set(Settings::BroadcastInterval, spnBoxBroadcastInterval->value() * Settings::Second);
+    // Broadcast section
+    Settings::set(Settings::BroadcastPort, broadcastPortSpinBox->value());
+    Settings::set(Settings::BroadcastTimeout, broadcastTimeoutSpinBox->value() * Settings::Second);
+    Settings::set(Settings::BroadcastInterval, broadcastIntervalSpinBox->value() * Settings::Second);
 
     QDialog::accept();
 }
 
-void SettingsDialog::onBtnResetClicked()
+void SettingsDialog::onResetButtonClicked()
 {
-    QMessageBox::StandardButton response = QMessageBox::question(this,
-                                                                 "Reset settings",
-                                                                 "Are you sure you want to reset "
-                                                                 "all settings to their default "
-                                                                 "values? This cannot be undone.");
-    if (response == QMessageBox::Yes) {
+    // Confirm that the user wants to reset all of the settings
+    QMessageBox::StandardButton response = QMessageBox::question(
+        this,
+        tr("Confirm Reset"),
+        tr("Are you sure you want to reset all settings to their default values? This cannot be undone.")
+    );
+
+    // Perform the reset and then reload all of the settings
+    if(response == QMessageBox::Yes) {
+
         Settings::reset();
+
 #ifdef BUILD_UPDATECHECKER
-        Q_EMIT configureUpdateChecker();
+        emit configureUpdateChecker();
 #endif
 
         // Reload the current values
@@ -88,40 +98,34 @@ void SettingsDialog::onBtnResetClicked()
     }
 }
 
-void SettingsDialog::onBtnSelectDirClicked()
+void SettingsDialog::onTransferDirectoryButtonClicked()
 {
-    QString path(QFileDialog::getExistingDirectory(this, tr("Select Directory")));
-
+    QString path = QFileDialog::getExistingDirectory(this, tr("Select Directory"), transferDirectoryEdit->text());
     if(!path.isNull()) {
-        lnEdtDirectory->setText(path);
+        transferDirectoryEdit->setText(path);
     }
 }
 
 void SettingsDialog::reload()
 {
     // General tab
-    lnEdtdeviceName->setText(Settings::get(Settings::DeviceName).toString());
+    deviceNameEdit->setText(Settings::get(Settings::DeviceName).toString());
+    transferDirectoryEdit->setText(Settings::get(Settings::TransferDirectory).toString());
 
 #ifdef BUILD_UPDATECHECKER
     int updateInterval = Settings::get(Settings::UpdateInterval).toInt();
     bool checkForUpdates = (updateInterval != 0);
-    lblUpdateInterval->setEnabled(checkForUpdates);
-    spnBoxUpdateInterval->setEnabled(checkForUpdates);
-    chkBoxCheckUpdates->setChecked(checkForUpdates);
-    spnBoxUpdateInterval->setValue(updateInterval / Settings::Hour);
-#else
-    chkBoxCheckUpdates->setVisible(false);
-    lblUpdateInterval->setVisible(false);
-    spnBoxUpdateInterval->setVisible(false);
+    updateCheckbox->setChecked(checkForUpdates);
+    updateIntervalSpinBox->setEnabled(checkForUpdates);
+    updateIntervalSpinBox->setValue(updateInterval / Settings::Hour);
 #endif
 
     // Transfer section
-    spnBoxBuffer->setValue(Settings::get(Settings::TransferBuffer).toInt() / Settings::Kb);
-    lnEdtDirectory->setText(Settings::get(Settings::TransferDirectory).toString());
-    spnBoxTransferPort->setValue(Settings::get(Settings::TransferPort).toLongLong());
+    transferPortSpinBox->setValue(Settings::get(Settings::TransferPort).toLongLong());
+    transferBufferSpinBox->setValue(Settings::get(Settings::TransferBuffer).toInt() / Settings::Kb);
 
     // Broadcast section
-    spnBoxBroadcastPort->setValue(Settings::get(Settings::BroadcastPort).toLongLong());
-    spnBoxBroadcastTimeout->setValue(Settings::get(Settings::BroadcastTimeout).toInt() / Settings::Second);
-    spnBoxBroadcastInterval->setValue(Settings::get(Settings::BroadcastInterval).toInt() / Settings::Second);
+    broadcastPortSpinBox->setValue(Settings::get(Settings::BroadcastPort).toLongLong());
+    broadcastTimeoutSpinBox->setValue(Settings::get(Settings::BroadcastTimeout).toInt() / Settings::Second);
+    broadcastIntervalSpinBox->setValue(Settings::get(Settings::BroadcastInterval).toInt() / Settings::Second);
 }

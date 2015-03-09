@@ -30,7 +30,7 @@
 #include <QTimer>
 #include <QUrl>
 
-#include "../util/settings.h"
+#include "../settings/settings.h"
 
 /**
  * @brief Periodically checks for application updates
