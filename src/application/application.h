@@ -25,6 +25,8 @@
 #ifndef NS_APPLICATION_H
 #define NS_APPLICATION_H
 
+#include <QPointer>
+
 #include "../bundle/bundle.h"
 #include "../device/devicemodel.h"
 #include "../icon/icon.h"
@@ -53,14 +55,19 @@ private Q_SLOTS:
     void notifyError(const QString &message);
 
 #ifdef BUILD_UPDATECHECKER
+    void onConfigureUpdateChecker();
+#endif
+
+#ifdef BUILD_UPDATECHECKER
     void notifyNewVersion(const QString &version, const QUrl &url);
 #endif
 
     void sendFiles();
     void sendDirectory();
 
-    void about();
-    void aboutQt();
+    void onOpenSettings();
+    void onOpenAbout();
+    void onOpenAboutQt();
 
 private:
 
@@ -72,7 +79,7 @@ private:
     TransferWindow mTransferWindow;
 
 #ifdef BUILD_UPDATECHECKER
-    UpdateChecker mUpdateChecker;
+    QPointer<UpdateChecker> mUpdateChecker;
 #endif
 
     Icon *mIcon;

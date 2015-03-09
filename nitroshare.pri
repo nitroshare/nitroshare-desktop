@@ -3,7 +3,7 @@ PROJECT_NAME        = nitroshare
 PROJECT_TITLE       = NitroShare
 PROJECT_DESCRIPTION = Network File Transfer Application
 PROJECT_AUTHOR      = Nathan Osman
-PROJECT_DOMAIN      = nitroshare.co
+PROJECT_DOMAIN      = nitroshare.net
 PROJECT_WEBSITE     = http://$${PROJECT_DOMAIN}
 
 # Define the components of the application version

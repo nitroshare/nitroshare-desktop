@@ -17,6 +17,7 @@ INCLUDEPATH       += $${INCLUDE_DIR}
 HEADERS += \
     application/aboutdialog.h \
     application/application.h \
+    application/settingsdialog.h \
     bundle/bundle.h \
     bundle/bundle_p.h \
     bundle/bundleitem.h \
@@ -43,6 +44,7 @@ HEADERS += \
 SOURCES += \
     application/aboutdialog.cpp \
     application/application.cpp \
+    application/settingsdialog.cpp \
     bundle/bundle.cpp \
     device/device.cpp \
     device/devicedialog.cpp \
@@ -63,6 +65,7 @@ SOURCES += \
 
 FORMS += \
     application/aboutdialog.ui \
+    application/settingsdialog.ui \
     device/devicedialog.ui \
     transfer/transferwindow.ui
 

@@ -58,6 +58,12 @@ public:
      */
     virtual ~Settings();
 
+    static const int Second;
+    static const int Minute;
+    static const int Hour;
+
+    static const int Kb;
+
     /// Time (in MS) between broadcast packets
     static const int BroadcastInterval;
 

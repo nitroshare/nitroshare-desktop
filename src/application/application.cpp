@@ -33,6 +33,7 @@
 #include "../util/settings.h"
 #include "application.h"
 #include "aboutdialog.h"
+#include "settingsdialog.h"
 
 #ifdef BUILD_APPINDICATOR
 #include "../icon/indicatoricon.h"
@@ -59,7 +60,8 @@ Application::Application()
     connect(&mTransferServer, &TransferServer::newTransfer, &mTransferModel, &TransferModel::addReceiver);
 
 #ifdef BUILD_UPDATECHECKER
-    connect(&mUpdateChecker, &UpdateChecker::newVersion, this, &Application::notifyNewVersion);
+    if (Settings::get(Settings::UpdateInterval).toInt() != 0)
+        onConfigureUpdateChecker();
 #endif
 
     mIcon->addAction(tr("Send Files..."), this, SLOT(sendFiles()));
@@ -67,8 +69,10 @@ Application::Application()
     mIcon->addSeparator();
     mIcon->addAction(tr("View Transfers..."), &mTransferWindow, SLOT(show()));
     mIcon->addSeparator();
-    mIcon->addAction(tr("About..."), this, SLOT(about()));
-    mIcon->addAction(tr("About Qt..."), this, SLOT(aboutQt()));
+    mIcon->addAction(tr("Settings"), this, SLOT(onOpenSettings()));
+    mIcon->addSeparator();
+    mIcon->addAction(tr("About..."), this, SLOT(onOpenAbout()));
+    mIcon->addAction(tr("About Qt..."), this, SLOT(onOpenAboutQt()));
     mIcon->addSeparator();
     mIcon->addAction(tr("Exit"), QApplication::instance(), SLOT(quit()));
 
@@ -139,6 +143,17 @@ void Application::notifyTransfersChanged(const QModelIndex &topLeft, const QMode
 }
 
 #ifdef BUILD_UPDATECHECKER
+void Application::onConfigureUpdateChecker()
+{
+    if (!mUpdateChecker) {
+        mUpdateChecker = UpdateChecker::instance();
+        connect(mUpdateChecker.data(), &UpdateChecker::newVersion,
+                this, &Application::notifyNewVersion);
+    }
+}
+#endif
+
+#ifdef BUILD_UPDATECHECKER
 void Application::notifyNewVersion(const QString &version, const QUrl &url)
 {
     if(QMessageBox::question(nullptr, tr("New Version"),
@@ -178,12 +193,24 @@ void Application::sendDirectory()
     }
 }
 
-void Application::about()
+void Application::onOpenSettings()
+{
+    SettingsDialog settingsDialog;
+
+#ifdef BUILD_UPDATECHECKER
+    connect(&settingsDialog, &SettingsDialog::configureUpdateChecker,
+            this, &Application::onConfigureUpdateChecker);
+#endif
+
+    settingsDialog.exec();
+}
+
+void Application::onOpenAbout()
 {
     AboutDialog().exec();
 }
 
-void Application::aboutQt()
+void Application::onOpenAboutQt()
 {
     QMessageBox::aboutQt(nullptr);
 }
