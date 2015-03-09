@@ -22,83 +22,50 @@
  * IN THE SOFTWARE.
  **/
 
-#include "settingsdialog.h"
-#include "ui_settingsdialog.h"
-
-#include <QMessageBox>
 #include <QFileDialog>
+#include <QMessageBox>
+
+#include "settings.h"
+#include "settingsdialog.h"
 
 #ifdef BUILD_UPDATECHECKER
-#include "updatechecker.h"
+#include "../application/updatechecker.h"
 #endif
 
-#include "../settings/settings.h"
-
-SettingsDialog::SettingsDialog(QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::SettingsDialog)
+SettingsDialog::SettingsDialog()
 {
-    ui->setupUi(this);
+    setupUi(this);
 
-    // General
-    ui->lnEdtdeviceName->setText(Settings::get(Settings::DeviceName).toString());
+    // Load the current values into the controls
+    reload();
 
-#ifdef BUILD_UPDATECHECKER
-    int updateInterval = Settings::get(Settings::UpdateInterval).toInt();
-    bool checkForUpdates = (updateInterval != 0);
-    ui->lblUpdateInterval->setEnabled(checkForUpdates);
-    ui->spnBoxUpdateInterval->setEnabled(checkForUpdates);
-    ui->chkBoxCheckUpdates->setChecked(checkForUpdates);
-    ui->spnBoxUpdateInterval->setValue(updateInterval / Settings::Hour);
-#else
-    ui->chkBoxCheckUpdates->setVisible(false);
-    ui->lblUpdateInterval->setVisible(false);
-    ui->spnBoxUpdateInterval->setVisible(false);
-#endif
-
-    // Transfer
-    ui->spnBoxBuffer->setValue(Settings::get(Settings::TransferBuffer).toInt() / Settings::Kb);
-    ui->lnEdtDirectory->setText(Settings::get(Settings::TransferDirectory).toString());
-    ui->spnBoxTransferPort->setValue(Settings::get(Settings::TransferPort).toLongLong());
-
-    // Broadcast
-    ui->spnBoxBroadcastPort->setValue(Settings::get(Settings::BroadcastPort).toLongLong());
-    ui->spnBoxBroadcastTimeout->setValue(Settings::get(Settings::BroadcastTimeout).toInt() / Settings::Second);
-    ui->spnBoxBroadcastInterval->setValue(Settings::get(Settings::BroadcastInterval).toInt() / Settings::Second);
-
-    connect(ui->pshBtnSelectDir, &QPushButton::clicked,
-            this, &SettingsDialog::onBtnSelectDirClicked);
-}
-
-SettingsDialog::~SettingsDialog()
-{
-    delete ui;
+    connect(pshBtnSelectDir, &QPushButton::clicked, this, &SettingsDialog::onBtnSelectDirClicked);
 }
 
 void SettingsDialog::accept()
 {
-    // General
-    Settings::set(Settings::DeviceName, ui->lnEdtdeviceName->text());
+    // General tab
+    Settings::set(Settings::DeviceName, lnEdtdeviceName->text());
 
 #ifdef BUILD_UPDATECHECKER
-    if (ui->chkBoxCheckUpdates->isChecked()) {
-        Settings::set(Settings::UpdateInterval, ui->spnBoxUpdateInterval->value() * Settings::Hour);
-        Q_EMIT configureUpdateChecker();
+    if (chkBoxCheckUpdates->isChecked()) {
+        Settings::set(Settings::UpdateInterval, spnBoxUpdateInterval->value() * Settings::Hour);
+        emit configureUpdateChecker();
     } else {
         Settings::set(Settings::UpdateInterval, 0);
         UpdateChecker::deleteInstance();
     }
 #endif
 
-    // Transfer
-    Settings::set(Settings::TransferDirectory, ui->lnEdtDirectory->text());
-    Settings::set(Settings::TransferPort, ui->spnBoxTransferPort->value());
-    Settings::set(Settings::TransferBuffer, ui->spnBoxBuffer->value() * Settings::Kb);
+    // Transfer tab
+    Settings::set(Settings::TransferDirectory, lnEdtDirectory->text());
+    Settings::set(Settings::TransferPort, spnBoxTransferPort->value());
+    Settings::set(Settings::TransferBuffer, spnBoxBuffer->value() * Settings::Kb);
 
-    // Broadcast
-    Settings::set(Settings::BroadcastPort, ui->spnBoxBroadcastPort->value());
-    Settings::set(Settings::BroadcastTimeout, ui->spnBoxBroadcastTimeout->value() * Settings::Second);
-    Settings::set(Settings::BroadcastInterval, ui->spnBoxBroadcastInterval->value() * Settings::Second);
+    // Broadcast tab
+    Settings::set(Settings::BroadcastPort, spnBoxBroadcastPort->value());
+    Settings::set(Settings::BroadcastTimeout, spnBoxBroadcastTimeout->value() * Settings::Second);
+    Settings::set(Settings::BroadcastInterval, spnBoxBroadcastInterval->value() * Settings::Second);
 
     QDialog::accept();
 }
@@ -115,7 +82,9 @@ void SettingsDialog::onBtnResetClicked()
 #ifdef BUILD_UPDATECHECKER
         Q_EMIT configureUpdateChecker();
 #endif
-        this->reject();
+
+        // Reload the current values
+        reload();
     }
 }
 
@@ -123,6 +92,36 @@ void SettingsDialog::onBtnSelectDirClicked()
 {
     QString path(QFileDialog::getExistingDirectory(this, tr("Select Directory")));
 
-    if(!path.isNull())
-        ui->lnEdtDirectory->setText(path);
+    if(!path.isNull()) {
+        lnEdtDirectory->setText(path);
+    }
+}
+
+void SettingsDialog::reload()
+{
+    // General tab
+    lnEdtdeviceName->setText(Settings::get(Settings::DeviceName).toString());
+
+#ifdef BUILD_UPDATECHECKER
+    int updateInterval = Settings::get(Settings::UpdateInterval).toInt();
+    bool checkForUpdates = (updateInterval != 0);
+    lblUpdateInterval->setEnabled(checkForUpdates);
+    spnBoxUpdateInterval->setEnabled(checkForUpdates);
+    chkBoxCheckUpdates->setChecked(checkForUpdates);
+    spnBoxUpdateInterval->setValue(updateInterval / Settings::Hour);
+#else
+    chkBoxCheckUpdates->setVisible(false);
+    lblUpdateInterval->setVisible(false);
+    spnBoxUpdateInterval->setVisible(false);
+#endif
+
+    // Transfer section
+    spnBoxBuffer->setValue(Settings::get(Settings::TransferBuffer).toInt() / Settings::Kb);
+    lnEdtDirectory->setText(Settings::get(Settings::TransferDirectory).toString());
+    spnBoxTransferPort->setValue(Settings::get(Settings::TransferPort).toLongLong());
+
+    // Broadcast section
+    spnBoxBroadcastPort->setValue(Settings::get(Settings::BroadcastPort).toLongLong());
+    spnBoxBroadcastTimeout->setValue(Settings::get(Settings::BroadcastTimeout).toInt() / Settings::Second);
+    spnBoxBroadcastInterval->setValue(Settings::get(Settings::BroadcastInterval).toInt() / Settings::Second);
 }

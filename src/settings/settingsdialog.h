@@ -22,23 +22,23 @@
  * IN THE SOFTWARE.
  **/
 
-#ifndef SETTINGSDIALOG_H
-#define SETTINGSDIALOG_H
+#ifndef NS_SETTINGSDIALOG_H
+#define NS_SETTINGSDIALOG_H
 
 #include <QDialog>
 
-namespace Ui {
-class SettingsDialog;
-}
+#include "ui_settingsdialog.h"
 
-class SettingsDialog : public QDialog
+/**
+ * @brief Settings dialog for configuring the application
+ */
+class SettingsDialog : public QDialog, public Ui::SettingsDialog
 {
     Q_OBJECT
 
 public:
 
-    explicit SettingsDialog(QWidget *parent = 0);
-    ~SettingsDialog();
+    SettingsDialog();
 
 Q_SIGNALS:
 
@@ -54,7 +54,8 @@ private Q_SLOTS:
     void onBtnSelectDirClicked();
 
 private:
-    Ui::SettingsDialog *ui;
+
+    void reload();
 };
 
-#endif // SETTINGSDIALOG_H
+#endif // NS_SETTINGSDIALOG_H
