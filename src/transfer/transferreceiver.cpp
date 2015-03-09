@@ -22,8 +22,8 @@
  * IN THE SOFTWARE.
  **/
 
+#include "../settings/settings.h"
 #include "../util/json.h"
-#include "../util/settings.h"
 #include "transferreceiver.h"
 
 TransferReceiver::TransferReceiver(qintptr socketDescriptor)

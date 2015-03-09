@@ -22,7 +22,7 @@
  * IN THE SOFTWARE.
  **/
 
-#include "../util/settings.h"
+#include "../settings/settings.h"
 #include "transferserver.h"
 #include "transferserver_p.h"
 

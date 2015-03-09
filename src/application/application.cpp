@@ -30,10 +30,10 @@
 
 #include "../device/devicedialog.h"
 #include "../icon/trayicon.h"
-#include "../util/settings.h"
+#include "../settings/settings.h"
+#include "../settings/settingsdialog.h"
 #include "application.h"
 #include "aboutdialog.h"
-#include "settingsdialog.h"
 
 #ifdef BUILD_APPINDICATOR
 #include "../icon/indicatoricon.h"
@@ -60,7 +60,7 @@ Application::Application()
     connect(&mTransferServer, &TransferServer::newTransfer, &mTransferModel, &TransferModel::addReceiver);
 
 #ifdef BUILD_UPDATECHECKER
-    if (Settings::get(Settings::UpdateInterval).toInt() != 0)
+    if(Settings::get(Settings::UpdateInterval).toInt() != 0)
         onConfigureUpdateChecker();
 #endif
 
@@ -151,9 +151,7 @@ void Application::onConfigureUpdateChecker()
                 this, &Application::notifyNewVersion);
     }
 }
-#endif
 
-#ifdef BUILD_UPDATECHECKER
 void Application::notifyNewVersion(const QString &version, const QUrl &url)
 {
     if(QMessageBox::question(nullptr, tr("New Version"),

@@ -17,7 +17,6 @@ INCLUDEPATH       += $${INCLUDE_DIR}
 HEADERS += \
     application/aboutdialog.h \
     application/application.h \
-    application/settingsdialog.h \
     bundle/bundle.h \
     bundle/bundle_p.h \
     bundle/bundleitem.h \
@@ -28,6 +27,9 @@ HEADERS += \
     device/devicemodel_p.h \
     icon/icon.h \
     icon/trayicon.h \
+    settings/settings.h \
+    settings/settings_p.h \
+    settings/settingsdialog.h \
     transfer/transfer.h \
     transfer/transfermodel.h \
     transfer/transfermodel_p.h \
@@ -37,14 +39,11 @@ HEADERS += \
     transfer/transferserver_p.h \
     transfer/transferwindow.h \
     util/json.h \
-    util/platform.h \
-    util/settings.h \
-    util/settings_p.h
+    util/platform.h
 
 SOURCES += \
     application/aboutdialog.cpp \
     application/application.cpp \
-    application/settingsdialog.cpp \
     bundle/bundle.cpp \
     device/device.cpp \
     device/devicedialog.cpp \
@@ -52,6 +51,8 @@ SOURCES += \
     device/devicemodel.cpp \
     icon/icon.cpp \
     icon/trayicon.cpp \
+    settings/settings.cpp \
+    settings/settingsdialog.cpp \
     transfer/transfer.cpp \
     transfer/transfermodel.cpp \
     transfer/transferreceiver.cpp \
@@ -60,7 +61,6 @@ SOURCES += \
     transfer/transferwindow.cpp \
     util/json.cpp \
     util/platform.cpp \
-    util/settings.cpp \
     main.cpp
 
 FORMS += \

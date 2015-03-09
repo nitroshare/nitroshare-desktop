@@ -26,8 +26,8 @@
 #include <QJsonObject>
 
 #include "../bundle/bundle_p.h"
+#include "../settings/settings.h"
 #include "../util/json.h"
-#include "../util/settings.h"
 #include "transfersender.h"
 
 TransferSender::TransferSender(const QString &deviceName, const QHostAddress &address, quint16 port, const Bundle *bundle)

@@ -25,9 +25,9 @@
 #include <QNetworkInterface>
 #include <QSet>
 
+#include "../settings/settings.h"
 #include "../util/json.h"
 #include "../util/platform.h"
-#include "../util/settings.h"
 #include "devicelistener.h"
 
 DeviceListener::DeviceListener()

@@ -56,9 +56,6 @@ private Q_SLOTS:
 
 #ifdef BUILD_UPDATECHECKER
     void onConfigureUpdateChecker();
-#endif
-
-#ifdef BUILD_UPDATECHECKER
     void notifyNewVersion(const QString &version, const QUrl &url);
 #endif
 

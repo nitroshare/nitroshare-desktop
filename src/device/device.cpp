@@ -24,7 +24,7 @@
 
 #include <QDateTime>
 
-#include "../util/settings.h"
+#include "../settings/settings.h"
 #include "device.h"
 
 Device::Device(const QString &uuid)

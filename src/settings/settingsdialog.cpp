@@ -32,7 +32,7 @@
 #include "updatechecker.h"
 #endif
 
-#include "../util/settings.h"
+#include "../settings/settings.h"
 
 SettingsDialog::SettingsDialog(QWidget *parent) :
     QDialog(parent),
