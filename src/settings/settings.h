@@ -92,6 +92,9 @@ public:
     /// Port for receiving transfers
     static const int TransferPort;
 
+    /// Whether to check for updates or not
+    static const int UpdateCheck;
+
     /// Interval between consecutive update checks
     static const int UpdateInterval;
 

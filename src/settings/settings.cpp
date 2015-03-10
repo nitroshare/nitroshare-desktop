@@ -72,6 +72,7 @@ QMap<int, Setting> Keys = {
        return QStandardPaths::writableLocation(QStandardPaths::DesktopLocation);
     }),
     DEFINE_SETTING(TransferPort, { return 40818; }),
+    DEFINE_SETTING(UpdateCheck, { return true; }),
     DEFINE_SETTING(UpdateInterval, { return 24 * Settings::Hour; })
 };
 
