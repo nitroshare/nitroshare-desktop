@@ -26,11 +26,8 @@
 #define NS_UPDATECHECKER_H
 
 #include <QNetworkAccessManager>
-#include <QPointer>
 #include <QTimer>
 #include <QUrl>
-
-#include "../settings/settings.h"
 
 /**
  * @brief Periodically checks for application updates
@@ -48,24 +45,8 @@ class UpdateChecker : public QObject
     Q_OBJECT
 
 public:
-    /**
-     * @brief instance is based on:
-     * Qt5.4.1/5.4/Src/qtdeclarative/src/qmltest/quicktest.cpp - QTestRootObject
-     * @return a singleton instance to UpdateChecker
-     */
-    static UpdateChecker *instance()
-    {
-        if (!UpdateChecker::sUpdateChecker)
-            UpdateChecker::sUpdateChecker = new UpdateChecker;
-        return UpdateChecker::sUpdateChecker;
-    }
-    /**
-     * @brief deleteInstance
-     */
-    static void deleteInstance() {
-        if (UpdateChecker::sUpdateChecker)
-            UpdateChecker::sUpdateChecker->deleteLater();
-    }
+
+    UpdateChecker();
 
 Q_SIGNALS:
 
@@ -80,16 +61,13 @@ private Q_SLOTS:
 
 private:
 
-    UpdateChecker();
     void sendRequest(const QUrl &url);
-    void reload();
+    void reload(bool initializing);
 
     QTimer mTimer;
     QNetworkAccessManager mManager;
 
     int mRedirectsRemaining;
-
-    static QPointer<UpdateChecker> sUpdateChecker;
 };
 
 #endif // NS_UPDATECHECKER_H

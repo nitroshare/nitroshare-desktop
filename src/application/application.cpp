@@ -60,8 +60,7 @@ Application::Application()
     connect(&mTransferServer, &TransferServer::newTransfer, &mTransferModel, &TransferModel::addReceiver);
 
 #ifdef BUILD_UPDATECHECKER
-    if(Settings::get(Settings::UpdateInterval).toInt() != 0)
-        onConfigureUpdateChecker();
+    connect(&mUpdateChecker, &UpdateChecker::newVersion, this, &Application::notifyNewVersion);
 #endif
 
     mIcon->addAction(tr("Send Files..."), this, SLOT(sendFiles()));
@@ -143,15 +142,6 @@ void Application::notifyTransfersChanged(const QModelIndex &topLeft, const QMode
 }
 
 #ifdef BUILD_UPDATECHECKER
-void Application::onConfigureUpdateChecker()
-{
-    if (!mUpdateChecker) {
-        mUpdateChecker = UpdateChecker::instance();
-        connect(mUpdateChecker.data(), &UpdateChecker::newVersion,
-                this, &Application::notifyNewVersion);
-    }
-}
-
 void Application::notifyNewVersion(const QString &version, const QUrl &url)
 {
     if(QMessageBox::question(nullptr, tr("New Version"),
@@ -193,14 +183,7 @@ void Application::sendDirectory()
 
 void Application::onOpenSettings()
 {
-    SettingsDialog settingsDialog;
-
-#ifdef BUILD_UPDATECHECKER
-    connect(&settingsDialog, &SettingsDialog::configureUpdateChecker,
-            this, &Application::onConfigureUpdateChecker);
-#endif
-
-    settingsDialog.exec();
+    SettingsDialog().exec();
 }
 
 void Application::onOpenAbout()

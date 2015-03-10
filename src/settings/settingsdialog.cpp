@@ -28,10 +28,6 @@
 #include "settings.h"
 #include "settingsdialog.h"
 
-#ifdef BUILD_UPDATECHECKER
-#include "../application/updatechecker.h"
-#endif
-
 SettingsDialog::SettingsDialog()
 {
     setupUi(this);
@@ -54,18 +50,12 @@ void SettingsDialog::accept()
     Settings::set(Settings::TransferDirectory, transferDirectoryEdit->text());
 
 #ifdef BUILD_UPDATECHECKER
-    if(updateCheckbox->isChecked()) {
-        Settings::set(Settings::UpdateInterval, updateIntervalSpinBox->value() * Settings::Hour);
-        emit configureUpdateChecker();
-    } else {
-        Settings::set(Settings::UpdateInterval, 0);
-        UpdateChecker::deleteInstance();
-    }
+    Settings::set(Settings::UpdateInterval, updateCheckbox->isChecked() ? updateIntervalSpinBox->value() * Settings::Hour : 0);
 #endif
 
     // Transfer section
     Settings::set(Settings::TransferPort, transferPortSpinBox->value());
-    Settings::set(Settings::TransferBuffer, transferBufferSpinBox->value() * Settings::Kb);
+    Settings::set(Settings::TransferBuffer, transferBufferSpinBox->value() * Settings::KiB);
 
     // Broadcast section
     Settings::set(Settings::BroadcastPort, broadcastPortSpinBox->value());
@@ -86,14 +76,7 @@ void SettingsDialog::onResetButtonClicked()
 
     // Perform the reset and then reload all of the settings
     if(response == QMessageBox::Yes) {
-
         Settings::reset();
-
-#ifdef BUILD_UPDATECHECKER
-        emit configureUpdateChecker();
-#endif
-
-        // Reload the current values
         reload();
     }
 }
@@ -113,16 +96,15 @@ void SettingsDialog::reload()
     transferDirectoryEdit->setText(Settings::get(Settings::TransferDirectory).toString());
 
 #ifdef BUILD_UPDATECHECKER
-    int updateInterval = Settings::get(Settings::UpdateInterval).toInt();
-    bool checkForUpdates = (updateInterval != 0);
-    updateCheckbox->setChecked(checkForUpdates);
-    updateIntervalSpinBox->setEnabled(checkForUpdates);
+    const int updateInterval = Settings::get(Settings::UpdateInterval).toInt();
+    updateCheckbox->setChecked(updateInterval);
+    updateIntervalSpinBox->setEnabled(updateInterval);
     updateIntervalSpinBox->setValue(updateInterval / Settings::Hour);
 #endif
 
     // Transfer section
     transferPortSpinBox->setValue(Settings::get(Settings::TransferPort).toLongLong());
-    transferBufferSpinBox->setValue(Settings::get(Settings::TransferBuffer).toInt() / Settings::Kb);
+    transferBufferSpinBox->setValue(Settings::get(Settings::TransferBuffer).toInt() / Settings::KiB);
 
     // Broadcast section
     broadcastPortSpinBox->setValue(Settings::get(Settings::BroadcastPort).toLongLong());

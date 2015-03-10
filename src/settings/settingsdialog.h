@@ -40,10 +40,6 @@ public:
 
     SettingsDialog();
 
-Q_SIGNALS:
-
-    void configureUpdateChecker();
-
 public Q_SLOTS:
 
     virtual void accept();

@@ -24,12 +24,12 @@
 
 #include <QJsonArray>
 #include <QJsonDocument>
-#include <QJsonDocument>
 #include <QJsonValue>
 #include <QNetworkReply>
 #include <QNetworkRequest>
 #include <QVariantMap>
 
+#include "../settings/settings.h"
 #include "../util/json.h"
 #include "../util/platform.h"
 #include "config.h"
@@ -41,8 +41,6 @@ const QUrl UpdateUrl = QUrl("http://nitroshare.net/api/1.0/updates/");
 // Maximum number of redirects that may be processed
 const int MaxRedirects = 2;
 
-QPointer<UpdateChecker> UpdateChecker::sUpdateChecker = nullptr;
-
 UpdateChecker::UpdateChecker()
 {
     connect(&mTimer, &QTimer::timeout, this, &UpdateChecker::checkForUpdates);
@@ -52,7 +50,7 @@ UpdateChecker::UpdateChecker()
     // Use a single-shot timer to ensure that it is only
     // started after an update check has completed
     mTimer.setSingleShot(true);
-    reload();
+    reload(true);
 
     // Check for an update right away
     checkForUpdates();
@@ -134,7 +132,7 @@ void UpdateChecker::onFinished(QNetworkReply *reply)
 void UpdateChecker::onSettingChanged(int key)
 {
     if(key == Settings::UpdateInterval) {
-        reload();
+        reload(false);
     }
 }
 
@@ -156,7 +154,20 @@ void UpdateChecker::sendRequest(const QUrl &url)
     mManager.post(request, QJsonDocument(object).toJson());
 }
 
-void UpdateChecker::reload()
+void UpdateChecker::reload(bool initializing)
 {
-    mTimer.setInterval(Settings::get(Settings::UpdateInterval).toInt());
+    // Retrieve and set the update interval
+    const int updateInterval = Settings::get(Settings::UpdateInterval).toInt();
+    mTimer.setInterval(updateInterval);
+
+    // Unless we are initializing, start and stop the timer as appropriate
+    if(!initializing) {
+        if(updateInterval) {
+            if(!mTimer.isActive()) {
+                mTimer.start();
+            }
+        } else {
+            mTimer.stop();
+        }
+    }
 }

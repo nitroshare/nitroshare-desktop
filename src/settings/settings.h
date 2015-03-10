@@ -45,6 +45,16 @@ class Settings : public QObject
 public:
 
     /**
+     * @brief Helpful constants
+     */
+    enum {
+        Second = 1000,
+        Minute = 60 * Second,
+        Hour = 60 * Minute,
+        KiB = 1024
+    };
+
+    /**
      * @brief Create a new settings instance
      * @param parent parent QObject
      *
@@ -57,12 +67,6 @@ public:
      * @brief Destroy the settings instance
      */
     virtual ~Settings();
-
-    static const int Second;
-    static const int Minute;
-    static const int Hour;
-
-    static const int Kb;
 
     /// Time (in MS) between broadcast packets
     static const int BroadcastInterval;
