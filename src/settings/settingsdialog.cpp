@@ -45,23 +45,27 @@ SettingsDialog::SettingsDialog()
 
 void SettingsDialog::accept()
 {
-    // General tab
-    Settings::set(Settings::DeviceName, deviceNameEdit->text());
-    Settings::set(Settings::TransferDirectory, transferDirectoryEdit->text());
+    Settings *settings = Settings::instance();
+    settings->beginSet();
+
+    // Settings in the general tab
+    settings->set(Settings::Key::DeviceName, deviceNameEdit->text());
+    settings->set(Settings::Key::TransferDirectory, transferDirectoryEdit->text());
 
 #ifdef BUILD_UPDATECHECKER
-    Settings::set(Settings::UpdateInterval, updateCheckbox->isChecked() ? updateIntervalSpinBox->value() * Settings::Hour : 0);
+    settings->set(Settings::Key::UpdateInterval, updateCheckbox->isChecked() ? updateIntervalSpinBox->value() * Settings::Constant::Hour : 0);
 #endif
 
-    // Transfer section
-    Settings::set(Settings::TransferPort, transferPortSpinBox->value());
-    Settings::set(Settings::TransferBuffer, transferBufferSpinBox->value() * Settings::KiB);
+    // Settings in the transfer section
+    settings->set(Settings::Key::TransferPort, transferPortSpinBox->value());
+    settings->set(Settings::Key::TransferBuffer, transferBufferSpinBox->value() * Settings::Constant::KiB);
 
-    // Broadcast section
-    Settings::set(Settings::BroadcastPort, broadcastPortSpinBox->value());
-    Settings::set(Settings::BroadcastTimeout, broadcastTimeoutSpinBox->value() * Settings::Second);
-    Settings::set(Settings::BroadcastInterval, broadcastIntervalSpinBox->value() * Settings::Second);
+    // Settings in the broadcast section
+    settings->set(Settings::Key::BroadcastPort, broadcastPortSpinBox->value());
+    settings->set(Settings::Key::BroadcastTimeout, broadcastTimeoutSpinBox->value() * Settings::Constant::Second);
+    settings->set(Settings::Key::BroadcastInterval, broadcastIntervalSpinBox->value() * Settings::Constant::Second);
 
+    settings->endSet();
     QDialog::accept();
 }
 
@@ -76,7 +80,7 @@ void SettingsDialog::onResetButtonClicked()
 
     // Perform the reset and then reload all of the settings
     if(response == QMessageBox::Yes) {
-        Settings::reset();
+        Settings::instance()->reset();
         reload();
     }
 }
@@ -91,23 +95,25 @@ void SettingsDialog::onTransferDirectoryButtonClicked()
 
 void SettingsDialog::reload()
 {
+    Settings *settings = Settings::instance();
+
     // General tab
-    deviceNameEdit->setText(Settings::get(Settings::DeviceName).toString());
-    transferDirectoryEdit->setText(Settings::get(Settings::TransferDirectory).toString());
+    deviceNameEdit->setText(settings->get(Settings::Key::DeviceName).toString());
+    transferDirectoryEdit->setText(settings->get(Settings::Key::TransferDirectory).toString());
 
 #ifdef BUILD_UPDATECHECKER
-    const int updateInterval = Settings::get(Settings::UpdateInterval).toInt();
+    const int updateInterval = settings->get(Settings::Key::UpdateInterval).toInt();
     updateCheckbox->setChecked(updateInterval);
     updateIntervalSpinBox->setEnabled(updateInterval);
-    updateIntervalSpinBox->setValue(updateInterval / Settings::Hour);
+    updateIntervalSpinBox->setValue(updateInterval / Settings::Constant::Hour);
 #endif
 
     // Transfer section
-    transferPortSpinBox->setValue(Settings::get(Settings::TransferPort).toLongLong());
-    transferBufferSpinBox->setValue(Settings::get(Settings::TransferBuffer).toInt() / Settings::KiB);
+    transferPortSpinBox->setValue(settings->get(Settings::Key::TransferPort).toLongLong());
+    transferBufferSpinBox->setValue(settings->get(Settings::Key::TransferBuffer).toInt() / Settings::Constant::KiB);
 
     // Broadcast section
-    broadcastPortSpinBox->setValue(Settings::get(Settings::BroadcastPort).toLongLong());
-    broadcastTimeoutSpinBox->setValue(Settings::get(Settings::BroadcastTimeout).toInt() / Settings::Second);
-    broadcastIntervalSpinBox->setValue(Settings::get(Settings::BroadcastInterval).toInt() / Settings::Second);
+    broadcastPortSpinBox->setValue(settings->get(Settings::Key::BroadcastPort).toLongLong());
+    broadcastTimeoutSpinBox->setValue(settings->get(Settings::Key::BroadcastTimeout).toInt() / Settings::Constant::Second);
+    broadcastIntervalSpinBox->setValue(settings->get(Settings::Key::BroadcastInterval).toInt() / Settings::Constant::Second);
 }
