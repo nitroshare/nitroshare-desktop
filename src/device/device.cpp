@@ -34,7 +34,7 @@ Device::Device(const QString &uuid)
 
 bool Device::hasTimedOut() const
 {
-    return QDateTime::currentMSecsSinceEpoch() - mLastPing > Settings::get(Settings::BroadcastTimeout).toLongLong();
+    return QDateTime::currentMSecsSinceEpoch() - mLastPing > Settings::instance()->get(Settings::Key::BroadcastTimeout).toLongLong();
 }
 
 bool Device::update(const QString &name, Platform::OperatingSystem operatingSystem, const QHostAddress &address, quint16 port)

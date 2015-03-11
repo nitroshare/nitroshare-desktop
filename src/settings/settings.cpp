@@ -127,10 +127,14 @@ void Settings::endSet()
         return;
     }
 
-    emit settingsChanged(d->multiSetKeys);
+    // If any keys were modified, emit the signal
+    // with the list of keys and clear the list
+    if(d->multiSetKeys.count()) {
+        emit settingsChanged(d->multiSetKeys);
+        d->multiSetKeys.clear();
+    }
 
     d->multiSet = false;
-    d->multiSetKeys.clear();
 }
 
 void Settings::reset()

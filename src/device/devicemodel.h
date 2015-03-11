@@ -35,6 +35,9 @@ class DeviceModelPrivate;
  * Devices continuously send out broadcast packets on all active network
  * interfaces. Once a packet is received, it is examined and an instance of
  * the Device class is created to represent the device.
+ *
+ * If a packet is not received from a device after a certain amount of time
+ * has elapsed, the device is considered to have timed out and is removed.
  */
 class DeviceModel : public QAbstractTableModel
 {

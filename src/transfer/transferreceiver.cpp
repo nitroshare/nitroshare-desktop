@@ -28,7 +28,7 @@
 
 TransferReceiver::TransferReceiver(qintptr socketDescriptor)
     : Transfer(TransferModel::Receive),
-      mRoot(Settings::get(Settings::TransferDirectory).toString())
+      mRoot(Settings::instance()->get(Settings::Key::TransferDirectory).toString())
 {
     mSocket.setSocketDescriptor(socketDescriptor);
 }

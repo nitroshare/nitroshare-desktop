@@ -29,7 +29,6 @@
 #include <QNetworkRequest>
 #include <QVariantMap>
 
-#include "../settings/settings.h"
 #include "../util/json.h"
 #include "../util/platform.h"
 #include "config.h"
@@ -45,12 +44,12 @@ UpdateChecker::UpdateChecker()
 {
     connect(&mTimer, &QTimer::timeout, this, &UpdateChecker::checkForUpdates);
     connect(&mManager, &QNetworkAccessManager::finished, this, &UpdateChecker::onFinished);
-    connect(Settings::instance(), &Settings::settingChanged, this, &UpdateChecker::onSettingChanged);
+    connect(Settings::instance(), &Settings::settingsChanged, this, &UpdateChecker::onSettingsChanged);
 
     // Use a single-shot timer to ensure that it is only
     // started after an update check has completed
     mTimer.setSingleShot(true);
-    reload(true);
+    onSettingsChanged();
 
     // Check for an update right away
     checkForUpdates();
@@ -129,10 +128,20 @@ void UpdateChecker::onFinished(QNetworkReply *reply)
     mTimer.start();
 }
 
-void UpdateChecker::onSettingChanged(int key)
+void UpdateChecker::onSettingsChanged(const QList<Settings::Key> &keys)
 {
-    if(key == Settings::UpdateInterval) {
-        reload(false);
+    Settings *settings = Settings::instance();
+
+    if(keys.contains(Settings::Key::UpdateCheck)) {
+        if(settings->get(Settings::Key::UpdateCheck).toBool()) {
+            mTimer.start();
+        } else {
+            mTimer.stop();
+        }
+    }
+
+    if(keys.empty() || keys.contains(Settings::Key::UpdateInterval)) {
+        mTimer.setInterval(settings->get(Settings::Key::UpdateInterval).toInt());
     }
 }
 
@@ -152,22 +161,4 @@ void UpdateChecker::sendRequest(const QUrl &url)
     // Include the information in the request
     QJsonObject object = QJsonObject::fromVariantMap(data);
     mManager.post(request, QJsonDocument(object).toJson());
-}
-
-void UpdateChecker::reload(bool initializing)
-{
-    // Retrieve and set the update interval
-    const int updateInterval = Settings::get(Settings::UpdateInterval).toInt();
-    mTimer.setInterval(updateInterval);
-
-    // Unless we are initializing, start and stop the timer as appropriate
-    if(!initializing) {
-        if(updateInterval) {
-            if(!mTimer.isActive()) {
-                mTimer.start();
-            }
-        } else {
-            mTimer.stop();
-        }
-    }
 }

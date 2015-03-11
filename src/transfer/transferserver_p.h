@@ -27,8 +27,10 @@
 
 #include <QTcpServer>
 
+#include "../settings/settings.h"
 #include "transferserver.h"
 
+// We must derive from QTcpServer in order to override the incomingConnection method
 class TransferServerPrivate : public QTcpServer
 {
     Q_OBJECT
@@ -39,7 +41,7 @@ public:
 
 private Q_SLOTS:
 
-    void onSettingChanged(int key);
+    void onSettingsChanged(const QList<Settings::Key> &keys);
 
 private:
 

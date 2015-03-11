@@ -29,6 +29,7 @@
 #include <QList>
 #include <QTimer>
 
+#include "../settings/settings.h"
 #include "device.h"
 #include "devicelistener.h"
 #include "devicemodel.h"
@@ -55,11 +56,7 @@ private Q_SLOTS:
                      const QHostAddress &address, quint16 port);
     void update();
 
-    void settingChanged(int key);
-
-private:
-
-    void reload();
+    void onSettingsChanged(const QList<Settings::Key> &keys = {});
 };
 
 #endif // NS_DEVICEMODELPRIVATE_H

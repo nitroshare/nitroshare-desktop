@@ -29,6 +29,8 @@
 #include <QTimer>
 #include <QUrl>
 
+#include "../settings/settings.h"
+
 /**
  * @brief Periodically checks for application updates
  *
@@ -55,14 +57,13 @@ Q_SIGNALS:
 private Q_SLOTS:
 
     void checkForUpdates();
-
     void onFinished(QNetworkReply *reply);
-    void onSettingChanged(int key);
+
+    void onSettingsChanged(const QList<Settings::Key> &keys = {});
 
 private:
 
     void sendRequest(const QUrl &url);
-    void reload(bool initializing);
 
     QTimer mTimer;
     QNetworkAccessManager mManager;

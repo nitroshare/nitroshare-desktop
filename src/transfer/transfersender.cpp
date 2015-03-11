@@ -35,7 +35,7 @@ TransferSender::TransferSender(const QString &deviceName, const QHostAddress &ad
       mAddress(address),
       mPort(port),
       mBundle(bundle),
-      mBufferSize(Settings::get(Settings::TransferBuffer).toInt())
+      mBufferSize(Settings::instance()->get(Settings::Key::TransferBuffer).toInt())
 {
     mDeviceName = deviceName;
 }
@@ -91,7 +91,7 @@ void TransferSender::writeTransferHeader()
     // Due to poor translation between 64-bit integers in C++ and JSON,
     // it is necessary to send integers as strings
     writeJsonPacket(QJsonObject::fromVariantMap({
-        { "name", Settings::get(Settings::DeviceName).toString() },
+        { "name", Settings::instance()->get(Settings::Key::DeviceName).toString() },
         { "size", QString::number(mTransferBytesTotal) },
         { "count", QString::number(mBundle->count()) }
     }));

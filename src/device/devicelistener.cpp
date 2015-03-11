@@ -25,18 +25,17 @@
 #include <QNetworkInterface>
 #include <QSet>
 
-#include "../settings/settings.h"
 #include "../util/json.h"
-#include "../util/platform.h"
 #include "devicelistener.h"
 
 DeviceListener::DeviceListener()
 {
     connect(&mTimer, &QTimer::timeout, this, &DeviceListener::sendPings);
     connect(&mSocket, &QUdpSocket::readyRead, this, &DeviceListener::processPings);
-    connect(Settings::instance(), &Settings::settingChanged, this, &DeviceListener::onSettingChanged);
+    connect(Settings::instance(), &Settings::settingsChanged, this, &DeviceListener::onSettingsChanged);
 
-    reload();
+    // Load the initial settings
+    onSettingsChanged();
 
     // Immediately announce the device on the network and start the timer
     sendPings();
@@ -83,11 +82,13 @@ void DeviceListener::sendPings()
     // TODO: when switching to Qt 5.4, switch to using QJsonObject's
     // initializer instead of converting a QVariantMap
 
+    Settings *settings = Settings::instance();
+
     QJsonObject object(QJsonObject::fromVariantMap({
-        { "uuid", Settings::get(Settings::DeviceUUID).toString() },
-        { "name", Settings::get(Settings::DeviceName).toString() },
+        { "uuid", settings->get(Settings::Key::DeviceUUID).toString() },
+        { "name", settings->get(Settings::Key::DeviceName).toString() },
         { "operating_system", Platform::operatingSystemName() },
-        { "port", QString::number(Settings::get(Settings::TransferPort).toInt()) }
+        { "port", QString::number(settings->get(Settings::Key::TransferPort).toInt()) }
     }));
 
     // Build a list of all unique addresses (since we are
@@ -110,19 +111,16 @@ void DeviceListener::sendPings()
     }
 }
 
-void DeviceListener::onSettingChanged(int key)
+void DeviceListener::onSettingsChanged(const QList<Settings::Key> &keys)
 {
-    if(key == Settings::BroadcastInterval || key == Settings::BroadcastPort) {
-        reload();
+    Settings *settings = Settings::instance();
+
+    if(keys.empty() || keys.contains(Settings::Key::BroadcastInterval)) {
+        mTimer.setInterval(settings->get(Settings::Key::BroadcastInterval).toInt());
     }
-}
 
-void DeviceListener::reload()
-{
-    // The timer is automatically restarted after setting the interval
-    mTimer.setInterval(Settings::get(Settings::BroadcastInterval).toInt());
-
-    // Close the socket if it is open and bind to the configured port
-    mSocket.close();
-    mSocket.bind(Settings::get(Settings::BroadcastPort).toInt(), QUdpSocket::ShareAddress);
+    if(keys.empty() || keys.contains(Settings::Key::BroadcastPort)) {
+        mSocket.close();
+        mSocket.bind(settings->get(Settings::Key::BroadcastPort).toInt(), QUdpSocket::ShareAddress);
+    }
 }

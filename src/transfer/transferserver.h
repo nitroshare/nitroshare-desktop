@@ -49,6 +49,11 @@ public:
      */
     explicit TransferServer(QObject *parent = nullptr);
 
+    /**
+     * @brief Destroy the server
+     */
+    virtual ~TransferServer();
+
 Q_SIGNALS:
 
     /**

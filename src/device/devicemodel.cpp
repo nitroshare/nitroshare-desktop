@@ -24,7 +24,6 @@
 
 #include <QIcon>
 
-#include "../settings/settings.h"
 #include "../util/platform.h"
 #include "devicemodel.h"
 #include "devicemodel_p.h"
@@ -38,9 +37,10 @@ DeviceModelPrivate::DeviceModelPrivate(DeviceModel *deviceModel)
 {
     connect(&timer, &QTimer::timeout, this, &DeviceModelPrivate::update);
     connect(&listener, &DeviceListener::pingReceived, this, &DeviceModelPrivate::processPing);
-    connect(Settings::instance(), &Settings::settingChanged, this, &DeviceModelPrivate::settingChanged);
+    connect(Settings::instance(), &Settings::settingsChanged, this, &DeviceModelPrivate::onSettingsChanged);
 
-    reload();
+    onSettingsChanged();
+
     timer.start();
 }
 
@@ -54,7 +54,7 @@ void DeviceModelPrivate::processPing(const QString &uuid, const QString &name, P
 {
     // Ensure that the UUID does not match this device
     // since we will receive our own broadcast packets
-    if(uuid == Settings::get(Settings::DeviceUUID).toString()) {
+    if(uuid == Settings::instance()->get(Settings::Key::DeviceUUID).toString()) {
         return;
     }
 
@@ -105,16 +105,11 @@ void DeviceModelPrivate::update()
     }
 }
 
-void DeviceModelPrivate::settingChanged(int key)
+void DeviceModelPrivate::onSettingsChanged(const QList<Settings::Key> &keys)
 {
-    if(key == Settings::BroadcastTimeout) {
-        reload();
+    if(keys.empty() || keys.contains(Settings::Key::BroadcastTimeout)) {
+        timer.setInterval(Settings::instance()->get(Settings::Key::BroadcastTimeout).toInt());
     }
-}
-
-void DeviceModelPrivate::reload()
-{
-    timer.setInterval(Settings::get(Settings::BroadcastTimeout).toInt());
 }
 
 DeviceModel::DeviceModel()

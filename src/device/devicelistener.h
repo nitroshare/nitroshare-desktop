@@ -29,6 +29,7 @@
 #include <QTimer>
 #include <QUdpSocket>
 
+#include "../settings/settings.h"
 #include "../util/platform.h"
 
 /**
@@ -56,11 +57,9 @@ private Q_SLOTS:
     void processPings();
     void sendPings();
 
-    void onSettingChanged(int key);
+    void onSettingsChanged(const QList<Settings::Key> &keys = {});
 
 private:
-
-    void reload();
 
     QTimer mTimer;
     QUdpSocket mSocket;
