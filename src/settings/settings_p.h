@@ -33,14 +33,23 @@ class SettingsPrivate
 {
 public:
 
+    enum class Flag {
+        None,
+        Initialize,
+        EmitSignal
+    };
+
     explicit SettingsPrivate(Settings *settings);
 
-    QVariant get(int key, bool initialize);
-    void set(int key, const QVariant &value, bool initializing);
+    QVariant get(Settings::Key key, Flag flag = Flag::None);
+    void set(Settings::Key key, const QVariant &value, Flag flag = Flag::None);
 
     Settings *const q;
 
     QSettings settings;
+
+    bool multiSet = false;
+    QList<Settings::Key> multiSetKeys;
 };
 
 #endif // NS_SETTINGSPRIVATE_H

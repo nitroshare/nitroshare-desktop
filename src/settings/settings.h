@@ -25,8 +25,8 @@
 #ifndef NS_SETTINGS_H
 #define NS_SETTINGS_H
 
+#include <QList>
 #include <QObject>
-#include <QVariant>
 
 class SettingsPrivate;
 
@@ -35,8 +35,20 @@ class SettingsPrivate;
  *
  * Access to settings that control behavior of the application is done through
  * a global instance of this class. The global instance may be obtained
- * through the instance() static method. From there, settings can be both
- * retrieved and set. Settings are applied immediately.
+ * through the instance() static method.
+ *
+ * Settings can be retrieved by providing the appropriate key to the get()
+ * method. To change the value of a single setting, use the set() method. The
+ * process for changing the value of multiple settings is as follows:
+ *
+ * - call the beginSet() method
+ * - call the set() method for each individual setting
+ * - call the endSet() method
+ *
+ * To receive notification when a value changes, obtain the global instance
+ * and connect to the settingsChanged() signal.
+ *
+ * Note: this class is not thread safe.
  */
 class Settings : public QObject
 {
@@ -45,9 +57,9 @@ class Settings : public QObject
 public:
 
     /**
-     * @brief Helpful constants
+     * @brief Helpful unit constants
      */
-    enum {
+    enum Constant {
         Second = 1000,
         Minute = 60 * Second,
         Hour = 60 * Minute,
@@ -55,48 +67,59 @@ public:
     };
 
     /**
-     * @brief Create a new settings instance
-     * @param parent parent QObject
-     *
-     * Instances of this class should not be instantiated. Instead, obtain a
-     * pointer to the global instance with the instance() static method.
+     * @brief Keys for individual settings
      */
-    explicit Settings(QObject *parent = nullptr);
+    enum class Key : int {
+        /// Port for sending broadcast packets
+        BroadcastPort = 1,
+        /// Time (in MS) between broadcast packets
+        BroadcastInterval = 2,
+        /// Time (in MS) after receiving a device's last packet before considering the device offline
+        BroadcastTimeout = 3,
+        /// Unique GUID used to identify the device
+        DeviceUUID = 11,
+        /// Descriptive name of the device
+        DeviceName = 12,
+        /// Port for receiving transfers
+        TransferPort = 21,
+        /// Size (in bytes) of the buffer used for transferring file data
+        TransferBuffer = 22,
+        /// Directory for storing received files and directories
+        TransferDirectory = 23,
+        /// Whether to check for updates or not
+        UpdateCheck = 31,
+        /// Interval between consecutive update checks
+        UpdateInterval = 32
+    };
 
     /**
-     * @brief Destroy the settings instance
+     * @brief Retrieve the value of the specified key
+     * @param key key to retrieve the value of
+     * @return value for the specified key
      */
-    virtual ~Settings();
+    QVariant get(Key key);
 
-    /// Time (in MS) between broadcast packets
-    static const int BroadcastInterval;
+    /**
+     * @brief Begin changing a group of settings
+     */
+    void beginSet();
 
-    /// Port for sending broadcast packets
-    static const int BroadcastPort;
+    /**
+     * @brief Set the value of the specified key
+     * @param key key to set the value of
+     * @param value new value for the key
+     */
+    void set(Key key, const QVariant &value);
 
-    /// Time (in MS) after receiving a device's last packet before considering the device offline
-    static const int BroadcastTimeout;
+    /**
+     * @brief Finish changing a group of settings
+     */
+    void endSet();
 
-    /// Descriptive name of the device
-    static const int DeviceName;
-
-    /// Unique GUID used to identify the device
-    static const int DeviceUUID;
-
-    /// Size (in bytes) of the buffer used for transferring file data
-    static const int TransferBuffer;
-
-    /// Directory for storing received files and directories
-    static const int TransferDirectory;
-
-    /// Port for receiving transfers
-    static const int TransferPort;
-
-    /// Whether to check for updates or not
-    static const int UpdateCheck;
-
-    /// Interval between consecutive update checks
-    static const int UpdateInterval;
+    /**
+     * @brief Reset all settings to their default values
+     */
+    void reset();
 
     /**
      * @brief Retrieve a pointer to the global settings instance
@@ -104,34 +127,19 @@ public:
      */
     static Settings *instance();
 
-    /**
-     * @brief Retrieve the value of the specified key
-     * @param key key to retrieve the value of
-     * @return value for the specified key
-     */
-    static QVariant get(int key);
-
-    /**
-     * @brief Set the value of the specified key
-     * @param key key to set the value of
-     * @param value new value for the key
-     */
-    static void set(int key, const QVariant &value);
-
-    /**
-     * @brief Reset all settings to their default values
-     */
-    static void reset();
-
 Q_SIGNALS:
 
     /**
-     * @brief Indicate that a specific setting has changed value
-     * @param key key whose value has changed
+     * @brief Indicate that one or more settings have changed
+     * @param keys list of keys with new values
      */
-    void settingChanged(int key);
+    void settingsChanged(const QList<Key> &keys);
 
 private:
+
+    // Prevent the creation or deletion of class instances
+    Settings();
+    virtual ~Settings();
 
     SettingsPrivate *const d;
 };

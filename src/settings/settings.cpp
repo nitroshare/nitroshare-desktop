@@ -26,130 +26,139 @@
 #include <QMap>
 #include <QStandardPaths>
 #include <QUuid>
-#include <QVariant>
 
 #include "settings.h"
 #include "settings_p.h"
 
-// Assign consecutive numbers to the constants
-int Accumulator = 0;
-
-#define DECLARE_SETTING(x) \
-    const int Settings::x = Accumulator++;
-
-DECLARE_SETTING(BroadcastInterval)
-DECLARE_SETTING(BroadcastPort)
-DECLARE_SETTING(BroadcastTimeout)
-DECLARE_SETTING(DeviceName)
-DECLARE_SETTING(DeviceUUID)
-DECLARE_SETTING(TransferBuffer)
-DECLARE_SETTING(TransferDirectory)
-DECLARE_SETTING(TransferPort)
-DECLARE_SETTING(UpdateInterval)
-
-// For each setting, store its name and an initialization function
-struct Setting
+// For each individual key, store its name and an initialization function
+struct KeyInfo
 {
     QString name;
     QVariant (*initialize)();
 };
 
-// Macro used for inputting settings into the
+// Macro used for generating the initialization list for a map
 #define DEFINE_SETTING(x,y) \
     { \
-        Settings::x, { #x, []() -> QVariant y } \
+        Settings::Key::x, { #x, []() -> QVariant y } \
     }
 
-// Define all of the settings
-QMap<int, Setting> Keys = {
-    DEFINE_SETTING(BroadcastInterval, { return 5 * Settings::Second; }),
+// Map keys to the appropriate KeyInfo instance
+const QMap<Settings::Key, KeyInfo> KeyMap = {
     DEFINE_SETTING(BroadcastPort, { return 40816; }),
-    DEFINE_SETTING(BroadcastTimeout, { return 30 * Settings::Second; }),
+    DEFINE_SETTING(BroadcastInterval, { return 5 * Settings::Constant::Second; }),
+    DEFINE_SETTING(BroadcastTimeout, { return 30 * Settings::Constant::Second; }),
+    DEFINE_SETTING(DeviceUUID, { return QUuid::createUuid().toString(); }),
     DEFINE_SETTING(DeviceName, { return QHostInfo::localHostName(); }),
-    DEFINE_SETTING(DeviceUUID, { return QUuid::createUuid(); }),
-    DEFINE_SETTING(TransferBuffer, { return 64 * Settings::KiB; }),
-    DEFINE_SETTING(TransferDirectory, {
-       return QStandardPaths::writableLocation(QStandardPaths::DesktopLocation);
-    }),
     DEFINE_SETTING(TransferPort, { return 40818; }),
+    DEFINE_SETTING(TransferBuffer, { return 64 * Settings::Constant::KiB; }),
+    DEFINE_SETTING(TransferDirectory, { return QStandardPaths::writableLocation(QStandardPaths::DesktopLocation); }),
     DEFINE_SETTING(UpdateCheck, { return true; }),
-    DEFINE_SETTING(UpdateInterval, { return 24 * Settings::Hour; })
+    DEFINE_SETTING(UpdateInterval, { return 24 * Settings::Constant::Hour; })
 };
-
-// Global settings instance
-Settings settings;
 
 SettingsPrivate::SettingsPrivate(Settings *settings)
     : q(settings)
 {
 }
 
-QVariant SettingsPrivate::get(int key, bool initialize)
+QVariant SettingsPrivate::get(Settings::Key key, Flag flag)
 {
-    // Retrieve the setting for the key and retrieve its current value
-    Setting setting = Keys.value(key);
-    QVariant value = settings.value(setting.name);
+    // Retrieve the name and initialization function for the key
+    KeyInfo keyInfo = KeyMap.value(key);
+    QVariant value = settings.value(keyInfo.name);
 
-    // If the value is NULL and we are allowed to initialize the variable, do so
-    if(value.isNull() && initialize) {
-        value = setting.initialize();
-        set(key, value, true);
+    // If no value was set and initialization is permited, initialize the setting
+    if(value.isNull() && flag == Flag::Initialize) {
+        value = keyInfo.initialize();
+        set(key, value);
     }
 
     return value;
 }
 
-void SettingsPrivate::set(int key, const QVariant &value, bool initializing)
+void SettingsPrivate::set(Settings::Key key, const QVariant &value, Flag flag)
 {
-    // This method is only invoked if:
-    // - the value was not set (initializing = true)
-    // - the value was set but is different (initializing = false)
+    settings.setValue(KeyMap.value(key).name, value);
 
-    // In either case, store the new value
-    settings.setValue(Keys.value(key).name, value);
+    // Take care of emitting the signal only if the appropriate flag was set
+    if(flag == Flag::EmitSignal) {
 
-    // Only emit the changed signal if the key is not being initialized
-    if(!initializing) {
-        emit q->settingChanged(key);
+        // If multiSet is set, add the setting to the list
+        // Otherwise, emit the signal indicating a change
+        if(multiSet) {
+            multiSetKeys.append(key);
+        } else {
+            emit q->settingsChanged({key});
+        }
     }
 }
 
-Settings::Settings(QObject *parent)
-    : QObject(parent),
-      d(new SettingsPrivate(this))
+QVariant Settings::get(Key key)
+{
+    return d->get(key, SettingsPrivate::Flag::Initialize);
+}
+
+void Settings::beginSet()
+{
+    if(d->multiSet) {
+        qWarning("beginSet() already invoked");
+        return;
+    }
+
+    d->multiSet = true;
+}
+
+void Settings::set(Key key, const QVariant &value)
+{
+    // Retrieve the current value but don't initialize
+    QVariant currentValue = d->get(key);
+
+    // Set the value only if it has actually changed and emit the signal
+    if(currentValue != value) {
+        d->set(key, value, SettingsPrivate::Flag::EmitSignal);
+    }
+}
+
+void Settings::endSet()
+{
+    if(!d->multiSet) {
+        qWarning("beginSet() must be invoked before endSet()");
+        return;
+    }
+
+    emit settingsChanged(d->multiSetKeys);
+
+    d->multiSet = false;
+    d->multiSetKeys.clear();
+}
+
+void Settings::reset()
+{
+    beginSet();
+
+    for(QMap<Settings::Key, KeyInfo>::const_iterator i = KeyMap.constBegin(); i != KeyMap.constEnd(); ++i) {
+        set(i.key(), i.value().initialize());
+    }
+
+    endSet();
+}
+
+Settings *Settings::instance()
+{
+    // By using a static variable here, we allow the constructor and destructor
+    // to be private, which prevents other instances and accidental deletion
+    static Settings settings;
+
+    return &settings;
+}
+
+Settings::Settings()
+    : d(new SettingsPrivate(this))
 {
 }
 
 Settings::~Settings()
 {
     delete d;
-}
-
-Settings *Settings::instance()
-{
-    return &settings;
-}
-
-void Settings::reset()
-{
-    for(QMap<int, Setting>::const_iterator i = Keys.constBegin(); i != Keys.constEnd(); ++i) {
-        set(i.key(), i.value().initialize());
-    }
-}
-
-QVariant Settings::get(int key)
-{
-    return instance()->d->get(key, true);
-}
-
-void Settings::set(int key, const QVariant &value)
-{
-    // Attempt to retrieve the current value
-    QVariant currentValue = instance()->d->get(key, false);
-
-    // Compare the current value to the new value
-    // and if they differ, set the new value
-    if(currentValue != value) {
-        instance()->d->set(key, value, false);
-    }
 }
