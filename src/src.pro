@@ -98,6 +98,19 @@ macx {
 
 # Files and settings specific to the Linux build
 linux-* {
+    # TODO: the following does NOT work when cross-compiling
+    # so you may have to set the definitions manually
+
+    # Check to see if dpkg is available
+    system(dpkg) {
+        DEFINES += __DEBIAN__
+    }
+
+    # Check to see if rpm is available
+    system(rpm) {
+        DEFINES += __RPM__
+    }
+
     # Check for the packages needed to build the appindicator class
     CONFIG += link_pkgconfig
     packagesExist(gtk+-2.0 appindicator-0.1 libnotify) {
