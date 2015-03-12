@@ -98,16 +98,16 @@ macx {
 
 # Files and settings specific to the Linux build
 linux-* {
-    # TODO: the following does NOT work when cross-compiling
-    # so you may have to set the definitions manually
+    # NOTE: when cross-compiling, you will need to manually
+    # specify CONFIG+=debian or CONFIG+=rpm
 
     # Check to see if dpkg is available
-    system(dpkg) {
+    system(dpkg --version >/dev/null)|debian {
         DEFINES += __DEBIAN__
     }
 
     # Check to see if rpm is available
-    system(rpm) {
+    system(rpm --version >/dev/null)|rpm {
         DEFINES += __RPM__
     }
 
