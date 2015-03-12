@@ -28,8 +28,9 @@
 #include "devicemodel.h"
 #include "devicemodel_p.h"
 
-// Enable QHostAddress to be used in a QVariant
+// Enable QHostAddress and OperatingSystem to be used in a QVariant
 Q_DECLARE_METATYPE(QHostAddress)
+Q_DECLARE_METATYPE(Platform::OperatingSystem)
 
 DeviceModelPrivate::DeviceModelPrivate(DeviceModel *deviceModel)
     : QObject(deviceModel),
@@ -154,7 +155,7 @@ QVariant DeviceModel::data(const QModelIndex &index, int role) const
     case NameRole:
         return device->name();
     case OperatingSystemRole:
-        return device->operatingSystem();
+        return QVariant::fromValue(device->operatingSystem());
     case AddressRole:
         return QVariant::fromValue(device->address());
     case PortRole:

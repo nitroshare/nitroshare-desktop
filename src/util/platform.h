@@ -45,14 +45,27 @@ class Platform
 {
 public:
 
-    enum OperatingSystem {
-        Unknown,
+    /**
+     * @brief Operating system definitions
+     *
+     * In order for the update checker to pull the correct update, we need to
+     * split Linux distributions into those that are Debian-based and those
+     * that are RPM-based. A generic "Linux" entry is provided as a catch-all.
+     */
+    enum class OperatingSystem : int {
+        Unknown = 0,
         Windows,
         OSX,
+        Debian,
+        RPM,
         Linux
     };
 
-    enum Architecture {
+    /**
+     * @brief CPU architecture definitions
+     */
+    enum class Architecture : int {
+        Unknown = 0,
         x86,
         x64
     };
@@ -99,6 +112,13 @@ public:
      * @return one of OperatingSystem
      */
     static OperatingSystem operatingSystemForName(const QString &name);
+
+    /**
+     * @brief Determine if an OperatingSystem is Linux-based
+     * @param operatingSystem one of OperatingSystem
+     * @return
+     */
+    static bool isLinux(OperatingSystem operatingSystem = currentOperatingSystem());
 
     /**
      * @brief Determine if the current platform is Unity

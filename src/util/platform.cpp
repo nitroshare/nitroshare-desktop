@@ -30,35 +30,47 @@
 Platform::OperatingSystem Platform::currentOperatingSystem()
 {
 #if defined(Q_OS_WIN32)
-    return Windows;
+    return OperatingSystem::Windows;
 #elif defined(Q_OS_MACX)
-    return OSX;
+    return OperatingSystem::OSX;
+#elif defined(__DEBIAN__)
+    return OperatingSystem::Debian;
+#elif defined(__RPM__)
+    return OperatingSystem::RPM;
 #elif defined(Q_OS_LINUX)
-    return Linux;
+    return OperatingSystem::Linux;
 #else
-    return Unknown;
+    return OperatingSystem::Unknown;
 #endif
 }
 
 Platform::Architecture Platform::currentArchitecture()
 {
-    // Note: Qt doesn't provide a define for 64-bit operating systems, so we
-    // need to do this ourselves: __x86_64__ works on everything but MSVC++
-#if defined(Q_OS_WIN64) || defined(__x86_64__)
-    return x64;
+    // Note: Qt doesn't provide the definitions we need to accurately
+    // determine the CPU architecture - in order to do that, we'll need
+    // to check a few preprocessor definitions ourselves
+
+#if defined(__i386__) || defined(_M_IX86)
+    return Architecture::x86;
+#elif defined(__x86_64__) || defined(_M_X64)
+    return Architecture::x64;
 #else
-    return x86;
+    return Architecture::Unknown;
 #endif
 }
 
 QString Platform::operatingSystemName(OperatingSystem operatingSystem)
 {
     switch(operatingSystem) {
-    case Windows:
+    case OperatingSystem::Windows:
         return "windows";
-    case OSX:
+    case OperatingSystem::OSX:
         return "osx";
-    case Linux:
+    case OperatingSystem::Debian:
+        return "debian";
+    case OperatingSystem::RPM:
+        return "rpm";
+    case OperatingSystem::Linux:
         return "linux";
     default:
         return "unknown";
@@ -68,11 +80,15 @@ QString Platform::operatingSystemName(OperatingSystem operatingSystem)
 QString Platform::operatingSystemFriendlyName(OperatingSystem operatingSystem)
 {
     switch(operatingSystem) {
-    case Windows:
+    case OperatingSystem::Windows:
         return QObject::tr("Windows");
-    case OSX:
+    case OperatingSystem::OSX:
         return QObject::tr("OS X");
-    case Linux:
+    case OperatingSystem::Debian:
+        return QObject::tr("Debian-based");
+    case OperatingSystem::RPM:
+        return QObject::tr("RPM-based");
+    case OperatingSystem::Linux:
         return QObject::tr("Linux");
     default:
         return QObject::tr("Unknown");
@@ -82,32 +98,48 @@ QString Platform::operatingSystemFriendlyName(OperatingSystem operatingSystem)
 Platform::OperatingSystem Platform::operatingSystemForName(const QString &name)
 {
     if(name == "windows") {
-        return Windows;
+        return OperatingSystem::Windows;
     } else if(name == "osx") {
-        return OSX;
+        return OperatingSystem::OSX;
+    } else if(name == "debian") {
+        return OperatingSystem::Debian;
+    } else if(name == "rpm") {
+        return OperatingSystem::RPM;
     } else if(name == "linux") {
-        return Linux;
+        return OperatingSystem::Linux;
     } else {
-        return Unknown;
+        return OperatingSystem::Unknown;
     }
 }
 
 QString Platform::architectureName(Architecture architecture)
 {
     switch(architecture) {
-    case x86:
+    case Architecture::x86:
         return "x86";
-    case x64:
+    case Architecture::x64:
         return "x64";
     default:
         return "unknown";
     }
 }
 
+bool Platform::isLinux(OperatingSystem operatingSystem)
+{
+    switch(operatingSystem) {
+    case OperatingSystem::Debian:
+    case OperatingSystem::RPM:
+    case OperatingSystem::Linux:
+        return true;
+    default:
+        return false;
+    }
+}
+
 bool Platform::isUnity()
 {
     // Only check the environment variable when running under Linux
-    if(currentOperatingSystem() == Linux) {
+    if(isLinux()) {
         return QProcessEnvironment::systemEnvironment().value("XDG_CURRENT_DESKTOP").toLower() == "unity";
     } else {
         return false;
