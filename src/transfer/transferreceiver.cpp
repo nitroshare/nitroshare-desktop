@@ -31,6 +31,7 @@ TransferReceiver::TransferReceiver(qintptr socketDescriptor)
       mRoot(Settings::instance()->get(Settings::Key::TransferDirectory).toString())
 {
     mSocket.setSocketDescriptor(socketDescriptor);
+    mDeviceName = tr("[Unknown]");
 }
 
 void TransferReceiver::start()

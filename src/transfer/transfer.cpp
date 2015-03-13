@@ -68,9 +68,9 @@ void Transfer::restart()
         return;
     }
 
-    // Ensure that the transfer is not in progress before restarting it
-    if(mState == TransferModel::Connecting || mState == TransferModel::InProgress) {
-        qWarning("Cannot restart a transfer that is in progress");
+    // Ensure that the transfer failed
+    if(mState != TransferModel::Failed) {
+        qWarning("Cannot restart a transfer that has not failed");
         return;
     }
 
@@ -96,13 +96,15 @@ void Transfer::onReadyRead()
     // Process as many packets as can be read from the buffer
     forever {
 
-        // If the transfer is finished, ignore packets
+        // If the transfer is finished, ignore any packets being received
         if(mProtocolState == ProtocolState::Finished) {
             break;
         }
 
         // If the size of the packet is not yet known attempt to read it
         if(!mBufferSize) {
+
+            // See if there is enough data in the buffer to read the size
             if(static_cast<size_t>(mBuffer.size()) >= sizeof(mBufferSize)) {
 
                 // memcpy must be used in order to avoid alignment issues
@@ -115,6 +117,7 @@ void Transfer::onReadyRead()
                 // A packet size of zero is an error
                 if(!mBufferSize) {
                     writeErrorPacket(tr("Empty packet received"));
+                    break;
                 }
 
             } else {
@@ -122,7 +125,7 @@ void Transfer::onReadyRead()
             }
         }
 
-        // If the buffer contains enough data for the packet, then process it
+        // If the buffer contains enough data to read the packet, then do so
         if(mBuffer.size() >= mBufferSize) {
             processPacket();
         } else {
@@ -139,15 +142,7 @@ void Transfer::onBytesWritten()
         // If the transfer finished, then report success or failure
         // Otherwise, have the child class write the next packet
         if(mProtocolState == ProtocolState::Finished) {
-
-            // Report the current status of the transfer
-            mState = mError.isNull() ? TransferModel::Succeeded : TransferModel::Failed;
-            emit dataChanged({TransferModel::StateRole});
-
-            // Close the socket and make sure no files are open
-            mSocket.abort();
-            mFile.close();
-
+            finish(mError.isNull() ? TransferModel::Succeeded : TransferModel::Failed);
         } else {
             writeNextPacket();
         }
@@ -158,12 +153,7 @@ void Transfer::onError(QAbstractSocket::SocketError)
 {
     // Errors are only meaningful during the Connecting and InProgress
     if(mState == TransferModel::Connecting || mState == TransferModel::InProgress) {
-
-        // Unlike other error conditions, a socket error indicates that the socket
-        // is closed and therefore we don't need to inform the remote device
-        mState = TransferModel::Failed;
-        emit dataChanged({TransferModel::StateRole});
-        mFile.close();
+        finish(TransferModel::Failed);
     }
 }
 
@@ -235,22 +225,16 @@ void Transfer::processPacket()
     switch(static_cast<PacketType>(type)) {
     case PacketType::Success:
     {
-        // Confirmation from the remote device that the transfer succeeded
-        mState = TransferModel::Succeeded;
-        emit dataChanged({TransferModel::StateRole});
-
-        mSocket.abort();
+        finish(TransferModel::Succeeded);
         break;
     }
     case PacketType::Error:
     {
         // An error occurred - grab the error message
         mError = QString::fromUtf8(data);
-        mState = TransferModel::Failed;
-        emit dataChanged({TransferModel::ErrorRole, TransferModel::StateRole});
+        emit dataChanged({TransferModel::ErrorRole});
 
-        mSocket.abort();
-        mFile.close();
+        finish(TransferModel::Failed);
         break;
     }
     case PacketType::Json:
@@ -308,4 +292,15 @@ void Transfer::reset()
 
     // For simplicity, signal that all roles have changed
     emit dataChanged();
+}
+
+void Transfer::finish(TransferModel::State state)
+{
+    // Change the state and emit the signal indicating the change
+    mState = state;
+    emit dataChanged({TransferModel::StateRole});
+
+    // Close the socket and any open file
+    mSocket.abort();
+    mFile.close();
 }

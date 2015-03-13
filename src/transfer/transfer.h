@@ -45,7 +45,7 @@
  *
  * At a lower level, a packet consists of a 32-bit signed integer indicating
  * its size. The first byte of the packet indicates its type. Four types are
- * currently used - success, error, JSON and binary packets.
+ * currently used - success, error, JSON, and binary packets.
  */
 class Transfer : public QObject
 {
@@ -69,7 +69,7 @@ public:
 
 Q_SIGNALS:
 
-    void dataChanged(const QVector<int> &roles = QVector<int>());
+    void dataChanged(const QVector<int> &roles = {});
 
 private Q_SLOTS:
 
@@ -121,6 +121,7 @@ private:
     void writePacket(PacketType type, const QByteArray &data = QByteArray());
 
     void reset();
+    void finish(TransferModel::State state);
 
     const TransferModel::Direction mDirection;
     TransferModel::State mState;
