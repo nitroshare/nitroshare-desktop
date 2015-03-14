@@ -10,6 +10,7 @@ if [ $? -eq 0 ]; then
 
         # It is enabled, add NitroShare exception
         echo "UFW enabled; allowing NitroShare through..."
+        ufw app update NitroShare
         ufw allow NitroShare
     fi
 fi
