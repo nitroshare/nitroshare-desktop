@@ -110,11 +110,13 @@ void TransferSender::writeItemHeader()
         { "last_read", QString::number(mCurrentItem->lastRead()) }
     });
 
-    // If the item is a directory, write the header and move to the next item
-    // Otherwise open the file and prepare for reading data
     if(mCurrentItem->isDir()) {
+
+        // If the item is a directory, write the
+        // header and move to the next item
         writeJsonPacket(header);
         nextItem();
+
     } else {
 
         // Set the filename and attempt to open the file

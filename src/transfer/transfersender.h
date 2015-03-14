@@ -25,7 +25,6 @@
 #ifndef NS_TRANSFERSENDER_H
 #define NS_TRANSFERSENDER_H
 
-#include <QFile>
 #include <QHostAddress>
 #include <QList>
 
@@ -61,9 +60,9 @@ private:
     const quint16 mPort;
     const Bundle *mBundle;
 
-    QList<BundleItem>::const_iterator mCurrentItem;
-
     const int mBufferSize;
+
+    QList<BundleItem>::const_iterator mCurrentItem;
 };
 
 #endif // NS_TRANSFERSENDER_H

@@ -26,7 +26,6 @@
 #define NS_TRANSFERRECEIVER_H
 
 #include <QDir>
-#include <QFile>
 
 #include "transfer.h"
 
