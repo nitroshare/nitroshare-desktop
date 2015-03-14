@@ -43,5 +43,5 @@ int main(int argc, char **argv)
     Application nitroshare;
     Q_UNUSED(nitroshare);
 
-    app.exec();
+    return app.exec();
 }
