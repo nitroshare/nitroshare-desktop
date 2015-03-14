@@ -1,0 +1,4 @@
+[NitroShare]
+title=File Transfer Application
+description=Cross-platform network file transfer application
+ports=40816/udp,40818/tcp
