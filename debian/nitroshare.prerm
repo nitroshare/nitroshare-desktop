@@ -8,8 +8,8 @@ if [ $? -eq 0 ]; then
     ufw status | grep -i inactive > /dev/null
     if [ $? -ne 0 ]; then
 
-        # It is enabled, add NitroShare exception
-        echo "UFW enabled; adding NitroShare profile..."
-        ufw allow NitroShare
+        # It is enabled, remove the NitroShare exception
+        echo "UFW enabled; removing NitroShare profile..."
+        ufw delete allow NitroShare
     fi
 fi
