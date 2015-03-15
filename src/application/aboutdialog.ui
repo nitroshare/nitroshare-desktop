@@ -25,6 +25,10 @@
   <property name="windowTitle">
    <string>NitroShare - About</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="../data/resource.qrc">
+    <normaloff>:/img/logo.svg</normaloff>:/img/logo.svg</iconset>
+  </property>
   <property name="sizeGripEnabled">
    <bool>false</bool>
   </property>
