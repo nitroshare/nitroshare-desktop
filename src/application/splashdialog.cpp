@@ -22,29 +22,13 @@
  * IN THE SOFTWARE.
  **/
 
-#include <QApplication>
+#include <QPixmap>
 
-#include "application/application.h"
-#include "application/splashdialog.h"
-#include "config.h"
+#include "splashdialog.h"
 
-int main(int argc, char **argv)
+SplashDialog::SplashDialog()
 {
-    QApplication app(argc, argv);
-    app.setQuitOnLastWindowClosed(false);
+    setupUi(this);
 
-    // Set up application properties
-    app.setApplicationDisplayName(PROJECT_TITLE);
-    app.setApplicationName(PROJECT_TITLE);
-    app.setApplicationVersion(PROJECT_VERSION);
-    app.setOrganizationDomain(PROJECT_DOMAIN);
-    app.setOrganizationName(PROJECT_AUTHOR);
-
-    SplashDialog().exec();
-
-    // Create the tray icon that runs the application
-    Application nitroshare;
-    Q_UNUSED(nitroshare);
-
-    return app.exec();
+    splash->setPixmap(QPixmap(":/img/splash.png"));
 }

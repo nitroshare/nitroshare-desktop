@@ -2,6 +2,7 @@
     <qresource prefix="/">
         <file>img/desktop.svg</file>
         <file>img/logo.svg</file>
+        <file>img/splash.png</file>
         <file>img/tray.svg</file>
     </qresource>
 </RCC>

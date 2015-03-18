@@ -22,29 +22,23 @@
  * IN THE SOFTWARE.
  **/
 
-#include <QApplication>
+#ifndef NS_SPLASHDIALOG_H
+#define NS_SPLASHDIALOG_H
 
-#include "application/application.h"
-#include "application/splashdialog.h"
-#include "config.h"
+#include <QDialog>
 
-int main(int argc, char **argv)
+#include "ui_splashdialog.h"
+
+/**
+ * @brief Simple dialog describing the application
+ */
+class SplashDialog : public QDialog, public Ui::SplashDialog
 {
-    QApplication app(argc, argv);
-    app.setQuitOnLastWindowClosed(false);
+    Q_OBJECT
 
-    // Set up application properties
-    app.setApplicationDisplayName(PROJECT_TITLE);
-    app.setApplicationName(PROJECT_TITLE);
-    app.setApplicationVersion(PROJECT_VERSION);
-    app.setOrganizationDomain(PROJECT_DOMAIN);
-    app.setOrganizationName(PROJECT_AUTHOR);
+public:
 
-    SplashDialog().exec();
+    SplashDialog();
+};
 
-    // Create the tray icon that runs the application
-    Application nitroshare;
-    Q_UNUSED(nitroshare);
-
-    return app.exec();
-}
+#endif // NS_SPLASHDIALOG_H
