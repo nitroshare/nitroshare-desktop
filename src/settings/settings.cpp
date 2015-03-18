@@ -45,6 +45,7 @@ struct KeyInfo
 
 // Map keys to the appropriate KeyInfo instance
 const QMap<Settings::Key, KeyInfo> KeyMap = {
+    DEFINE_SETTING(ApplicationSplash, { return false; }),
     DEFINE_SETTING(BroadcastPort, { return 40816; }),
     DEFINE_SETTING(BroadcastInterval, { return 5 * Settings::Constant::Second; }),
     DEFINE_SETTING(BroadcastTimeout, { return 30 * Settings::Constant::Second; }),

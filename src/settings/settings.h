@@ -70,26 +70,28 @@ public:
      * @brief Keys for individual settings
      */
     enum class Key : int {
+        /// Whether the splash screen has been shown or not
+        ApplicationSplash = 1,
         /// Port for sending broadcast packets
-        BroadcastPort = 1,
+        BroadcastPort = 11,
         /// Time (in MS) between broadcast packets
-        BroadcastInterval = 2,
+        BroadcastInterval = 12,
         /// Time (in MS) after receiving a device's last packet before considering the device offline
-        BroadcastTimeout = 3,
+        BroadcastTimeout = 13,
         /// Unique GUID used to identify the device
-        DeviceUUID = 11,
+        DeviceUUID = 21,
         /// Descriptive name of the device
-        DeviceName = 12,
+        DeviceName = 22,
         /// Port for receiving transfers
-        TransferPort = 21,
+        TransferPort = 31,
         /// Size (in bytes) of the buffer used for transferring file data
-        TransferBuffer = 22,
+        TransferBuffer = 32,
         /// Directory for storing received files and directories
-        TransferDirectory = 23,
+        TransferDirectory = 33,
         /// Whether to check for updates or not
-        UpdateCheck = 31,
+        UpdateCheck = 41,
         /// Interval between consecutive update checks
-        UpdateInterval = 32
+        UpdateInterval = 42
     };
 
     /**
