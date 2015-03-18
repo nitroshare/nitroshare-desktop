@@ -26,6 +26,7 @@
 
 #include "application/application.h"
 #include "application/splashdialog.h"
+#include "settings/settings.h"
 #include "config.h"
 
 int main(int argc, char **argv)
@@ -40,7 +41,11 @@ int main(int argc, char **argv)
     app.setOrganizationDomain(PROJECT_DOMAIN);
     app.setOrganizationName(PROJECT_AUTHOR);
 
-    SplashDialog().exec();
+    // Display the spash dialog if this is the first run
+    if(!Settings::instance()->get(Settings::Key::ApplicationSplash).toBool()) {
+        SplashDialog().exec();
+        Settings::instance()->set(Settings::Key::ApplicationSplash, true);
+    }
 
     // Create the tray icon that runs the application
     Application nitroshare;

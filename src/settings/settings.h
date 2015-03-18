@@ -70,7 +70,7 @@ public:
      * @brief Keys for individual settings
      */
     enum class Key : int {
-        /// Whether the splash screen has been shown or not
+        /// Whether the splash dialog has been shown or not
         ApplicationSplash = 1,
         /// Port for sending broadcast packets
         BroadcastPort = 11,
