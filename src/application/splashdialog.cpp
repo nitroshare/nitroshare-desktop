@@ -22,13 +22,10 @@
  * IN THE SOFTWARE.
  **/
 
-#include <QPixmap>
-
 #include "splashdialog.h"
 
 SplashDialog::SplashDialog()
 {
     setupUi(this);
-
-    splash->setPixmap(QPixmap(":/img/splash.png"));
+    setWindowFlags(Qt::SplashScreen);
 }

@@ -29,30 +29,44 @@
    <iconset resource="../data/resource.qrc">
     <normaloff>:/img/logo.svg</normaloff>:/img/logo.svg</iconset>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
-   <property name="leftMargin">
-    <number>0</number>
+  <property name="styleSheet">
+   <string notr="true">QDialog {
+    background-image: url(:/img/splash.png);
+}</string>
+  </property>
+  <widget class="QPushButton" name="pushButton">
+   <property name="geometry">
+    <rect>
+     <x>510</x>
+     <y>430</y>
+     <width>100</width>
+     <height>30</height>
+    </rect>
    </property>
-   <property name="topMargin">
-    <number>0</number>
+   <property name="text">
+    <string>Close</string>
    </property>
-   <property name="rightMargin">
-    <number>0</number>
-   </property>
-   <property name="bottomMargin">
-    <number>0</number>
-   </property>
-   <item row="1" column="0">
-    <widget class="QLabel" name="splash">
-     <property name="pixmap">
-      <pixmap resource="../data/resource.qrc">:/img/splash.png</pixmap>
-     </property>
-    </widget>
-   </item>
-  </layout>
+  </widget>
  </widget>
  <resources>
   <include location="../data/resource.qrc"/>
  </resources>
- <connections/>
+ <connections>
+  <connection>
+   <sender>pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>SplashDialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>559</x>
+     <y>444</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>319</x>
+     <y>239</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>
