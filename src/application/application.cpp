@@ -207,5 +207,6 @@ void Application::sendBundle(const Bundle *bundle)
         quint16 port = index.data(DeviceModel::PortRole).value<quint16>();
 
         mTransferModel.addSender(deviceName, address, port, bundle);
+        mTransferWindow.show();
     }
 }
