@@ -6,6 +6,11 @@ TEMPLATE   = subdirs
 SUBDIRS    = src
 src.target = src
 
+OTHER_FILES += \
+    dist/setup.iss.in \
+    LICENSE.txt \
+    README.md
+
 # Add targets that are specific to the Windows build
 win32 {
     # Determine whether the build is for win32 or win64
