@@ -22,10 +22,17 @@
  * IN THE SOFTWARE.
  **/
 
+#include <QApplication>
+#include <QDesktopWidget>
+#include <QStyle>
+
 #include "splashdialog.h"
 
 SplashDialog::SplashDialog()
 {
     setupUi(this);
-    setWindowFlags(Qt::SplashScreen);
+
+    // Remove the frame and center the window
+    setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
+    setGeometry(QStyle::alignedRect(Qt::LeftToRight, Qt::AlignCenter, size(), QApplication::desktop()->availableGeometry()));
 }

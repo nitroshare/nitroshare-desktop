@@ -36,6 +36,13 @@
 #include "updatechecker.h"
 #endif
 
+/**
+ * @brief An interface between the user and the transfer classes
+ *
+ * This class maintains the device and transfer models used for discovering
+ * devices on the network and initiating transfers with them. The class is
+ * also resposible for communicating events to the user using notifications.
+ */
 class Application : public QObject
 {
     Q_OBJECT
@@ -60,6 +67,7 @@ private Q_SLOTS:
     void sendDirectory();
 
     void onOpenSettings();
+
     void onOpenAbout();
     void onOpenAboutQt();
 
@@ -76,8 +84,10 @@ private:
     UpdateChecker mUpdateChecker;
 #endif
 
+    // A pointer must be used since the child class is determined at runtime
     Icon *mIcon;
 
+    // Used to avoid showing notifications during the first 10 seconds after startup
     qint64 mStartTime;
 };
 

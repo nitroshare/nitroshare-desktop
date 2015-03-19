@@ -46,8 +46,8 @@ Q_DECLARE_METATYPE(QHostAddress)
 Application::Application()
     : mTransferWindow(&mTransferModel),
 #ifdef BUILD_APPINDICATOR
-      mIcon(Platform::useIndicator() ? static_cast<Icon *>(new IndicatorIcon) :
-                                       static_cast<Icon *>(new TrayIcon)),
+      mIcon(Platform::useIndicator() ? static_cast<Icon*>(new IndicatorIcon) :
+                                       static_cast<Icon*>(new TrayIcon)),
 #else
       mIcon(new TrayIcon),
 #endif
@@ -75,7 +75,7 @@ Application::Application()
     mIcon->addSeparator();
     mIcon->addAction(tr("Exit"), QApplication::instance(), SLOT(quit()));
 
-    // Start the server
+    // Start the transfer server
     mTransferServer.start();
 }
 
@@ -158,7 +158,7 @@ void Application::sendFiles()
 {
     QStringList filenames(QFileDialog::getOpenFileNames(nullptr, tr("Select Files")));
 
-    if(filenames.length()) {
+    if(filenames.count()) {
         Bundle *bundle = new Bundle;
 
         foreach(QString filename, filenames) {
