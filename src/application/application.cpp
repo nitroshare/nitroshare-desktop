@@ -46,8 +46,8 @@ Q_DECLARE_METATYPE(QHostAddress)
 Application::Application()
     : mTransferWindow(&mTransferModel),
 #ifdef BUILD_APPINDICATOR
-      mIcon(Platform::isUnity() ? static_cast<Icon *>(new IndicatorIcon) :
-                                  static_cast<Icon *>(new TrayIcon)),
+      mIcon(Platform::useIndicator() ? static_cast<Icon *>(new IndicatorIcon) :
+                                       static_cast<Icon *>(new TrayIcon)),
 #else
       mIcon(new TrayIcon),
 #endif

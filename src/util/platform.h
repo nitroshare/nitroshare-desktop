@@ -126,7 +126,7 @@ public:
      *
      * This method determines the current desktop environment during runtime.
      */
-    static bool isUnity();
+    static bool useIndicator();
 };
 
 #endif // NS_PLATFORM_H

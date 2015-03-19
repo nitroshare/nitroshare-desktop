@@ -85,9 +85,7 @@ QString Platform::operatingSystemFriendlyName(OperatingSystem operatingSystem)
     case OperatingSystem::OSX:
         return QObject::tr("OS X");
     case OperatingSystem::Debian:
-        return QObject::tr("Debian-based");
     case OperatingSystem::RPM:
-        return QObject::tr("RPM-based");
     case OperatingSystem::Linux:
         return QObject::tr("Linux");
     default:
@@ -136,11 +134,12 @@ bool Platform::isLinux(OperatingSystem operatingSystem)
     }
 }
 
-bool Platform::isUnity()
+bool Platform::useIndicator()
 {
     // Only check the environment variable when running under Linux
     if(isLinux()) {
-        return QProcessEnvironment::systemEnvironment().value("XDG_CURRENT_DESKTOP").toLower() == "unity";
+        QString desktop = QProcessEnvironment::systemEnvironment().value("XDG_CURRENT_DESKTOP").toLower();
+        return desktop == "unity" || desktop == "gnome";
     } else {
         return false;
     }
