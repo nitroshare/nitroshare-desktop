@@ -53,7 +53,8 @@ void SettingsDialog::accept()
     settings->set(Settings::Key::TransferDirectory, transferDirectoryEdit->text());
 
 #ifdef BUILD_UPDATECHECKER
-    settings->set(Settings::Key::UpdateInterval, updateCheckbox->isChecked() ? updateIntervalSpinBox->value() * Settings::Constant::Hour : 0);
+    settings->set(Settings::Key::UpdateCheck, updateCheckbox->isChecked());
+    settings->set(Settings::Key::UpdateInterval, updateIntervalSpinBox->value() * Settings::Constant::Hour);
 #endif
 
     // Settings in the transfer section
@@ -102,10 +103,9 @@ void SettingsDialog::reload()
     transferDirectoryEdit->setText(settings->get(Settings::Key::TransferDirectory).toString());
 
 #ifdef BUILD_UPDATECHECKER
-    const int updateInterval = settings->get(Settings::Key::UpdateInterval).toInt();
-    updateCheckbox->setChecked(updateInterval);
-    updateIntervalSpinBox->setEnabled(updateInterval);
-    updateIntervalSpinBox->setValue(updateInterval / Settings::Constant::Hour);
+    updateCheckbox->setChecked(settings->get(Settings::Key::UpdateCheck).toBool());
+    updateIntervalSpinBox->setEnabled(updateCheckbox->isChecked());
+    updateIntervalSpinBox->setValue(settings->get(Settings::Key::UpdateInterval).toInt() / Settings::Constant::Hour);
 #endif
 
     // Transfer section
