@@ -29,6 +29,13 @@
 
 #include "../util/platform.h"
 
+/**
+ * @brief Information about another device on the network
+ *
+ * The members of this class are populated by the DeviceModel class when pings
+ * are received. The information needed to transfer files to the device are
+ * contained here.
+ */
 class Device
 {
 public:

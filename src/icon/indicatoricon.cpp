@@ -30,7 +30,7 @@
 // Assumes 'data' is a QAction * and triggers it
 void triggerQAction(GtkMenu *, gpointer data)
 {
-    reinterpret_cast<QAction *>(data)->trigger();
+    reinterpret_cast<QAction*>(data)->trigger();
 }
 
 IndicatorIcon::IndicatorIcon()
@@ -52,9 +52,9 @@ IndicatorIcon::~IndicatorIcon()
 
 void IndicatorIcon::addAction(const QString &text, QObject *receiver, const char *member)
 {
-    GtkWidget *menuItem(gtk_menu_item_new_with_label(text.toUtf8().constData()));
+    GtkWidget *menuItem = gtk_menu_item_new_with_label(text.toUtf8().constData());
 
-    QAction *action(new QAction(text, this));
+    QAction *action = new QAction(text, this);
     connect(action, SIGNAL(triggered()), receiver, member);
 
     g_signal_connect(menuItem, "activate", G_CALLBACK(triggerQAction), action);
@@ -65,7 +65,7 @@ void IndicatorIcon::addAction(const QString &text, QObject *receiver, const char
 
 void IndicatorIcon::addSeparator()
 {
-    GtkWidget *separator(gtk_separator_menu_item_new());
+    GtkWidget *separator = gtk_separator_menu_item_new();
 
     gtk_widget_show(separator);
     gtk_menu_shell_append(GTK_MENU_SHELL(mMenu), separator);
@@ -73,11 +73,11 @@ void IndicatorIcon::addSeparator()
 
 void IndicatorIcon::showMessage(const QString &message)
 {
-    NotifyNotification *notification(notify_notification_new(
+    NotifyNotification *notification = notify_notification_new(
         "NitroShare Notification",
         message.toUtf8().constData(),
         "nitroshare-indicator"
-    ));
+    );
 
     notify_notification_show(notification, nullptr);
 
