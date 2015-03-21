@@ -39,7 +39,7 @@ Name: \"desktopicon\"; Description: \"{cm:CreateDesktopIcon}\"; GroupDescription
 Source: \"$$absolute_path($${DESTDIR})\\*\"; DestDir: \"{app}\"; Excludes: \"\\vcredist_x??.exe\"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 ; Include the VC++ runtime in the installer
-#if VCRArch
+#ifdef VCRArch
 Source: \"{#VCRFilename(VCRArch)}\"; DestDir: \"{tmp}\"; Flags: deleteafterinstall
 #endif
 
@@ -51,7 +51,7 @@ Name: \"{commondesktop}\\$${PROJECT_TITLE}\"; Filename: \"{app}\\$${EXE_FILENAME
 Filename: \"{app}\\$${PROJECT_TITLE}\"; Description: \"{cm:LaunchProgram,{#StringChange(\"$${PROJECT_TITLE}\", \'&\', \'&&\')}}\"; Flags: nowait postinstall skipifsilent
 
 ; Install the VC++ runtime (silently)
-#if VCRArch
+#ifdef VCRArch
 Filename: \"{tmp}\\vcredist_{#VCRArch}.exe\"; Parameters: \"/q\";
 #endif
 
