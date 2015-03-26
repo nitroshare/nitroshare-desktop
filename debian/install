@@ -1,2 +1,0 @@
-#!/usr/bin/dh-exec
-debian/nitroshare.ufw => etc/ufw/applications.d/nitroshare
