@@ -25,9 +25,8 @@
 #ifndef NS_CONFIG_H
 #define NS_CONFIG_H
 
-// Definitions copied from the project files
+// Project definitions
 #define PROJECT_NAME          "${PROJECT_NAME}"
-#define PROJECT_TITLE         "${PROJECT_NAME}"
 #define PROJECT_DESCRIPTION   "${PROJECT_DESCRIPTION}"
 #define PROJECT_AUTHOR        "${PROJECT_AUTHOR}"
 #define PROJECT_DOMAIN        "${PROJECT_DOMAIN}"
@@ -40,5 +39,9 @@
 
 // Current version as a string
 #define PROJECT_VERSION       "${PROJECT_VERSION}"
+
+// Build options
+#cmakedefine BUILD_LOCALE_API
+#cmakedefine BUILD_UPDATE_CHECKER
 
 #endif // NS_CONFIG_H

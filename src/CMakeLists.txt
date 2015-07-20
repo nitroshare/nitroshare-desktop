@@ -24,7 +24,7 @@ set(SRC
     main.cpp
 )
 
-if(UPDATE_CHECKER)
+if(BUILD_UPDATE_CHECKER)
     set(SRC ${SRC} application/updatechecker.cpp)
 endif()
 
@@ -50,3 +50,7 @@ target_compile_features(nitroshare PRIVATE
     cxx_strong_enums
     cxx_uniform_initialization
 )
+
+if(BUILD_LOCAL_API)
+    target_link_libraries(nitroshare QHttpEngine)
+endif()

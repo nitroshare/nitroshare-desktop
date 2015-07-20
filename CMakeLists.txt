@@ -10,8 +10,8 @@ set(PROJECT_VERSION_MINOR 3)
 set(PROJECT_VERSION_PATCH 1)
 set(PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
 
-option(LOCAL_API "Expose a local HTTP API" ON)
-option(UPDATE_CHECKER "Check for updates at startup" ON)
+option(BUILD_LOCAL_API "Expose a local HTTP API" ON)
+option(BUILD_UPDATE_CHECKER "Check for updates at startup" ON)
 
 find_package(Qt5Network 5.1 REQUIRED)
 find_package(Qt5Widgets 5.1 REQUIRED)

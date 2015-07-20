@@ -34,6 +34,7 @@
 #include "../settings/settingsdialog.h"
 #include "application.h"
 #include "aboutdialog.h"
+#include "config.h"
 
 #ifdef BUILD_APPINDICATOR
 #include "../icon/indicatoricon.h"
@@ -59,7 +60,7 @@ Application::Application()
     connect(&mTransferServer, &TransferServer::error, this, &Application::notifyError);
     connect(&mTransferServer, &TransferServer::newTransfer, &mTransferModel, &TransferModel::addReceiver);
 
-#ifdef BUILD_UPDATECHECKER
+#ifdef BUILD_UPDATE_CHECKER
     connect(&mUpdateChecker, &UpdateChecker::newVersion, this, &Application::notifyNewVersion);
 #endif
 
@@ -141,7 +142,7 @@ void Application::notifyTransfersChanged(const QModelIndex &topLeft, const QMode
     }
 }
 
-#ifdef BUILD_UPDATECHECKER
+#ifdef BUILD_UPDATE_CHECKER
 void Application::notifyNewVersion(const QString &version, const QUrl &url)
 {
     if(QMessageBox::question(nullptr, tr("New Version"),

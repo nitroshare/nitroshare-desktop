@@ -65,7 +65,7 @@ AboutDialog::AboutDialog()
     QFont font = lblProjectTitle->font();
     font.setBold(true);
     lblProjectTitle->setFont(font);
-    lblProjectTitle->setText(PROJECT_TITLE);
+    lblProjectTitle->setText(PROJECT_NAME);
 
     lblVersion->setText(QString("Version %1").arg(PROJECT_VERSION));
     lblDescription->setText(PROJECT_DESCRIPTION);

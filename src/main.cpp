@@ -35,8 +35,8 @@ int main(int argc, char **argv)
     app.setQuitOnLastWindowClosed(false);
 
     // Set up application properties
-    app.setApplicationDisplayName(PROJECT_TITLE);
-    app.setApplicationName(PROJECT_TITLE);
+    app.setApplicationDisplayName(PROJECT_NAME);
+    app.setApplicationName(PROJECT_NAME);
     app.setApplicationVersion(PROJECT_VERSION);
     app.setOrganizationDomain(PROJECT_DOMAIN);
     app.setOrganizationName(PROJECT_AUTHOR);

@@ -25,6 +25,7 @@
 #include <QFileDialog>
 #include <QMessageBox>
 
+#include "config.h"
 #include "settings.h"
 #include "settingsdialog.h"
 
@@ -32,7 +33,7 @@ SettingsDialog::SettingsDialog()
 {
     setupUi(this);
 
-#ifndef BUILD_UPDATECHECKER
+#ifndef BUILD_UPDATE_CHECKER
     // Remove the update controls
     delete updateCheckbox;
     delete updateIntervalLabel;
@@ -52,7 +53,7 @@ void SettingsDialog::accept()
     settings->set(Settings::Key::DeviceName, deviceNameEdit->text());
     settings->set(Settings::Key::TransferDirectory, transferDirectoryEdit->text());
 
-#ifdef BUILD_UPDATECHECKER
+#ifdef BUILD_UPDATE_CHECKER
     settings->set(Settings::Key::UpdateCheck, updateCheckbox->isChecked());
     settings->set(Settings::Key::UpdateInterval, updateIntervalSpinBox->value() * Settings::Constant::Hour);
 #endif
@@ -102,7 +103,7 @@ void SettingsDialog::reload()
     deviceNameEdit->setText(settings->get(Settings::Key::DeviceName).toString());
     transferDirectoryEdit->setText(settings->get(Settings::Key::TransferDirectory).toString());
 
-#ifdef BUILD_UPDATECHECKER
+#ifdef BUILD_UPDATE_CHECKER
     updateCheckbox->setChecked(settings->get(Settings::Key::UpdateCheck).toBool());
     updateIntervalSpinBox->setEnabled(updateCheckbox->isChecked());
     updateIntervalSpinBox->setValue(settings->get(Settings::Key::UpdateInterval).toInt() / Settings::Constant::Hour);
