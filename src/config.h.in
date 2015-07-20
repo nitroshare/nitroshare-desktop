@@ -26,19 +26,19 @@
 #define NS_CONFIG_H
 
 // Definitions copied from the project files
-#define PROJECT_NAME          \"$${PROJECT_NAME}\"
-#define PROJECT_TITLE         \"$${PROJECT_TITLE}\"
-#define PROJECT_DESCRIPTION   \"$${PROJECT_DESCRIPTION}\"
-#define PROJECT_AUTHOR        \"$${PROJECT_AUTHOR}\"
-#define PROJECT_DOMAIN        \"$${PROJECT_DOMAIN}\"
-#define PROJECT_WEBSITE       \"$${PROJECT_WEBSITE}\"
+#define PROJECT_NAME          "${PROJECT_NAME}"
+#define PROJECT_TITLE         "${PROJECT_NAME}"
+#define PROJECT_DESCRIPTION   "${PROJECT_DESCRIPTION}"
+#define PROJECT_AUTHOR        "${PROJECT_AUTHOR}"
+#define PROJECT_DOMAIN        "${PROJECT_DOMAIN}"
+#define PROJECT_WEBSITE       "${PROJECT_WEBSITE}"
 
 // Current version broken into individual components
-#define PROJECT_VERSION_MAJOR $${PROJECT_VERSION_MAJOR}
-#define PROJECT_VERSION_MINOR $${PROJECT_VERSION_MINOR}
-#define PROJECT_VERSION_PATCH $${PROJECT_VERSION_PATCH}
+#define PROJECT_VERSION_MAJOR ${PROJECT_VERSION_MAJOR}
+#define PROJECT_VERSION_MINOR ${PROJECT_VERSION_MINOR}
+#define PROJECT_VERSION_PATCH ${PROJECT_VERSION_PATCH}
 
 // Current version as a string
-#define PROJECT_VERSION       \"$${PROJECT_VERSION}\"
+#define PROJECT_VERSION       "${PROJECT_VERSION}"
 
 #endif // NS_CONFIG_H
