@@ -18,6 +18,7 @@ A cross-platform network file transfer application designed to make transferring
 
 The requirements for building NitroShare are as follows:
 
+* CMake 3.2.0+
 * C++ compiler with support for C++11:
     * Microsoft Visual C++ 2013+
     * GCC 4.7+
@@ -30,26 +31,39 @@ In order to use [application indicators](https://unity.ubuntu.com/projects/appin
 * libappindicator
 * libnotify
 
+In order to use the local API, you will need [QHttpEngine](https://github.com/nitroshare/qhttpengine) 0.1.0+ installed.
+
 ### Building the Application
 
 The instructions below describe the build process for each of the supported platforms.
 
 #### Ubuntu 14.04, 14.10, & 15.04
 
-1. Install GCC and the Qt 5 development files:
+1. Install CMake and the Qt 5 development files:
 
-        sudo apt-get install build-essential qtbase5-dev libqt5svg5 libgtk2.0-dev libappindicator-dev libnotify-dev
+        sudo apt-get install build-essential cmake qtbase5-dev libqt5svg5
 
-   Note: the last three packages add support for application indicators and are optional.
+   To enable support for application indicators, you will need to install the following packages:
+
+        sudo apt-get install libgtk2.0-dev libappindicator-dev libnotify-dev
+
+   To enable support for the local API, you will need to add a PPA and install the following package:
+
+        sudo add-apt-repository ppa:george-edison55/nitroshare
+        sudo apt-get update
+        sudo apt-get install libqhttpengine-dev
 
 2. Change to the root of the source directory and build the project:
 
-        qmake
+        mkdir build && cd build
+        cmake -DBUILD_APPINDICATOR=ON -DBUILD_LOCAL_API=ON ..
         make
 
-3. The NitroShare binary will be in the `out/install` directory and can be run with:
+   To enable automatic updates, include the `-DBUILD_UPDATE_CHECKER=ON` flag.
 
-        out/install/nitroshare
+3. The NitroShare binary will be in the `src/` directory and can be run with:
+
+        src/nitroshare
 
 #### Windows 7, 8, & 8.1
 
