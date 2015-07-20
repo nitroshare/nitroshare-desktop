@@ -25,7 +25,7 @@ The requirements for building NitroShare are as follows:
     * Clang 3.1+
 * Qt 5.1+
 
-In order to use [application indicators](https://unity.ubuntu.com/projects/appindicators/) on supported Linux platforms, you also need the following development packages installed:
+In order to use [application indicators](https://unity.ubuntu.com/projects/appindicators/) on supported Linux platforms, you will need the following development packages installed:
 
 * GTK+ 2
 * libappindicator
@@ -37,9 +37,14 @@ In order to use the local API, you will need [QHttpEngine](https://github.com/ni
 
 The instructions below describe the build process for each of the supported platforms.
 
-#### Ubuntu 14.04, 14.10, & 15.04
+#### Ubuntu 14.04, 14.10, 15.04, & 15.10
 
-1. Install CMake and the Qt 5 development files:
+1. Versions of Ubuntu prior to 15.10 (Wily Werewolf) include an outdated version of CMake and therefore you will need to add the following PPA before installing CMake:
+
+        sudo add-apt-repository ppa:george-edison55/cmake-3.x
+        sudo apt-get update
+
+2. Install GCC, CMake, and the Qt 5 development files:
 
         sudo apt-get install build-essential cmake qtbase5-dev libqt5svg5
 
@@ -66,6 +71,8 @@ The instructions below describe the build process for each of the supported plat
         src/nitroshare
 
 #### Windows 7, 8, & 8.1
+
+> **Warning!** these instructions are out-of-date!
 
 1. Download and install the following tools:
 
@@ -94,6 +101,8 @@ The instructions below describe the build process for each of the supported plat
 >     set LINK=/SUBSYSTEM:WINDOWS,5.01
 
 #### OS X 10.7, 10.8, 10.9, & 10.10
+
+> **Warning!** these instructions are out-of-date!
 
 1. Download and install the following tools:
 
