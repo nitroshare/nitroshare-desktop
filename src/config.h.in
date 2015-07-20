@@ -41,6 +41,7 @@
 #define PROJECT_VERSION       "${PROJECT_VERSION}"
 
 // Build options
+#cmakedefine BUILD_APPINDICATOR
 #cmakedefine BUILD_LOCALE_API
 #cmakedefine BUILD_UPDATE_CHECKER
 
