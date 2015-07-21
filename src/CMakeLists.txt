@@ -33,6 +33,7 @@ endif()
 if(BUILD_LOCAL_API)
     set(SRC ${SRC}
         api/apihandler.cpp
+        api/apiserver.cpp
     )
 endif()
 
