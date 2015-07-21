@@ -32,7 +32,7 @@ endif()
 
 if(BUILD_LOCAL_API)
     set(SRC ${SRC}
-        api/localapi.cpp
+        api/apihandler.cpp
     )
 endif()
 

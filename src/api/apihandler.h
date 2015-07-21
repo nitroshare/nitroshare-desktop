@@ -22,8 +22,8 @@
  * IN THE SOFTWARE.
  **/
 
-#ifndef NS_LOCALAPI_H
-#define NS_LOCALAPI_H
+#ifndef NS_APIHANDLER_H
+#define NS_APIHANDLER_H
 
 #include <QVariantMap>
 
@@ -32,7 +32,7 @@
 /**
  * @brief Local HTTP API exposing application functionality
  */
-class LocalApi : public QObjectHandler
+class ApiHandler : public QObjectHandler
 {
     Q_OBJECT
 
@@ -41,4 +41,4 @@ private Q_SLOTS:
     QVariantMap sendFiles(const QVariantMap &params);
 };
 
-#endif // NS_LOCALAPI_H
+#endif // NS_APIHANDLER_H

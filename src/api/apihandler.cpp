@@ -22,9 +22,10 @@
  * IN THE SOFTWARE.
  **/
 
-#include "localapi.h"
+#include "../bundle/bundle.h"
+#include "apihandler.h"
 
-QVariantMap LocalApi::sendFiles(const QVariantMap &params)
+QVariantMap ApiHandler::sendFiles(const QVariantMap &params)
 {
     // Ensure one of "files" or "directories" was included in the JSON
     if(!params.contains("files") && !params.contains("directories")) {
@@ -33,7 +34,16 @@ QVariantMap LocalApi::sendFiles(const QVariantMap &params)
         });
     }
 
-    // TODO: copy files
+    // Create a new bundle and add each of the files and directories
+    Bundle *bundle = new Bundle;
+    foreach(QString filename, params.value("files").toStringList()) {
+        bundle->addFile(filename);
+    }
+    foreach(QString path, params.value("directories").toStringList()) {
+        bundle->addDirectory(path);
+    }
+
+    // TODO: send the bundle
 
     // An empty map indicates success
     return QVariantMap();
