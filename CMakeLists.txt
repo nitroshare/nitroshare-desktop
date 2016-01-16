@@ -5,7 +5,7 @@ set(PROJECT_NAME "NitroShare")
 set(PROJECT_DESCRIPTION "Network File Transfer Application")
 set(PROJECT_AUTHOR "Nathan Osman")
 set(PROJECT_DOMAIN "nitroshare.net")
-set(PROJECT_WEBSITE "http://${PROJECT_DOMAIN}")
+set(PROJECT_WEBSITE "https://${PROJECT_DOMAIN}")
 
 set(PROJECT_VERSION_MAJOR 0)
 set(PROJECT_VERSION_MINOR 3)
