@@ -30,10 +30,6 @@ if(BUILD_APPINDICATOR)
     )
 endif()
 
-if(BUILD_LOCAL_API)
-    set(SRC ${SRC})
-endif()
-
 if(BUILD_UPDATE_CHECKER)
     set(SRC ${SRC}
         application/updatechecker.cpp
@@ -59,8 +55,8 @@ qt5_add_resources(QRC
 
 add_executable(nitroshare WIN32 ${SRC} ${UI} ${QRC})
 
-# Since Qt and GTK+ both define the symbol "signals", it is
-# necessary to ensure that it is not defined by Qt
+# Since Qt and GTK+ both define the symbol "signals", it is necessary to
+# ensure that it is not defined by Qt.
 add_definitions(-DQT_NO_SIGNALS_SLOTS_KEYWORDS)
 
 qt5_use_modules(nitroshare Widgets Network Svg)
@@ -73,12 +69,8 @@ target_compile_features(nitroshare PRIVATE
 )
 
 if(BUILD_APPINDICATOR)
-    target_link_libraries(nitroshare ${APPINDICATOR_LIBRARIES})
     target_include_directories(nitroshare PRIVATE ${APPINDICATOR_INCLUDE_DIRS})
-endif()
-
-if(BUILD_LOCAL_API)
-    target_link_libraries(nitroshare QHttpEngine)
+    target_link_libraries(nitroshare ${APPINDICATOR_LIBRARIES})
 endif()
 
 install(TARGETS nitroshare

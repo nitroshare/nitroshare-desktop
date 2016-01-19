@@ -13,20 +13,17 @@ set(PROJECT_VERSION_PATCH 1)
 set(PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
 
 option(BUILD_APPINDICATOR "Application indicator support" OFF)
-option(BUILD_LOCAL_API "Expose a local HTTP API" OFF)
 option(BUILD_UPDATE_CHECKER "Check for updates at startup" OFF)
 
 find_package(Qt5Network 5.1 REQUIRED)
 find_package(Qt5Widgets 5.1 REQUIRED)
 find_package(Qt5Svg 5.1 REQUIRED)
 
+# NitroShare uses QSystemTrayIcon by default but support for application
+# indicators (AppIndicators) can be compiled in.
 if(BUILD_APPINDICATOR)
     find_package(PkgConfig REQUIRED)
     pkg_check_modules(APPINDICATOR REQUIRED gtk+-2.0 appindicator-0.1 libnotify)
-endif()
-
-if(BUILD_LOCAL_API)
-    find_package(QHttpEngine 0.1.0 REQUIRED)
 endif()
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
