@@ -42,7 +42,6 @@
 
 // Build options
 #cmakedefine BUILD_APPINDICATOR
-#cmakedefine BUILD_LOCALE_API
 #cmakedefine BUILD_UPDATE_CHECKER
 
 #endif // NS_CONFIG_H
