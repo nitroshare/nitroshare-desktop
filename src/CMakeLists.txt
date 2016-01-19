@@ -31,10 +31,7 @@ if(BUILD_APPINDICATOR)
 endif()
 
 if(BUILD_LOCAL_API)
-    set(SRC ${SRC}
-        api/apihandler.cpp
-        api/apiserver.cpp
-    )
+    set(SRC ${SRC})
 endif()
 
 if(BUILD_UPDATE_CHECKER)
