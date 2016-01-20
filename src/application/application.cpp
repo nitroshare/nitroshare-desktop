@@ -60,10 +60,6 @@ Application::Application()
     connect(&mTransferServer, &TransferServer::error, this, &Application::notifyError);
     connect(&mTransferServer, &TransferServer::newTransfer, &mTransferModel, &TransferModel::addReceiver);
 
-#ifdef BUILD_UPDATE_CHECKER
-    connect(&mUpdateChecker, &UpdateChecker::newVersion, this, &Application::notifyNewVersion);
-#endif
-
     mIcon->addAction(tr("Send Files..."), this, SLOT(sendFiles()));
     mIcon->addAction(tr("Send Directory..."), this, SLOT(sendDirectory()));
     mIcon->addSeparator();
@@ -141,19 +137,6 @@ void Application::notifyTransfersChanged(const QModelIndex &topLeft, const QMode
         }
     }
 }
-
-#ifdef BUILD_UPDATE_CHECKER
-void Application::notifyNewVersion(const QString &version, const QUrl &url)
-{
-    if(QMessageBox::question(nullptr, tr("New Version"),
-            tr("Version %1 of NitroShare is now available. Would you like to download it?")
-                    .arg(version)) == QMessageBox::Yes) {
-
-        // Open the URL in the user's default browser
-        QDesktopServices::openUrl(url);
-    }
-}
-#endif
 
 void Application::sendFiles()
 {

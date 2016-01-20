@@ -88,10 +88,6 @@ public:
         TransferBuffer = 32,
         /// Directory for storing received files and directories
         TransferDirectory = 33,
-        /// Whether to check for updates or not
-        UpdateCheck = 41,
-        /// Interval between consecutive update checks
-        UpdateInterval = 42
     };
 
     /**

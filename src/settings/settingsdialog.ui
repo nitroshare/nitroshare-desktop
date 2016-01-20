@@ -37,18 +37,8 @@
        <string>General</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_4">
-       <item row="0" column="2">
+       <item row="0" column="1">
         <widget class="QLineEdit" name="deviceNameEdit"/>
-       </item>
-       <item row="4" column="0" colspan="2">
-        <widget class="QLabel" name="updateIntervalLabel">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="text">
-          <string>Update interval:</string>
-         </property>
-        </widget>
        </item>
        <item row="0" column="0">
         <widget class="QLabel" name="deviceNameLabel">
@@ -57,7 +47,7 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="2">
+       <item row="1" column="1">
         <layout class="QHBoxLayout" name="transferDirectoryLayout">
          <item>
           <widget class="QLineEdit" name="transferDirectoryEdit"/>
@@ -100,44 +90,6 @@
         <widget class="QLabel" name="transferDirectoryLabel">
          <property name="text">
           <string>Directory:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="2">
-        <widget class="QSpinBox" name="updateIntervalSpinBox">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-         <property name="suffix">
-          <string> hr</string>
-         </property>
-         <property name="minimum">
-          <number>1</number>
-         </property>
-         <property name="maximum">
-          <number>48</number>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="0">
-        <widget class="QCheckBox" name="updateCheckbox">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="text">
-          <string>Check for updates</string>
-         </property>
-         <property name="checked">
-          <bool>true</bool>
          </property>
         </widget>
        </item>
@@ -415,22 +367,6 @@
     <hint type="destinationlabel">
      <x>199</x>
      <y>124</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>updateCheckbox</sender>
-   <signal>clicked(bool)</signal>
-   <receiver>updateIntervalSpinBox</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>94</x>
-     <y>273</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>330</x>
-     <y>303</y>
     </hint>
    </hints>
   </connection>

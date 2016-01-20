@@ -33,10 +33,6 @@
 #include "../transfer/transferwindow.h"
 #include "config.h"
 
-#ifdef BUILD_UPDATE_CHECKER
-#include "updatechecker.h"
-#endif
-
 /**
  * @brief An interface between the user and the transfer classes
  *
@@ -60,10 +56,6 @@ private Q_SLOTS:
     void notifyTransfersChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles);
     void notifyError(const QString &message);
 
-#ifdef BUILD_UPDATE_CHECKER
-    void notifyNewVersion(const QString &version, const QUrl &url);
-#endif
-
     void sendFiles();
     void sendDirectory();
 
@@ -80,10 +72,6 @@ private:
     TransferModel mTransferModel;
     TransferServer mTransferServer;
     TransferWindow mTransferWindow;
-
-#ifdef BUILD_UPDATE_CHECKER
-    UpdateChecker mUpdateChecker;
-#endif
 
     // A pointer must be used since the child class is determined at runtime
     Icon *mIcon;

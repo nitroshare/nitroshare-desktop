@@ -42,6 +42,5 @@
 
 // Build options
 #cmakedefine BUILD_APPINDICATOR
-#cmakedefine BUILD_UPDATE_CHECKER
 
 #endif // NS_CONFIG_H

@@ -54,8 +54,6 @@ const QMap<Settings::Key, KeyInfo> KeyMap = {
     DEFINE_SETTING(TransferPort, { return 40818; }),
     DEFINE_SETTING(TransferBuffer, { return 64 * Settings::Constant::KiB; }),
     DEFINE_SETTING(TransferDirectory, { return QStandardPaths::writableLocation(QStandardPaths::DesktopLocation); }),
-    DEFINE_SETTING(UpdateCheck, { return true; }),
-    DEFINE_SETTING(UpdateInterval, { return 24 * Settings::Constant::Hour; })
 };
 
 SettingsPrivate::SettingsPrivate(Settings *settings)

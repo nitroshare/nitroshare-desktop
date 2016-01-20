@@ -38,8 +38,7 @@
  * It is important to note that the information provided by the first two
  * methods is determined during compile-time. Therefore, running an x86 build
  * of the application on 64-bit Windows will still cause currentArchitecture()
- * to indicate x86. This is considered expected behavior since it will cause
- * the update checker to retrieve updates for the same architecture.
+ * to indicate x86.
  */
 class Platform
 {
@@ -47,17 +46,11 @@ public:
 
     /**
      * @brief Operating system definitions
-     *
-     * In order for the update checker to pull the correct update, we need to
-     * split Linux distributions into those that are Debian-based and those
-     * that are RPM-based. A generic "Linux" entry is provided as a catch-all.
      */
     enum class OperatingSystem : int {
         Unknown = 0,
         Windows,
         OSX,
-        Debian,
-        RPM,
         Linux
     };
 
@@ -71,7 +64,7 @@ public:
     };
 
     /**
-     * @brief Desktop environment
+     * @brief Linux desktop environment
      *
      * This is needed in order to determine the correct class to use for
      * showing the tray icon. In addition, some environments require special
@@ -79,8 +72,6 @@ public:
      */
     enum class DesktopEnvironment : int {
         Unknown = 0,
-        Explorer, // Windows
-        Aqua,     // OS X
         Unity,    // Ubuntu
         Gnome,
         KDE,
@@ -138,13 +129,6 @@ public:
      * @return one of OperatingSystem
      */
     static OperatingSystem operatingSystemForName(const QString &name);
-
-    /**
-     * @brief Determine if an OperatingSystem is Linux-based
-     * @param operatingSystem one of OperatingSystem
-     * @return
-     */
-    static bool isLinux(OperatingSystem operatingSystem = currentOperatingSystem());
 
     /**
      * @brief Determine if the current platform is Unity

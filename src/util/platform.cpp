@@ -24,6 +24,7 @@
 
 #include <QObject>
 #include <QProcessEnvironment>
+#include <QStandardPaths>
 
 #include "platform.h"
 
@@ -33,10 +34,6 @@ Platform::OperatingSystem Platform::currentOperatingSystem()
     return OperatingSystem::Windows;
 #elif defined(Q_OS_MACX)
     return OperatingSystem::OSX;
-#elif defined(__DEBIAN__)
-    return OperatingSystem::Debian;
-#elif defined(__RPM__)
-    return OperatingSystem::RPM;
 #elif defined(Q_OS_LINUX)
     return OperatingSystem::Linux;
 #else
@@ -61,11 +58,6 @@ Platform::Architecture Platform::currentArchitecture()
 
 Platform::DesktopEnvironment Platform::currentDesktopEnvironment()
 {
-#if defined(Q_OS_WIN32)
-    return DesktopEnvironment::Explorer;
-#elif defined(Q_OS_MACX)
-    return DesktopEnvironment::Aqua;
-#elif defined(Q_OS_LINUX)
     QString desktop = QProcessEnvironment::systemEnvironment().value("XDG_CURRENT_DESKTOP").toLower();
     if(desktop == "unity") {
         return DesktopEnvironment::Unity;
@@ -84,9 +76,6 @@ Platform::DesktopEnvironment Platform::currentDesktopEnvironment()
     } else {
         return DesktopEnvironment::Unknown;
     }
-#else
-    return DesktopEnvironment::Unknown;
-#endif
 }
 
 QString Platform::operatingSystemName(OperatingSystem operatingSystem)
@@ -96,10 +85,6 @@ QString Platform::operatingSystemName(OperatingSystem operatingSystem)
         return "windows";
     case OperatingSystem::OSX:
         return "osx";
-    case OperatingSystem::Debian:
-        return "debian";
-    case OperatingSystem::RPM:
-        return "rpm";
     case OperatingSystem::Linux:
         return "linux";
     default:
@@ -114,8 +99,6 @@ QString Platform::operatingSystemFriendlyName(OperatingSystem operatingSystem)
         return QObject::tr("Windows");
     case OperatingSystem::OSX:
         return QObject::tr("OS X");
-    case OperatingSystem::Debian:
-    case OperatingSystem::RPM:
     case OperatingSystem::Linux:
         return QObject::tr("Linux");
     default:
@@ -129,10 +112,6 @@ Platform::OperatingSystem Platform::operatingSystemForName(const QString &name)
         return OperatingSystem::Windows;
     } else if(name == "osx") {
         return OperatingSystem::OSX;
-    } else if(name == "debian") {
-        return OperatingSystem::Debian;
-    } else if(name == "rpm") {
-        return OperatingSystem::RPM;
     } else if(name == "linux") {
         return OperatingSystem::Linux;
     } else {
@@ -152,25 +131,30 @@ QString Platform::architectureName(Architecture architecture)
     }
 }
 
-bool Platform::isLinux(OperatingSystem operatingSystem)
-{
-    switch(operatingSystem) {
-    case OperatingSystem::Debian:
-    case OperatingSystem::RPM:
-    case OperatingSystem::Linux:
-        return true;
-    default:
-        return false;
-    }
-}
-
 bool Platform::useIndicator()
 {
-    // Only check the environment variable when running under Linux
-    if(isLinux()) {
-        QString desktop = QProcessEnvironment::systemEnvironment().value("XDG_CURRENT_DESKTOP").toLower();
-        return desktop == "unity" || desktop == "gnome";
-    } else {
-        return false;
+    // Detecting the correct icon to display is incredibly difficult - the
+    // algorithm currently being used goes something like this:
+    //  - Windows: use QSystemTrayIcon
+    //  - OS X: use QSystemTrayIcon
+    //  - Linux:
+    //     - Unity: use AppIndicator
+    //     - Gnome: use AppIndicator
+    //     - KDE: use QSystemTrayIcon
+    //     - MATE: use AppIndicator
+    //     - Cinnamon: use AppIndicator
+    //     - Pantheon: use AppIndicator
+    if(currentOperatingSystem() == OperatingSystem::Linux) {
+        switch(currentDesktopEnvironment()) {
+        case DesktopEnvironment::Unity:
+        case DesktopEnvironment::Gnome:
+        case DesktopEnvironment::MATE:
+        case DesktopEnvironment::Cinnamon:
+        case DesktopEnvironment::Pantheon:
+            return true;
+        }
     }
+
+    // For everything else, use QSystemTrayIcon
+    return false;
 }

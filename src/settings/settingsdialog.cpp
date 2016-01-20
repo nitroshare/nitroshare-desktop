@@ -33,13 +33,6 @@ SettingsDialog::SettingsDialog()
 {
     setupUi(this);
 
-#ifndef BUILD_UPDATE_CHECKER
-    // Remove the update controls
-    delete updateCheckbox;
-    delete updateIntervalLabel;
-    delete updateIntervalSpinBox;
-#endif
-
     // Load the current values into the controls
     reload();
 }
@@ -52,11 +45,6 @@ void SettingsDialog::accept()
     // Settings in the general tab
     settings->set(Settings::Key::DeviceName, deviceNameEdit->text());
     settings->set(Settings::Key::TransferDirectory, transferDirectoryEdit->text());
-
-#ifdef BUILD_UPDATE_CHECKER
-    settings->set(Settings::Key::UpdateCheck, updateCheckbox->isChecked());
-    settings->set(Settings::Key::UpdateInterval, updateIntervalSpinBox->value() * Settings::Constant::Hour);
-#endif
 
     // Settings in the transfer section
     settings->set(Settings::Key::TransferPort, transferPortSpinBox->value());
@@ -102,12 +90,6 @@ void SettingsDialog::reload()
     // General tab
     deviceNameEdit->setText(settings->get(Settings::Key::DeviceName).toString());
     transferDirectoryEdit->setText(settings->get(Settings::Key::TransferDirectory).toString());
-
-#ifdef BUILD_UPDATE_CHECKER
-    updateCheckbox->setChecked(settings->get(Settings::Key::UpdateCheck).toBool());
-    updateIntervalSpinBox->setEnabled(updateCheckbox->isChecked());
-    updateIntervalSpinBox->setValue(settings->get(Settings::Key::UpdateInterval).toInt() / Settings::Constant::Hour);
-#endif
 
     // Transfer section
     transferPortSpinBox->setValue(settings->get(Settings::Key::TransferPort).toLongLong());

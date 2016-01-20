@@ -30,12 +30,6 @@ if(BUILD_APPINDICATOR)
     )
 endif()
 
-if(BUILD_UPDATE_CHECKER)
-    set(SRC ${SRC}
-        application/updatechecker.cpp
-    )
-endif()
-
 if(WIN32)
     configure_file(data/resource.rc.in "${CMAKE_CURRENT_BINARY_DIR}/resource.rc")
     set(SRC ${SRC} "${CMAKE_CURRENT_BINARY_DIR}/resource.rc")
