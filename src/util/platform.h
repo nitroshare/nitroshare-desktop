@@ -71,6 +71,26 @@ public:
     };
 
     /**
+     * @brief Desktop environment
+     *
+     * This is needed in order to determine the correct class to use for
+     * showing the tray icon. In addition, some environments require special
+     * add-ons to be installed (like Gnome).
+     */
+    enum class DesktopEnvironment : int {
+        Unknown = 0,
+        Explorer, // Windows
+        Aqua,     // OS X
+        Unity,    // Ubuntu
+        Gnome,
+        KDE,
+        XFCE,
+        MATE,
+        Cinnamon, // Mint
+        Pantheon  // Elementary
+    };
+
+    /**
      * @brief Retrieve the current operating system
      * @return one of OperatingSystem
      */
@@ -81,6 +101,12 @@ public:
      * @return one of Architecture
      */
     static Architecture currentArchitecture();
+
+    /**
+     * @brief Retrieve the current desktop environment
+     * @return one of DesktopEnvironment
+     */
+    static DesktopEnvironment currentDesktopEnvironment();
 
     /**
      * @brief Retrieve the machine-friendly name of an OperatingSystem

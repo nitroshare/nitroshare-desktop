@@ -59,6 +59,36 @@ Platform::Architecture Platform::currentArchitecture()
 #endif
 }
 
+Platform::DesktopEnvironment Platform::currentDesktopEnvironment()
+{
+#if defined(Q_OS_WIN32)
+    return DesktopEnvironment::Explorer;
+#elif defined(Q_OS_MACX)
+    return DesktopEnvironment::Aqua;
+#elif defined(Q_OS_LINUX)
+    QString desktop = QProcessEnvironment::systemEnvironment().value("XDG_CURRENT_DESKTOP").toLower();
+    if(desktop == "unity") {
+        return DesktopEnvironment::Unity;
+    } else if(desktop == "gnome") {
+        return DesktopEnvironment::Gnome;
+    } else if(desktop.endsWith("plasma")) {
+        return DesktopEnvironment::KDE;
+    } else if(desktop == "xfce") {
+        return DesktopEnvironment::XFCE;
+    } else if(desktop == "mate") {
+        return DesktopEnvironment::MATE;
+    } else if(desktop.endsWith("cinnamon")) {
+        return DesktopEnvironment::Cinnamon;
+    } else if(desktop == "pantheon") {
+        return DesktopEnvironment::Pantheon;
+    } else {
+        return DesktopEnvironment::Unknown;
+    }
+#else
+    return DesktopEnvironment::Unknown;
+#endif
+}
+
 QString Platform::operatingSystemName(OperatingSystem operatingSystem)
 {
     switch(operatingSystem) {
