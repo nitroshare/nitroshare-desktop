@@ -14,6 +14,8 @@ set(PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT
 
 option(BUILD_APPINDICATOR "Application indicator support" OFF)
 
+include(GNUInstallDirs)
+
 find_package(Qt5Network 5.1 REQUIRED)
 find_package(Qt5Widgets 5.1 REQUIRED)
 find_package(Qt5Svg 5.1 REQUIRED)
