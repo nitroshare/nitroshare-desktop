@@ -61,7 +61,7 @@ Platform::DesktopEnvironment Platform::currentDesktopEnvironment()
     QString desktop = QProcessEnvironment::systemEnvironment().value("XDG_CURRENT_DESKTOP").toLower();
     if(desktop == "unity") {
         return DesktopEnvironment::Unity;
-    } else if(desktop == "gnome") {
+    } else if(desktop.startsWith("gnome")) {
         return DesktopEnvironment::Gnome;
     } else if(desktop.endsWith("plasma")) {
         return DesktopEnvironment::KDE;
