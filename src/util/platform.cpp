@@ -125,7 +125,7 @@ QString Platform::architectureName(Architecture architecture)
     case Architecture::x86:
         return "x86";
     case Architecture::x64:
-        return "x64";
+        return "x86_64";
     default:
         return "unknown";
     }

@@ -25,6 +25,7 @@
 #include <QPixmap>
 #include <QFont>
 
+#include "../util/platform.h"
 #include "aboutdialog.h"
 #include "config.h"
 
@@ -67,7 +68,9 @@ AboutDialog::AboutDialog()
     lblProjectTitle->setFont(font);
     lblProjectTitle->setText(PROJECT_NAME);
 
-    lblVersion->setText(QString("Version %1").arg(PROJECT_VERSION));
+    lblVersion->setText(QString("Version %1 - %2 %3").arg(PROJECT_VERSION)
+            .arg(Platform::operatingSystemFriendlyName())
+            .arg(Platform::architectureName()));
     lblDescription->setText(PROJECT_DESCRIPTION);
 
     QString websiteTxt("<html><head/><body><a href=\"%1\">%1</a></body></html>");

@@ -42,11 +42,11 @@
    <item>
     <widget class="QWidget" name="wdtContent" native="true">
      <layout class="QVBoxLayout" name="vBoxLytContent">
+     <item alignment="Qt::AlignHCenter">
+      <widget class="QLabel" name="lblDescription"/>
+     </item>
       <item alignment="Qt::AlignHCenter">
        <widget class="QLabel" name="lblVersion"/>
-      </item>
-      <item alignment="Qt::AlignHCenter">
-       <widget class="QLabel" name="lblDescription"/>
       </item>
       <item alignment="Qt::AlignHCenter">
        <widget class="QLabel" name="lblWebsite">
