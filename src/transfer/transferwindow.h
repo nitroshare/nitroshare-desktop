@@ -48,6 +48,11 @@ public:
 
     explicit TransferWindow(TransferModel *model);
 
+Q_SIGNALS:
+
+    void sendFiles();
+    void sendDirectory();
+
 public Q_SLOTS:
 
     void onRowsInserted(const QModelIndex &parent, int first, int last);

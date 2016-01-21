@@ -47,6 +47,27 @@
     <item>
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
+       <widget class="QPushButton" name="sendFilesBtn">
+        <property name="text">
+         <string>Send Files...</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="sendDirectoryBtn">
+        <property name="text">
+         <string>Send Directory...</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="Line" name="line">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QPushButton" name="clear">
         <property name="text">
          <string>Clear</string>

@@ -38,7 +38,10 @@ TransferWindow::TransferWindow(TransferModel *model)
     transferView->setColumnWidth(TransferModel::ProgressColumn, 150);
     transferView->setColumnWidth(TransferModel::StateColumn, 200);
 
+    connect(sendDirectoryBtn, &QPushButton::clicked, this, &TransferWindow::sendDirectory);
+    connect(sendFilesBtn, &QPushButton::clicked, this, &TransferWindow::sendFiles);
     connect(clear, &QPushButton::clicked, mModel, &TransferModel::clear);
+
     connect(mModel, &TransferModel::rowsInserted, this, &TransferWindow::onRowsInserted);
     connect(mModel, &TransferModel::dataChanged, this, &TransferWindow::onDataChanged);
 }
