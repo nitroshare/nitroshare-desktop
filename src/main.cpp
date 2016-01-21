@@ -23,10 +23,12 @@
  **/
 
 #include <QApplication>
+#include <QMessageBox>
 
 #include "application/application.h"
 #include "application/splashdialog.h"
 #include "settings/settings.h"
+#include "util/platform.h"
 #include "config.h"
 
 int main(int argc, char **argv)
@@ -41,8 +43,11 @@ int main(int argc, char **argv)
     app.setOrganizationDomain(PROJECT_DOMAIN);
     app.setOrganizationName(PROJECT_AUTHOR);
 
-    // Display the spash dialog if this is the first run
-    if(!Settings::instance()->get(Settings::Key::ApplicationSplash).toBool()) {
+    // Check to see if the splash screen has been displayed yet
+    bool appSplash = Settings::instance()->get(Settings::Key::ApplicationSplash).toBool();
+
+    // If not, display it and remember that the user has seen it
+    if(!appSplash) {
         SplashDialog().exec();
         Settings::instance()->set(Settings::Key::ApplicationSplash, true);
     }
@@ -50,6 +55,18 @@ int main(int argc, char **argv)
     // Create the tray icon that runs the application
     Application nitroshare;
     Q_UNUSED(nitroshare);
+
+    // If the splash had not been seen and the user is running Gnome,
+    // warn them that they need a special extension installed
+    if(!appSplash && Platform::currentDesktopEnvironment() ==
+            Platform::DesktopEnvironment::Gnome) {
+        QMessageBox::about(nullptr, QObject::tr("Warning"), QObject::tr(
+                "Some versions of Gnome do not support AppIndicators. This prevents "
+                "NitroShare from displaying an indicator in the notification area. "
+                "If you cannot see the icon there, please install this extension:"
+                "<br><br><a href='%1'>%1</a>"
+        ).arg("https://extensions.gnome.org/extension/615/appindicator-support/"));
+    }
 
     return app.exec();
 }
