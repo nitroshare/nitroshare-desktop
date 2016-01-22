@@ -37,6 +37,19 @@
        <string>General</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_4">
+       <item row="3" column="0">
+        <spacer name="verticalSpacer1">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
        <item row="0" column="1">
         <widget class="QLineEdit" name="deviceNameEdit"/>
        </item>
@@ -44,6 +57,13 @@
         <widget class="QLabel" name="deviceNameLabel">
          <property name="text">
           <string>Device name:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="transferDirectoryLabel">
+         <property name="text">
+          <string>Directory:</string>
          </property>
         </widget>
        </item>
@@ -73,24 +93,20 @@
          </item>
         </layout>
        </item>
-       <item row="2" column="0">
-        <spacer name="verticalSpacer1">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
+       <item row="2" column="0" colspan="2">
+        <widget class="QGroupBox" name="behaviorGroupBox">
+         <property name="title">
+          <string>Behavior</string>
          </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="transferDirectoryLabel">
-         <property name="text">
-          <string>Directory:</string>
-         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_2">
+          <item>
+           <widget class="QCheckBox" name="overwriteCheckBox">
+            <property name="text">
+             <string>Overwrite files with identical names</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
       </layout>

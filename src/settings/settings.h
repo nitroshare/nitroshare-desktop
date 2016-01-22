@@ -71,23 +71,25 @@ public:
      */
     enum class Key : int {
         /// Whether the splash dialog has been shown or not
-        ApplicationSplash = 1,
+        ApplicationSplash,
+        /// Whether to overwrite incoming files
+        BehaviorOverwrite,
         /// Port for sending broadcast packets
-        BroadcastPort = 11,
+        BroadcastPort,
         /// Time (in MS) between broadcast packets
-        BroadcastInterval = 12,
+        BroadcastInterval,
         /// Time (in MS) after receiving a device's last packet before considering the device offline
-        BroadcastTimeout = 13,
+        BroadcastTimeout,
         /// Unique GUID used to identify the device
-        DeviceUUID = 21,
+        DeviceUUID,
         /// Descriptive name of the device
-        DeviceName = 22,
+        DeviceName,
         /// Port for receiving transfers
-        TransferPort = 31,
+        TransferPort,
         /// Size (in bytes) of the buffer used for transferring file data
-        TransferBuffer = 32,
+        TransferBuffer,
         /// Directory for storing received files and directories
-        TransferDirectory = 33,
+        TransferDirectory,
     };
 
     /**

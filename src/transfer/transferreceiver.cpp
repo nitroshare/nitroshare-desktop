@@ -22,13 +22,17 @@
  * IN THE SOFTWARE.
  **/
 
+#include <QRegularExpression>
+#include <QRegularExpressionMatch>
+
 #include "../settings/settings.h"
 #include "../util/json.h"
 #include "transferreceiver.h"
 
 TransferReceiver::TransferReceiver(qintptr socketDescriptor)
     : Transfer(TransferModel::Receive),
-      mRoot(Settings::instance()->get(Settings::Key::TransferDirectory).toString())
+      mRoot(Settings::instance()->get(Settings::Key::TransferDirectory).toString()),
+      mOverwrite(Settings::instance()->get(Settings::Key::BehaviorOverwrite).toBool())
 {
     mSocket.setSocketDescriptor(socketDescriptor);
     mDeviceName = tr("[Unknown]");
@@ -169,7 +173,7 @@ void TransferReceiver::processItemHeader(const QJsonObject &object)
 
             // Abort if the file can't be opened
             mFile.setFileName(filename);
-            if(!mFile.open(QIODevice::WriteOnly)) {
+            if(!openFile()) {
                 writeErrorPacket(tr("Unable to open %1").arg(filename));
                 return;
             }
@@ -196,4 +200,38 @@ void TransferReceiver::nextItem()
     if(!mTransferItemsRemaining) {
         writeSuccessPacket();
     }
+}
+
+bool TransferReceiver::openFile()
+{
+    // NOTE: there is a known race-condition in the code below - it
+    // is possible that a file could be created between checking for
+    // the file and attempting to open it. However, this is incredibly
+    // hard to work around and unlikely to be a problem in most normal
+    // circumstances.
+
+    // If overwrite is enabled OR the file doesn't exist, try
+    // to open the file with the original filename
+    if(mOverwrite || !mFile.exists()) {
+        return mFile.open(QIODevice::WriteOnly);
+    }
+
+    // Break the filename into its components
+    QRegularExpression re("^(.*?)((?:\\.tar)?\\.[^\\/\\\\]*)?$");
+    QRegularExpressionMatch match = re.match(mFile.fileName());
+    if(!match.hasMatch()) {
+        return false;
+    }
+
+    // Try consecutive numbers
+    int num = 2;
+    while(mFile.exists()) {
+        mFile.setFileName(QString("%1-%2%3")
+                .arg(match.captured(1))
+                .arg(num++)
+                .arg(match.captured(2)));
+    }
+
+    // One was found that doesn't exist - try opening it
+    return mFile.open(QIODevice::WriteOnly);
 }

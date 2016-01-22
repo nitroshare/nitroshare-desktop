@@ -45,6 +45,7 @@ void SettingsDialog::accept()
     // Settings in the general tab
     settings->set(Settings::Key::DeviceName, deviceNameEdit->text());
     settings->set(Settings::Key::TransferDirectory, transferDirectoryEdit->text());
+    settings->set(Settings::Key::BehaviorOverwrite, overwriteCheckBox->isChecked());
 
     // Settings in the transfer section
     settings->set(Settings::Key::TransferPort, transferPortSpinBox->value());
@@ -90,6 +91,7 @@ void SettingsDialog::reload()
     // General tab
     deviceNameEdit->setText(settings->get(Settings::Key::DeviceName).toString());
     transferDirectoryEdit->setText(settings->get(Settings::Key::TransferDirectory).toString());
+    overwriteCheckBox->setChecked(settings->get(Settings::Key::BehaviorOverwrite).toBool());
 
     // Transfer section
     transferPortSpinBox->setValue(settings->get(Settings::Key::TransferPort).toLongLong());

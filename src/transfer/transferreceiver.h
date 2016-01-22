@@ -50,9 +50,11 @@ private:
     void processItemHeader(const QJsonObject &object);
 
     void nextItem();
+    bool openFile();
 
-    // Directory to write files to
-    QDir mRoot;
+    // Information for writing files that are received
+    const QDir mRoot;
+    const bool mOverwrite;
 
     // Number of items remaining to be transferred
     qint32 mTransferItemsRemaining;
