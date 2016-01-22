@@ -25,7 +25,7 @@ VS_VERSION_INFO VERSIONINFO
             VALUE "InternalName",     PROJECT_NAME "\0"
             VALUE "LegalCopyright",   "Copyright (c) 2015 " PROJECT_AUTHOR "\0"
             VALUE "OriginalFilename", PROJECT_NAME ".exe\0"
-            VALUE "ProductName",      PROJECT_TITLE "\0"
+            VALUE "ProductName",      PROJECT_NAME "\0"
             VALUE "ProductVersion",   PROJECT_VERSION "\0"
         }
     }

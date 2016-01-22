@@ -31,8 +31,7 @@ if(APPINDICATOR_SUPPORT)
 endif()
 
 if(WIN32)
-    configure_file(data/resource.rc.in "${CMAKE_CURRENT_BINARY_DIR}/resource.rc")
-    set(SRC ${SRC} "${CMAKE_CURRENT_BINARY_DIR}/resource.rc")
+    set(SRC ${SRC} "data/resource.rc")
 endif()
 
 qt5_wrap_ui(UI
