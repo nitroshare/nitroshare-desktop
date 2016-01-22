@@ -36,7 +36,7 @@
 #include "aboutdialog.h"
 #include "config.h"
 
-#ifdef BUILD_APPINDICATOR
+#ifdef APPINDICATOR_SUPPORT
 #include "../icon/indicatoricon.h"
 #include "../util/platform.h"
 #endif
@@ -46,11 +46,14 @@ Q_DECLARE_METATYPE(QHostAddress)
 
 Application::Application()
     : mTransferWindow(&mTransferModel),
-#ifdef BUILD_APPINDICATOR
+#ifdef APPINDICATOR_SUPPORT
       mIcon(Platform::useIndicator() ? static_cast<Icon*>(new IndicatorIcon) :
                                        static_cast<Icon*>(new TrayIcon)),
 #else
       mIcon(new TrayIcon),
+#endif
+#ifdef UNITY_INTEGRATION
+      mLauncherEntry(nullptr),
 #endif
       mStartTime(QDateTime::currentMSecsSinceEpoch())
 {
@@ -73,6 +76,10 @@ Application::Application()
     mIcon->addAction(tr("About Qt..."), this, SLOT(onOpenAboutQt()));
     mIcon->addSeparator();
     mIcon->addAction(tr("Exit"), QApplication::instance(), SLOT(quit()));
+
+#ifdef UNITY_INTEGRATION
+    mLauncherEntry = unity_launcher_entry_get_for_desktop_id("nitroshare.desktop");
+#endif
 
     // Start the transfer server
     mTransferServer.start();
@@ -138,6 +145,33 @@ void Application::notifyTransfersChanged(const QModelIndex &topLeft, const QMode
             }
         }
     }
+
+#ifdef UNITY_INTEGRATION
+    // TODO: heavy refactoring is needed
+
+    if(mLauncherEntry) {
+        // Calculate the number of transfers in progress and the sum of their progress
+        int numTransfers = 0;
+        int totalProgress = 0;
+        for(int row = 0; row < mTransferModel.rowCount(); ++row) {
+            QModelIndex index = mTransferModel.index(row, 0);
+            if(index.data(TransferModel::StateRole).toInt() == TransferModel::InProgress) {
+                numTransfers += 1;
+                totalProgress += index.data(TransferModel::ProgressRole).toInt();
+            }
+        }
+
+        // Calculate the total progress and display it
+        double progress = numTransfers ? static_cast<double>(totalProgress) /
+                static_cast<double>(numTransfers) / 100.0 : 0.0;
+        unity_launcher_entry_set_progress(mLauncherEntry, progress);
+        unity_launcher_entry_set_progress_visible(mLauncherEntry, progress > 0.0 && progress < 1.0);
+
+        // Show the count
+        unity_launcher_entry_set_count(mLauncherEntry, numTransfers);
+        unity_launcher_entry_set_count_visible(mLauncherEntry, static_cast<bool>(numTransfers));
+    }
+#endif
 }
 
 void Application::sendFiles()

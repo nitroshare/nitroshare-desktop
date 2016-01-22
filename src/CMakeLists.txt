@@ -24,7 +24,7 @@ set(SRC
     main.cpp
 )
 
-if(BUILD_APPINDICATOR)
+if(APPINDICATOR_SUPPORT)
     set(SRC ${SRC}
         icon/indicatoricon.cpp
     )
@@ -62,9 +62,14 @@ target_compile_features(nitroshare PRIVATE
     cxx_uniform_initialization
 )
 
-if(BUILD_APPINDICATOR)
+if(APPINDICATOR_SUPPORT)
     target_include_directories(nitroshare PRIVATE ${APPINDICATOR_INCLUDE_DIRS})
     target_link_libraries(nitroshare ${APPINDICATOR_LIBRARIES})
+endif()
+
+if(UNITY_INTEGRATION)
+    target_include_directories(nitroshare PRIVATE ${UNITY_INCLUDE_DIRS})
+    target_link_libraries(nitroshare ${UNITY_LIBRARIES})
 endif()
 
 install(TARGETS nitroshare

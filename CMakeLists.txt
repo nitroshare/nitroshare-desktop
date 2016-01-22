@@ -12,7 +12,8 @@ set(PROJECT_VERSION_MINOR 3)
 set(PROJECT_VERSION_PATCH 1)
 set(PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
 
-option(BUILD_APPINDICATOR "Application indicator support" OFF)
+option(APPINDICATOR_SUPPORT "Application indicator support" OFF)
+option(UNITY_INTEGRATION "Integrate with the Unity desktop" OFF)
 
 include(GNUInstallDirs)
 
@@ -20,11 +21,22 @@ find_package(Qt5Network 5.1 REQUIRED)
 find_package(Qt5Widgets 5.1 REQUIRED)
 find_package(Qt5Svg 5.1 REQUIRED)
 
-# NitroShare uses QSystemTrayIcon by default but support for application
-# indicators (AppIndicators) can be compiled in.
-if(BUILD_APPINDICATOR)
+if(APPINDICATOR_SUPPORT OR UNITY_INTEGRATION)
+
+    # Both options require pkg-config
     find_package(PkgConfig REQUIRED)
-    pkg_check_modules(APPINDICATOR REQUIRED gtk+-2.0 appindicator-0.1 libnotify)
+
+    # NitroShare uses QSystemTrayIcon by default but support for application
+    # indicators (AppIndicators) can be compiled in.
+    if(APPINDICATOR_SUPPORT)
+        pkg_check_modules(APPINDICATOR REQUIRED gtk+-2.0 appindicator-0.1 libnotify)
+    endif()
+
+    # NitroShare also supports using the Unity API to display the number
+    # of transfers and overall progress.
+    if(UNITY_INTEGRATION)
+        pkg_check_modules(UNITY REQUIRED unity)
+    endif()
 endif()
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)

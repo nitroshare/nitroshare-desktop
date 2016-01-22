@@ -33,6 +33,10 @@
 #include "../transfer/transferwindow.h"
 #include "config.h"
 
+#ifdef UNITY_INTEGRATION
+#include <unity/unity/unity.h>
+#endif
+
 /**
  * @brief An interface between the user and the transfer classes
  *
@@ -75,6 +79,10 @@ private:
 
     // A pointer must be used since the child class is determined at runtime
     Icon *mIcon;
+
+#ifdef UNITY_INTEGRATION
+    UnityLauncherEntry *mLauncherEntry;
+#endif
 
     // Used to avoid showing notifications during the first 10 seconds after startup
     qint64 mStartTime;
