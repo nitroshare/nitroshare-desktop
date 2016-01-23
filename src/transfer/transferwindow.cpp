@@ -39,7 +39,7 @@ TransferWindow::TransferWindow(TransferModel *model)
     , mTaskbarButton(nullptr)
 #endif
 #ifdef UNITY_FOUND
-    , mLauncherEntry(nullptr),
+    , mLauncherEntry(nullptr)
 #endif
 {
     setupUi(this);
