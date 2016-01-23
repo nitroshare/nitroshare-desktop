@@ -29,6 +29,7 @@
 #include "transferwindow.h"
 
 #ifdef Qt5WinExtras_FOUND
+#include <QSysInfo>
 #include <QWinTaskbarProgress>
 #endif
 
@@ -97,7 +98,7 @@ void TransferWindow::onDataChanged(const QModelIndex &topLeft, const QModelIndex
 #ifdef Qt5WinExtras_FOUND
 void TransferWindow::showEvent(QShowEvent *)
 {
-    if(!mTaskbarButton) {
+    if(!mTaskbarButton && QSysInfo::windowsVersion() >= QSysInfo::WV_WINDOWS7) {
         mTaskbarButton = new QWinTaskbarButton(this);
         mTaskbarButton->setWindow(windowHandle());
     }
