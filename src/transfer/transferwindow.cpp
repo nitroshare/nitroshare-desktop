@@ -38,6 +38,9 @@ TransferWindow::TransferWindow(TransferModel *model)
 #ifdef Qt5WinExtras_FOUND
     , mTaskbarButton(nullptr)
 #endif
+#ifdef UNITY_FOUND
+    , mLauncherEntry(nullptr),
+#endif
 {
     setupUi(this);
 
@@ -52,6 +55,10 @@ TransferWindow::TransferWindow(TransferModel *model)
 
     connect(mModel, &TransferModel::rowsInserted, this, &TransferWindow::onRowsInserted);
     connect(mModel, &TransferModel::dataChanged, this, &TransferWindow::onDataChanged);
+
+#ifdef UNITY_FOUND
+    mLauncherEntry = unity_launcher_entry_get_for_desktop_id("nitroshare.desktop");
+#endif
 }
 
 void TransferWindow::onRowsInserted(const QModelIndex &, int first, int last)
@@ -91,6 +98,14 @@ void TransferWindow::onDataChanged(const QModelIndex &topLeft, const QModelIndex
         int progress = mModel->combinedProgress();
         mTaskbarButton->progress()->setValue(progress);
         mTaskbarButton->progress()->setVisible(progress > 0 && progress < 100);
+    }
+#endif
+
+#ifdef UNITY_FOUND
+    if(mLauncherEntry) {
+        int progress = mModel->combinedProgress();
+        unity_launcher_entry_set_progress(mLauncherEntry, static_cast<double>(progress) / 100.0f);
+        unity_launcher_entry_set_progress_visible(mLauncherEntry, progress > 0 && progress < 100);
     }
 #endif
 }

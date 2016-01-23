@@ -52,9 +52,6 @@ Application::Application()
 #else
       mIcon(new TrayIcon),
 #endif
-#ifdef UNITY_FOUND
-      mLauncherEntry(nullptr),
-#endif
       mStartTime(QDateTime::currentMSecsSinceEpoch())
 {
     connect(&mDeviceModel, &DeviceModel::rowsInserted, this, &Application::notifyDevicesAdded);
@@ -76,10 +73,6 @@ Application::Application()
     mIcon->addAction(tr("About Qt..."), this, SLOT(onOpenAboutQt()));
     mIcon->addSeparator();
     mIcon->addAction(tr("Exit"), QApplication::instance(), SLOT(quit()));
-
-#ifdef UNITY_FOUND
-    mLauncherEntry = unity_launcher_entry_get_for_desktop_id("nitroshare.desktop");
-#endif
 
     // Start the transfer server
     mTransferServer.start();
@@ -145,14 +138,6 @@ void Application::notifyTransfersChanged(const QModelIndex &topLeft, const QMode
             }
         }
     }
-
-#ifdef UNITY_FOUND
-    if(mLauncherEntry) {
-        int progress = mTransferModel.combinedProgress();
-        unity_launcher_entry_set_progress(mLauncherEntry, static_cast<double>(progress) / 100.0f);
-        unity_launcher_entry_set_progress_visible(mLauncherEntry, progress > 0 && progress < 100);
-    }
-#endif
 }
 
 void Application::sendFiles()

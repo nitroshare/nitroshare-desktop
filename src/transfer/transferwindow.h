@@ -35,6 +35,10 @@
 #include <QWinTaskbarButton>
 #endif
 
+#ifdef UNITY_FOUND
+#include <unity/unity/unity.h>
+#endif
+
 /**
  * @brief Displays a list of all transfers in the model
  *
@@ -77,6 +81,10 @@ private:
 
 #ifdef Qt5WinExtras_FOUND
     QWinTaskbarButton *mTaskbarButton;
+#endif
+
+#ifdef UNITY_FOUND
+    UnityLauncherEntry *mLauncherEntry;
 #endif
 };
 
