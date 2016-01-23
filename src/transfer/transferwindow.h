@@ -27,8 +27,13 @@
 
 #include <QMainWindow>
 
+#include "config.h"
 #include "transfermodel.h"
 #include "ui_transferwindow.h"
+
+#ifdef Qt5WinExtras_FOUND
+#include <QWinTaskbarButton>
+#endif
 
 /**
  * @brief Displays a list of all transfers in the model
@@ -60,10 +65,19 @@ public Q_SLOTS:
 
 private:
 
+#ifdef Qt5WinExtras_FOUND
+    virtual void showEvent(QShowEvent *);
+    virtual void hideEvent(QHideEvent *);
+#endif
+
     void updateProgressBar(int row);
     void updateButton(int row);
 
     TransferModel *const mModel;
+
+#ifdef Qt5WinExtras_FOUND
+    QWinTaskbarButton *mTaskbarButton;
+#endif
 };
 
 #endif // NS_TRANSFERDIALOG_H

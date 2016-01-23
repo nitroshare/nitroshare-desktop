@@ -18,6 +18,9 @@ find_package(Qt5Network 5.1 REQUIRED)
 find_package(Qt5Widgets 5.1 REQUIRED)
 find_package(Qt5Svg 5.1 REQUIRED)
 
+if(WIN32)
+    find_package(Qt5WinExtras)
+endif()
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     find_package(PkgConfig)

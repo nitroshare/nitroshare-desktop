@@ -28,8 +28,15 @@
 
 #include "transferwindow.h"
 
+#ifdef Qt5WinExtras_FOUND
+#include <QWinTaskbarProgress>
+#endif
+
 TransferWindow::TransferWindow(TransferModel *model)
     : mModel(model)
+#ifdef Qt5WinExtras_FOUND
+    , mTaskbarButton(nullptr)
+#endif
 {
     setupUi(this);
 
@@ -77,7 +84,33 @@ void TransferWindow::onDataChanged(const QModelIndex &topLeft, const QModelIndex
             updateButton(row);
         }
     }
+
+#ifdef Qt5WinExtras_FOUND
+    if(mTaskbarButton) {
+        int progress = mModel->combinedProgress();
+        mTaskbarButton->progress()->setValue(progress);
+        mTaskbarButton->progress()->setVisible(progress > 0 && progress < 100);
+    }
+#endif
 }
+
+#ifdef Qt5WinExtras_FOUND
+void TransferWindow::showEvent(QShowEvent *)
+{
+    if(!mTaskbarButton) {
+        mTaskbarButton = new QWinTaskbarButton(this);
+        mTaskbarButton->setWindow(windowHandle());
+    }
+}
+
+void TransferWindow::hideEvent(QHideEvent *)
+{
+    if(mTaskbarButton) {
+        delete mTaskbarButton;
+        mTaskbarButton = nullptr;
+    }
+}
+#endif
 
 void TransferWindow::updateProgressBar(int row)
 {

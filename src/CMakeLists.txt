@@ -53,6 +53,9 @@ add_executable(nitroshare WIN32 ${SRC} ${UI} ${QRC})
 add_definitions(-DQT_NO_SIGNALS_SLOTS_KEYWORDS)
 
 qt5_use_modules(nitroshare Widgets Network Svg)
+if(Qt5WinExtras_FOUND)
+    qt5_use_modules(nitroshare WinExtras)
+endif()
 
 target_compile_features(nitroshare PRIVATE
     cxx_lambdas

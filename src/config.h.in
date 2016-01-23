@@ -41,6 +41,7 @@
 #define PROJECT_VERSION       "${PROJECT_VERSION}"
 
 // Build options
+#cmakedefine Qt5WinExtras_FOUND
 #cmakedefine APPINDICATOR_FOUND
 #cmakedefine UNITY_FOUND
 
