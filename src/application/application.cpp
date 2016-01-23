@@ -147,29 +147,11 @@ void Application::notifyTransfersChanged(const QModelIndex &topLeft, const QMode
     }
 
 #ifdef UNITY_INTEGRATION
-    // TODO: heavy refactoring is needed
-
     if(mLauncherEntry) {
-        // Calculate the number of transfers in progress and the sum of their progress
-        int numTransfers = 0;
-        int totalProgress = 0;
-        for(int row = 0; row < mTransferModel.rowCount(); ++row) {
-            QModelIndex index = mTransferModel.index(row, 0);
-            if(index.data(TransferModel::StateRole).toInt() == TransferModel::InProgress) {
-                numTransfers += 1;
-                totalProgress += index.data(TransferModel::ProgressRole).toInt();
-            }
-        }
-
         // Calculate the total progress and display it
-        double progress = numTransfers ? static_cast<double>(totalProgress) /
-                static_cast<double>(numTransfers) / 100.0 : 0.0;
-        unity_launcher_entry_set_progress(mLauncherEntry, progress);
-        unity_launcher_entry_set_progress_visible(mLauncherEntry, progress > 0.0 && progress < 1.0);
-
-        // Show the count
-        unity_launcher_entry_set_count(mLauncherEntry, numTransfers);
-        unity_launcher_entry_set_count_visible(mLauncherEntry, static_cast<bool>(numTransfers));
+        int progress = mTransferModel.combinedProgress();
+        unity_launcher_entry_set_progress(mLauncherEntry, static_cast<double>(progress) / 100.0f);
+        unity_launcher_entry_set_progress_visible(mLauncherEntry, progress > 0 && progress < 100);
     }
 #endif
 }

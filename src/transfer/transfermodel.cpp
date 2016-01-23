@@ -24,6 +24,7 @@
 
 #include <QApplication>
 #include <QBrush>
+#include <QDateTime>
 #include <QIcon>
 #include <QStyle>
 
@@ -33,7 +34,9 @@
 #include "transfersender.h"
 
 TransferModelPrivate::TransferModelPrivate(TransferModel *transferModel)
-    : q(transferModel)
+    : q(transferModel),
+      cachedProgress(0),
+      cachedProgressAge(0)
 {
 }
 
@@ -50,6 +53,9 @@ void TransferModelPrivate::add(Transfer *transfer)
 
     // Whenever the transfer changes, emit the appropriate signal
     QObject::connect(transfer, &Transfer::dataChanged, [this, transfer](const QVector<int> &roles) {
+        if(!roles.contains(TransferModel::ProgressRole)) {
+            cachedProgressAge = 0;
+        }
         int index = transfers.indexOf(transfer);
         emit q->dataChanged(q->index(index, 0), q->index(index, TransferModel::ColumnCount - 1), roles);
     });
@@ -184,6 +190,28 @@ QHash<int, QByteArray> TransferModel::roleNames() const
         {StateRole, "state"},
         {ErrorRole, "error"}
     };
+}
+
+int TransferModel::combinedProgress() const
+{
+    // If we're still within 200ms of the last call, return the cached value
+    qint64 currentMSecs = QDateTime::currentMSecsSinceEpoch();
+    if(d->cachedProgressAge + 200 > currentMSecs) {
+        return d->cachedProgress;
+    }
+
+    // Sum the progress of all transfers in progress
+    int progress = 0;
+    for(QList<Transfer*>::const_iterator i = d->transfers.constBegin(); i != d->transfers.constEnd(); ++i) {
+        if((*i)->state() == InProgress) {
+            progress += (*i)->progress();
+        }
+    }
+    progress /= d->transfers.count();
+
+    // Store the value for next time
+    d->cachedProgressAge = currentMSecs;
+    return d->cachedProgress = progress;
 }
 
 void TransferModel::addReceiver(qintptr socketDescriptor)

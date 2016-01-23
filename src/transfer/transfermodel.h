@@ -152,6 +152,15 @@ public:
      */
     virtual QHash<int, QByteArray> roleNames() const;
 
+    /**
+     * @brief Calculate the combined progress of all transfers
+     * @return progress of all transfers
+     *
+     * In order to avoid costly processing, the value is cached for a brief
+     * period of time and all subsequent calls will return the cached value.
+     */
+    int combinedProgress() const;
+
 public Q_SLOTS:
 
     /**

@@ -43,6 +43,9 @@ public:
     TransferModel *const q;
 
     QList<Transfer*> transfers;
+
+    int cachedProgress;
+    qint64 cachedProgressAge;
 };
 
 #endif // NS_TRANSFERMODELPRIVATE_H
