@@ -41,7 +41,7 @@
 #define PROJECT_VERSION       "${PROJECT_VERSION}"
 
 // Build options
-#cmakedefine APPINDICATOR_SUPPORT
-#cmakedefine UNITY_INTEGRATION
+#cmakedefine APPINDICATOR_FOUND
+#cmakedefine UNITY_FOUND
 
 #endif // NS_CONFIG_H

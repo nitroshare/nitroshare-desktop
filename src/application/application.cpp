@@ -36,7 +36,7 @@
 #include "aboutdialog.h"
 #include "config.h"
 
-#ifdef APPINDICATOR_SUPPORT
+#ifdef APPINDICATOR_FOUND
 #include "../icon/indicatoricon.h"
 #include "../util/platform.h"
 #endif
@@ -46,13 +46,13 @@ Q_DECLARE_METATYPE(QHostAddress)
 
 Application::Application()
     : mTransferWindow(&mTransferModel),
-#ifdef APPINDICATOR_SUPPORT
+#ifdef APPINDICATOR_FOUND
       mIcon(Platform::useIndicator() ? static_cast<Icon*>(new IndicatorIcon) :
                                        static_cast<Icon*>(new TrayIcon)),
 #else
       mIcon(new TrayIcon),
 #endif
-#ifdef UNITY_INTEGRATION
+#ifdef UNITY_FOUND
       mLauncherEntry(nullptr),
 #endif
       mStartTime(QDateTime::currentMSecsSinceEpoch())
@@ -77,7 +77,7 @@ Application::Application()
     mIcon->addSeparator();
     mIcon->addAction(tr("Exit"), QApplication::instance(), SLOT(quit()));
 
-#ifdef UNITY_INTEGRATION
+#ifdef UNITY_FOUND
     mLauncherEntry = unity_launcher_entry_get_for_desktop_id("nitroshare.desktop");
 #endif
 
@@ -146,9 +146,8 @@ void Application::notifyTransfersChanged(const QModelIndex &topLeft, const QMode
         }
     }
 
-#ifdef UNITY_INTEGRATION
+#ifdef UNITY_FOUND
     if(mLauncherEntry) {
-        // Calculate the total progress and display it
         int progress = mTransferModel.combinedProgress();
         unity_launcher_entry_set_progress(mLauncherEntry, static_cast<double>(progress) / 100.0f);
         unity_launcher_entry_set_progress_visible(mLauncherEntry, progress > 0 && progress < 100);

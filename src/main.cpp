@@ -56,6 +56,7 @@ int main(int argc, char **argv)
     Application nitroshare;
     Q_UNUSED(nitroshare);
 
+#ifdef APPINDICATOR_FOUND
     // If the splash had not been seen and the user is running Gnome,
     // warn them that they need a special extension installed
     if(!appSplash && Platform::currentDesktopEnvironment() ==
@@ -67,6 +68,7 @@ int main(int argc, char **argv)
                 "<br><br><a href='%1'>%1</a>"
         ).arg("https://extensions.gnome.org/extension/615/appindicator-support/"));
     }
+#endif
 
     return app.exec();
 }

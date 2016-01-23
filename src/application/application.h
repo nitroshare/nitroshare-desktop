@@ -33,7 +33,7 @@
 #include "../transfer/transferwindow.h"
 #include "config.h"
 
-#ifdef UNITY_INTEGRATION
+#ifdef UNITY_FOUND
 #include <unity/unity/unity.h>
 #endif
 
@@ -80,7 +80,7 @@ private:
     // A pointer must be used since the child class is determined at runtime
     Icon *mIcon;
 
-#ifdef UNITY_INTEGRATION
+#ifdef UNITY_FOUND
     UnityLauncherEntry *mLauncherEntry;
 #endif
 
