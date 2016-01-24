@@ -22,6 +22,10 @@ if(WIN32)
     find_package(Qt5WinExtras)
 endif()
 
+if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    find_package(Qt5MacExtras)
+endif()
+
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     find_package(PkgConfig)
     if(PKG_CONFIG_FOUND)

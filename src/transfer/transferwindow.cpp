@@ -33,6 +33,10 @@
 #include <QWinTaskbarProgress>
 #endif
 
+#ifdef Qt5MacExtras_FOUND
+#include <QtMac>
+#endif
+
 TransferWindow::TransferWindow(TransferModel *model)
     : mModel(model)
 #ifdef Qt5WinExtras_FOUND
@@ -98,6 +102,15 @@ void TransferWindow::onDataChanged(const QModelIndex &topLeft, const QModelIndex
         int progress = mModel->combinedProgress();
         mTaskbarButton->progress()->setValue(progress);
         mTaskbarButton->progress()->setVisible(progress > 0 && progress < 100);
+    }
+#endif
+
+#ifdef Qt5MacExtras_FOUND
+    int progress = mModel->combinedProgress();
+    if(progress > 0 && progress < 100) {
+        QtMac::setBadgeLabelText(QString("%1%").arg(progress));
+    } else {
+        QtMac::setBadgeLabelText("");
     }
 #endif
 

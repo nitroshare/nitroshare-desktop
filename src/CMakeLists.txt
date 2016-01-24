@@ -56,6 +56,9 @@ qt5_use_modules(nitroshare Widgets Network Svg)
 if(Qt5WinExtras_FOUND)
     qt5_use_modules(nitroshare WinExtras)
 endif()
+if(Qt5MacExtras_FOUND)
+    qt5_use_modules(nitroshare MacExtras)
+endif()
 
 target_compile_features(nitroshare PRIVATE
     cxx_lambdas
