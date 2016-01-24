@@ -22,7 +22,7 @@ if(WIN32)
     find_package(Qt5WinExtras)
 endif()
 
-if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+if(APPLE)
     find_package(Qt5MacExtras)
 endif()
 

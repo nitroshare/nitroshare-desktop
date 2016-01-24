@@ -34,6 +34,13 @@ if(WIN32)
     set(SRC ${SRC} "data/resource.rc")
 endif()
 
+if(APPLE)
+    set_source_files_properties("data/icon/nitroshare.icns" PROPERTIES
+        MACOSX_PACKAGE_LOCATION Resources
+    )
+    set(SRC ${SRC} "data/icon/nitroshare.icns")
+endif()
+
 qt5_wrap_ui(UI
     application/aboutdialog.ui
     application/splashdialog.ui
@@ -75,6 +82,15 @@ endif()
 if(UNITY_FOUND)
     target_include_directories(nitroshare PRIVATE ${UNITY_INCLUDE_DIRS})
     target_link_libraries(nitroshare ${UNITY_LIBRARIES})
+endif()
+
+if(APPLE)
+    set_target_properties(nitroshare PROPERTIES
+        MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/Info.plist.in"
+        MACOSX_BUNDLE_ICON_FILE "nitroshare.icns"
+        MACOSX_BUNDLE_GUI_IDENTIFIER "com.NathanOsman.NitroShare"
+        MACOSX_BUNDLE_BUNDLE_NAME "NitroShare"
+    )
 endif()
 
 install(TARGETS nitroshare
