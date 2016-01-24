@@ -152,6 +152,8 @@ bool Platform::useIndicator()
         case DesktopEnvironment::Cinnamon:
         case DesktopEnvironment::Pantheon:
             return true;
+        default:
+            return false;
         }
     }
 
