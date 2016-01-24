@@ -46,7 +46,7 @@ qt5_add_resources(QRC
     data/resource.qrc
 )
 
-add_executable(nitroshare WIN32 ${SRC} ${UI} ${QRC})
+add_executable(nitroshare WIN32 MACOSX_BUNDLE ${SRC} ${UI} ${QRC})
 
 # Since Qt and GTK+ both define the symbol "signals", it is necessary to
 # ensure that it is not defined by Qt.
@@ -79,4 +79,5 @@ endif()
 
 install(TARGETS nitroshare
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    BUNDLE DESTINATION .
 )
