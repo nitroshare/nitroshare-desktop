@@ -76,6 +76,11 @@ void Bundle::addDirectory(const QString &path)
 
         foreach(QFileInfo info, QDir(tos).entryInfoList(QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot)) {
 
+            // Skip symbolic links
+            if(info.isSymLink()) {
+                continue;
+            }
+
             // Add the item to the bundle
             d->items.append(BundleItem(root, info));
 
