@@ -202,12 +202,16 @@ int TransferModel::combinedProgress() const
 
     // Sum the progress of all transfers in progress
     int progress = 0;
+    int progressCount = 0;
     for(QList<Transfer*>::const_iterator i = d->transfers.constBegin(); i != d->transfers.constEnd(); ++i) {
         if((*i)->state() == InProgress) {
             progress += (*i)->progress();
+            progressCount++;
         }
     }
-    progress /= d->transfers.count();
+    if(progressCount) {
+        progress /= progressCount;
+    }
 
     // Store the value for next time
     d->cachedProgressAge = currentMSecs;
