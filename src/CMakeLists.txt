@@ -91,6 +91,17 @@ if(APPLE)
         MACOSX_BUNDLE_GUI_IDENTIFIER "com.NathanOsman.NitroShare"
         MACOSX_BUNDLE_BUNDLE_NAME "NitroShare"
     )
+
+    # Clever hack to find the path to macdeployqt
+    get_target_property(_qmake_executable Qt5::qmake IMPORTED_LOCATION)
+    get_filename_component(_qt_bin_dir "${_qmake_executable}" DIRECTORY)
+    find_program(_macdeployqt macdeployqt HINTS "${_qt_bin_dir}")
+
+    # Run macdeployqt after building
+    add_custom_command(TARGET nitroshare POST_BUILD
+        COMMAND ${_macdeployqt} "$<TARGET_FILE_DIR:nitroshare>/../.." -always-overwrite
+        COMMENT "Running macdeployqt..."
+    )
 endif()
 
 install(TARGETS nitroshare
