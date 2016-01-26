@@ -45,6 +45,7 @@ void SettingsDialog::accept()
     // Settings in the general tab
     settings->set(Settings::Key::DeviceName, deviceNameEdit->text());
     settings->set(Settings::Key::TransferDirectory, transferDirectoryEdit->text());
+    settings->set(Settings::Key::BehaviorReceive, receiveFilesCheckBox->isChecked());
     settings->set(Settings::Key::BehaviorOverwrite, overwriteCheckBox->isChecked());
 
     // Settings in the transfer section
@@ -91,6 +92,7 @@ void SettingsDialog::reload()
     // General tab
     deviceNameEdit->setText(settings->get(Settings::Key::DeviceName).toString());
     transferDirectoryEdit->setText(settings->get(Settings::Key::TransferDirectory).toString());
+    receiveFilesCheckBox->setChecked(settings->get(Settings::Key::BehaviorReceive).toBool());
     overwriteCheckBox->setChecked(settings->get(Settings::Key::BehaviorOverwrite).toBool());
 
     // Transfer section

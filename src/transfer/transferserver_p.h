@@ -39,9 +39,9 @@ public:
 
     explicit TransferServerPrivate(TransferServer *transferServer);
 
-private Q_SLOTS:
+public Q_SLOTS:
 
-    void onSettingsChanged(const QList<Settings::Key> &keys);
+    void onSettingsChanged(const QList<Settings::Key> &keys = {});
 
 private:
 

@@ -47,6 +47,7 @@ struct KeyInfo
 const QMap<Settings::Key, KeyInfo> KeyMap = {
     DEFINE_SETTING(ApplicationSplash, { return false; }),
     DEFINE_SETTING(BehaviorOverwrite, { return false; }),
+    DEFINE_SETTING(BehaviorReceive, { return true; }),
     DEFINE_SETTING(BroadcastPort, { return 40816; }),
     DEFINE_SETTING(BroadcastInterval, { return 5 * Settings::Constant::Second; }),
     DEFINE_SETTING(BroadcastTimeout, { return 30 * Settings::Constant::Second; }),

@@ -100,6 +100,13 @@
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_2">
           <item>
+           <widget class="QCheckBox" name="receiveFilesCheckBox">
+            <property name="text">
+             <string>Receive files</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <widget class="QCheckBox" name="overwriteCheckBox">
             <property name="text">
              <string>Overwrite files with identical names</string>

@@ -29,13 +29,22 @@ TransferServerPrivate::TransferServerPrivate(TransferServer *transferServer)
     : QTcpServer(transferServer),
       q(transferServer)
 {
+    connect(Settings::instance(), &Settings::settingsChanged, this, &TransferServerPrivate::onSettingsChanged);
 }
 
 void TransferServerPrivate::onSettingsChanged(const QList<Settings::Key> &keys)
 {
-    if(keys.contains(Settings::Key::TransferPort)) {
+    Settings *settings = Settings::instance();
+
+    if(keys.empty() || keys.contains(Settings::Key::BehaviorReceive) ||
+            keys.contains(Settings::Key::TransferPort)) {
         close();
-        q->start();
+        if(settings->get(Settings::Key::BehaviorReceive).toBool()) {
+            quint16 port = Settings::instance()->get(Settings::Key::TransferPort).toInt();
+            if(!listen(QHostAddress::Any, port)) {
+                emit q->error(tr("Unable to listen on port %1").arg(port));
+            }
+        }
     }
 }
 
@@ -57,9 +66,5 @@ TransferServer::~TransferServer()
 
 void TransferServer::start()
 {
-    // Indicate an error if the port is unavailable
-    quint16 port = Settings::instance()->get(Settings::Key::TransferPort).toInt();
-    if(!d->listen(QHostAddress::Any, port)) {
-        emit error(tr("Unable to listen on port %1").arg(port));
-    }
+    d->onSettingsChanged();
 }

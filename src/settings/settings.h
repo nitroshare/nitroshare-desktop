@@ -74,6 +74,8 @@ public:
         ApplicationSplash,
         /// Whether to overwrite incoming files
         BehaviorOverwrite,
+        /// Whether to accept file transfers
+        BehaviorReceive,
         /// Port for sending broadcast packets
         BroadcastPort,
         /// Time (in MS) between broadcast packets
