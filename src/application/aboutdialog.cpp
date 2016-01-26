@@ -75,7 +75,7 @@ AboutDialog::AboutDialog()
 
     QString websiteTxt("<html><head/><body><a href=\"%1\">%1</a></body></html>");
     lblWebsite->setText(websiteTxt.arg(PROJECT_WEBSITE));
-    lblCopyright->setText(QString("Copyright (c) 2015 - %1").arg(PROJECT_AUTHOR));
+    lblCopyright->setText(QString("Copyright (c) 2016 - %1").arg(PROJECT_AUTHOR));
 
     textBrowser->hide();
 }
