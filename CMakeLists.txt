@@ -30,7 +30,7 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     find_package(PkgConfig)
     if(PKG_CONFIG_FOUND)
         pkg_check_modules(APPINDICATOR gtk+-2.0 appindicator-0.1 libnotify)
-        pkg_check_modules(UNITY REQUIRED unity)
+        pkg_check_modules(UNITY unity)
     endif()
 endif()
 
