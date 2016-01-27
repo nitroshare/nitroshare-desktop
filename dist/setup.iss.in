@@ -1,103 +1,73 @@
 ; This file is used to build setup.iss which is then fed to the Inno Setup compiler
-; The variables used below come from the qmake project files
+; The variables used below come from the CMakeLists.txt
 
 [Setup]
 AppId              = {{174A4547-917E-4BAF-9F25-FCE545CCD487}
-AppName            = \"$${PROJECT_TITLE}\"
-AppVersion         = \"$${PROJECT_VERSION}\"
-AppPublisher       = \"$${PROJECT_AUTHOR}\"
-DefaultDirName     = \"{pf}\\$${PROJECT_TITLE}\"
-DefaultGroupName   = \"$${PROJECT_TITLE}\"
-LicenseFile        = ..\\LICENSE.txt
+AppName            = "${PROJECT_NAME}"
+AppVersion         = "${PROJECT_VERSION}"
+AppPublisher       = "${PROJECT_AUTHOR}"
+DefaultDirName     = "{pf}\${PROJECT_NAME}"
+DefaultGroupName   = "${PROJECT_NAME}"
+LicenseFile        = "${LICENSE_FILE}"
 OutputDir          = .
-OutputBaseFilename = \"$${INSTALLER_NAME}\"
+OutputBaseFilename = "${PROJECT_NAME}-${PROJECT_VERSION}"
 Compression        = lzma
 SolidCompression   = yes
 
 ; Set two additional directives if we are building a 64-bit installer
-!!IF equals(ARCH, 64)
-ArchitecturesAllowed            = x64
+ArchitecturesAllowed            = ${ARCHITECTURE}
 ArchitecturesInstallIn64BitMode = x64
-!!ENDIF
-
-; Check to see if the Visual C++ runtime is being included
-#define VCRFilename(str Architecture) \\
-    \"$$absolute_path($${DESTDIR})\\vcredist_\" + Architecture + \".exe\"
-#if FileExists(VCRFilename(\"x86\"))
-#define VCRArch \"x86\"
-#elif FileExists(VCRFilename(\"x64\"))
-#define VCRArch \"x64\"
-#endif
 
 [Languages]
-Name: \"english\"; MessagesFile: \"compiler:Default.isl\"
+Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Tasks]
-Name: \"desktopicon\"; Description: \"{cm:CreateDesktopIcon}\"; GroupDescription: \"{cm:AdditionalIcons}\"; Flags: unchecked
+Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: \"$$absolute_path($${DESTDIR})\\*\"; DestDir: \"{app}\"; Excludes: \"\\vcredist_x??.exe\"; Flags: ignoreversion recursesubdirs createallsubdirs
-
-; Include the VC++ runtime in the installer
-#ifdef VCRArch
-Source: \"{#VCRFilename(VCRArch)}\"; DestDir: \"{tmp}\"; Flags: deleteafterinstall
-#endif
+Source: "{#TARGET_FILE}"; DestDir: "{app}"
+Source: "${LIBRARY_PATH}/*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
-Name: \"{group}\\$${PROJECT_TITLE}\"; Filename: \"{app}\\$${EXE_FILENAME}\"
-Name: \"{commondesktop}\\$${PROJECT_TITLE}\"; Filename: \"{app}\\$${EXE_FILENAME}\"; Tasks: desktopicon
+Name: "{group}\${PROJECT_NAME}"; Filename: "{app}\{#TARGET_FILE_NAME}"
+Name: "{commondesktop}\${PROJECT_NAME}"; Filename: "{app}\{#TARGET_FILE_NAME}"; Tasks: desktopicon
 
 [Run]
-Filename: \"{app}\\$${PROJECT_TITLE}\"; Description: \"{cm:LaunchProgram,{#StringChange(\"$${PROJECT_TITLE}\", \'&\', \'&&\')}}\"; Flags: nowait postinstall skipifsilent
-
-; Install the VC++ runtime (silently)
-#ifdef VCRArch
-Filename: \"{tmp}\\vcredist_{#VCRArch}.exe\"; Parameters: \"/q\";
-#endif
+Filename: "{app}\{#TARGET_FILE_NAME}"; Description: "{cm:LaunchProgram,{#StringChange("${PROJECT_NAME}", '&', '&&')}}"; Flags: nowait postinstall skipifsilent
 
 [Code]
 
 // The code below is adapted from
 // http://www.vincenzo.net/isxkb/index.php?title=Adding_a_rule_to_the_Windows_firewall
 
-procedure AddFirewallException(AppName, FileName: String);
+procedure CurStepChanged(CurStep: TSetupStep);
 var
   FirewallManager: Variant;
   FirewallProfile: Variant;
   FirewallObject: Variant;
 begin
-  try
-    FirewallManager := CreateOleObject(\'HNetCfg.FwMgr\');
-    FirewallProfile := FirewallManager.LocalPolicy.CurrentProfile;
-    FirewallObject := CreateOleObject(\'HNetCfg.FwAuthorizedApplication\');
-    FirewallObject.Name := AppName;
-    FirewallObject.ProcessImageFileName := FileName;
-    FirewallProfile.AuthorizedApplications.Add(FirewallObject);
-  except
-  end;
+  if CurStep = ssPostInstall then
+    try
+      FirewallManager := CreateOleObject('HNetCfg.FwMgr');
+      FirewallProfile := FirewallManager.LocalPolicy.CurrentProfile;
+      FirewallObject := CreateOleObject('HNetCfg.FwAuthorizedApplication');
+      FirewallObject.Name := '${PROJECT_NAME}';
+      FirewallObject.ProcessImageFileName := ExpandConstant('{app}\{#TARGET_FILE_NAME}');
+      FirewallProfile.AuthorizedApplications.Add(FirewallObject);
+    except
+    end;
 end;
 
-procedure RemoveFirewallException(FileName: String);
+procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
 var
   FirewallManager: Variant;
   FirewallProfile: Variant;
 begin
-  try
-    FirewallManager := CreateOleObject(\'HNetCfg.FwMgr\');
-    FirewallProfile := FirewallManager.LocalPolicy.CurrentProfile;
-    FireWallProfile.AuthorizedApplications.Remove(FileName);
-  except
-  end;
-end;
-
-procedure CurStepChanged(CurStep: TSetupStep);
-begin
-  if CurStep = ssPostInstall then
-    AddFirewallException(\'$${PROJECT_TITLE}\', ExpandConstant(\'{app}\') + \'\\$${EXE_FILENAME}\');
-end;
-
-procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
-begin
   if CurUninstallStep = usPostUninstall then
-    RemoveFirewallException(ExpandConstant(\'{app}\') + \'\\$${EXE_FILENAME}\');
+    try
+      FirewallManager := CreateOleObject('HNetCfg.FwMgr');
+      FirewallProfile := FirewallManager.LocalPolicy.CurrentProfile;
+      FireWallProfile.AuthorizedApplications.Remove(ExpandConstant('{app}\{#TARGET_FILE_NAME}'));
+    except
+    end;
 end;
