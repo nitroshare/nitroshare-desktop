@@ -32,16 +32,20 @@ find_program(WINDEPLOYQT_EXECUTABLE windeployqt HINTS "${_qt_bin_dir}")
 find_program(MACDEPLOYQT_EXECUTABLE macdeployqt HINTS "${_qt_bin_dir}")
 
 function(windeployqt target)
-    set(script "${CMAKE_CURRENT_BINARY_DIR}/install_${target}.cmake")
+    set(script "${CMAKE_CURRENT_BINARY_DIR}/windeployqt_${target}.cmake")
     file(
         GENERATE OUTPUT "${script}"
-        CONTENT "execute_process(
-            COMMAND \"\${CMAKE_COMMAND}\" -E env PATH=\"${_qt_bin_dir}\"
-                \"${WINDEPLOYQT_EXECUTABLE}\"
-                    --no-compiler-runtime
-                    --dir \"${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}\"
-                    \"$<TARGET_FILE:${target}>\"
-        )"
+        CONTENT "
+message(STATUS \"Deploying Qt for ${target}...\")
+execute_process(
+    COMMAND \"\${CMAKE_COMMAND}\" -E env PATH=\"${_qt_bin_dir}\"
+        \"${WINDEPLOYQT_EXECUTABLE}\"
+            --verbose 0
+            --no-compiler-runtime
+            --dir \"${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}\"
+            \"$<TARGET_FILE:${target}>\"
+)
+        "
     )
     install(SCRIPT "${script}")
 endfunction()
