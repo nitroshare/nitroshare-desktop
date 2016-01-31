@@ -32,9 +32,10 @@
 const QString Credits =
     "<html><head><meta name='qrichtext' content='1'/></head><body>"
     "<table><tr><td>Created by:</td>"
-    "<td><a href='mailto:nathan@quickmediasolutions.com'>Nathan Osman</a></td></tr>"
-    "<tr><td></td><td><a href='mailto:daniel.samrocha@gmail.com'>Daniel San</a>"
-    "</td></tr></table></body></html>";
+    "<td><a href='quickmediasolutions.com'>Nathan Osman</a></td></tr>"
+    "<tr><td></td><td><a href='matthewjumpdesign.com'>Matthew Jump</a></td></tr>"
+    "<tr><td></td><td><a href='mailto:daniel.samrocha@gmail.com'>Daniel San</a></td></tr>"
+    "</table></body></html>";
 
 const QString License =
     "The MIT License (MIT)\n\n"
