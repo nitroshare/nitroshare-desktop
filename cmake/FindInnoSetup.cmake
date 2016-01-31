@@ -25,13 +25,11 @@ include(FindPackageHandleStandardArgs)
 # Find the Inno Setup CLI compiler
 find_program(INNOSETUP_EXECUTABLE
     NAMES iscc
-    PATHS
-        "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Inno Setup 5_is1;InstallLocation]"
+    PATHS "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Inno Setup 5_is1;InstallLocation]"
 )
 
 # Process the arguments passed to find_package
-find_package_handle_standard_args(
-    InnoSetup
+find_package_handle_standard_args(InnoSetup
     REQUIRED_VARS INNOSETUP_EXECUTABLE
 )
 

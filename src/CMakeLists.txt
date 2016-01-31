@@ -24,21 +24,21 @@ set(SRC
     main.cpp
 )
 
-if(APPINDICATOR_FOUND)
-    set(SRC ${SRC}
-        icon/indicatoricon.cpp
-    )
-endif()
-
 if(WIN32)
     set(SRC ${SRC} "data/resource.rc")
 endif()
 
 if(APPLE)
+    set(SRC ${SRC} "data/icon/nitroshare.icns")
     set_source_files_properties("data/icon/nitroshare.icns" PROPERTIES
         MACOSX_PACKAGE_LOCATION Resources
     )
-    set(SRC ${SRC} "data/icon/nitroshare.icns")
+endif()
+
+if(APPINDICATOR_FOUND)
+    set(SRC ${SRC}
+        icon/indicatoricon.cpp
+    )
 endif()
 
 qt5_wrap_ui(UI
@@ -55,9 +55,12 @@ qt5_add_resources(QRC
 
 add_executable(nitroshare WIN32 MACOSX_BUNDLE ${SRC} ${UI} ${QRC})
 
-# Since Qt and GTK+ both define the symbol "signals", it is necessary to
-# ensure that it is not defined by Qt.
-add_definitions(-DQT_NO_SIGNALS_SLOTS_KEYWORDS)
+target_compile_features(nitroshare PRIVATE
+    cxx_lambdas
+    cxx_nullptr
+    cxx_strong_enums
+    cxx_uniform_initialization
+)
 
 qt5_use_modules(nitroshare Widgets Network Svg)
 if(Qt5WinExtras_FOUND)
@@ -66,13 +69,6 @@ endif()
 if(Qt5MacExtras_FOUND)
     qt5_use_modules(nitroshare MacExtras)
 endif()
-
-target_compile_features(nitroshare PRIVATE
-    cxx_lambdas
-    cxx_nullptr
-    cxx_strong_enums
-    cxx_uniform_initialization
-)
 
 if(APPINDICATOR_FOUND)
     target_include_directories(nitroshare PRIVATE ${APPINDICATOR_INCLUDE_DIRS})
@@ -84,6 +80,30 @@ if(UNITY_FOUND)
     target_link_libraries(nitroshare ${UNITY_LIBRARIES})
 endif()
 
+# If windeployqt is available, use it immediately after the build completes to
+# ensure that the dependencies are available.
+# If Inno Setup is available, provide a target for building an EXE installer.
+if(WIN32)
+    include(DeployQt)
+    if(WINDEPLOYQT_EXECUTABLE)
+        windeployqt(nitroshare)
+    endif()
+    find_package(InnoSetup)
+    if(INNOSETUP_EXECUTABLE)
+        configure_file(setup.iss.in "${CMAKE_CURRENT_BINARY_DIR}/setup.iss")
+        add_custom_target(exe
+            "${INNOSETUP_EXECUTABLE}"
+                /Q
+                /DTARGET_FILE_NAME="$<TARGET_FILE_NAME:nitroshare>"
+                "${CMAKE_CURRENT_BINARY_DIR}/setup.iss"
+            DEPENDS nitroshare
+            COMMENT "Building installer..."
+        )
+    endif()
+endif()
+
+# If macdeployqt is available, use it immediately after the build completes to
+# copy the Qt frameworks into the application bundle.
 if(APPLE)
     set_target_properties(nitroshare PROPERTIES
         MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/Info.plist.in"
@@ -91,17 +111,10 @@ if(APPLE)
         MACOSX_BUNDLE_GUI_IDENTIFIER "com.NathanOsman.NitroShare"
         MACOSX_BUNDLE_BUNDLE_NAME "NitroShare"
     )
-
-    # Clever hack to find the path to macdeployqt
-    get_target_property(_qmake_executable Qt5::qmake IMPORTED_LOCATION)
-    get_filename_component(_qt_bin_dir "${_qmake_executable}" DIRECTORY)
-    find_program(_macdeployqt macdeployqt HINTS "${_qt_bin_dir}")
-
-    # Run macdeployqt after building
-    add_custom_command(TARGET nitroshare POST_BUILD
-        COMMAND ${_macdeployqt} "$<TARGET_FILE_DIR:nitroshare>/../.." -always-overwrite
-        COMMENT "Running macdeployqt..."
-    )
+    include(DeployQt)
+    if(MACDEPLOYQT_EXECUTABLE)
+        macdeployqt(nitroshare)
+    endif()
 endif()
 
 install(TARGETS nitroshare

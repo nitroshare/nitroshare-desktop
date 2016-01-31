@@ -20,8 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-include(GNUInstallDirs)
-
 find_package(Qt5Core REQUIRED)
 
 # Retrieve the absolute path to qmake and then use that path to find
@@ -31,23 +29,40 @@ get_filename_component(_qt_bin_dir "${_qmake_executable}" DIRECTORY)
 find_program(WINDEPLOYQT_EXECUTABLE windeployqt HINTS "${_qt_bin_dir}")
 find_program(MACDEPLOYQT_EXECUTABLE macdeployqt HINTS "${_qt_bin_dir}")
 
+# Add commands that copy the required Qt files to the same directory as the
+# target after being built, including the system libraries
 function(windeployqt target)
-    set(script "${CMAKE_CURRENT_BINARY_DIR}/windeployqt_${target}.cmake")
-    file(
-        GENERATE OUTPUT "${script}"
-        CONTENT "
-message(STATUS \"Deploying Qt for ${target}...\")
-execute_process(
-    COMMAND \"\${CMAKE_COMMAND}\" -E env PATH=\"${_qt_bin_dir}\"
-        \"${WINDEPLOYQT_EXECUTABLE}\"
-            --verbose 0
-            --no-compiler-runtime
-            --dir \"${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}\"
-            \"$<TARGET_FILE:${target}>\"
-)
-        "
+    add_custom_command(TARGET ${target} POST_BUILD
+        COMMAND "${CMAKE_COMMAND}" -E
+            env PATH="${_qt_bin_dir}" "${WINDEPLOYQT_EXECUTABLE}"
+                --verbose 0
+                --no-compiler-runtime
+                "$<TARGET_FILE:${target}>"
+        COMMENT "Deploying Qt..."
     )
-    install(SCRIPT "${script}")
+
+    # windeployqt doesn't work correctly with the system runtime libraries,
+    # so we fall back to one of CMake's own modules for copying them over
+    include(InstallRequiredSystemLibraries)
+    foreach(lib ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS})
+        get_filename_component(filename "${lib}" NAME)
+        add_custom_command(TARGET ${target} POST_BUILD
+            COMMAND "${CMAKE_COMMAND}" -E
+                copy_if_different "${lib}" "$<TARGET_FILE_DIR:${target}>"
+            COMMENT "Copying ${filename}..."
+        )
+    endforeach()
+endfunction()
+
+# Add commands that copy the required Qt files to the application bundle
+# represented by the target.
+function(macdeployqt target)
+    add_custom_command(TARGET ${target} POST_BUILD
+        COMMAND "${MACDEPLOYQT_EXECUTABLE}"
+            "$<TARGET_FILE_DIR:${target}>/../.."
+            -always-overwrite
+        COMMENT "Deploying Qt..."
+    )
 endfunction()
 
 mark_as_advanced(WINDEPLOYQT_EXECUTABLE MACDEPLOYQT_EXECUTABLE)
