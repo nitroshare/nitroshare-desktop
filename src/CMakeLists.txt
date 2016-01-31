@@ -62,12 +62,25 @@ target_compile_features(nitroshare PRIVATE
     cxx_uniform_initialization
 )
 
-set_target_properties(nitroshare PROPERTIES
-    MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/Info.plist.in"
-    MACOSX_BUNDLE_ICON_FILE "nitroshare.icns"
-    MACOSX_BUNDLE_GUI_IDENTIFIER "com.NathanOsman.NitroShare"
-    MACOSX_BUNDLE_BUNDLE_NAME "NitroShare"
-)
+# By default, Visual C++ produces PE files with "minimum OS Required" set to
+# 6.0 (Windows Vista). A special linker flag is needed for XP support.
+if(WIN32 AND MSVC)
+    if(${CMAKE_SIZEOF_VOID_P} EQUAL 8)
+        set_target_properties(nitroshare PROPERTIES LINK_FLAGS "/SUBSYSTEM:WINDOWS,5.02")
+    else()
+        set_target_properties(nitroshare PROPERTIES LINK_FLAGS "/SUBSYSTEM:WINDOWS,5.01")
+    endif()
+endif()
+
+# In order to support Retina, a special tag is required in Info.plist.
+if(APPLE)
+    set_target_properties(nitroshare PROPERTIES
+        MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/Info.plist.in"
+        MACOSX_BUNDLE_ICON_FILE "nitroshare.icns"
+        MACOSX_BUNDLE_GUI_IDENTIFIER "com.NathanOsman.NitroShare"
+        MACOSX_BUNDLE_BUNDLE_NAME "NitroShare"
+    )
+endif()
 
 qt5_use_modules(nitroshare Widgets Network Svg)
 if(Qt5WinExtras_FOUND)

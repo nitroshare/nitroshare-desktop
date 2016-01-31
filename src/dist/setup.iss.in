@@ -37,10 +37,11 @@ Source: "${CMAKE_BINARY_DIR}\out\*"; DestDir: "{app}"; Flags: ignoreversion recu
 
 [Icons]
 Name: "{group}\${PROJECT_NAME}"; Filename: "{app}\{#TARGET_FILE_NAME}"
+Name: "{group}\{cm:UninstallProgram,${PROJECT_NAME}}"; Filename: "{uninstallexe}"
 Name: "{commondesktop}\${PROJECT_NAME}"; Filename: "{app}\{#TARGET_FILE_NAME}"; Tasks: desktopicon
 
 [Run]
-Filename: "{app}\{#TARGET_FILE_NAME}"; Description: "{cm:LaunchProgram,{#StringChange("${PROJECT_NAME}", '&', '&&')}}"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\{#TARGET_FILE_NAME}"; Description: "{cm:LaunchProgram,${PROJECT_NAME}}"; Flags: nowait postinstall skipifsilent
 
 [Code]
 
