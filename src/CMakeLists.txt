@@ -136,6 +136,7 @@ if(APPLE)
             -fs HFS+
             -size 30m
             "${dmg}"
+        DEPENDS nitroshare
         COMMENT "Building disk image..."
     )
 endif()
