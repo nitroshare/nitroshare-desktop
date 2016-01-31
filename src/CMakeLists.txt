@@ -126,7 +126,7 @@ if(APPLE)
         macdeployqt(nitroshare)
     endif()
     set(sym "${CMAKE_BINARY_DIR}/out/Applications")
-    set(dmg "${CMAKE_CURRENT_BINARY_DIR}/nitroshare-${PROJECT_VERSION}-osx.dmg")
+    set(dmg "${CMAKE_BINARY_DIR}/nitroshare-${PROJECT_VERSION}-osx.dmg")
     add_custom_target(dmg
         COMMAND rm -f "${sym}" "${dmg}"
         COMMAND ln -s /Applications "${sym}"
