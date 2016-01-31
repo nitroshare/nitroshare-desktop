@@ -16,7 +16,7 @@ DefaultDirName     = "{pf}\${PROJECT_NAME}"
 DefaultGroupName   = "${PROJECT_NAME}"
 LicenseFile        = "${CMAKE_CURRENT_SOURCE_DIR}\..\LICENSE.txt"
 OutputDir          = .
-OutputBaseFilename = "${PROJECT_NAME}-${PROJECT_VERSION}-windows-{#ARCH}"
+OutputBaseFilename = "nitroshare-${PROJECT_VERSION}-windows-{#ARCH}"
 Compression        = lzma
 SolidCompression   = yes
 
