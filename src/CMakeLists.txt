@@ -62,6 +62,13 @@ target_compile_features(nitroshare PRIVATE
     cxx_uniform_initialization
 )
 
+set_target_properties(nitroshare PROPERTIES
+    MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/Info.plist.in"
+    MACOSX_BUNDLE_ICON_FILE "nitroshare.icns"
+    MACOSX_BUNDLE_GUI_IDENTIFIER "com.NathanOsman.NitroShare"
+    MACOSX_BUNDLE_BUNDLE_NAME "NitroShare"
+)
+
 qt5_use_modules(nitroshare Widgets Network Svg)
 if(Qt5WinExtras_FOUND)
     qt5_use_modules(nitroshare WinExtras)
@@ -80,6 +87,13 @@ if(UNITY_FOUND)
     target_link_libraries(nitroshare ${UNITY_LIBRARIES})
 endif()
 
+include(GNUInstallDirs)
+
+install(TARGETS nitroshare
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    BUNDLE DESTINATION .
+)
+
 # If windeployqt is available, use it immediately after the build completes to
 # ensure that the dependencies are available.
 # If Inno Setup is available, provide a target for building an EXE installer.
@@ -90,9 +104,9 @@ if(WIN32)
     endif()
     find_package(InnoSetup)
     if(INNOSETUP_EXECUTABLE)
-        configure_file(setup.iss.in "${CMAKE_CURRENT_BINARY_DIR}/setup.iss")
+        configure_file(dist/setup.iss.in "${CMAKE_CURRENT_BINARY_DIR}/setup.iss")
         add_custom_target(exe
-            "${INNOSETUP_EXECUTABLE}"
+            COMMAND "${INNOSETUP_EXECUTABLE}"
                 /Q
                 /DTARGET_FILE_NAME="$<TARGET_FILE_NAME:nitroshare>"
                 "${CMAKE_CURRENT_BINARY_DIR}/setup.iss"
@@ -104,20 +118,37 @@ endif()
 
 # If macdeployqt is available, use it immediately after the build completes to
 # copy the Qt frameworks into the application bundle.
+# Create a target for building a DMG that contains the application bundle and a
+# symlink to the /Applications folder.
 if(APPLE)
-    set_target_properties(nitroshare PROPERTIES
-        MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/Info.plist.in"
-        MACOSX_BUNDLE_ICON_FILE "nitroshare.icns"
-        MACOSX_BUNDLE_GUI_IDENTIFIER "com.NathanOsman.NitroShare"
-        MACOSX_BUNDLE_BUNDLE_NAME "NitroShare"
-    )
     include(DeployQt)
     if(MACDEPLOYQT_EXECUTABLE)
         macdeployqt(nitroshare)
     endif()
+    set(sym "${CMAKE_BINARY_DIR}/out/Applications")
+    set(dmg "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-${PROJECT_VERSION}-osx.dmg")
+    add_custom_target(dmg
+        COMMAND rm -f "${sym}" "${dmg}"
+        COMMAND ln -s /Applications "${sym}"
+        COMMAND hdiutil create
+            -srcfolder "${CMAKE_BINARY_DIR}/out"
+            -volname "${PROJECT_NAME}"
+            -fs HFS+
+            -size 30m
+            "${dmg}"
+        COMMENT "Building disk image..."
+    )
 endif()
 
-install(TARGETS nitroshare
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-    BUNDLE DESTINATION .
-)
+# On Linux, include the icons, manpage, and .desktop file when installing.
+if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+    install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/dist/icons"
+        DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}"
+    )
+    install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/dist/nitroshare.1"
+        DESTINATION "${CMAKE_INSTALL_MANDIR}/man1"
+    )
+    install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/dist/nitroshare.desktop"
+        DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/applications"
+    )
+endif()
