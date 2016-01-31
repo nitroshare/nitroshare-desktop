@@ -8,17 +8,19 @@
 #endif
 
 [Setup]
-AppId              = {{174A4547-917E-4BAF-9F25-FCE545CCD487}
-AppName            = "${PROJECT_NAME}"
-AppVersion         = "${PROJECT_VERSION}"
-AppPublisher       = "${PROJECT_AUTHOR}"
-DefaultDirName     = "{pf}\${PROJECT_NAME}"
-DefaultGroupName   = "${PROJECT_NAME}"
-LicenseFile        = "${CMAKE_CURRENT_SOURCE_DIR}\..\LICENSE.txt"
-OutputDir          = "${CMAKE_BINARY_DIR}"
-OutputBaseFilename = "nitroshare-${PROJECT_VERSION}-windows-{#ARCH}"
-Compression        = lzma
-SolidCompression   = yes
+AppId                = {{174A4547-917E-4BAF-9F25-FCE545CCD487}
+AppName              = "${PROJECT_NAME}"
+AppVersion           = "${PROJECT_VERSION}"
+AppPublisher         = "${PROJECT_AUTHOR}"
+DefaultDirName       = "{pf}\${PROJECT_NAME}"
+DefaultGroupName     = "${PROJECT_NAME}"
+LicenseFile          = "${CMAKE_CURRENT_SOURCE_DIR}\..\LICENSE.txt"
+OutputDir            = "${CMAKE_BINARY_DIR}"
+OutputBaseFilename   = "nitroshare-${PROJECT_VERSION}-windows-{#ARCH}"
+Compression          = lzma
+SolidCompression     = yes
+WizardImageFile      = "${CMAKE_CURRENT_SOURCE_DIR}\dist\wizard-image.bmp"
+WizardSmallImageFile = "${CMAKE_CURRENT_SOURCE_DIR}\dist\wizard-small-image.bmp"
 
 ; Set two additional directives if we are building a 64-bit installer
 #if ARCH == "x86_64"
