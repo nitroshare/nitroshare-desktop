@@ -52,10 +52,6 @@ int main(int argc, char **argv)
         Settings::instance()->set(Settings::Key::ApplicationSplash, true);
     }
 
-    // Create the tray icon that runs the application
-    Application nitroshare;
-    Q_UNUSED(nitroshare);
-
 #ifdef APPINDICATOR_FOUND
     // If the splash had not been seen and the user is running Gnome,
     // warn them that they need a special extension installed
@@ -64,11 +60,15 @@ int main(int argc, char **argv)
         QMessageBox::about(nullptr, QObject::tr("Warning"), QObject::tr(
                 "Some versions of Gnome do not support AppIndicators. This prevents "
                 "NitroShare from displaying an indicator in the notification area. "
-                "If you cannot see the icon there, please install this extension:"
+                "Please ensure you have this extension installed before continuing:"
                 "<br><br><a href='%1'>%1</a>"
         ).arg("https://extensions.gnome.org/extension/615/appindicator-support/"));
     }
 #endif
+
+    // Create the tray icon that runs the application
+    Application nitroshare;
+    Q_UNUSED(nitroshare);
 
     return app.exec();
 }
