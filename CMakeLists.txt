@@ -21,8 +21,6 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/out")
 
 find_package(Qt5Network 5.1 REQUIRED)
 find_package(Qt5Widgets 5.1 REQUIRED)
-find_package(Qt5Svg 5.1 REQUIRED)
-
 
 # Qt5WinExtras is an optional dependency that allows the application to
 # display transfer progress in the Windows taskbar.
