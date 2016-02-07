@@ -129,3 +129,45 @@ Run the following command to build a Windows EXE installer:
 Run the following command to build a compressed disk image:
 
     make dmg
+
+### Protocol Description
+
+NitroShare uses a custom protocol running atop a TCP connection to transfer files. Communication consists of an exchange of "packets" which have the following format:
+
+    PacketSize [32-bit little-endian signed integer]
+    PacketType [8-bit signed integer]
+    Data [n-byte stream where "n" is equal to PacketSize]
+
+There are four types of packets:
+
+* **Success (0)** - sent by the receiver to indicate successful transfer. `PacketSize` is always 0.
+* **Error (1)** - sent by either peer to indicate an error has occurred. `Data` contains a UTF-8 encoded error message.
+* **Json (2)** - sent by the sender. `Data` contains a JSON object.
+* **Binary (3)** - sent by the sender. `Data` contains raw binary data.
+
+A transfer consists of the following sequence of steps:
+
+1. Sender opens a TCP connection to the receiver.
+2. Sender begins by sending the transfer header - a JSON packet with the following information (note that all fields are strings):
+
+        {
+            "name": "",  // name of the sender
+            "size": "",  // total size of all files being transferred
+            "count": ""  // total number of files being transferred
+        }
+
+3. Sender begins sending the files and directories one-by-one. Each item begins with an item header - a JSON packet with the following information:
+
+        {
+            "name": "",           // filename (see below)
+            "directory": false,   // whether the item is a directory
+            "created": "",        // creation date of the item
+            "last_modified": "",  // last modification date of the item
+            "last_read": ""       // last access time of the item
+        }
+
+   The `name` field contains the relative path and filename of the item. The receiver determines the absolute path by combining this value with the directory the user has chosen for receiving files.
+
+4. Once each item header is sent, the file's contents are sent in a sequence of binary packets. The default size for each packet is 64kb.
+
+5. The receiver knows how many items to expect from the `count` field in the transfer header. Once all of the items have been received, the receiver sends a success packet to the sender which then closes the connection.
