@@ -22,6 +22,7 @@
  * IN THE SOFTWARE.
  **/
 
+#include <QDir>
 #include <QHostInfo>
 #include <QMap>
 #include <QStandardPaths>
@@ -55,7 +56,7 @@ const QMap<Settings::Key, KeyInfo> KeyMap = {
     DEFINE_SETTING(DeviceName, { return QHostInfo::localHostName(); }),
     DEFINE_SETTING(TransferPort, { return 40818; }),
     DEFINE_SETTING(TransferBuffer, { return 64 * Settings::Constant::KiB; }),
-    DEFINE_SETTING(TransferDirectory, { return QStandardPaths::writableLocation(QStandardPaths::DownloadLocation); }),
+    DEFINE_SETTING(TransferDirectory, { return QDir::cleanPath(QStandardPaths::writableLocation(QStandardPaths::DownloadLocation) + QDir::separator() + "NitroShare"); }),
 };
 
 SettingsPrivate::SettingsPrivate(Settings *settings)
