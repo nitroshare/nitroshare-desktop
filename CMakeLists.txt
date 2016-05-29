@@ -34,6 +34,9 @@ if(APPLE)
     find_package(Qt5MacExtras)
 endif()
 
+# QHttpEngine is required in order to build the local HTTP API
+find_package(QHttpEngine)
+
 # libappindicator is an optional dependency that enables the application to
 # determine at runtime if the current desktop environment supports using an
 # application indicator instead of a QTrayIcon and use one instead

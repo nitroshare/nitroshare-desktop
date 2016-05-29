@@ -35,6 +35,12 @@ if(APPLE)
     )
 endif()
 
+if(QHttpEngine_FOUND)
+    set(SRC ${SRC}
+        api/apihandler.cpp
+    )
+endif()
+
 if(APPINDICATOR_FOUND)
     set(SRC ${SRC}
         icon/indicatoricon.cpp
