@@ -140,6 +140,21 @@ void Application::notifyTransfersChanged(const QModelIndex &topLeft, const QMode
     }
 }
 
+void Application::sendBundle(const Bundle *bundle)
+{
+    QModelIndex index = DeviceDialog::getDevice(&mDeviceModel);
+    if(index.isValid()) {
+
+        // Obtain the information needed to connect to the device
+        QString deviceName = index.data(DeviceModel::NameRole).value<QString>();
+        QHostAddress address = index.data(DeviceModel::AddressRole).value<QHostAddress>();
+        quint16 port = index.data(DeviceModel::PortRole).value<quint16>();
+
+        mTransferModel.addSender(deviceName, address, port, bundle);
+        mTransferWindow.show();
+    }
+}
+
 void Application::sendFiles()
 {
     QStringList filenames(QFileDialog::getOpenFileNames(nullptr, tr("Select Files")));
@@ -180,19 +195,4 @@ void Application::onOpenAbout()
 void Application::onOpenAboutQt()
 {
     QMessageBox::aboutQt(nullptr);
-}
-
-void Application::sendBundle(const Bundle *bundle)
-{
-    QModelIndex index = DeviceDialog::getDevice(&mDeviceModel);
-    if(index.isValid()) {
-
-        // Obtain the information needed to connect to the device
-        QString deviceName = index.data(DeviceModel::NameRole).value<QString>();
-        QHostAddress address = index.data(DeviceModel::AddressRole).value<QHostAddress>();
-        quint16 port = index.data(DeviceModel::PortRole).value<quint16>();
-
-        mTransferModel.addSender(deviceName, address, port, bundle);
-        mTransferWindow.show();
-    }
 }
