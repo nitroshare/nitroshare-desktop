@@ -22,4 +22,43 @@
  * IN THE SOFTWARE.
  **/
 
+#include <QFileInfo>
+#include <QStringList>
+
 #include "apihandler.h"
+
+ApiHandler::ApiHandler(const QString &token)
+    : mToken(token)
+{
+}
+
+QVariantMap ApiHandler::sendItems(const QVariantMap &params)
+{
+    QStringList items = params.value("items").toStringList();
+    Bundle *bundle = new Bundle();
+
+    // Add the items to the bundle
+    foreach(QString item, items) {
+        QFileInfo info(item);
+        if (info.isDir()) {
+            bundle->addDirectory(item);
+        } else if(info.isFile()) {
+            bundle->addFile(item);
+        }
+    }
+
+    // Transfer the bundle
+    emit bundleCreated(bundle);
+}
+
+void ApiHandler::process(QHttpSocket *socket, const QString &path)
+{
+    // Ensure that the correct authentication token was provided
+    if (socket->headers().value("X-Auth-Token") != mToken) {
+        socket->writeError(QHttpSocket::Forbidden);
+        return;
+    }
+
+    // If authenticated, have QObjectHandler process the request
+    QObjectHandler::process(socket, path);
+}

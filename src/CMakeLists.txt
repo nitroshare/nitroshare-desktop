@@ -96,6 +96,10 @@ if(Qt5MacExtras_FOUND)
     qt5_use_modules(nitroshare MacExtras)
 endif()
 
+if(QHttpEngine_FOUND)
+    target_link_libraries(nitroshare QHttpEngine)
+endif()
+
 if(APPINDICATOR_FOUND)
     target_include_directories(nitroshare PRIVATE ${APPINDICATOR_INCLUDE_DIRS})
     target_link_libraries(nitroshare ${APPINDICATOR_LIBRARIES})

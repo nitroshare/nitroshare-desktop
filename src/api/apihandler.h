@@ -25,6 +25,35 @@
 #ifndef NS_APIHANDLER_H
 #define NS_APIHANDLER_H
 
-//...
+#include <QVariantMap>
+
+#include <QHttpEngine/QObjectHandler>
+#include <QHttpEngine/QHttpSocket>
+
+#include "../bundle/bundle.h"
+#include "../device/devicemodel.h"
+
+class ApiHandler : public QObjectHandler
+{
+    Q_OBJECT
+
+public:
+
+    ApiHandler(const QString &token);
+
+Q_SIGNALS:
+
+    void bundleCreated(const Bundle *bundle);
+
+public Q_SLOTS:
+
+    QVariantMap sendItems(const QVariantMap &params);
+
+private:
+
+    void process(QHttpSocket *socket, const QString &path);
+
+    const QString &mToken;
+};
 
 #endif // NS_APIHANDLER_H
