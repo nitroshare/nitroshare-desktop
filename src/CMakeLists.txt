@@ -38,6 +38,7 @@ endif()
 if(QHttpEngine_FOUND)
     set(SRC ${SRC}
         api/apihandler.cpp
+        api/apiserver.cpp
     )
 endif()
 
