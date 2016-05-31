@@ -54,6 +54,7 @@ Application::Application()
       mStartTime(QDateTime::currentMSecsSinceEpoch())
 {
 #ifdef QHttpEngine_FOUND
+    connect(&mApiServer, &ApiServer::error, this, &Application::notifyError);
     connect(&mApiServer, &ApiServer::bundleCreated, this, &Application::sendBundle);
 #endif
 
