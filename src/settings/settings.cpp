@@ -54,6 +54,7 @@ const QMap<Settings::Key, KeyInfo> KeyMap = {
     DEFINE_SETTING(BroadcastTimeout, { return 30 * Settings::Constant::Second; }),
     DEFINE_SETTING(DeviceUUID, { return QUuid::createUuid().toString(); }),
     DEFINE_SETTING(DeviceName, { return QHostInfo::localHostName(); }),
+    DEFINE_SETTING(LocalAPI, { return true; }),
     DEFINE_SETTING(TransferPort, { return 40818; }),
     DEFINE_SETTING(TransferBuffer, { return 64 * Settings::Constant::KiB; }),
     DEFINE_SETTING(TransferDirectory, { return QDir::cleanPath(QStandardPaths::writableLocation(QStandardPaths::DownloadLocation) + QDir::separator() + "NitroShare"); }),

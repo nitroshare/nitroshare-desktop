@@ -86,6 +86,8 @@ public:
         DeviceUUID,
         /// Descriptive name of the device
         DeviceName,
+        /// Whether to expose a local API
+        LocalAPI,
         /// Port for receiving transfers
         TransferPort,
         /// Size (in bytes) of the buffer used for transferring file data
