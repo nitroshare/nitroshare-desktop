@@ -31,7 +31,6 @@
 #include <QHttpEngine/QHttpSocket>
 
 #include "../bundle/bundle.h"
-#include "../device/devicemodel.h"
 
 class ApiHandler : public QObjectHandler
 {

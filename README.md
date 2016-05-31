@@ -114,7 +114,7 @@ The instructions below describe the steps necessary to create installers or pack
 
 #### Ubuntu
 
-Debian packaging for NitroShare can be found here:  
+Debian packaging for NitroShare can be found here:
 https://github.com/nitroshare/nitroshare-desktop-debian
 
 #### Windows
