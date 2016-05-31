@@ -34,7 +34,6 @@
 #include "../settings/settingsdialog.h"
 #include "application.h"
 #include "aboutdialog.h"
-#include "config.h"
 
 #ifdef APPINDICATOR_FOUND
 #include "../icon/indicatoricon.h"
@@ -54,6 +53,10 @@ Application::Application()
 #endif
       mStartTime(QDateTime::currentMSecsSinceEpoch())
 {
+#ifdef QHttpEngine_FOUND
+    connect(&mApiServer, &ApiServer::bundleCreated, this, &Application::sendBundle);
+#endif
+
     connect(&mDeviceModel, &DeviceModel::rowsInserted, this, &Application::notifyDevicesAdded);
     connect(&mDeviceModel, &DeviceModel::rowsAboutToBeRemoved, this, &Application::notifyDevicesRemoved);
     connect(&mTransferModel, &TransferModel::dataChanged, this, &Application::notifyTransfersChanged);
@@ -74,7 +77,12 @@ Application::Application()
     mIcon->addSeparator();
     mIcon->addAction(tr("Exit"), QApplication::instance(), SLOT(quit()));
 
-    // Start the transfer server
+    // Start the API server (if enabled) and the transfer server
+
+#ifdef QHttpEngine_FOUND
+    mApiServer.start();
+#endif
+
     mTransferServer.start();
 }
 

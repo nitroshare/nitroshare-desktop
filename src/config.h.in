@@ -43,6 +43,7 @@
 // Build options
 #cmakedefine Qt5WinExtras_FOUND
 #cmakedefine Qt5MacExtras_FOUND
+#cmakedefine QHttpEngine_FOUND
 #cmakedefine APPINDICATOR_FOUND
 #cmakedefine UNITY_FOUND
 

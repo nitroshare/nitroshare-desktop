@@ -25,6 +25,12 @@
 #ifndef NS_APPLICATION_H
 #define NS_APPLICATION_H
 
+#include "config.h"
+
+#ifdef QHttpEngine_FOUND
+#include "../api/apiserver.h"
+#endif
+
 #include "../bundle/bundle.h"
 #include "../device/devicemodel.h"
 #include "../icon/icon.h"
@@ -66,6 +72,10 @@ private Q_SLOTS:
     void onOpenAboutQt();
 
 private:
+
+#ifdef QHttpEngine_FOUND
+    ApiServer mApiServer;
+#endif
 
     DeviceModel mDeviceModel;
     TransferModel mTransferModel;
