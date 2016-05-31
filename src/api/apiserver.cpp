@@ -31,7 +31,8 @@
 #include "apiserver_p.h"
 
 ApiServerPrivate::ApiServerPrivate(ApiServer *apiServer)
-    : q(apiServer),
+    : QObject(apiServer),
+      q(apiServer),
       token(QUuid::createUuid().toString()),
       handler(token),
       server(&handler)
@@ -80,6 +81,7 @@ void ApiServerPrivate::start()
     }));
 
     localFile.write(QJsonDocument(object).toJson());
+    localFile.close();
 }
 
 ApiServer::ApiServer(QObject *parent)
