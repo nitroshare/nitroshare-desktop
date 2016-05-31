@@ -100,6 +100,13 @@
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_2">
           <item>
+           <widget class="QCheckBox" name="localApiCheckBox">
+            <property name="text">
+             <string>Allow local applications to interact with NitroShare</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <widget class="QCheckBox" name="receiveFilesCheckBox">
             <property name="text">
              <string>Receive files</string>
