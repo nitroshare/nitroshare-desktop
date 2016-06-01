@@ -49,6 +49,8 @@ QVariantMap ApiHandler::sendItems(const QVariantMap &params)
 
     // Transfer the bundle
     emit bundleCreated(bundle);
+
+    return QVariantMap();
 }
 
 void ApiHandler::process(QHttpSocket *socket, const QString &path)
