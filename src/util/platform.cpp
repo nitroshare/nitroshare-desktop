@@ -28,6 +28,20 @@
 
 #include "platform.h"
 
+#if defined(Q_OS_LINUX)
+#include <QApplication>
+#include <QDir>
+#include <QFile>
+
+const QString gAutoStartPath(QDir::homePath() + "/.config/autostart/nitroshare.desktop");
+const QString gDesktopFile(
+    "[Desktop Entry]\n"
+    "Version=1.0\n"
+    "Exec=%1\n"
+    "Terminal=false\n"
+);
+#endif
+
 Platform::OperatingSystem Platform::currentOperatingSystem()
 {
 #if defined(Q_OS_WIN32)
@@ -159,4 +173,47 @@ bool Platform::useIndicator()
 
     // For everything else, use QSystemTrayIcon
     return false;
+}
+
+bool Platform::autoStartEnabled()
+{
+#if defined(Q_OS_WIN32)
+    return false;
+#elif defined(Q_OS_MACX)
+    return false;
+#elif defined(Q_OS_LINUX)
+    return QFile::exists(gAutoStartPath);
+#else
+    return false;
+#endif
+}
+
+bool Platform::enableAutoStart()
+{
+#if defined(Q_OS_WIN32)
+    return false;
+#elif defined(Q_OS_MACX)
+    return false;
+#elif defined(Q_OS_LINUX)
+    QFile file(gAutoStartPath);
+    if (!file.open(QIODevice::WriteOnly)) {
+        return false;
+    }
+    return file.write(gDesktopFile.arg(QApplication::arguments().at(0)).toUtf8()) != -1;
+#else
+    return false;
+#endif
+}
+
+bool Platform::disableAutoStart()
+{
+#if defined(Q_OS_WIN32)
+    return false;
+#elif defined(Q_OS_MACX)
+    return false;
+#elif defined(Q_OS_LINUX)
+    return QFile::remove(gAutoStartPath);
+#else
+    return false;
+#endif
 }

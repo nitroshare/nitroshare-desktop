@@ -28,7 +28,7 @@
 #include <QString>
 
 /**
- * @brief Platform information methods
+ * @brief Platform methods
  *
  * Some of the application functionality depends on platform-specific code.
  * Rather than depending on #define statements throughout the source code,
@@ -137,6 +137,24 @@ public:
      * This method determines the current desktop environment during runtime.
      */
     static bool useIndicator();
+
+    /**
+     * @brief Determine if auto start is enabled
+     * @return true if auto start is enabled
+     */
+    static bool autoStartEnabled();
+
+    /**
+     * @brief Start NitroShare after login
+     * @return true if successful
+     */
+    static bool enableAutoStart();
+
+    /**
+     * @brief Stop NitroShare from launching after login
+     * @return true if successful
+     */
+    static bool disableAutoStart();
 };
 
 #endif // NS_PLATFORM_H
