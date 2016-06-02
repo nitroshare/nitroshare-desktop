@@ -52,6 +52,8 @@ private Q_SLOTS:
 private:
 
     void reload();
+
+    bool mAutoStart;
 };
 
 #endif // NS_SETTINGSDIALOG_H

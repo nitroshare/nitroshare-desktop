@@ -25,11 +25,13 @@
 #include <QFileDialog>
 #include <QMessageBox>
 
+#include "../util/platform.h"
 #include "config.h"
 #include "settings.h"
 #include "settingsdialog.h"
 
 SettingsDialog::SettingsDialog()
+    : mAutoStart(false)
 {
     setupUi(this);
 
@@ -57,6 +59,13 @@ void SettingsDialog::accept()
     settings->set(Settings::Key::BroadcastPort, broadcastPortSpinBox->value());
     settings->set(Settings::Key::BroadcastTimeout, broadcastTimeoutSpinBox->value() * Settings::Constant::Second);
     settings->set(Settings::Key::BroadcastInterval, broadcastIntervalSpinBox->value() * Settings::Constant::Second);
+
+    // Enable / disable auto start if changed
+    if (mAutoStart != autoStartCheckBox->isChecked()) {
+        if (!Platform::setAutoStart(autoStartCheckBox->isChecked())) {
+            QMessageBox::critical(nullptr, tr("Error"), tr("Cannot enable or disable auto-start."));
+        }
+    }
 
     settings->endSet();
     QDialog::accept();
@@ -90,10 +99,14 @@ void SettingsDialog::reload()
 {
     Settings *settings = Settings::instance();
 
+    // Retrieve auto start value
+    mAutoStart = Platform::autoStart();
+
     // General tab
     deviceNameEdit->setText(settings->get(Settings::Key::DeviceName).toString());
     transferDirectoryEdit->setText(settings->get(Settings::Key::TransferDirectory).toString());
     localApiCheckBox->setChecked(settings->get(Settings::Key::LocalAPI).toBool());
+    autoStartCheckBox->setChecked(mAutoStart);
     receiveFilesCheckBox->setChecked(settings->get(Settings::Key::BehaviorReceive).toBool());
     overwriteCheckBox->setChecked(settings->get(Settings::Key::BehaviorOverwrite).toBool());
 

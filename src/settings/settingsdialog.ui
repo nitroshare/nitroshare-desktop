@@ -107,6 +107,13 @@
            </widget>
           </item>
           <item>
+           <widget class="QCheckBox" name="autoStartCheckBox">
+            <property name="text">
+             <string>Auto start after login</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <widget class="QCheckBox" name="receiveFilesCheckBox">
             <property name="text">
              <string>Receive files</string>
