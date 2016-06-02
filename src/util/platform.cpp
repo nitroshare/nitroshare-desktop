@@ -37,6 +37,8 @@ const QString gAutoStartPath(QDir::homePath() + "/.config/autostart/nitroshare.d
 const QString gDesktopFile(
     "[Desktop Entry]\n"
     "Version=1.0\n"
+    "Name=NitroShare\n"
+    "Type=Application\n"
     "Exec=%1\n"
     "Terminal=false\n"
 );
