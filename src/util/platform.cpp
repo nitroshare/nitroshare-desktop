@@ -175,7 +175,7 @@ bool Platform::useIndicator()
     return false;
 }
 
-bool Platform::autoStartEnabled()
+bool Platform::autoStart()
 {
 #if defined(Q_OS_WIN32)
     return false;
@@ -188,31 +188,22 @@ bool Platform::autoStartEnabled()
 #endif
 }
 
-bool Platform::enableAutoStart()
+bool Platform::setAutoStart(bool enabled)
 {
 #if defined(Q_OS_WIN32)
     return false;
 #elif defined(Q_OS_MACX)
     return false;
 #elif defined(Q_OS_LINUX)
-    QFile file(gAutoStartPath);
-    if (!file.open(QIODevice::WriteOnly)) {
-        return false;
+    if (enabled) {
+        QFile file(gAutoStartPath);
+        if (!file.open(QIODevice::WriteOnly)) {
+            return false;
+        }
+        return file.write(gDesktopFile.arg(QApplication::arguments().at(0)).toUtf8()) != -1;
+    } else {
+        return QFile::remove(gAutoStartPath);
     }
-    return file.write(gDesktopFile.arg(QApplication::arguments().at(0)).toUtf8()) != -1;
-#else
-    return false;
-#endif
-}
-
-bool Platform::disableAutoStart()
-{
-#if defined(Q_OS_WIN32)
-    return false;
-#elif defined(Q_OS_MACX)
-    return false;
-#elif defined(Q_OS_LINUX)
-    return QFile::remove(gAutoStartPath);
 #else
     return false;
 #endif
