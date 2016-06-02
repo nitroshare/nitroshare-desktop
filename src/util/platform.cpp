@@ -26,13 +26,23 @@
 #include <QProcessEnvironment>
 #include <QStandardPaths>
 
-#include "platform.h"
+#if defined(Q_OS_WIN32)
+#include <QSettings>
+#endif
 
 #if defined(Q_OS_LINUX)
 #include <QApplication>
 #include <QDir>
 #include <QFile>
+#endif
 
+#include "platform.h"
+
+#if defined(Q_OS_WIN32)
+const QString gRegistryPath("HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run");
+#endif
+
+#if defined(Q_OS_LINUX)
 const QString gAutoStartPath(QDir::homePath() + "/.config/autostart/nitroshare.desktop");
 const QString gDesktopFile(
     "[Desktop Entry]\n"
@@ -180,7 +190,7 @@ bool Platform::useIndicator()
 bool Platform::autoStart()
 {
 #if defined(Q_OS_WIN32)
-    return false;
+    return QSettings(gRegistryPath, QSettings::NativeFormat).contains("NitroShare");
 #elif defined(Q_OS_MACX)
     return false;
 #elif defined(Q_OS_LINUX)
@@ -190,19 +200,27 @@ bool Platform::autoStart()
 #endif
 }
 
-bool Platform::setAutoStart(bool enabled)
+bool Platform::setAutoStart(bool enable)
 {
+    const QString execPath(QApplication::arguments().at(0));
+
 #if defined(Q_OS_WIN32)
-    return false;
+    QSettings settings(gRegistryPath, QSettings::NativeFormat);
+    if (enable) {
+        settings.setValue("NitroShare", execPath);
+    } else {
+        settings.remove("NitroShare");
+    }
+    return true;
 #elif defined(Q_OS_MACX)
     return false;
 #elif defined(Q_OS_LINUX)
-    if (enabled) {
+    if (enable) {
         QFile file(gAutoStartPath);
         if (!file.open(QIODevice::WriteOnly)) {
             return false;
         }
-        return file.write(gDesktopFile.arg(QApplication::arguments().at(0)).toUtf8()) != -1;
+        return file.write(gDesktopFile.arg(execPath).toUtf8()) != -1;
     } else {
         return QFile::remove(gAutoStartPath);
     }

@@ -146,10 +146,10 @@ public:
 
     /**
      * @brief Start NitroShare after login
-     * @param enabled true to enable auto start
+     * @param enable true to enable auto start
      * @return true if successful
      */
-    static bool setAutoStart(bool enabled);
+    static bool setAutoStart(bool enable);
 };
 
 #endif // NS_PLATFORM_H
