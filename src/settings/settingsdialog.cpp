@@ -31,7 +31,7 @@
 #include "settingsdialog.h"
 
 SettingsDialog::SettingsDialog()
-    : mAutoStart(false)
+    : mAutoStart(Platform::autoStart())
 {
     setupUi(this);
 
@@ -98,9 +98,6 @@ void SettingsDialog::onTransferDirectoryButtonClicked()
 void SettingsDialog::reload()
 {
     Settings *settings = Settings::instance();
-
-    // Retrieve auto start value
-    mAutoStart = Platform::autoStart();
 
     // General tab
     deviceNameEdit->setText(settings->get(Settings::Key::DeviceName).toString());
