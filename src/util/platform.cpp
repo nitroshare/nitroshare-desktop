@@ -22,6 +22,7 @@
  * IN THE SOFTWARE.
  **/
 
+#include <QApplication>
 #include <QObject>
 #include <QProcessEnvironment>
 #include <QStandardPaths>
@@ -31,7 +32,6 @@
 #endif
 
 #if defined(Q_OS_LINUX)
-#include <QApplication>
 #include <QDir>
 #include <QFile>
 #endif
