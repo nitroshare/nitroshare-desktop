@@ -89,7 +89,7 @@ if(APPLE)
     )
 endif()
 
-qt5_use_modules(nitroshare Widgets Network)
+qt5_use_modules(nitroshare Widgets Network Svg)
 if(Qt5WinExtras_FOUND)
     qt5_use_modules(nitroshare WinExtras)
 endif()
