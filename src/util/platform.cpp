@@ -55,7 +55,7 @@ const QString gAutoStartFile(
     "    <array>\n"
     "        <string>%1</string>\n"
     "    </array>\n"
-    "    <key>KeepAlive</key>\n"
+    "    <key>RunAtLoad</key>\n"
     "    <true/>\n"
     "</dict>\n"
     "</plist>\n"
