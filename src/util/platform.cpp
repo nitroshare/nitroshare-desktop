@@ -31,7 +31,7 @@
 #include <QSettings>
 #endif
 
-#if defined(Q_OS_LINUX)
+#if defined(Q_OS_MACX) || defined(Q_OS_LINUX)
 #include <QDir>
 #include <QFile>
 #endif
@@ -42,9 +42,28 @@
 const QString gRegistryPath("HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run");
 #endif
 
+#if defined(Q_OS_MACX)
+const QString gAutoStartPath(QDir::homePath() + "/");
+const QString gAutoStartFile(
+    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+    "<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n"
+    "<plist version=\"1.0\">\n"
+    "<dict>\n"
+    "    <key>Label</key>\n"
+    "    <string>com.NathanOsman.NitroShare</string>\n"
+    "    <key>ProgramArguments</key>\n"
+    "    <array>\n"
+    "        <string>%1</string>\n"
+    "    </array>\n"
+    "    <key>KeepAlive</key>\n"
+    "</dict>\n"
+    "</plist>\n"
+);
+#endif
+
 #if defined(Q_OS_LINUX)
 const QString gAutoStartPath(QDir::homePath() + "/.config/autostart/nitroshare.desktop");
-const QString gDesktopFile(
+const QString gAutoStartFile(
     "[Desktop Entry]\n"
     "Version=1.0\n"
     "Name=NitroShare\n"
@@ -191,9 +210,7 @@ bool Platform::autoStart()
 {
 #if defined(Q_OS_WIN32)
     return QSettings(gRegistryPath, QSettings::NativeFormat).contains("NitroShare");
-#elif defined(Q_OS_MACX)
-    return false;
-#elif defined(Q_OS_LINUX)
+#elif defined(Q_OS_MACX) || defined(Q_OS_LINUX)
     return QFile::exists(gAutoStartPath);
 #else
     return false;
@@ -212,15 +229,13 @@ bool Platform::setAutoStart(bool enable)
         settings.remove("NitroShare");
     }
     return true;
-#elif defined(Q_OS_MACX)
-    return false;
-#elif defined(Q_OS_LINUX)
+#elif defined(Q_OS_MACX) || defined(Q_OS_LINUX)
     if (enable) {
         QFile file(gAutoStartPath);
         if (!file.open(QIODevice::WriteOnly)) {
             return false;
         }
-        return file.write(gDesktopFile.arg(execPath).toUtf8()) != -1;
+        return file.write(gAutoStartFile.arg(execPath).toUtf8()) != -1;
     } else {
         return QFile::remove(gAutoStartPath);
     }
