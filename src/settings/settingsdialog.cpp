@@ -35,6 +35,11 @@ SettingsDialog::SettingsDialog()
 {
     setupUi(this);
 
+#ifndef QHttpEngine_FOUND
+    // Disable the local API option if built without QHttpEngine
+    localApiCheckBox->setEnabled(false);
+#endif
+
     // Load the current values into the controls
     reload();
 }
