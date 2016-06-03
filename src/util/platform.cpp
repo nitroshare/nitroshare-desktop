@@ -43,7 +43,7 @@ const QString gRegistryPath("HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\Cu
 #endif
 
 #if defined(Q_OS_MACX)
-const QString gAutoStartPath(QDir::homePath() + "/");
+const QString gAutoStartPath(QDir::homePath() + "/Library/LaunchAgents/com.NathanOsman.NitroShare.plist");
 const QString gAutoStartFile(
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
     "<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n"
