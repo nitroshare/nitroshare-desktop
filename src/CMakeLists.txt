@@ -106,11 +106,6 @@ if(APPINDICATOR_FOUND)
     target_link_libraries(nitroshare ${APPINDICATOR_LIBRARIES})
 endif()
 
-if(UNITY_FOUND)
-    target_include_directories(nitroshare PRIVATE ${UNITY_INCLUDE_DIRS})
-    target_link_libraries(nitroshare ${UNITY_LIBRARIES})
-endif()
-
 include(GNUInstallDirs)
 
 install(TARGETS nitroshare

@@ -24,12 +24,11 @@ The requirements for building NitroShare are as follows:
     * Clang 3.1+
 * Qt 5.1+ (Qt 5.3+ required for building installers)
 
-On supported Linux platforms, NitroShare can be built with support for [application indicators](https://unity.ubuntu.com/projects/appindicators/) and Unity integration. These features are enabled when the following development packages are installed:
+On supported Linux platforms, NitroShare can be built with support for [application indicators](https://unity.ubuntu.com/projects/appindicators/). This feature is enabled when the following development packages are installed:
 
 * GTK+ 2
 * libappindicator
 * libnotify
-* libunity
 
 ### Building the Application
 
@@ -46,9 +45,9 @@ The instructions below describe the build process for each of the supported plat
 
         sudo apt-get install build-essential cmake qtbase5-dev
 
-   To enable support for application indicators and Unity integration, you will need to install the following packages:
+   To enable support for application indicators, you will need to install the following packages:
 
-        sudo apt-get install libgtk2.0-dev libappindicator-dev libnotify-dev libunity-dev
+        sudo apt-get install libgtk2.0-dev libappindicator-dev libnotify-dev
 
 2. Change to the root of the source directory and build the project:
 

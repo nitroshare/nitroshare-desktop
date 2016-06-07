@@ -45,6 +45,5 @@
 #cmakedefine Qt5MacExtras_FOUND
 #cmakedefine QHttpEngine_FOUND
 #cmakedefine APPINDICATOR_FOUND
-#cmakedefine UNITY_FOUND
 
 #endif // NS_CONFIG_H

@@ -41,13 +41,10 @@ find_package(QHttpEngine)
 # libappindicator is an optional dependency that enables the application to
 # determine at runtime if the current desktop environment supports using an
 # application indicator instead of a QTrayIcon and use one instead
-# libunity is an optional dependency that enables the application to display
-# transfer progress in the Unity launcher.
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     find_package(PkgConfig)
     if(PKG_CONFIG_FOUND)
         pkg_check_modules(APPINDICATOR gtk+-2.0 appindicator-0.1 libnotify)
-        pkg_check_modules(UNITY unity)
     endif()
 endif()
 

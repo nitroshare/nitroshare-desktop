@@ -37,12 +37,27 @@
 #include <QtMac>
 #endif
 
+#ifdef Q_OS_LINUX
+#include <QLibrary>
+
+// To avoid a hard dependency on libunity, the entrypoints are loaded at runtime
+QLibrary gUnity("unity");
+
+typedef void* (*fnGetForDesktopId)(const char* desktop_id);
+typedef void (*fnSetProgress)(void* self, double value);
+typedef void (*fnSetProgressVisible)(void* self, int value);
+
+fnGetForDesktopId gGetForDesktopId = (fnGetForDesktopId) gUnity.resolve("unity_launcher_entry_get_for_desktop_id");
+fnSetProgress gSetProgress = (fnSetProgress) gUnity.resolve("unity_launcher_entry_set_progress");
+fnSetProgressVisible gSetProgressVisible = (fnSetProgressVisible) gUnity.resolve("unity_launcher_entry_set_progress_visible");
+#endif
+
 TransferWindow::TransferWindow(TransferModel *model)
     : mModel(model)
 #ifdef Qt5WinExtras_FOUND
     , mTaskbarButton(nullptr)
 #endif
-#ifdef UNITY_FOUND
+#ifdef Q_OS_LINUX
     , mLauncherEntry(nullptr)
 #endif
 {
@@ -60,8 +75,10 @@ TransferWindow::TransferWindow(TransferModel *model)
     connect(mModel, &TransferModel::rowsInserted, this, &TransferWindow::onRowsInserted);
     connect(mModel, &TransferModel::dataChanged, this, &TransferWindow::onDataChanged);
 
-#ifdef UNITY_FOUND
-    mLauncherEntry = unity_launcher_entry_get_for_desktop_id("nitroshare.desktop");
+#ifdef Q_OS_LINUX
+    if (gGetForDesktopId && gSetProgress && gSetProgressVisible) {
+        mLauncherEntry = gGetForDesktopId("nitroshare.desktop");
+    }
 #endif
 }
 
@@ -114,11 +131,11 @@ void TransferWindow::onDataChanged(const QModelIndex &topLeft, const QModelIndex
     }
 #endif
 
-#ifdef UNITY_FOUND
+#ifdef Q_OS_LINUX
     if(mLauncherEntry) {
         int progress = mModel->combinedProgress();
-        unity_launcher_entry_set_progress(mLauncherEntry, static_cast<double>(progress) / 100.0f);
-        unity_launcher_entry_set_progress_visible(mLauncherEntry, progress > 0 && progress < 100);
+        gSetProgress(mLauncherEntry, static_cast<double>(progress) / 100.0f);
+        gSetProgressVisible(mLauncherEntry, progress > 0 && progress < 100);
     }
 #endif
 }
