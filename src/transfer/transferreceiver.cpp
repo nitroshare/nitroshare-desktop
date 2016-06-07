@@ -171,6 +171,12 @@ void TransferReceiver::processItemHeader(const QJsonObject &object)
                 return;
             }
 
+            // Ensure the parent directory exists
+            if(!QDir(filename).mkpath("..")) {
+                writeErrorPacket(tr("Unable to create %1").arg(filename));
+                return;
+            }
+
             // Abort if the file can't be opened
             mFile.setFileName(filename);
             if(!openFile()) {
