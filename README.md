@@ -1,6 +1,5 @@
 ## NitroShare
 
-[![Build Status](http://windows.quickmediasolutions.com/job/NitroShare/badge/icon)](http://windows.quickmediasolutions.com/job/NitroShare)
 [![](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](http://opensource.org/licenses/MIT)
 [![Join the chat at https://gitter.im/nitroshare/nitroshare-desktop](http://img.shields.io/badge/gitter-JOIN_CHAT-green.svg?style=flat)](https://gitter.im/nitroshare/nitroshare-desktop?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
