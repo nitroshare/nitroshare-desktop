@@ -5,5 +5,5 @@ Name=NitroShare
 Comment=Network File Transfer Application
 Icon=nitroshare
 Exec=nitroshare
-Categories=Network;FileTransfer
-Keywords=network;transfer
+Categories=Network;FileTransfer;
+Keywords=network;transfer;
