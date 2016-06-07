@@ -47,7 +47,7 @@ public Q_SLOTS:
 private Q_SLOTS:
 
     void onResetButtonClicked();
-    void onTransferDirectoryButtonClicked();
+    void onBrowseButtonClicked();
 
 private:
 
