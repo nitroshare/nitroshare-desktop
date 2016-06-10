@@ -145,6 +145,9 @@ void SettingsDialog::reload()
     privateKeyEdit->setText(settings->get(Settings::Key::TLSPrivateKey).toString());
     privateKeyPassphraseEdit->setText(settings->get(Settings::Key::TLSPrivateKeyPassphrase).toString());
 
+    // Conditionally enable the security items if TLS is checked
+    emit tlsCheckBox->clicked(tlsCheckBox->isChecked());
+
     // Transfer section
     transferPortSpinBox->setValue(settings->get(Settings::Key::TransferPort).toLongLong());
     transferBufferSpinBox->setValue(settings->get(Settings::Key::TransferBuffer).toInt() / Settings::Constant::KiB);
