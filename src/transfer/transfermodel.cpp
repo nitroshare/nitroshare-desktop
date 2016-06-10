@@ -90,22 +90,28 @@ void TransferModelPrivate::onSettingsChanged(const QList<Settings::Key> &keys)
 
     // Load the CA certificate
     if (keys.empty() || keys.contains(Settings::Key::TLSCACertificate)) {
-        QFile file(settings->get(Settings::Key::TLSCACertificate).toString());
-        if (file.open(QIODevice::ReadOnly)) {
-            QSslCertificate cert(&file, QSsl::Pem);
-            if (!cert.isNull()) {
-                configuration.setCaCertificates(QList<QSslCertificate>({cert}));
+        QString filename = settings->get(Settings::Key::TLSCACertificate).toString();
+        if (!filename.isEmpty()) {
+            QFile file(filename);
+            if (file.open(QIODevice::ReadOnly)) {
+                QSslCertificate cert(&file, QSsl::Pem);
+                if (!cert.isNull()) {
+                    configuration.setCaCertificates(QList<QSslCertificate>({cert}));
+                }
             }
         }
     }
 
     // Load the client certificate
     if (keys.empty() || keys.contains(Settings::Key::TLSCertificate)) {
-        QFile file(settings->get(Settings::Key::TLSCertificate).toString());
-        if (file.open(QIODevice::ReadOnly)) {
-            QSslCertificate cert(&file, QSsl::Pem);
-            if (!cert.isNull()) {
-                configuration.setLocalCertificate(cert);
+        QString filename = settings->get(Settings::Key::TLSCertificate).toString();
+        if (!filename.isEmpty()) {
+            QFile file(filename);
+            if (file.open(QIODevice::ReadOnly)) {
+                QSslCertificate cert(&file, QSsl::Pem);
+                if (!cert.isNull()) {
+                    configuration.setLocalCertificate(cert);
+                }
             }
         }
     }
@@ -113,12 +119,15 @@ void TransferModelPrivate::onSettingsChanged(const QList<Settings::Key> &keys)
     // Load the private key and passphrase
     if (keys.empty() || keys.contains(Settings::Key::TLSPrivateKey) ||
             keys.contains(Settings::Key::TLSPrivateKeyPassphrase)) {
-        QFile file(settings->get(Settings::Key::TLSPrivateKey).toString());
-        if (file.open(QIODevice::ReadOnly)) {
-            QSslKey key(&file, QSsl::Rsa, QSsl::Pem, QSsl::PrivateKey,
-                    settings->get(Settings::Key::TLSPrivateKeyPassphrase).toByteArray());
-            if (!key.isNull()) {
-                configuration.setPrivateKey(key);
+        QString filename = settings->get(Settings::Key::TLSPrivateKey).toString();
+        if (!filename.isEmpty()) {
+            QFile file(filename);
+            if (file.open(QIODevice::ReadOnly)) {
+                QSslKey key(&file, QSsl::Rsa, QSsl::Pem, QSsl::PrivateKey,
+                        settings->get(Settings::Key::TLSPrivateKeyPassphrase).toByteArray());
+                if (!key.isNull()) {
+                    configuration.setPrivateKey(key);
+                }
             }
         }
     }
