@@ -86,48 +86,63 @@ void TransferModelPrivate::remove(Transfer *transfer)
 
 void TransferModelPrivate::onSettingsChanged(const QList<Settings::Key> &keys)
 {
+    // When the settings are changed, only attempt to do anything if TLS is
+    // being enabled (either because the application is loading or the setting
+    // has changed). There is a lot of duplicated code in this fragment but it
+    // is difficult to factor out because of very subtle differences.
+
     Settings *settings = Settings::instance();
 
-    // Load the CA certificate
-    if (keys.empty() || keys.contains(Settings::Key::TLSCACertificate)) {
-        QString filename = settings->get(Settings::Key::TLSCACertificate).toString();
-        if (!filename.isEmpty()) {
+    if (settings->get(Settings::Key::TLS).toBool()) {
+        bool tlsChanged = keys.isEmpty() || keys.contains(Settings::Key::TLS);
+
+        // Load the CA certificate
+        if (tlsChanged || keys.contains(Settings::Key::TLSCACertificate)) {
+            QString filename = settings->get(Settings::Key::TLSCACertificate).toString();
             QFile file(filename);
             if (file.open(QIODevice::ReadOnly)) {
                 QSslCertificate cert(&file, QSsl::Pem);
                 if (!cert.isNull()) {
                     configuration.setCaCertificates(QList<QSslCertificate>({cert}));
+                } else {
+                    emit q->error(tr("%1 is not a valid CA certificate").arg(filename));
                 }
+            } else {
+                emit q->error(tr("Unable to open %1").arg(filename));
             }
         }
-    }
 
-    // Load the client certificate
-    if (keys.empty() || keys.contains(Settings::Key::TLSCertificate)) {
-        QString filename = settings->get(Settings::Key::TLSCertificate).toString();
-        if (!filename.isEmpty()) {
+        // Load the client certificate
+        if (tlsChanged || keys.contains(Settings::Key::TLSCertificate)) {
+            QString filename = settings->get(Settings::Key::TLSCertificate).toString();
             QFile file(filename);
             if (file.open(QIODevice::ReadOnly)) {
                 QSslCertificate cert(&file, QSsl::Pem);
                 if (!cert.isNull()) {
                     configuration.setLocalCertificate(cert);
+                } else {
+                    emit q->error(tr("%1 is not a valid certificate").arg(filename));
                 }
+            } else {
+                emit q->error(tr("Unable to open %1").arg(filename));
             }
         }
-    }
 
-    // Load the private key and passphrase
-    if (keys.empty() || keys.contains(Settings::Key::TLSPrivateKey) ||
-            keys.contains(Settings::Key::TLSPrivateKeyPassphrase)) {
-        QString filename = settings->get(Settings::Key::TLSPrivateKey).toString();
-        if (!filename.isEmpty()) {
+        // Load the private key and passphrase
+        if (tlsChanged || keys.contains(Settings::Key::TLSPrivateKey) ||
+                keys.contains(Settings::Key::TLSPrivateKeyPassphrase)) {
+            QString filename = settings->get(Settings::Key::TLSPrivateKey).toString();
             QFile file(filename);
             if (file.open(QIODevice::ReadOnly)) {
                 QSslKey key(&file, QSsl::Rsa, QSsl::Pem, QSsl::PrivateKey,
                         settings->get(Settings::Key::TLSPrivateKeyPassphrase).toByteArray());
                 if (!key.isNull()) {
                     configuration.setPrivateKey(key);
+                } else {
+                    emit q->error(tr("Unable to load private key %1").arg(filename));
                 }
+            } else {
+                emit q->error(tr("Unable to open %1").arg(filename));
             }
         }
     }

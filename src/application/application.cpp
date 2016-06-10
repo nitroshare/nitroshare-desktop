@@ -61,6 +61,7 @@ Application::Application()
     connect(&mDeviceModel, &DeviceModel::rowsInserted, this, &Application::notifyDevicesAdded);
     connect(&mDeviceModel, &DeviceModel::rowsAboutToBeRemoved, this, &Application::notifyDevicesRemoved);
     connect(&mTransferModel, &TransferModel::dataChanged, this, &Application::notifyTransfersChanged);
+    connect(&mTransferModel, &TransferModel::error, this, &Application::notifyError);
     connect(&mTransferServer, &TransferServer::error, this, &Application::notifyError);
     connect(&mTransferServer, &TransferServer::newTransfer, &mTransferModel, &TransferModel::addReceiver);
     connect(&mTransferWindow, &TransferWindow::sendDirectory, this, &Application::sendDirectory);
