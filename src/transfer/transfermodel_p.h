@@ -27,11 +27,14 @@
 
 #include <QList>
 
+#include "../settings/settings.h"
 #include "transfer.h"
 #include "transfermodel.h"
 
-class TransferModelPrivate
+class TransferModelPrivate : public QObject
 {
+    Q_OBJECT
+
 public:
 
     explicit TransferModelPrivate(TransferModel *transferModel);
@@ -46,6 +49,10 @@ public:
 
     int cachedProgress;
     qint64 cachedProgressAge;
+
+private Q_SLOTS:
+
+    void onSettingsChanged(const QList<Settings::Key> &keys = {});
 };
 
 #endif // NS_TRANSFERMODELPRIVATE_H

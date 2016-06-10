@@ -34,10 +34,14 @@
 #include "transfersender.h"
 
 TransferModelPrivate::TransferModelPrivate(TransferModel *transferModel)
-    : q(transferModel),
+    : QObject(transferModel),
+      q(transferModel),
       cachedProgress(0),
       cachedProgressAge(0)
 {
+    connect(Settings::instance(), &Settings::settingsChanged, this, &TransferModelPrivate::onSettingsChanged);
+
+    onSettingsChanged();
 }
 
 TransferModelPrivate::~TransferModelPrivate()
@@ -73,6 +77,11 @@ void TransferModelPrivate::remove(Transfer *transfer)
     emit q->endRemoveRows();
 
     delete transfer;
+}
+
+void TransferModelPrivate::onSettingsChanged(const QList<Settings::Key> &keys)
+{
+    //...
 }
 
 TransferModel::TransferModel(QObject *parent)
