@@ -25,7 +25,10 @@
 #include <QApplication>
 #include <QBrush>
 #include <QDateTime>
+#include <QFile>
 #include <QIcon>
+#include <QSslCertificate>
+#include <QSslKey>
 #include <QStyle>
 
 #include "transfermodel.h"
@@ -41,6 +44,8 @@ TransferModelPrivate::TransferModelPrivate(TransferModel *transferModel)
 {
     connect(Settings::instance(), &Settings::settingsChanged, this, &TransferModelPrivate::onSettingsChanged);
 
+    configuration.setPeerVerifyMode(QSslSocket::VerifyPeer);
+    configuration.setProtocol(QSsl::TlsV1_2OrLater);
     onSettingsChanged();
 }
 
@@ -81,7 +86,42 @@ void TransferModelPrivate::remove(Transfer *transfer)
 
 void TransferModelPrivate::onSettingsChanged(const QList<Settings::Key> &keys)
 {
-    //...
+    Settings *settings = Settings::instance();
+
+    // Load the CA certificate
+    if (keys.empty() || keys.contains(Settings::Key::TLSCACertificate)) {
+        QFile file(settings->get(Settings::Key::TLSCACertificate).toString());
+        if (file.open(QIODevice::ReadOnly)) {
+            QSslCertificate cert(&file, QSsl::Pem);
+            if (!cert.isNull()) {
+                configuration.setCaCertificates(QList<QSslCertificate>({cert}));
+            }
+        }
+    }
+
+    // Load the client certificate
+    if (keys.empty() || keys.contains(Settings::Key::TLSCertificate)) {
+        QFile file(settings->get(Settings::Key::TLSCertificate).toString());
+        if (file.open(QIODevice::ReadOnly)) {
+            QSslCertificate cert(&file, QSsl::Pem);
+            if (!cert.isNull()) {
+                configuration.setLocalCertificate(cert);
+            }
+        }
+    }
+
+    // Load the private key and passphrase
+    if (keys.empty() || keys.contains(Settings::Key::TLSPrivateKey) ||
+            keys.contains(Settings::Key::TLSPrivateKeyPassphrase)) {
+        QFile file(settings->get(Settings::Key::TLSPrivateKey).toString());
+        if (file.open(QIODevice::ReadOnly)) {
+            QSslKey key(&file, QSsl::Rsa, QSsl::Pem, QSsl::PrivateKey,
+                    settings->get(Settings::Key::TLSPrivateKeyPassphrase).toByteArray());
+            if (!key.isNull()) {
+                configuration.setPrivateKey(key);
+            }
+        }
+    }
 }
 
 TransferModel::TransferModel(QObject *parent)

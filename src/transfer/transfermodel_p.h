@@ -26,6 +26,7 @@
 #define NS_TRANSFERMODELPRIVATE_H
 
 #include <QList>
+#include <QSslConfiguration>
 
 #include "../settings/settings.h"
 #include "transfer.h"
@@ -45,6 +46,7 @@ public:
 
     TransferModel *const q;
 
+    QSslConfiguration configuration;
     QList<Transfer*> transfers;
 
     int cachedProgress;
