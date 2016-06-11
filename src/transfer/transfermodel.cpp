@@ -45,7 +45,7 @@ TransferModelPrivate::TransferModelPrivate(TransferModel *transferModel)
     connect(Settings::instance(), &Settings::settingsChanged, this, &TransferModelPrivate::onSettingsChanged);
 
     configuration.setPeerVerifyMode(QSslSocket::VerifyPeer);
-    configuration.setProtocol(QSsl::TlsV1_2OrLater);
+    configuration.setProtocol(QSsl::TlsV1_2);
     onSettingsChanged();
 }
 
