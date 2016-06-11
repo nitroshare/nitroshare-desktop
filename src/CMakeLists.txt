@@ -89,12 +89,18 @@ if(APPLE)
     )
 endif()
 
-qt5_use_modules(nitroshare Widgets Network Svg)
+# GCC decided to be clever and ignore unused shared libraries during linking
+# making this hack necessary to ensure QtSVG is linked against
+if(CMAKE_COMPILER_IS_GNUCXX)
+    target_link_libraries(nitroshare -Wl,--no-as-needed)
+endif()
+
+target_link_libraries(nitroshare Qt5::Widgets Qt5::Network Qt5::Svg)
 if(Qt5WinExtras_FOUND)
-    qt5_use_modules(nitroshare WinExtras)
+    target_link_libraries(nitroshare Qt5::WinExtras)
 endif()
 if(Qt5MacExtras_FOUND)
-    qt5_use_modules(nitroshare MacExtras)
+    target_link_libraries(nitroshare Qt5::MacExtras)
 endif()
 
 if(QHttpEngine_FOUND)
