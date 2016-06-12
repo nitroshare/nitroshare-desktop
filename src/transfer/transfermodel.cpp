@@ -27,8 +27,6 @@
 #include <QDateTime>
 #include <QFile>
 #include <QIcon>
-#include <QSslCertificate>
-#include <QSslKey>
 #include <QStyle>
 
 #include "transfermodel.h"
@@ -39,13 +37,12 @@
 TransferModelPrivate::TransferModelPrivate(TransferModel *transferModel)
     : QObject(transferModel),
       q(transferModel),
+      configuration(nullptr),
       cachedProgress(0),
       cachedProgressAge(0)
 {
     connect(Settings::instance(), &Settings::settingsChanged, this, &TransferModelPrivate::onSettingsChanged);
 
-    configuration.setPeerVerifyMode(QSslSocket::VerifyPeer);
-    configuration.setProtocol(QSsl::TlsV1_2);
     onSettingsChanged();
 }
 
@@ -84,65 +81,83 @@ void TransferModelPrivate::remove(Transfer *transfer)
     delete transfer;
 }
 
+QSslCertificate TransferModelPrivate::loadCert(const QString &filename)
+{
+    QFile file(filename);
+    if (!file.open(QIODevice::ReadOnly)) {
+        emit q->error(tr("Unable to open %1").arg(filename));
+        return QSslCertificate();
+    }
+
+    QSslCertificate cert(&file, QSsl::Pem);
+    if (cert.isNull()) {
+        emit q->error(tr("%1 is not a valid CA certificate").arg(filename));
+        return QSslCertificate();
+    }
+
+    return cert;
+}
+
+QSslKey TransferModelPrivate::loadKey(const QString &filename, const QByteArray &passphrase)
+{
+    QFile file(filename);
+    if (!file.open(QIODevice::ReadOnly)) {
+        emit q->error(tr("Unable to open %1").arg(filename));
+        return QSslKey();
+    }
+
+    QSslKey key(&file, QSsl::Rsa, QSsl::Pem, QSsl::PrivateKey, passphrase);
+    if (key.isNull()) {
+        emit q->error(tr("Unable to load private key %1").arg(filename));
+        return QSslKey();
+    }
+
+    return key;
+}
+
 void TransferModelPrivate::onSettingsChanged(const QList<Settings::Key> &keys)
 {
-    // When the settings are changed, only attempt to do anything if TLS is
-    // being enabled (either because the application is loading or the setting
-    // has changed). There is a lot of duplicated code in this fragment but it
-    // is difficult to factor out because of very subtle differences.
-
     Settings *settings = Settings::instance();
 
-    if (settings->get(Settings::Key::TLS).toBool()) {
-        bool tlsChanged = keys.isEmpty() || keys.contains(Settings::Key::TLS);
+    if (keys.isEmpty() || keys.contains(Settings::Key::TLS) ||
+            keys.contains(Settings::Key::TLSCACertificate) ||
+            keys.contains(Settings::Key::TLSCertificate) ||
+            keys.contains(Settings::Key::TLSPrivateKey) ||
+            keys.contains(Settings::Key::TLSPrivateKeyPassphrase)) {
 
-        // Load the CA certificate
-        if (tlsChanged || keys.contains(Settings::Key::TLSCACertificate)) {
-            QString filename = settings->get(Settings::Key::TLSCACertificate).toString();
-            QFile file(filename);
-            if (file.open(QIODevice::ReadOnly)) {
-                QSslCertificate cert(&file, QSsl::Pem);
-                if (!cert.isNull()) {
-                    configuration.setCaCertificates(QList<QSslCertificate>({cert}));
-                } else {
-                    emit q->error(tr("%1 is not a valid CA certificate").arg(filename));
-                }
-            } else {
-                emit q->error(tr("Unable to open %1").arg(filename));
-            }
+        // Begin by purging the existing configuration
+        if (configuration) {
+            delete configuration;
+            configuration = nullptr;
         }
 
-        // Load the client certificate
-        if (tlsChanged || keys.contains(Settings::Key::TLSCertificate)) {
-            QString filename = settings->get(Settings::Key::TLSCertificate).toString();
-            QFile file(filename);
-            if (file.open(QIODevice::ReadOnly)) {
-                QSslCertificate cert(&file, QSsl::Pem);
-                if (!cert.isNull()) {
-                    configuration.setLocalCertificate(cert);
-                } else {
-                    emit q->error(tr("%1 is not a valid certificate").arg(filename));
-                }
-            } else {
-                emit q->error(tr("Unable to open %1").arg(filename));
-            }
-        }
+        // Continue only if TLS is enabled
+        if (settings->get(Settings::Key::TLS).toBool()) {
 
-        // Load the private key and passphrase
-        if (tlsChanged || keys.contains(Settings::Key::TLSPrivateKey) ||
-                keys.contains(Settings::Key::TLSPrivateKeyPassphrase)) {
-            QString filename = settings->get(Settings::Key::TLSPrivateKey).toString();
-            QFile file(filename);
-            if (file.open(QIODevice::ReadOnly)) {
-                QSslKey key(&file, QSsl::Rsa, QSsl::Pem, QSsl::PrivateKey,
-                        settings->get(Settings::Key::TLSPrivateKeyPassphrase).toByteArray());
-                if (!key.isNull()) {
-                    configuration.setPrivateKey(key);
-                } else {
-                    emit q->error(tr("Unable to load private key %1").arg(filename));
-                }
-            } else {
-                emit q->error(tr("Unable to open %1").arg(filename));
+            // Create a new configuration
+            configuration = new QSslConfiguration;
+            configuration->setPeerVerifyMode(QSslSocket::VerifyPeer);
+            configuration->setProtocol(QSsl::TlsV1_2);
+
+            // Load the CA certificate
+            QSslCertificate caCert = loadCert(settings->get(Settings::Key::TLSCACertificate).toString());
+            if (!caCert.isNull()) {
+                configuration->setCaCertificates(QList<QSslCertificate>({caCert}));
+            }
+
+            // Load the client certificate
+            QSslCertificate cert = loadCert(settings->get(Settings::Key::TLSCertificate).toString());
+            if (!cert.isNull()) {
+                configuration->setLocalCertificate(cert);
+            }
+
+            // Load the private key
+            QSslKey key = loadKey(
+                settings->get(Settings::Key::TLSPrivateKey).toString(),
+                settings->get(Settings::Key::TLSPrivateKeyPassphrase).toByteArray()
+            );
+            if (!key.isNull()) {
+                configuration->setPrivateKey(key);
             }
         }
     }
