@@ -35,7 +35,7 @@ class TransferReceiver : public Transfer
 
 public:
 
-    explicit TransferReceiver(qintptr socketDescriptor);
+    TransferReceiver(QSslConfiguration *configuration, qintptr socketDescriptor);
 
     virtual void start();
 

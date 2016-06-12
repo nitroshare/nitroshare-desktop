@@ -26,6 +26,7 @@
 #define NS_TRANSFERSENDER_H
 
 #include <QHostAddress>
+#include <QSslConfiguration>
 #include <QList>
 
 #include "../bundle/bundle.h"
@@ -38,7 +39,7 @@ class TransferSender : public Transfer
 
 public:
 
-    TransferSender(const QString &deviceName, const QHostAddress &address, quint16 port, const Bundle *bundle);
+    TransferSender(QSslConfiguration *configuration, const QString &deviceName, const QHostAddress &address, quint16 port, const Bundle *bundle);
     virtual ~TransferSender();
 
     virtual void start();

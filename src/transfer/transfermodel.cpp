@@ -308,12 +308,12 @@ int TransferModel::combinedProgress() const
 
 void TransferModel::addReceiver(qintptr socketDescriptor)
 {
-    d->add(new TransferReceiver(socketDescriptor));
+    d->add(new TransferReceiver(d->configuration, socketDescriptor));
 }
 
 void TransferModel::addSender(const QString &deviceName, const QHostAddress &address, quint16 port, const Bundle *bundle)
 {
-    d->add(new TransferSender(deviceName, address, port, bundle));
+    d->add(new TransferSender(d->configuration, deviceName, address, port, bundle));
 }
 
 void TransferModel::cancel(int index)

@@ -31,15 +31,17 @@
 #include "../util/json.h"
 #include "transfer.h"
 
-Transfer::Transfer(TransferModel::Direction direction)
+Transfer::Transfer(QSslConfiguration *configuration, TransferModel::Direction direction)
     : mDirection(direction)
 {
-    connect(&mSocket, &QTcpSocket::connected, this, &Transfer::onConnected);
-    connect(&mSocket, &QTcpSocket::readyRead, this, &Transfer::onReadyRead);
-    connect(&mSocket, &QTcpSocket::bytesWritten, this, &Transfer::onBytesWritten);
+    mSocket = new QTcpSocket(this);
+
+    connect(mSocket, &QTcpSocket::connected, this, &Transfer::onConnected);
+    connect(mSocket, &QTcpSocket::readyRead, this, &Transfer::onReadyRead);
+    connect(mSocket, &QTcpSocket::bytesWritten, this, &Transfer::onBytesWritten);
 
     // The error() method is overloaded (sigh) so we need to be very explicit here
-    connect(&mSocket, static_cast<void (QTcpSocket::*)(QAbstractSocket::SocketError)>(&QTcpSocket::error), this, &Transfer::onError);
+    connect(mSocket, static_cast<void (QTcpSocket::*)(QAbstractSocket::SocketError)>(&QTcpSocket::error), this, &Transfer::onError);
 
     // Set all of the transfer members to proper initial values
     reset();
@@ -91,7 +93,7 @@ void Transfer::onConnected()
 void Transfer::onReadyRead()
 {
     // Add all of the new data to the buffer
-    mBuffer.append(mSocket.readAll());
+    mBuffer.append(mSocket->readAll());
 
     // Process as many packets as can be read from the buffer
     forever {
@@ -137,7 +139,7 @@ void Transfer::onReadyRead()
 void Transfer::onBytesWritten()
 {
     // Wait until there is no more pending data to write
-    if(!mSocket.bytesToWrite()) {
+    if(!mSocket->bytesToWrite()) {
 
         // If the transfer finished, then report success or failure
         // Otherwise, have the child class write the next packet
@@ -264,12 +266,12 @@ void Transfer::writePacket(PacketType type, const QByteArray &data)
 {
     // Write the size of the packet including its type
     qint32 packetSize = qToLittleEndian(data.length() + 1);
-    mSocket.write(reinterpret_cast<const char*>(&packetSize), sizeof(packetSize));
+    mSocket->write(reinterpret_cast<const char*>(&packetSize), sizeof(packetSize));
 
     // Write the packet type and the data (if provided)
-    mSocket.write(reinterpret_cast<const char*>(&type), 1);
+    mSocket->write(reinterpret_cast<const char*>(&type), 1);
     if(data.length()) {
-        mSocket.write(data);
+        mSocket->write(data);
     }
 }
 
@@ -301,6 +303,6 @@ void Transfer::finish(TransferModel::State state)
     emit dataChanged({TransferModel::StateRole});
 
     // Close the socket and any open file
-    mSocket.abort();
+    mSocket->abort();
     mFile.close();
 }

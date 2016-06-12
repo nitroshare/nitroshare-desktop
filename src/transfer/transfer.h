@@ -27,6 +27,7 @@
 
 #include <QFile>
 #include <QJsonObject>
+#include <QSslConfiguration>
 #include <QTcpSocket>
 
 #include "transfermodel.h"
@@ -53,8 +54,7 @@ class Transfer : public QObject
 
 public:
 
-    // "explicit" is not needed here since this class is abstract
-    Transfer(TransferModel::Direction direction);
+    Transfer(QSslConfiguration *configuration, TransferModel::Direction direction);
 
     QString deviceName() const { return mDeviceName; }
     int progress() const { return mProgress; }
@@ -92,7 +92,7 @@ protected:
 
     void updateProgress();
 
-    QTcpSocket mSocket;
+    QTcpSocket *mSocket;
     QString mDeviceName;
 
     enum class ProtocolState {

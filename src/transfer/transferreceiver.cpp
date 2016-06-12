@@ -29,12 +29,12 @@
 #include "../util/json.h"
 #include "transferreceiver.h"
 
-TransferReceiver::TransferReceiver(qintptr socketDescriptor)
-    : Transfer(TransferModel::Receive),
+TransferReceiver::TransferReceiver(QSslConfiguration *configuration, qintptr socketDescriptor)
+    : Transfer(configuration, TransferModel::Receive),
       mRoot(Settings::instance()->get(Settings::Key::TransferDirectory).toString()),
       mOverwrite(Settings::instance()->get(Settings::Key::BehaviorOverwrite).toBool())
 {
-    mSocket.setSocketDescriptor(socketDescriptor);
+    mSocket->setSocketDescriptor(socketDescriptor);
     mDeviceName = tr("[Unknown]");
 }
 

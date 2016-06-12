@@ -30,8 +30,8 @@
 #include "../util/json.h"
 #include "transfersender.h"
 
-TransferSender::TransferSender(const QString &deviceName, const QHostAddress &address, quint16 port, const Bundle *bundle)
-    : Transfer(TransferModel::Send),
+TransferSender::TransferSender(QSslConfiguration *configuration, const QString &deviceName, const QHostAddress &address, quint16 port, const Bundle *bundle)
+    : Transfer(configuration, TransferModel::Send),
       mAddress(address),
       mPort(port),
       mBundle(bundle),
@@ -51,7 +51,7 @@ void TransferSender::start()
     mCurrentItem = mBundle->d->items.constBegin();
 
     // Attempt to connect to the other device
-    mSocket.connectToHost(mAddress, mPort);
+    mSocket->connectToHost(mAddress, mPort);
 }
 
 void TransferSender::processJsonPacket(const QJsonObject &)
