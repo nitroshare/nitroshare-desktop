@@ -69,16 +69,6 @@ target_compile_features(nitroshare PRIVATE
     cxx_uniform_initialization
 )
 
-# By default, Visual C++ produces PE files with "minimum OS Required" set to
-# 6.0 (Windows Vista). A special linker flag is needed for XP support.
-if(WIN32 AND MSVC)
-    if(${CMAKE_SIZEOF_VOID_P} EQUAL 8)
-        set_target_properties(nitroshare PROPERTIES LINK_FLAGS "/SUBSYSTEM:WINDOWS,5.02")
-    else()
-        set_target_properties(nitroshare PROPERTIES LINK_FLAGS "/SUBSYSTEM:WINDOWS,5.01")
-    endif()
-endif()
-
 # In order to support Retina, a special tag is required in Info.plist.
 if(APPLE)
     set_target_properties(nitroshare PROPERTIES
