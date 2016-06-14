@@ -184,9 +184,14 @@ void Transfer::onError(QAbstractSocket::SocketError)
 
 void Transfer::onSslErrors(const QList<QSslError> &errors)
 {
-    // Errors beyond the first one are ignored
-    mError = errors.at(0).errorString();
-    finish(TransferModel::Failed);
+    // Ignore HostNameMismatch errors since certificates are automatically
+    // valid if they are signed by the CA - show all other errors
+    if (errors.count() == 1 && errors.at(0).error() == QSslError::HostNameMismatch) {
+        qobject_cast<QSslSocket*>(mSocket)->ignoreSslErrors();
+    } else {
+        mError = errors.at(0).errorString();
+        finish(TransferModel::Failed);
+    }
 }
 
 void Transfer::writeSuccessPacket()
