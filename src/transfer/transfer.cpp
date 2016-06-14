@@ -184,7 +184,8 @@ void Transfer::onError(QAbstractSocket::SocketError)
 
 void Transfer::onSslErrors(const QList<QSslError> &errors)
 {
-    qDebug("TLS error");
+    // Errors beyond the first one are ignored
+    mError = errors.at(0).errorString();
     finish(TransferModel::Failed);
 }
 
