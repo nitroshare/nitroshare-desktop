@@ -41,9 +41,14 @@ TransferReceiver::TransferReceiver(QSslConfiguration *configuration, qintptr soc
     onConnected();
 }
 
-void TransferReceiver::start()
+void TransferReceiver::startConnect()
 {
     // The socket is already connected at this point
+}
+
+void TransferReceiver::startTransfer()
+{
+    // The client starts the transfer
 }
 
 void TransferReceiver::processJsonPacket(const QJsonObject &object)

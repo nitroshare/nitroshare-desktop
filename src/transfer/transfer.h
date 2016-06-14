@@ -63,7 +63,7 @@ public:
     TransferModel::State state() const { return mState; }
     QString error() const { return mError; }
 
-    virtual void start() = 0;
+    virtual void startConnect() = 0;
 
     void cancel();
     void restart();
@@ -85,6 +85,8 @@ private Q_SLOTS:
     void onSslErrors(const QList<QSslError> &errors);
 
 protected:
+
+    virtual void startTransfer() = 0;
 
     virtual void processJsonPacket(const QJsonObject &object) = 0;
     virtual void processBinaryPacket(const QByteArray &data) = 0;

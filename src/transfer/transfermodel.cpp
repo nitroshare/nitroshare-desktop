@@ -66,7 +66,7 @@ void TransferModelPrivate::add(Transfer *transfer)
         emit q->dataChanged(q->index(index, 0), q->index(index, TransferModel::ColumnCount - 1), roles);
     });
 
-    transfer->start();
+    transfer->startConnect();
 }
 
 void TransferModelPrivate::remove(Transfer *transfer)

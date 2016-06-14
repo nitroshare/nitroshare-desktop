@@ -37,9 +37,11 @@ public:
 
     TransferReceiver(QSslConfiguration *configuration, qintptr socketDescriptor);
 
-    virtual void start();
+    virtual void startConnect();
 
 private:
+
+    virtual void startTransfer();
 
     virtual void processJsonPacket(const QJsonObject &object);
     virtual void processBinaryPacket(const QByteArray &data);

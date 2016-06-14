@@ -45,13 +45,19 @@ TransferSender::~TransferSender()
     delete mBundle;
 }
 
-void TransferSender::start()
+void TransferSender::startConnect()
 {
     mTransferBytesTotal = mBundle->totalSize();
     mCurrentItem = mBundle->d->items.constBegin();
 
     // Attempt to connect to the other device
     mSocket->connectToHost(mAddress, mPort);
+}
+
+void TransferSender::startTransfer()
+{
+    // Begin writing the first packet
+    writeNextPacket();
 }
 
 void TransferSender::processJsonPacket(const QJsonObject &)

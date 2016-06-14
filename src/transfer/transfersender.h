@@ -42,9 +42,11 @@ public:
     TransferSender(QSslConfiguration *configuration, const QString &deviceName, const QHostAddress &address, quint16 port, const Bundle *bundle);
     virtual ~TransferSender();
 
-    virtual void start();
+    virtual void startConnect();
 
 private:
+
+    virtual void startTransfer();
 
     virtual void processJsonPacket(const QJsonObject &object);
     virtual void processBinaryPacket(const QByteArray &data);

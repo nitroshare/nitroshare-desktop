@@ -35,14 +35,12 @@
 Transfer::Transfer(QSslConfiguration *configuration, TransferModel::Direction direction)
     : mDirection(direction)
 {
+    // Create a socket of the appropriate type
     if (configuration) {
         QSslSocket *socket = new QSslSocket(this);
         socket->setSslConfiguration(*configuration);
 
-        if (mDirection == TransferModel::Send) {
-            connect(socket, &QSslSocket::encrypted, this, &Transfer::onEncrypted);
-        }
-
+        connect(socket, &QSslSocket::encrypted, this, &Transfer::onEncrypted);
         connect(socket, static_cast<void(QSslSocket::*)(const QList<QSslError> &)>(&QSslSocket::sslErrors), this, &Transfer::onSslErrors);
 
         mSocket = socket;
@@ -53,8 +51,6 @@ Transfer::Transfer(QSslConfiguration *configuration, TransferModel::Direction di
     connect(mSocket, &QTcpSocket::connected, this, &Transfer::onConnected);
     connect(mSocket, &QTcpSocket::readyRead, this, &Transfer::onReadyRead);
     connect(mSocket, &QTcpSocket::bytesWritten, this, &Transfer::onBytesWritten);
-
-    // The error() method is overloaded (sigh) so we need to be very explicit here
     connect(mSocket, static_cast<void (QTcpSocket::*)(QAbstractSocket::SocketError)>(&QTcpSocket::error), this, &Transfer::onError);
 
     // Set all of the transfer members to proper initial values
@@ -90,9 +86,9 @@ void Transfer::restart()
         return;
     }
 
-    // Reset all of the transfer variables and start again
+    // Reset all of the transfer variables and reconnect again
     reset();
-    start();
+    startConnect();
 }
 
 void Transfer::onEncrypted()
@@ -100,8 +96,7 @@ void Transfer::onEncrypted()
     mState = TransferModel::InProgress;
     emit dataChanged({TransferModel::StateRole});
 
-    // Begin writing the first packet
-    writeNextPacket();
+    startTransfer();
 }
 
 void Transfer::onConnected()
@@ -113,8 +108,8 @@ void Transfer::onConnected()
         } else {
             socket->startServerEncryption();
         }
-    } else if(mDirection == TransferModel::Send) {
-        onEncrypted();
+    } else {
+        startTransfer();
     }
 }
 
@@ -317,8 +312,7 @@ void Transfer::reset()
     mTransferBytes = 0;
     mTransferBytesTotal = 0;
 
-    // The state is already in progress for a receiving transfer
-    mState = mDirection == TransferModel::Send ? TransferModel::Connecting : TransferModel::InProgress;
+    mState = TransferModel::Connecting;
     mError.clear();
 
     mProgress = 0;
