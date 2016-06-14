@@ -174,7 +174,7 @@ void Transfer::onBytesWritten()
     }
 }
 
-void Transfer::onError(QAbstractSocket::SocketError error)
+void Transfer::onError(QAbstractSocket::SocketError)
 {
     // Errors are only meaningful during the Connecting and InProgress
     if(mState == TransferModel::Connecting || mState == TransferModel::InProgress) {
