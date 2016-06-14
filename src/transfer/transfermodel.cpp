@@ -137,7 +137,6 @@ void TransferModelPrivate::onSettingsChanged(const QList<Settings::Key> &keys)
             // Create a new configuration
             configuration = new QSslConfiguration;
             configuration->setPeerVerifyMode(QSslSocket::VerifyPeer);
-            configuration->setProtocol(QSsl::TlsV1_2);
 
             // Load the CA certificate
             QSslCertificate caCert = loadCert(settings->get(Settings::Key::TLSCACertificate).toString());
