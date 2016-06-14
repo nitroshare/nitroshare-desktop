@@ -41,16 +41,18 @@ Transfer::Transfer(QSslConfiguration *configuration, TransferModel::Direction di
         socket->setSslConfiguration(*configuration);
 
         connect(socket, &QSslSocket::encrypted, this, &Transfer::onEncrypted);
+        connect(socket, &QSslSocket::encryptedBytesWritten, this, &Transfer::onBytesWritten);
         connect(socket, static_cast<void(QSslSocket::*)(const QList<QSslError> &)>(&QSslSocket::sslErrors), this, &Transfer::onSslErrors);
 
         mSocket = socket;
     } else {
         mSocket = new QTcpSocket(this);
+
+        connect(mSocket, &QTcpSocket::bytesWritten, this, &Transfer::onBytesWritten);
     }
 
     connect(mSocket, &QTcpSocket::connected, this, &Transfer::onConnected);
     connect(mSocket, &QTcpSocket::readyRead, this, &Transfer::onReadyRead);
-    connect(mSocket, &QTcpSocket::bytesWritten, this, &Transfer::onBytesWritten);
     connect(mSocket, static_cast<void (QTcpSocket::*)(QAbstractSocket::SocketError)>(&QTcpSocket::error), this, &Transfer::onError);
 
     // Set all of the transfer members to proper initial values
