@@ -73,6 +73,7 @@ Q_SIGNALS:
 
 private Q_SLOTS:
 
+    void onEncrypted();
     void onConnected();
     void onReadyRead();
     void onBytesWritten();

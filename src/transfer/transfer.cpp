@@ -25,6 +25,7 @@
 #include <cstring>
 
 #include <QJsonDocument>
+#include <QSslSocket>
 #include <QtEndian>
 #include <QVariantMap>
 
@@ -34,7 +35,16 @@
 Transfer::Transfer(QSslConfiguration *configuration, TransferModel::Direction direction)
     : mDirection(direction)
 {
-    mSocket = new QTcpSocket(this);
+    if (configuration) {
+        QSslSocket *socket = new QSslSocket(this);
+
+        socket->setSslConfiguration(*configuration);
+        connect(socket, &QSslSocket::encrypted, this, &Transfer::onEncrypted);
+
+        mSocket = socket;
+    } else {
+        mSocket = new QTcpSocket(this);
+    }
 
     connect(mSocket, &QTcpSocket::connected, this, &Transfer::onConnected);
     connect(mSocket, &QTcpSocket::readyRead, this, &Transfer::onReadyRead);
@@ -81,13 +91,30 @@ void Transfer::restart()
     start();
 }
 
-void Transfer::onConnected()
+void Transfer::onEncrypted()
 {
     mState = TransferModel::InProgress;
     emit dataChanged({TransferModel::StateRole});
 
     // Begin writing the first packet
     writeNextPacket();
+}
+
+void Transfer::onConnected()
+{
+    // If the connection is *not* encrypted, jump directly to the
+    // onEncrypted() slot, otherwise begin the encryption procedure
+    QSslSocket *socket = qobject_cast<QSslSocket*>(mSocket);
+
+    if (socket) {
+        if (mDirection == TransferModel::Send) {
+            socket->startClientEncryption();
+        } else {
+            socket->startServerEncryption();
+        }
+    } else {
+        onEncrypted();
+    }
 }
 
 void Transfer::onReadyRead()
