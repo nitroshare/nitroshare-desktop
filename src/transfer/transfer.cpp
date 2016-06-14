@@ -37,9 +37,13 @@ Transfer::Transfer(QSslConfiguration *configuration, TransferModel::Direction di
 {
     if (configuration) {
         QSslSocket *socket = new QSslSocket(this);
-
         socket->setSslConfiguration(*configuration);
-        connect(socket, &QSslSocket::encrypted, this, &Transfer::onEncrypted);
+
+        if (mDirection == TransferModel::Send) {
+            connect(socket, &QSslSocket::encrypted, this, &Transfer::onEncrypted);
+        }
+
+        connect(socket, static_cast<void(QSslSocket::*)(const QList<QSslError> &)>(&QSslSocket::sslErrors), this, &Transfer::onSslErrors);
 
         mSocket = socket;
     } else {
@@ -102,17 +106,14 @@ void Transfer::onEncrypted()
 
 void Transfer::onConnected()
 {
-    // If the connection is *not* encrypted, jump directly to the
-    // onEncrypted() slot, otherwise begin the encryption procedure
     QSslSocket *socket = qobject_cast<QSslSocket*>(mSocket);
-
     if (socket) {
         if (mDirection == TransferModel::Send) {
             socket->startClientEncryption();
         } else {
             socket->startServerEncryption();
         }
-    } else {
+    } else if(mDirection == TransferModel::Send) {
         onEncrypted();
     }
 }
@@ -184,6 +185,12 @@ void Transfer::onError(QAbstractSocket::SocketError)
     if(mState == TransferModel::Connecting || mState == TransferModel::InProgress) {
         finish(TransferModel::Failed);
     }
+}
+
+void Transfer::onSslErrors(const QList<QSslError> &errors)
+{
+    qDebug("TLS error");
+    finish(TransferModel::Failed);
 }
 
 void Transfer::writeSuccessPacket()

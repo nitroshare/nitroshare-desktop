@@ -28,6 +28,7 @@
 #include <QFile>
 #include <QJsonObject>
 #include <QSslConfiguration>
+#include <QSslError>
 #include <QTcpSocket>
 
 #include "transfermodel.h"
@@ -71,13 +72,17 @@ Q_SIGNALS:
 
     void dataChanged(const QVector<int> &roles = {});
 
+protected Q_SLOTS:
+
+    void onConnected();
+
 private Q_SLOTS:
 
     void onEncrypted();
-    void onConnected();
     void onReadyRead();
     void onBytesWritten();
     void onError(QAbstractSocket::SocketError error);
+    void onSslErrors(const QList<QSslError> &errors);
 
 protected:
 

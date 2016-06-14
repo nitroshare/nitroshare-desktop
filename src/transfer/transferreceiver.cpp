@@ -36,6 +36,9 @@ TransferReceiver::TransferReceiver(QSslConfiguration *configuration, qintptr soc
 {
     mSocket->setSocketDescriptor(socketDescriptor);
     mDeviceName = tr("[Unknown]");
+
+    // Trigger server-side TLS handshake
+    onConnected();
 }
 
 void TransferReceiver::start()
