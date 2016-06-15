@@ -67,11 +67,14 @@ void DeviceListener::processPings()
                 Json::objectContains(object, "operating_system", operatingSystemName) &&
                 Json::objectContains(object, "port", port)) {
 
-            // Double-check that the port is valid and convert the operating system
+            // Double-check that the port is valid
             if(port > 0 && port < 65536) {
 
                 Platform::OperatingSystem operatingSystem = Platform::operatingSystemForName(operatingSystemName);
-                emit pingReceived(uuid, name, operatingSystem, address, port);
+                bool usesTls = false;
+                Json::objectContains(object, "uses_tls", usesTls);
+
+                emit pingReceived(uuid, name, operatingSystem, address, port, usesTls);
             }
         }
     }
@@ -88,7 +91,8 @@ void DeviceListener::sendPings()
         { "uuid", settings->get(Settings::Key::DeviceUUID).toString() },
         { "name", settings->get(Settings::Key::DeviceName).toString() },
         { "operating_system", Platform::operatingSystemName() },
-        { "port", QString::number(settings->get(Settings::Key::TransferPort).toInt()) }
+        { "port", QString::number(settings->get(Settings::Key::TransferPort).toInt()) },
+        { "uses_tls", settings->get(Settings::Key::TLS).toBool() }
     }));
 
     // Build a list of all unique addresses (since we are

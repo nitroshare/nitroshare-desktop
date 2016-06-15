@@ -47,9 +47,11 @@ public:
     Platform::OperatingSystem operatingSystem() const { return mOperatingSystem; }
     QHostAddress address() const { return mAddress; }
     quint16 port() const { return mPort; }
+    bool usesTls() const { return mUsesTls; }
 
     bool hasTimedOut() const;
-    bool update(const QString &name, Platform::OperatingSystem operatingSystem, const QHostAddress &address, quint16 port);
+    bool update(const QString &name, Platform::OperatingSystem operatingSystem,
+                const QHostAddress &address, quint16 port, bool usesTls);
 
 private:
 
@@ -59,6 +61,7 @@ private:
     Platform::OperatingSystem mOperatingSystem;
     QHostAddress mAddress;
     quint16 mPort;
+    bool mUsesTls;
 
     qint64 mLastPing = 0;
 };

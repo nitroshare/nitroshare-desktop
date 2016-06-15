@@ -51,7 +51,7 @@ DeviceModelPrivate::~DeviceModelPrivate()
 }
 
 void DeviceModelPrivate::processPing(const QString &uuid, const QString &name, Platform::OperatingSystem operatingSystem,
-                                     const QHostAddress &address, quint16 port)
+                                     const QHostAddress &address, quint16 port, bool usesTls)
 {
     // Ensure that the UUID does not match this device
     // since we will receive our own broadcast packets
@@ -76,7 +76,7 @@ void DeviceModelPrivate::processPing(const QString &uuid, const QString &name, P
     }
 
     // Update the device and check to see if anything important has changed
-    bool changed = device->update(name, operatingSystem, address, port);
+    bool changed = device->update(name, operatingSystem, address, port, usesTls);
 
     // Add the device if it was created, and otherwise, check to see
     // if something changed and emit the appropriate signal if so
