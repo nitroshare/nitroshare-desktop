@@ -160,6 +160,8 @@ QVariant DeviceModel::data(const QModelIndex &index, int role) const
         return QVariant::fromValue(device->address());
     case PortRole:
         return device->port();
+    case UsesTLSRole:
+        return device->usesTls();
     }
 
     return QVariant();
@@ -188,6 +190,7 @@ QHash<int, QByteArray> DeviceModel::roleNames() const
         {NameRole, "name"},
         {OperatingSystemRole, "operating_system"},
         {AddressRole, "address"},
-        {PortRole, "port"}
+        {PortRole, "port"},
+        {UsesTLSRole, "uses_tls"}
     };
 }

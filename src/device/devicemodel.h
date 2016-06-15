@@ -71,6 +71,8 @@ public:
         AddressRole,
         /// Transfer port
         PortRole,
+        /// Whether the device uses TLS
+        UsesTLSRole
     };
 
     /**
