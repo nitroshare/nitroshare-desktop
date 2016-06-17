@@ -22,6 +22,8 @@
     <string>public.app-category.utilities</string>
     <key>LSMinimumSystemVersion</key>
     <string>10.7.0</string>
+    <key>LSUIElement</key>
+    <string>1</string>
     <key>NSPrincipalClass</key>
     <string>NSApplication</string>
     <key>NSHighResolutionCapable</key>
