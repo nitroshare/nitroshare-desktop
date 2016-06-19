@@ -109,14 +109,23 @@ install(TARGETS nitroshare
     BUNDLE DESTINATION .
 )
 
-# If windeployqt is available, use it immediately after the build completes to
-# ensure that the dependencies are available.
-# If Inno Setup is available, provide a target for building an EXE installer.
 if(WIN32)
+    # If windeployqt is available, use it immediately after the build completes to
+    # ensure that the dependencies are available.
     include(DeployQt)
     if(WINDEPLOYQT_EXECUTABLE)
         windeployqt(nitroshare)
     endif()
+
+    # If QHttpEngine was used, include it in the installer
+    if(QHttpEngine_FOUND)
+        add_custom_command(TARGET nitroshare POST_BUILD
+            COMMAND "${CMAKE_COMMAND}" -E
+                copy_if_different "$<TARGET_FILE:QHttpEngine>" "$<TARGET_FILE_DIR:nitroshare>"
+        )
+    endif()
+
+    # If Inno Setup is available, provide a target for building an EXE installer.
     find_package(InnoSetup)
     if(INNOSETUP_EXECUTABLE)
         configure_file(dist/setup.iss.in "${CMAKE_CURRENT_BINARY_DIR}/setup.iss")
@@ -131,15 +140,16 @@ if(WIN32)
     endif()
 endif()
 
-# If macdeployqt is available, use it immediately after the build completes to
-# copy the Qt frameworks into the application bundle.
-# Create a target for building a DMG that contains the application bundle and a
-# symlink to the /Applications folder.
 if(APPLE)
+    # If macdeployqt is available, use it immediately after the build completes to
+    # copy the Qt frameworks into the application bundle.
     include(DeployQt)
     if(MACDEPLOYQT_EXECUTABLE)
         macdeployqt(nitroshare)
     endif()
+
+    # Create a target for building a DMG that contains the application bundle and a
+    # symlink to the /Applications folder.
     set(sym "${CMAKE_BINARY_DIR}/out/Applications")
     set(dmg "${CMAKE_BINARY_DIR}/nitroshare-${PROJECT_VERSION}-osx.dmg")
     add_custom_target(dmg
