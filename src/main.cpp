@@ -23,7 +23,10 @@
  **/
 
 #include <QApplication>
+#include <QLibraryInfo>
+#include <QLocale>
 #include <QMessageBox>
+#include <QTranslator>
 
 #include "application/application.h"
 #include "application/splashdialog.h"
@@ -42,6 +45,17 @@ int main(int argc, char **argv)
     app.setApplicationVersion(PROJECT_VERSION);
     app.setOrganizationDomain(PROJECT_DOMAIN);
     app.setOrganizationName(PROJECT_AUTHOR);
+
+    // Set up translations for Qt
+    QTranslator qtTranslator;
+    qtTranslator.load(QString("qt_%1").arg(QLocale::system().name()),
+            QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+    app.installTranslator(&qtTranslator);
+
+    // Set up translations for NitroShare
+    QTranslator nsTranslator;
+    nsTranslator.load(QString("nitroshare_%1").arg(QLocale::system().name()), ":/qm");
+    app.installTranslator(&nsTranslator);
 
     // Check to see if the splash screen has been displayed yet
     bool appSplash = Settings::instance()->get(Settings::Key::ApplicationSplash).toBool();
