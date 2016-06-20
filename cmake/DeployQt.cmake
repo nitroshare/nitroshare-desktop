@@ -43,6 +43,14 @@ function(windeployqt target)
 
     # windeployqt doesn't work correctly with the system runtime libraries,
     # so we fall back to one of CMake's own modules for copying them over
+
+    # Doing this with MSVC 2015 requires CMake 3.6+
+    if((MSVC_VERSION VERSION_EQUAL 1900 OR MSVC_VERSION VERSION_GREATER 1900)
+            AND CMAKE_VERSION VERSION_LESS "3.6")
+        message(WARNING "Deploying with MSVC 2015+ requires CMake 3.6+")
+    endif()
+
+    set(CMAKE_INSTALL_UCRT_LIBRARIES TRUE)
     include(InstallRequiredSystemLibraries)
     foreach(lib ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS})
         get_filename_component(filename "${lib}" NAME)
