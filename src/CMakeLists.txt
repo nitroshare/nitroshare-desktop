@@ -141,6 +141,24 @@ if(WIN32)
 endif()
 
 if(APPLE)
+    # If QHttpEngine was used, copy the dynlib over and correct its RPATH
+    if(QHttpEngine_FOUND)
+        add_custom_command(TARGET nitroshare POST_BUILD
+            COMMAND "${CMAKE_COMMAND}" -E
+                make_directory "$<TARGET_FILE_DIR:nitroshare>/../Frameworks"
+            COMMAND "${CMAKE_COMMAND}" -E
+                copy_if_different
+                    "$<TARGET_FILE:QHttpEngine>"
+                    "$<TARGET_FILE_DIR:nitroshare>/../Frameworks/$<TARGET_SONAME_FILE_NAME:QHttpEngine>"
+            COMMAND install_name_tool
+                -change
+                "$<TARGET_SONAME_FILE_NAME:QHttpEngine>"
+                "@rpath/$<TARGET_SONAME_FILE_NAME:QHttpEngine>"
+                "$<TARGET_FILE:nitroshare>"
+            COMMENT "Copying QHttpEngine and correcting RPATH..."
+        )
+    endif()
+
     # If macdeployqt is available, use it immediately after the build completes to
     # copy the Qt frameworks into the application bundle.
     include(DeployQt)
