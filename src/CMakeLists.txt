@@ -185,7 +185,7 @@ if(APPLE)
     )
 endif()
 
-# On Linux, include the icons, manpage, and .desktop file when installing.
+# On Linux, include the icons, manpage, .desktop file, and Nautilus extension when installing.
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/dist/icons"
         DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}"
@@ -195,5 +195,8 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     )
     install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/dist/nitroshare.desktop"
         DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/applications"
+    )
+    install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/dist/nitroshare.py"
+        DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/nautilus-python/extensions"
     )
 endif()
