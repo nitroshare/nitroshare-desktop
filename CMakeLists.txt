@@ -51,6 +51,12 @@ endif()
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 
+# Apple requires a couple extra flags
+if(APPLE)
+    set(CMAKE_CXX_FLAGS "-stdlib=libc++")
+    set(CMAKE_OSX_DEPLOYMENT_TARGET "10.8")
+endif()
+
 # Since Qt and GTK+ both define the symbol "signals", it is necessary to
 # ensure that it is not defined by Qt.
 add_definitions(-DQT_NO_SIGNALS_SLOTS_KEYWORDS)
