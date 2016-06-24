@@ -26,10 +26,18 @@
 #include <QStringList>
 
 #include "apihandler.h"
+#include "config.h"
 
 ApiHandler::ApiHandler(const QString &token)
     : mToken(token)
 {
+}
+
+QVariantMap ApiHandler::version(const QVariantMap &params)
+{
+    return QVariantMap({
+        { "version", PROJECT_VERSION }
+    });
 }
 
 QVariantMap ApiHandler::sendItems(const QVariantMap &params)

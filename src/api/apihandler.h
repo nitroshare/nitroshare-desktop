@@ -46,6 +46,7 @@ Q_SIGNALS:
 
 public Q_SLOTS:
 
+    QVariantMap version(const QVariantMap &params);
     QVariantMap sendItems(const QVariantMap &params);
 
 private:
