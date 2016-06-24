@@ -36,12 +36,12 @@ void TransferServerPrivate::onSettingsChanged(const QList<Settings::Key> &keys)
 {
     Settings *settings = Settings::instance();
 
-    if(keys.empty() || keys.contains(Settings::Key::BehaviorReceive) ||
+    if (keys.empty() || keys.contains(Settings::Key::BehaviorReceive) ||
             keys.contains(Settings::Key::TransferPort)) {
         close();
-        if(settings->get(Settings::Key::BehaviorReceive).toBool()) {
+        if (settings->get(Settings::Key::BehaviorReceive).toBool()) {
             quint16 port = Settings::instance()->get(Settings::Key::TransferPort).toInt();
-            if(!listen(QHostAddress::Any, port)) {
+            if (!listen(QHostAddress::Any, port)) {
                 emit q->error(tr("Unable to listen on port %1").arg(port));
             }
         }

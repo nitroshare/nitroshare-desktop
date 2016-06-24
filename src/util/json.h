@@ -48,7 +48,7 @@
  *     QString item1;
  *     qint64 item2;
  *
- *     if(JSON::isArray(doc, array) &&
+ *     if (JSON::isArray(doc, array) &&
  *             array.count() &&
  *             JSON::isObject(array.at(0), object) &&
  *             JSON::objectContains(object, "item1", item1) &&

@@ -84,7 +84,7 @@ TransferWindow::TransferWindow(TransferModel *model)
 
 void TransferWindow::onRowsInserted(const QModelIndex &, int first, int last)
 {
-    for(int row = first; row <= last; ++row) {
+    for (int row = first; row <= last; ++row) {
 
         // Create a progress box for (surprise!) displaying progress
         // It will remain in place as long as the row does
@@ -101,21 +101,21 @@ void TransferWindow::onRowsInserted(const QModelIndex &, int first, int last)
 
 void TransferWindow::onDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight,  const QVector<int> &roles)
 {
-    for(int row = topLeft.row(); row <= bottomRight.row(); ++row) {
+    for (int row = topLeft.row(); row <= bottomRight.row(); ++row) {
 
         // Update the progress box if its value has changed
-        if(roles.contains(TransferModel::ProgressRole) || roles.empty()) {
+        if (roles.contains(TransferModel::ProgressRole) || roles.empty()) {
             updateProgressBar(row);
         }
 
         // Update the button if the state has changed
-        if(roles.contains(TransferModel::StateRole) || roles.isEmpty()) {
+        if (roles.contains(TransferModel::StateRole) || roles.isEmpty()) {
             updateButton(row);
         }
     }
 
 #ifdef Qt5WinExtras_FOUND
-    if(mTaskbarButton) {
+    if (mTaskbarButton) {
         int progress = mModel->combinedProgress();
         mTaskbarButton->progress()->setValue(progress);
         mTaskbarButton->progress()->setVisible(progress > 0 && progress < 100);
@@ -124,7 +124,7 @@ void TransferWindow::onDataChanged(const QModelIndex &topLeft, const QModelIndex
 
 #ifdef Qt5MacExtras_FOUND
     int progress = mModel->combinedProgress();
-    if(progress > 0 && progress < 100) {
+    if (progress > 0 && progress < 100) {
         QtMac::setBadgeLabelText(QString("%1%").arg(progress));
     } else {
         QtMac::setBadgeLabelText("");
@@ -132,7 +132,7 @@ void TransferWindow::onDataChanged(const QModelIndex &topLeft, const QModelIndex
 #endif
 
 #ifdef Q_OS_LINUX
-    if(mLauncherEntry) {
+    if (mLauncherEntry) {
         int progress = mModel->combinedProgress();
         gSetProgress(mLauncherEntry, static_cast<double>(progress) / 100.0f);
         gSetProgressVisible(mLauncherEntry, progress > 0 && progress < 100);
@@ -143,7 +143,7 @@ void TransferWindow::onDataChanged(const QModelIndex &topLeft, const QModelIndex
 #ifdef Qt5WinExtras_FOUND
 void TransferWindow::showEvent(QShowEvent *)
 {
-    if(!mTaskbarButton && QSysInfo::windowsVersion() >= QSysInfo::WV_WINDOWS7) {
+    if (!mTaskbarButton && QSysInfo::windowsVersion() >= QSysInfo::WV_WINDOWS7) {
         mTaskbarButton = new QWinTaskbarButton(this);
         mTaskbarButton->setWindow(windowHandle());
     }
@@ -151,7 +151,7 @@ void TransferWindow::showEvent(QShowEvent *)
 
 void TransferWindow::hideEvent(QHideEvent *)
 {
-    if(mTaskbarButton) {
+    if (mTaskbarButton) {
         delete mTaskbarButton;
         mTaskbarButton = nullptr;
     }
@@ -183,14 +183,14 @@ void TransferWindow::updateButton(int row)
     // - a cancel button for transfers in progress
     // - a restart button for failed and canceled transfers being sent
     // - a dismiss button for everything else
-    if(state == TransferModel::Connecting || state == TransferModel::InProgress) {
+    if (state == TransferModel::Connecting || state == TransferModel::InProgress) {
 
         button->setText(tr("Cancel"));
         connect(button, &QPushButton::clicked, [this, index]() {
             mModel->cancel(index.row());
         });
 
-    } else if(direction == TransferModel::Send && state == TransferModel::Failed) {
+    } else if (direction == TransferModel::Send && state == TransferModel::Failed) {
 
         button->setText(tr("Restart"));
         connect(button, &QPushButton::clicked, [this, index]() {

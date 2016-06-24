@@ -83,10 +83,10 @@ AboutDialog::AboutDialog()
 
 void AboutDialog::onCreditsOrLicenceClicked(bool checked)
 {
-    if(sender()->objectName() == "btnLicense") {
+    if (sender()->objectName() == "btnLicense") {
         textBrowser->setText(License);
         btnCredits->setChecked(false);
-    } else if(sender()->objectName() == "btnCredits") {
+    } else if (sender()->objectName() == "btnCredits") {
         textBrowser->setText(Credits);
         btnLicense->setChecked(false);
     }

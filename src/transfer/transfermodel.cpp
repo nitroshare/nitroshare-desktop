@@ -59,7 +59,7 @@ void TransferModelPrivate::add(Transfer *transfer)
 
     // Whenever the transfer changes, emit the appropriate signal
     QObject::connect(transfer, &Transfer::dataChanged, [this, transfer](const QVector<int> &roles) {
-        if(!roles.contains(TransferModel::ProgressRole)) {
+        if (!roles.contains(TransferModel::ProgressRole)) {
             cachedProgressAge = 0;
         }
         int index = transfers.indexOf(transfer);
@@ -185,21 +185,21 @@ int TransferModel::columnCount(const QModelIndex &parent) const
 
 QVariant TransferModel::data(const QModelIndex &index, int role) const
 {
-    if(!index.isValid() || index.model() != this) {
+    if (!index.isValid() || index.model() != this) {
         return QVariant();
     }
 
     Transfer *transfer = d->transfers.at(index.row());
 
-    switch(role) {
+    switch (role) {
     case Qt::DisplayRole:
-        switch(index.column()) {
+        switch (index.column()) {
         case DeviceNameColumn:
             return transfer->deviceName();
         case ProgressColumn:
             return QString("%1%").arg(transfer->progress());
         case StateColumn:
-            switch(transfer->state()) {
+            switch (transfer->state()) {
             case Connecting:
                 return tr("Connecting");
             case InProgress:
@@ -212,8 +212,8 @@ QVariant TransferModel::data(const QModelIndex &index, int role) const
         }
         break;
     case Qt::DecorationRole:
-        if(index.column() == DeviceNameColumn) {
-            switch(transfer->direction()) {
+        if (index.column() == DeviceNameColumn) {
+            switch (transfer->direction()) {
             case Send:
                 return QApplication::style()->standardIcon(QStyle::SP_ArrowUp);
             case Receive:
@@ -222,8 +222,8 @@ QVariant TransferModel::data(const QModelIndex &index, int role) const
         }
         break;
     case Qt::ForegroundRole:
-        if(index.column() == StateColumn) {
-            switch(transfer->state()) {
+        if (index.column() == StateColumn) {
+            switch (transfer->state()) {
             case Failed:
                 return QBrush(Qt::darkRed);
             case Succeeded:
@@ -250,11 +250,11 @@ QVariant TransferModel::data(const QModelIndex &index, int role) const
 
 QVariant TransferModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-    if(orientation != Qt::Horizontal || role != Qt::DisplayRole) {
+    if (orientation != Qt::Horizontal || role != Qt::DisplayRole) {
         return QAbstractTableModel::headerData(section, orientation, role);
     }
 
-    switch(section) {
+    switch (section) {
     case DeviceNameColumn:
         return tr("Device Name");
     case ProgressColumn:
@@ -283,20 +283,20 @@ int TransferModel::combinedProgress() const
 {
     // If we're still within 200ms of the last call, return the cached value
     qint64 currentMSecs = QDateTime::currentMSecsSinceEpoch();
-    if(d->cachedProgressAge + 200 > currentMSecs) {
+    if (d->cachedProgressAge + 200 > currentMSecs) {
         return d->cachedProgress;
     }
 
     // Sum the progress of all transfers in progress
     int progress = 0;
     int progressCount = 0;
-    for(QList<Transfer*>::const_iterator i = d->transfers.constBegin(); i != d->transfers.constEnd(); ++i) {
-        if((*i)->state() == InProgress) {
+    for (QList<Transfer*>::const_iterator i = d->transfers.constBegin(); i != d->transfers.constEnd(); ++i) {
+        if ((*i)->state() == InProgress) {
             progress += (*i)->progress();
             progressCount++;
         }
     }
-    if(progressCount) {
+    if (progressCount) {
         progress /= progressCount;
     }
 
@@ -317,7 +317,7 @@ void TransferModel::addSender(const QString &deviceName, const QHostAddress &add
 
 void TransferModel::cancel(int index)
 {
-    if(index < 0 || index >= d->transfers.count()) {
+    if (index < 0 || index >= d->transfers.count()) {
         qWarning("Invalid index supplied.");
         return;
     }
@@ -327,7 +327,7 @@ void TransferModel::cancel(int index)
 
 void TransferModel::restart(int index)
 {
-    if(index < 0 || index >= d->transfers.count()) {
+    if (index < 0 || index >= d->transfers.count()) {
         qWarning("Invalid index supplied.");
         return;
     }
@@ -337,14 +337,14 @@ void TransferModel::restart(int index)
 
 void TransferModel::dismiss(int index)
 {
-    if(index < 0 || index >= d->transfers.count()) {
+    if (index < 0 || index >= d->transfers.count()) {
         qWarning("Invalid index supplied.");
         return;
     }
 
     // Retrieve the transfer and ensure it is not in progress
     Transfer *transfer = d->transfers.at(index);
-    if(transfer->state() == TransferModel::Connecting || transfer->state() == TransferModel::InProgress) {
+    if (transfer->state() == TransferModel::Connecting || transfer->state() == TransferModel::InProgress) {
         qWarning("Cannot dismiss a transfer that is currently in progress.");
         return;
     }
@@ -355,11 +355,11 @@ void TransferModel::dismiss(int index)
 void TransferModel::clear()
 {
     // Iterate over the list in reverse to preserve indices when items are removed
-    for(int i = d->transfers.count() - 1; i >= 0; --i) {
+    for (int i = d->transfers.count() - 1; i >= 0; --i) {
         Transfer *transfer = d->transfers.at(i);
 
         // Remove only items that are finished
-        if(transfer->state() == Failed || transfer->state() == Succeeded) {
+        if (transfer->state() == Failed || transfer->state() == Succeeded) {
             d->remove(transfer);
         }
     }

@@ -44,7 +44,7 @@ DeviceListener::DeviceListener()
 
 void DeviceListener::processPings()
 {
-    while(mSocket.hasPendingDatagrams()) {
+    while (mSocket.hasPendingDatagrams()) {
 
         // Capture both the data and the address
         QByteArray data;
@@ -61,14 +61,14 @@ void DeviceListener::processPings()
         QString operatingSystemName;
         int port;
 
-        if(Json::isObject(document, object) &&
+        if (Json::isObject(document, object) &&
                 Json::objectContains(object, "uuid", uuid) &&
                 Json::objectContains(object, "name", name) &&
                 Json::objectContains(object, "operating_system", operatingSystemName) &&
                 Json::objectContains(object, "port", port)) {
 
             // Double-check that the port is valid
-            if(port > 0 && port < 65536) {
+            if (port > 0 && port < 65536) {
 
                 Platform::OperatingSystem operatingSystem = Platform::operatingSystemForName(operatingSystemName);
                 bool usesTls = false;
@@ -98,10 +98,10 @@ void DeviceListener::sendPings()
     // Build a list of all unique addresses (since we are
     // sending broadcast packets, these will always be IPv4)
     QSet<QHostAddress> addresses;
-    foreach(QNetworkInterface interface, QNetworkInterface::allInterfaces()) {
-        if(interface.flags() & QNetworkInterface::CanBroadcast) {
-            foreach(QNetworkAddressEntry entry, interface.addressEntries()) {
-                if(!entry.broadcast().isNull()) {
+    foreach (QNetworkInterface interface, QNetworkInterface::allInterfaces()) {
+        if (interface.flags() & QNetworkInterface::CanBroadcast) {
+            foreach (QNetworkAddressEntry entry, interface.addressEntries()) {
+                if (!entry.broadcast().isNull()) {
                     addresses.insert(entry.broadcast());
                 }
             }
@@ -110,7 +110,7 @@ void DeviceListener::sendPings()
 
     // Build the packet and send it on all of the addresses
     QByteArray data(QJsonDocument(object).toJson(QJsonDocument::Compact));
-    foreach(QHostAddress address, addresses) {
+    foreach (QHostAddress address, addresses) {
         mSocket.writeDatagram(data, address, mSocket.localPort());
     }
 }
@@ -119,11 +119,11 @@ void DeviceListener::onSettingsChanged(const QList<Settings::Key> &keys)
 {
     Settings *settings = Settings::instance();
 
-    if(keys.empty() || keys.contains(Settings::Key::BroadcastInterval)) {
+    if (keys.empty() || keys.contains(Settings::Key::BroadcastInterval)) {
         mTimer.setInterval(settings->get(Settings::Key::BroadcastInterval).toInt());
     }
 
-    if(keys.empty() || keys.contains(Settings::Key::BroadcastPort)) {
+    if (keys.empty() || keys.contains(Settings::Key::BroadcastPort)) {
         mSocket.close();
         mSocket.bind(settings->get(Settings::Key::BroadcastPort).toInt(), QUdpSocket::ShareAddress);
     }

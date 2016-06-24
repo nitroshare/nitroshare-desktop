@@ -105,19 +105,19 @@ Platform::Architecture Platform::currentArchitecture()
 Platform::DesktopEnvironment Platform::currentDesktopEnvironment()
 {
     QString desktop = QProcessEnvironment::systemEnvironment().value("XDG_CURRENT_DESKTOP").toLower();
-    if(desktop == "unity") {
+    if (desktop == "unity") {
         return DesktopEnvironment::Unity;
-    } else if(desktop.startsWith("gnome")) {
+    } else if (desktop.startsWith("gnome")) {
         return DesktopEnvironment::Gnome;
-    } else if(desktop.endsWith("plasma")) {
+    } else if (desktop.endsWith("plasma")) {
         return DesktopEnvironment::KDE;
-    } else if(desktop == "xfce") {
+    } else if (desktop == "xfce") {
         return DesktopEnvironment::XFCE;
-    } else if(desktop == "mate") {
+    } else if (desktop == "mate") {
         return DesktopEnvironment::MATE;
-    } else if(desktop.endsWith("cinnamon")) {
+    } else if (desktop.endsWith("cinnamon")) {
         return DesktopEnvironment::Cinnamon;
-    } else if(desktop == "pantheon") {
+    } else if (desktop == "pantheon") {
         return DesktopEnvironment::Pantheon;
     } else {
         return DesktopEnvironment::Unknown;
@@ -126,7 +126,7 @@ Platform::DesktopEnvironment Platform::currentDesktopEnvironment()
 
 QString Platform::operatingSystemName(OperatingSystem operatingSystem)
 {
-    switch(operatingSystem) {
+    switch (operatingSystem) {
     case OperatingSystem::Windows:
         return "windows";
     case OperatingSystem::OSX:
@@ -140,7 +140,7 @@ QString Platform::operatingSystemName(OperatingSystem operatingSystem)
 
 QString Platform::operatingSystemFriendlyName(OperatingSystem operatingSystem)
 {
-    switch(operatingSystem) {
+    switch (operatingSystem) {
     case OperatingSystem::Windows:
         return QObject::tr("Windows");
     case OperatingSystem::OSX:
@@ -154,11 +154,11 @@ QString Platform::operatingSystemFriendlyName(OperatingSystem operatingSystem)
 
 Platform::OperatingSystem Platform::operatingSystemForName(const QString &name)
 {
-    if(name == "windows") {
+    if (name == "windows") {
         return OperatingSystem::Windows;
-    } else if(name == "osx") {
+    } else if (name == "osx") {
         return OperatingSystem::OSX;
-    } else if(name == "linux") {
+    } else if (name == "linux") {
         return OperatingSystem::Linux;
     } else {
         return OperatingSystem::Unknown;
@@ -167,7 +167,7 @@ Platform::OperatingSystem Platform::operatingSystemForName(const QString &name)
 
 QString Platform::architectureName(Architecture architecture)
 {
-    switch(architecture) {
+    switch (architecture) {
     case Architecture::x86:
         return "x86";
     case Architecture::x64:
@@ -190,8 +190,8 @@ bool Platform::useIndicator()
     //     - MATE: use AppIndicator
     //     - Cinnamon: use AppIndicator
     //     - Pantheon: use AppIndicator
-    if(currentOperatingSystem() == OperatingSystem::Linux) {
-        switch(currentDesktopEnvironment()) {
+    if (currentOperatingSystem() == OperatingSystem::Linux) {
+        switch (currentDesktopEnvironment()) {
         case DesktopEnvironment::Unity:
         case DesktopEnvironment::Gnome:
         case DesktopEnvironment::MATE:

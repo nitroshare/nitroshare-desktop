@@ -55,7 +55,7 @@ void DeviceModelPrivate::processPing(const QString &uuid, const QString &name, P
 {
     // Ensure that the UUID does not match this device
     // since we will receive our own broadcast packets
-    if(uuid == Settings::instance()->get(Settings::Key::DeviceUUID).toString()) {
+    if (uuid == Settings::instance()->get(Settings::Key::DeviceUUID).toString()) {
         return;
     }
 
@@ -63,15 +63,15 @@ void DeviceModelPrivate::processPing(const QString &uuid, const QString &name, P
     Device *device = nullptr;
     int row = 0;
 
-    for(; row < devices.count(); ++row) {
-        if(devices.at(row)->uuid() == uuid) {
+    for (; row < devices.count(); ++row) {
+        if (devices.at(row)->uuid() == uuid) {
             device = devices.at(row);
         }
     }
 
     // Create a new device if one does not yet exist with the UUID
     bool created = static_cast<bool>(!device);
-    if(created) {
+    if (created) {
         device = new Device(uuid);
     }
 
@@ -80,11 +80,11 @@ void DeviceModelPrivate::processPing(const QString &uuid, const QString &name, P
 
     // Add the device if it was created, and otherwise, check to see
     // if something changed and emit the appropriate signal if so
-    if(created) {
+    if (created) {
         q->beginInsertRows(QModelIndex(), devices.count(), devices.count());
         devices.append(device);
         q->endInsertRows();
-    } else if(changed) {
+    } else if (changed) {
         emit q->dataChanged(q->index(row, 0), q->index(row, DeviceModel::ColumnCount));
     }
 }
@@ -92,11 +92,11 @@ void DeviceModelPrivate::processPing(const QString &uuid, const QString &name, P
 void DeviceModelPrivate::update()
 {
     // Iterate over the list in reverse to preserve indices when items are removed
-    for(int row = devices.count() - 1; row >= 0; --row) {
+    for (int row = devices.count() - 1; row >= 0; --row) {
         Device *device = devices.at(row);
 
         // Remove the device if it has timed out
-        if(device->hasTimedOut()) {
+        if (device->hasTimedOut()) {
             q->beginRemoveRows(QModelIndex(), row, row);
             devices.removeAt(row);
             q->endRemoveRows();
@@ -108,7 +108,7 @@ void DeviceModelPrivate::update()
 
 void DeviceModelPrivate::onSettingsChanged(const QList<Settings::Key> &keys)
 {
-    if(keys.empty() || keys.contains(Settings::Key::BroadcastTimeout)) {
+    if (keys.empty() || keys.contains(Settings::Key::BroadcastTimeout)) {
         timer.setInterval(Settings::instance()->get(Settings::Key::BroadcastTimeout).toInt());
     }
 }
@@ -130,15 +130,15 @@ int DeviceModel::columnCount(const QModelIndex &parent) const
 
 QVariant DeviceModel::data(const QModelIndex &index, int role) const
 {
-    if(!index.isValid() || index.model() != this) {
+    if (!index.isValid() || index.model() != this) {
         return QVariant();
     }
 
     Device *device = d->devices.at(index.row());
 
-    switch(role) {
+    switch (role) {
     case Qt::DisplayRole:
-        switch(index.column()) {
+        switch (index.column()) {
         case NameColumn:
             return device->name();
         case OperatingSystemColumn:
@@ -146,7 +146,7 @@ QVariant DeviceModel::data(const QModelIndex &index, int role) const
         }
         break;
     case Qt::DecorationRole:
-        if(index.column() == NameColumn) {
+        if (index.column() == NameColumn) {
             return QIcon(":/img/desktop.svg");
         }
         break;
@@ -169,11 +169,11 @@ QVariant DeviceModel::data(const QModelIndex &index, int role) const
 
 QVariant DeviceModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-    if(orientation != Qt::Horizontal || role != Qt::DisplayRole) {
+    if (orientation != Qt::Horizontal || role != Qt::DisplayRole) {
         return QAbstractItemModel::headerData(section, orientation, role);
     }
 
-    switch(section) {
+    switch (section) {
     case NameColumn:
         return tr("Device Name");
     case OperatingSystemColumn:

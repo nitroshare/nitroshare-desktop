@@ -101,8 +101,8 @@ void Application::notifyError(const QString &message)
 void Application::notifyDevicesAdded(const QModelIndex &, int first, int last)
 {
     // Only display notifications if current uptime exceeds the broadcast timeout
-    if(QDateTime::currentMSecsSinceEpoch() - mStartTime > Settings::instance()->get(Settings::Key::BroadcastTimeout).toInt()) {
-        for(int row = first; row <= last; ++row) {
+    if (QDateTime::currentMSecsSinceEpoch() - mStartTime > Settings::instance()->get(Settings::Key::BroadcastTimeout).toInt()) {
+        for (int row = first; row <= last; ++row) {
             mIcon->showMessage(tr("%1 has joined.").arg(
                 mDeviceModel.data(mDeviceModel.index(row, 0), DeviceModel::NameRole).toString()
             ));
@@ -112,7 +112,7 @@ void Application::notifyDevicesAdded(const QModelIndex &, int first, int last)
 
 void Application::notifyDevicesRemoved(const QModelIndex &, int first, int last)
 {
-    for(int row = first; row <= last; ++row) {
+    for (int row = first; row <= last; ++row) {
         mIcon->showMessage(tr("%1 has left.").arg(
             mDeviceModel.data(mDeviceModel.index(row, 0), DeviceModel::NameRole).toString()
         ));
@@ -124,17 +124,17 @@ void Application::notifyTransfersChanged(const QModelIndex &topLeft, const QMode
     // Display notifications if one of the following happens:
     // - the device name is known (receiving only)
     // - transfer fails or succeeds
-    for(int row = topLeft.row(); row <= bottomRight.row(); ++row) {
+    for (int row = topLeft.row(); row <= bottomRight.row(); ++row) {
 
         QModelIndex index = mTransferModel.index(row, 0);
-        if(roles.contains(TransferModel::DeviceNameRole)) {
+        if (roles.contains(TransferModel::DeviceNameRole)) {
 
             mIcon->showMessage(tr("Receiving transfer from %1.").arg(
                 index.data(TransferModel::DeviceNameRole).toString()
             ));
-        } else if(roles.contains(TransferModel::StateRole)) {
+        } else if (roles.contains(TransferModel::StateRole)) {
 
-            switch(index.data(TransferModel::StateRole).toInt()) {
+            switch (index.data(TransferModel::StateRole).toInt()) {
             case TransferModel::Failed:
                 mIcon->showMessage(tr("Transfer with %1 failed.").arg(
                     index.data(TransferModel::DeviceNameRole).toString()
@@ -153,7 +153,7 @@ void Application::notifyTransfersChanged(const QModelIndex &topLeft, const QMode
 void Application::sendBundle(const Bundle *bundle)
 {
     QModelIndex index = DeviceDialog::getDevice(&mDeviceModel);
-    if(index.isValid()) {
+    if (index.isValid()) {
 
         // Obtain the information needed to connect to the device
         QString deviceName = index.data(DeviceModel::NameRole).value<QString>();
@@ -169,10 +169,10 @@ void Application::sendFiles()
 {
     QStringList filenames(QFileDialog::getOpenFileNames(nullptr, tr("Select Files")));
 
-    if(filenames.count()) {
+    if (filenames.count()) {
         Bundle *bundle = new Bundle;
 
-        foreach(QString filename, filenames) {
+        foreach (QString filename, filenames) {
             bundle->addFile(filename);
         }
 
@@ -184,7 +184,7 @@ void Application::sendDirectory()
 {
     QString path(QFileDialog::getExistingDirectory(nullptr, tr("Select Directory")));
 
-    if(!path.isNull()) {
+    if (!path.isNull()) {
         Bundle *bundle = new Bundle;
 
         bundle->addDirectory(path);

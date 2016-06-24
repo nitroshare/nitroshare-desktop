@@ -75,12 +75,12 @@ void TransferSender::processBinaryPacket(const QByteArray &)
 void TransferSender::writeNextPacket()
 {
     // Write the next packet according to the current state
-    switch(mProtocolState) {
+    switch (mProtocolState) {
     case ProtocolState::TransferHeader:
         writeTransferHeader();
         break;
     case ProtocolState::TransferItems:
-        if(mFile.isOpen()) {
+        if (mFile.isOpen()) {
             writeItemData();
         } else {
             writeItemHeader();
@@ -116,7 +116,7 @@ void TransferSender::writeItemHeader()
         { "last_read", QString::number(mCurrentItem->lastRead()) }
     });
 
-    if(mCurrentItem->isDir()) {
+    if (mCurrentItem->isDir()) {
 
         // If the item is a directory, write the
         // header and move to the next item
@@ -127,7 +127,7 @@ void TransferSender::writeItemHeader()
 
         // Set the filename and attempt to open the file
         mFile.setFileName(mCurrentItem->absoluteFilename());
-        if(!mFile.open(QIODevice::ReadOnly)) {
+        if (!mFile.open(QIODevice::ReadOnly)) {
             writeErrorPacket(tr("Unable to open %1").arg(mCurrentItem->absoluteFilename()));
             return;
         }
@@ -138,7 +138,7 @@ void TransferSender::writeItemHeader()
         writeJsonPacket(header);
 
         // If the file is empty, there's no need to send its contents
-        if(!mFileBytesRemaining) {
+        if (!mFileBytesRemaining) {
             mFile.close();
             nextItem();
         }
@@ -155,7 +155,7 @@ void TransferSender::writeItemData()
     qint64 bytesRead = mFile.read(buffer.data(), qMin(mFileBytesRemaining, static_cast<qint64>(mBufferSize)));
 
     // Ensure that a valid number of bytes were read
-    if(bytesRead < 0 && mFileBytesRemaining) {
+    if (bytesRead < 0 && mFileBytesRemaining) {
          writeErrorPacket(tr("Unable to read from %1").arg(mFile.fileName()));
          return;
     }
@@ -171,7 +171,7 @@ void TransferSender::writeItemData()
     updateProgress();
 
     // If there are no bytes remaining in the file close it and move on
-    if(!mFileBytesRemaining) {
+    if (!mFileBytesRemaining) {
         mFile.close();
         nextItem();
     }
@@ -183,7 +183,7 @@ void TransferSender::nextItem()
     ++mCurrentItem;
 
     // Check to see if the "next item" actually exists or if we're done
-    if(mCurrentItem == mBundle->d->items.constEnd()) {
+    if (mCurrentItem == mBundle->d->items.constEnd()) {
         mProtocolState = ProtocolState::Acknowledgement;
     }
 }

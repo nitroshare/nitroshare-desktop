@@ -93,7 +93,7 @@ void SettingsDialog::onResetButtonClicked()
     );
 
     // Perform the reset and then reload all of the settings
-    if(response == QMessageBox::Yes) {
+    if (response == QMessageBox::Yes) {
         Settings::instance()->reset();
         reload();
     }

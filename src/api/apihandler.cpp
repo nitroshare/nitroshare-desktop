@@ -38,11 +38,11 @@ QVariantMap ApiHandler::sendItems(const QVariantMap &params)
     Bundle *bundle = new Bundle();
 
     // Add the items to the bundle
-    foreach(QString item, items) {
+    foreach (QString item, items) {
         QFileInfo info(item);
         if (info.isDir()) {
             bundle->addDirectory(item);
-        } else if(info.isFile()) {
+        } else if (info.isFile()) {
             bundle->addFile(item);
         }
     }

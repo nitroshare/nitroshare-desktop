@@ -63,7 +63,7 @@ int main(int argc, char **argv)
     bool appSplash = Settings::instance()->get(Settings::Key::ApplicationSplash).toBool();
 
     // If not, display it and remember that the user has seen it
-    if(!appSplash) {
+    if (!appSplash) {
         SplashDialog().exec();
         Settings::instance()->set(Settings::Key::ApplicationSplash, true);
     }
@@ -71,7 +71,7 @@ int main(int argc, char **argv)
 #ifdef APPINDICATOR_FOUND
     // If the splash had not been seen and the user is running Gnome,
     // warn them that they need a special extension installed
-    if(!appSplash && Platform::currentDesktopEnvironment() ==
+    if (!appSplash && Platform::currentDesktopEnvironment() ==
             Platform::DesktopEnvironment::Gnome) {
         QMessageBox::about(nullptr, QObject::tr("Warning"), QObject::tr(
                 "Some versions of Gnome do not support AppIndicators. This prevents "
