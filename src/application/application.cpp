@@ -25,8 +25,10 @@
 #include <QApplication>
 #include <QDateTime>
 #include <QDesktopServices>
+#include <QDesktopWidget>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QStyle>
 
 #include "../device/devicedialog.h"
 #include "../icon/trayicon.h"
@@ -70,7 +72,7 @@ Application::Application()
     mIcon->addAction(tr("Send Files..."), this, SLOT(sendFiles()));
     mIcon->addAction(tr("Send Directory..."), this, SLOT(sendDirectory()));
     mIcon->addSeparator();
-    mIcon->addAction(tr("View Transfers..."), &mTransferWindow, SLOT(show()));
+    mIcon->addAction(tr("View Transfers..."), this, SLOT(onViewTransfers()));
     mIcon->addSeparator();
     mIcon->addAction(tr("Settings"), this, SLOT(onOpenSettings()));
     mIcon->addSeparator();
@@ -190,6 +192,20 @@ void Application::sendDirectory()
         bundle->addDirectory(path);
         sendBundle(bundle);
     }
+}
+
+void Application::onViewTransfers()
+{
+    mTransferWindow.show();
+    mTransferWindow.setGeometry(
+        QStyle::alignedRect(
+            Qt::LeftToRight,
+            Qt::AlignCenter,
+            mTransferWindow.size(),
+            QApplication::desktop()->availableGeometry()
+        )
+    );
+    mTransferWindow.raise();
 }
 
 void Application::onOpenSettings()

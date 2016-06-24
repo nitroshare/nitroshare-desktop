@@ -66,6 +66,7 @@ private Q_SLOTS:
     void sendFiles();
     void sendDirectory();
 
+    void onViewTransfers();
     void onOpenSettings();
 
     void onOpenAbout();
