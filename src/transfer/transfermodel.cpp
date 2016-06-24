@@ -221,6 +221,11 @@ QVariant TransferModel::data(const QModelIndex &index, int role) const
             }
         }
         break;
+    case Qt::TextAlignmentRole:
+        if (index.column() == StateColumn) {
+            return Qt::AlignCenter;
+        }
+        break;
     case Qt::ForegroundRole:
         if (index.column() == StateColumn) {
             switch (transfer->state()) {
