@@ -64,9 +64,9 @@ TransferWindow::TransferWindow(TransferModel *model)
     setupUi(this);
 
     transferView->setModel(mModel);
-    transferView->setColumnWidth(TransferModel::DeviceNameColumn, 150);
-    transferView->setColumnWidth(TransferModel::ProgressColumn, 150);
-    transferView->setColumnWidth(TransferModel::StateColumn, 200);
+    transferView->setColumnWidth(TransferModel::DeviceNameColumn, 180);
+    transferView->setColumnWidth(TransferModel::ProgressColumn, 200);
+    transferView->setColumnWidth(TransferModel::StateColumn, 180);
 
     connect(sendDirectoryBtn, &QPushButton::clicked, this, &TransferWindow::sendDirectory);
     connect(sendFilesBtn, &QPushButton::clicked, this, &TransferWindow::sendFiles);
