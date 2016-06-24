@@ -35,9 +35,9 @@ ApiHandler::ApiHandler(const QString &token)
 
 QVariantMap ApiHandler::version(const QVariantMap &params)
 {
-    return QVariantMap({
+    return {
         { "version", PROJECT_VERSION }
-    });
+    };
 }
 
 QVariantMap ApiHandler::sendItems(const QVariantMap &params)
