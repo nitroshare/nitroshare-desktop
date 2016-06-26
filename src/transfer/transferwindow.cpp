@@ -22,9 +22,11 @@
  * IN THE SOFTWARE.
  **/
 
+#include <QMimeData>
 #include <QPersistentModelIndex>
 #include <QProgressBar>
 #include <QPushButton>
+#include <QUrl>
 
 #include "transferwindow.h"
 
@@ -74,6 +76,8 @@ TransferWindow::TransferWindow(TransferModel *model)
 
     connect(mModel, &TransferModel::rowsInserted, this, &TransferWindow::onRowsInserted);
     connect(mModel, &TransferModel::dataChanged, this, &TransferWindow::onDataChanged);
+
+    setAcceptDrops(true);
 
 #ifdef Q_OS_LINUX
     if (gGetForDesktopId && gSetProgress && gSetProgressVisible) {
@@ -157,6 +161,25 @@ void TransferWindow::hideEvent(QHideEvent *)
     }
 }
 #endif
+
+void TransferWindow::dragEnterEvent(QDragEnterEvent *event)
+{
+    if (event->mimeData()->hasUrls()) {
+        event->acceptProposedAction();
+    }
+}
+
+void TransferWindow::dropEvent(QDropEvent *event)
+{
+    QStringList items;
+
+    foreach (QUrl url, event->mimeData()->urls()) {
+        items.append(url.toLocalFile());
+    }
+
+    emit itemsQueued(items);
+    event->acceptProposedAction();
+}
 
 void TransferWindow::updateProgressBar(int row)
 {

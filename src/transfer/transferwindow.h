@@ -25,6 +25,8 @@
 #ifndef NS_TRANSFERWINDOW_H
 #define NS_TRANSFERWINDOW_H
 
+#include <QDragEnterEvent>
+#include <QDropEvent>
 #include <QMainWindow>
 
 #include "config.h"
@@ -58,6 +60,8 @@ Q_SIGNALS:
     void sendFiles();
     void sendDirectory();
 
+    void itemsQueued(const QStringList &items);
+
 public Q_SLOTS:
 
     void onRowsInserted(const QModelIndex &parent, int first, int last);
@@ -69,6 +73,9 @@ private:
     virtual void showEvent(QShowEvent *);
     virtual void hideEvent(QHideEvent *);
 #endif
+
+    void dragEnterEvent(QDragEnterEvent *event);
+    void dropEvent(QDropEvent *event);
 
     void updateProgressBar(int row);
     void updateButton(int row);

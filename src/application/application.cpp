@@ -68,6 +68,7 @@ Application::Application()
     connect(&mTransferServer, &TransferServer::newTransfer, &mTransferModel, &TransferModel::addReceiver);
     connect(&mTransferWindow, &TransferWindow::sendDirectory, this, &Application::sendDirectory);
     connect(&mTransferWindow, &TransferWindow::sendFiles, this, &Application::sendFiles);
+    connect(&mTransferWindow, &TransferWindow::itemsQueued, this, &Application::onItemsQueued);
 
     mIcon->addAction(tr("Send Files..."), this, SLOT(sendFiles()));
     mIcon->addAction(tr("Send Directory..."), this, SLOT(sendDirectory()));
