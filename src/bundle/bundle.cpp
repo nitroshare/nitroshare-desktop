@@ -50,6 +50,17 @@ qint64 Bundle::totalSize() const
     return d->totalSize;
 }
 
+void Bundle::addItem(const QString &path)
+{
+    QFileInfo info(path);
+
+    if (info.isDir()) {
+        addDirectory(path);
+    } else {
+        addFile(path);
+    }
+}
+
 void Bundle::addFile(const QString &filename)
 {
     QFileInfo info(filename);

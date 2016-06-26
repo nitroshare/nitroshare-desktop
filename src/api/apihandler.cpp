@@ -42,21 +42,8 @@ QVariantMap ApiHandler::version(const QVariantMap &params)
 
 QVariantMap ApiHandler::sendItems(const QVariantMap &params)
 {
-    QStringList items = params.value("items").toStringList();
-    Bundle *bundle = new Bundle();
-
-    // Add the items to the bundle
-    foreach (QString item, items) {
-        QFileInfo info(item);
-        if (info.isDir()) {
-            bundle->addDirectory(item);
-        } else if (info.isFile()) {
-            bundle->addFile(item);
-        }
-    }
-
-    // Transfer the bundle
-    emit bundleCreated(bundle);
+    // Queue the items for transfer
+    emit itemsQueued(params.value("items").toStringList());
 
     return QVariantMap();
 }

@@ -57,7 +57,7 @@ Application::Application()
 {
 #ifdef QHttpEngine_FOUND
     connect(&mApiServer, &ApiServer::error, this, &Application::notifyError);
-    connect(&mApiServer, &ApiServer::bundleCreated, this, &Application::sendBundle);
+    connect(&mApiServer, &ApiServer::itemsQueued, this, &Application::onItemsQueued);
 #endif
 
     connect(&mDeviceModel, &DeviceModel::rowsInserted, this, &Application::notifyDevicesAdded);
@@ -152,19 +152,15 @@ void Application::notifyTransfersChanged(const QModelIndex &topLeft, const QMode
     }
 }
 
-void Application::sendBundle(const Bundle *bundle)
+void Application::onItemsQueued(const QStringList &items)
 {
-    QModelIndex index = DeviceDialog::getDevice(&mDeviceModel);
-    if (index.isValid()) {
+    Bundle *bundle = new Bundle;
 
-        // Obtain the information needed to connect to the device
-        QString deviceName = index.data(DeviceModel::NameRole).value<QString>();
-        QHostAddress address = index.data(DeviceModel::AddressRole).value<QHostAddress>();
-        quint16 port = index.data(DeviceModel::PortRole).value<quint16>();
-
-        mTransferModel.addSender(deviceName, address, port, bundle);
-        mTransferWindow.show();
+    foreach(QString item, items) {
+        bundle->addItem(item);
     }
+
+    sendBundle(bundle);
 }
 
 void Application::sendFiles()
@@ -221,4 +217,19 @@ void Application::onOpenAbout()
 void Application::onOpenAboutQt()
 {
     QMessageBox::aboutQt(nullptr);
+}
+
+void Application::sendBundle(const Bundle *bundle)
+{
+    QModelIndex index = DeviceDialog::getDevice(&mDeviceModel);
+    if (index.isValid()) {
+
+        // Obtain the information needed to connect to the device
+        QString deviceName = index.data(DeviceModel::NameRole).value<QString>();
+        QHostAddress address = index.data(DeviceModel::AddressRole).value<QHostAddress>();
+        quint16 port = index.data(DeviceModel::PortRole).value<quint16>();
+
+        mTransferModel.addSender(deviceName, address, port, bundle);
+        mTransferWindow.show();
+    }
 }

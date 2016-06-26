@@ -61,7 +61,7 @@ private Q_SLOTS:
     void notifyTransfersChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles);
     void notifyError(const QString &message);
 
-    void sendBundle(const Bundle *bundle);
+    void onItemsQueued(const QStringList &items);
 
     void sendFiles();
     void sendDirectory();
@@ -73,6 +73,8 @@ private Q_SLOTS:
     void onOpenAboutQt();
 
 private:
+
+    void sendBundle(const Bundle *bundle);
 
 #ifdef QHttpEngine_FOUND
     ApiServer mApiServer;

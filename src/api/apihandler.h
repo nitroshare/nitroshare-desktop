@@ -30,8 +30,6 @@
 #include <QHttpEngine/QObjectHandler>
 #include <QHttpEngine/QHttpSocket>
 
-#include "../bundle/bundle.h"
-
 class ApiHandler : public QObjectHandler
 {
     Q_OBJECT
@@ -42,7 +40,7 @@ public:
 
 Q_SIGNALS:
 
-    void bundleCreated(const Bundle *bundle);
+    void itemsQueued(const QStringList &items);
 
 public Q_SLOTS:
 

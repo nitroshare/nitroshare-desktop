@@ -27,8 +27,6 @@
 
 #include <QObject>
 
-#include "../bundle/bundle.h"
-
 class ApiServerPrivate;
 
 /**
@@ -58,10 +56,10 @@ Q_SIGNALS:
     void error(const QString &message);
 
     /**
-     * @brief Indicate a new bundle to transfer
-     * @param bundle items to transfer
+     * @brief Indicate new items to transfer
+     * @param list of file and directory paths
      */
-    void bundleCreated(const Bundle *bundle);
+    void itemsQueued(const QStringList &items);
 
 public Q_SLOTS:
 
