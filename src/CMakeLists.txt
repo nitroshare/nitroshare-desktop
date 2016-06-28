@@ -56,8 +56,50 @@ qt5_wrap_ui(UI
     transfer/transferwindow.ui
 )
 
+# Update the TS files from the source directory
+file(GLOB TS data/ts/*.ts)
+add_custom_target(ts
+    COMMAND "${Qt5_LUPDATE_EXECUTABLE}"
+        -silent
+        -locations relative
+        "${CMAKE_CURRENT_SOURCE_DIR}"
+        -ts ${TS}
+)
+
+# Create a directory for the compiled QM files
+file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/data/qm")
+
+# Create commands for each of the translation files
+set(QM_XML)
+set(QM)
+foreach(_ts_path ${TS})
+    get_filename_component(_ts_name "${_ts_path}" NAME)
+    get_filename_component(_ts_name_we "${_ts_path}" NAME_WE)
+    set(_qm_name "${_ts_name_we}.qm")
+    set(_qm_path "${CMAKE_CURRENT_BINARY_DIR}/data/qm/${_qm_name}")
+    set(QM_XML "${QM_XML}<file>qm/${_qm_name}</file>")
+    list(APPEND QM "${_qm_path}")
+    add_custom_command(OUTPUT "${_qm_path}"
+        COMMAND "${Qt5_LRELEASE_EXECUTABLE}"
+            -compress
+            -removeidentical
+            -silent
+            "${_ts_path}"
+            -qm "${_qm_path}"
+        COMMENT "Compiling ${_ts_name}"
+    )
+endforeach()
+
+# Create a target for compiling all of the translation files
+add_custom_target(qm DEPENDS ${QM})
+
+# Configure the i18n resource file
+set(QRC_QM "${CMAKE_CURRENT_BINARY_DIR}/data/resource_qm.qrc")
+configure_file(data/resource_qm.qrc.in "${QRC_QM}")
+
 qt5_add_resources(QRC
     data/resource.qrc
+    "${QRC_QM}"
 )
 
 add_executable(nitroshare WIN32 MACOSX_BUNDLE ${SRC} ${UI} ${QRC})
