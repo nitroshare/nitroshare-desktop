@@ -86,7 +86,7 @@ foreach(_ts_path ${TS})
             -silent
             "${_ts_path}"
             -qm "${_qm_path}"
-        COMMENT "Compiling ${_ts_name}"
+        COMMENT "Generating ${_ts_name}"
     )
 endforeach()
 
