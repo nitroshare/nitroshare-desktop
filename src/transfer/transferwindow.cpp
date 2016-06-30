@@ -144,23 +144,31 @@ void TransferWindow::onDataChanged(const QModelIndex &topLeft, const QModelIndex
 #endif
 }
 
-#ifdef Qt5WinExtras_FOUND
 void TransferWindow::showEvent(QShowEvent *)
 {
+#ifdef Qt5WinExtras_FOUND
     if (!mTaskbarButton && QSysInfo::windowsVersion() >= QSysInfo::WV_WINDOWS7) {
         mTaskbarButton = new QWinTaskbarButton(this);
         mTaskbarButton->setWindow(windowHandle());
     }
+#endif
+#ifdef Q_OS_MACX
+    setForeground(true);
+#endif
 }
 
 void TransferWindow::hideEvent(QHideEvent *)
 {
+#ifdef Qt5WinExtras_FOUND
     if (mTaskbarButton) {
         delete mTaskbarButton;
         mTaskbarButton = nullptr;
     }
-}
 #endif
+#ifdef Q_OS_MACX
+    setForeground(false);
+#endif
+}
 
 void TransferWindow::dragEnterEvent(QDragEnterEvent *event)
 {

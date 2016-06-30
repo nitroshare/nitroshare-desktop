@@ -25,11 +25,14 @@ set(SRC
 )
 
 if(WIN32)
-    set(SRC ${SRC} "data/resource.rc")
+    set(SRC ${SRC} data/resource.rc)
 endif()
 
 if(APPLE)
-    set(SRC ${SRC} "data/icon/nitroshare.icns")
+    set(SRC ${SRC}
+        data/icon/nitroshare.icns
+        transfer/transferwindow.mm
+    )
     set_source_files_properties("data/icon/nitroshare.icns" PROPERTIES
         MACOSX_PACKAGE_LOCATION Resources
     )
@@ -119,6 +122,7 @@ if(APPLE)
         MACOSX_BUNDLE_GUI_IDENTIFIER "com.NathanOsman.NitroShare"
         MACOSX_BUNDLE_BUNDLE_NAME "NitroShare"
     )
+    target_link_libraries(nitroshare "-framework ApplicationServices")
 endif()
 
 # GCC decided to be clever and ignore unused shared libraries during linking

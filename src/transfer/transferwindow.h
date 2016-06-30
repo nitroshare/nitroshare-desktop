@@ -69,16 +69,18 @@ public Q_SLOTS:
 
 private:
 
-#ifdef Qt5WinExtras_FOUND
     virtual void showEvent(QShowEvent *);
     virtual void hideEvent(QHideEvent *);
-#endif
 
     void dragEnterEvent(QDragEnterEvent *event);
     void dropEvent(QDropEvent *event);
 
     void updateProgressBar(int row);
     void updateButton(int row);
+
+#ifdef Q_OS_MAC
+    void setForeground(bool foreground);
+#endif
 
     TransferModel *const mModel;
 
