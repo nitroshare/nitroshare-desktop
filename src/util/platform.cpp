@@ -133,6 +133,8 @@ QString Platform::operatingSystemName(OperatingSystem operatingSystem)
         return "osx";
     case OperatingSystem::Linux:
         return "linux";
+    case OperatingSystem::Android:
+        return "android";
     default:
         return "unknown";
     }
@@ -147,6 +149,8 @@ QString Platform::operatingSystemFriendlyName(OperatingSystem operatingSystem)
         return QObject::tr("OS X");
     case OperatingSystem::Linux:
         return QObject::tr("Linux");
+    case OperatingSystem::Android:
+        return QObject::tr("Android");
     default:
         return QObject::tr("Unknown");
     }
@@ -160,6 +164,8 @@ Platform::OperatingSystem Platform::operatingSystemForName(const QString &name)
         return OperatingSystem::OSX;
     } else if (name == "linux") {
         return OperatingSystem::Linux;
+    } else if (name == "android") {
+        return OperatingSystem::Android;
     } else {
         return OperatingSystem::Unknown;
     }
