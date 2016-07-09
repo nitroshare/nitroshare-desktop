@@ -146,13 +146,20 @@ QVariant DeviceModel::data(const QModelIndex &index, int role) const
         }
         break;
     case Qt::DecorationRole:
-        if (index.column() == NameColumn) {
+        switch (index.column()) {
+        case NameColumn:
+            if (device->usesTls()) {
+                return QIcon(":/img/tls.svg");
+            }
+            break;
+        case OperatingSystemColumn:
             switch (device->operatingSystem()) {
             case Platform::OperatingSystem::Android:
                 return QIcon(":/img/mobile.svg");
             default:
                 return QIcon(":/img/desktop.svg");
             }
+            break;
         }
         break;
     case UUIDRole:
