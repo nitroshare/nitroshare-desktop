@@ -40,7 +40,7 @@ Transfer::Transfer(QSslConfiguration *configuration, TransferModel::Direction di
         QSslSocket *socket = new QSslSocket(this);
         socket->setSslConfiguration(*configuration);
 
-        connect(socket, &QSslSocket::encrypted, this, &Transfer::onEncrypted);
+        connect(socket, &QSslSocket::encrypted, this, &Transfer::initTransfer);
         connect(socket, &QSslSocket::encryptedBytesWritten, this, &Transfer::onBytesWritten);
         connect(socket, static_cast<void(QSslSocket::*)(const QList<QSslError> &)>(&QSslSocket::sslErrors), this, &Transfer::onSslErrors);
 
@@ -93,7 +93,7 @@ void Transfer::restart()
     startConnect();
 }
 
-void Transfer::onEncrypted()
+void Transfer::initTransfer()
 {
     mState = TransferModel::InProgress;
     emit dataChanged({TransferModel::StateRole});
@@ -111,7 +111,7 @@ void Transfer::onConnected()
             socket->startServerEncryption();
         }
     } else {
-        startTransfer();
+        initTransfer();
     }
 }
 

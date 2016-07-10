@@ -78,7 +78,7 @@ protected Q_SLOTS:
 
 private Q_SLOTS:
 
-    void onEncrypted();
+    void initTransfer();
     void onReadyRead();
     void onBytesWritten();
     void onError(QAbstractSocket::SocketError error);

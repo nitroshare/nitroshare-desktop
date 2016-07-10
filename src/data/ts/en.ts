@@ -131,7 +131,7 @@
 <context>
     <name>DeviceModel</name>
     <message>
-        <location filename="../../device/devicemodel.cpp" line="+178"/>
+        <location filename="../../device/devicemodel.cpp" line="+190"/>
         <source>Device Name</source>
         <translation type="unfinished"></translation>
     </message>
@@ -154,7 +154,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../util/platform.cpp" line="+145"/>
+        <location filename="../../util/platform.cpp" line="+147"/>
         <source>Windows</source>
         <translation type="unfinished"></translation>
     </message>
@@ -166,6 +166,11 @@
     <message>
         <location line="+2"/>
         <source>Linux</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Android</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -575,7 +580,7 @@ To transfer files, use the menu item in your system tray. After selecting the fi
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../transfer/transferwindow.cpp" line="+211"/>
+        <location filename="../../transfer/transferwindow.cpp" line="+219"/>
         <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
