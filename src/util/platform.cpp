@@ -109,7 +109,7 @@ Platform::DesktopEnvironment Platform::currentDesktopEnvironment()
         return DesktopEnvironment::Unity;
     } else if (desktop.startsWith("gnome")) {
         return DesktopEnvironment::Gnome;
-    } else if (desktop.endsWith("plasma")) {
+    } else if (desktop.endsWith("plasma") || desktop == "kde") {
         return DesktopEnvironment::KDE;
     } else if (desktop == "xfce") {
         return DesktopEnvironment::XFCE;
