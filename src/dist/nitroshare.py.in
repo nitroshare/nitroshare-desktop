@@ -1,5 +1,5 @@
 """
-Nemo Extension
+${_file_manager} Extension
 Adds a "send with NitroShare" menu item to files and directories
 
 The MIT License (MIT)
@@ -32,13 +32,13 @@ from urlparse import urlparse
 
 import gi
 gi.require_version('Gtk', '3.0')
-gi.require_version('Nemo', '3.0')
+gi.require_version('${_file_manager}', '3.0')
 
-from gi.repository import Nemo, GObject, Gtk
+from gi.repository import ${_file_manager}, GObject, Gtk
 from requests import ConnectionError, post
 
 
-class NitroShareMenu(GObject.GObject, Nemo.MenuProvider):
+class NitroShareMenu(GObject.GObject, ${_file_manager}.MenuProvider):
     """
     Add a menu item "Send with NitroShare".
     """
@@ -73,7 +73,7 @@ class NitroShareMenu(GObject.GObject, Nemo.MenuProvider):
         """
         if not len(files):
             return
-        item = Nemo.MenuItem(
+        item = ${_file_manager}.MenuItem(
             name='NitroShare::SendFiles',
             label="Send with NitroShare...",
         )
