@@ -72,7 +72,9 @@ void ApiServerPrivate::start()
     }
 
     if (!localFile.open()) {
-        emit q->error(tr("Unable to open %1").arg(localFile.fileName()));
+        emit q->error(tr("Unable to open %1\n\nDescription: \"%2\"")
+                .arg(localFile.fileName())
+                .arg(localFile.errorString()));
         return;
     }
 

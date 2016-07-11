@@ -33,7 +33,9 @@
     </message>
     <message>
         <location line="+5"/>
-        <source>Unable to open %1</source>
+        <source>Unable to open %1
+
+Description: &quot;%2&quot;</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
