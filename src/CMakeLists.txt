@@ -231,7 +231,7 @@ if(APPLE)
     )
 endif()
 
-# On Linux, include the icons, manpage, .desktop file, and Nautilus extension when installing.
+# On Linux, include the icons, manpage, .desktop file, and file manager extensions when installing.
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/dist/icons"
         DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}"
@@ -242,7 +242,15 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/dist/nitroshare.desktop"
         DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/applications"
     )
-    install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/dist/nitroshare.py"
-        DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/nautilus-python/extensions"
-    )
+
+    # Configure and install Python extensions for Nautilus-derived file managers
+    foreach(_file_manager Nautilus Nemo Caja)
+        string(TOLOWER ${_file_manager} _file_manager_lower)
+        set(_py_filename "${CMAKE_CURRENT_BINARY_DIR}/dist/nitroshare_${_file_manager_lower}.py")
+        configure_file("${CMAKE_CURRENT_SOURCE_DIR}/dist/nitroshare.py.in" "${_py_filename}")
+        install(FILES "${_py_filename}"
+            DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/${_file_manager_lower}-python/extensions"
+            RENAME nitroshare.py
+        )
+    endforeach()
 endif()
