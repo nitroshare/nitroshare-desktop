@@ -29,23 +29,31 @@
 #include "../util/json.h"
 #include "transferreceiver.h"
 
-TransferReceiver::TransferReceiver(qintptr socketDescriptor)
-    : Transfer(TransferModel::Receive),
+TransferReceiver::TransferReceiver(QSslConfiguration *configuration, qintptr socketDescriptor)
+    : Transfer(configuration, TransferModel::Receive),
       mRoot(Settings::instance()->get(Settings::Key::TransferDirectory).toString()),
       mOverwrite(Settings::instance()->get(Settings::Key::BehaviorOverwrite).toBool())
 {
-    mSocket.setSocketDescriptor(socketDescriptor);
+    mSocket->setSocketDescriptor(socketDescriptor);
     mDeviceName = tr("[Unknown]");
+
+    // Trigger server-side TLS handshake
+    onConnected();
 }
 
-void TransferReceiver::start()
+void TransferReceiver::startConnect()
 {
     // The socket is already connected at this point
 }
 
+void TransferReceiver::startTransfer()
+{
+    // The client starts the transfer
+}
+
 void TransferReceiver::processJsonPacket(const QJsonObject &object)
 {
-    switch(mProtocolState) {
+    switch (mProtocolState) {
     case ProtocolState::TransferHeader:
         processTransferHeader(object);
         break;
@@ -63,17 +71,17 @@ void TransferReceiver::processBinaryPacket(const QByteArray &data)
     // and after a file header - for sanity, we check the amount of
     // data we're expecting to receive from the amount actually received
 
-    if(mProtocolState == ProtocolState::TransferItems) {
+    if (mProtocolState == ProtocolState::TransferItems) {
 
         // The file will only be open if an item header was received prior
         // This error is also triggered if more data for the previous file arrives
-        if(!mFile.isOpen()) {
+        if (!mFile.isOpen()) {
             writeErrorPacket(tr("Binary packet received before item header"));
             return;
         }
 
         // Ensure that the size of the packet does not exceed the amount expected
-        if(data.size() > mFileBytesRemaining) {
+        if (data.size() > mFileBytesRemaining) {
             writeErrorPacket(tr("Binary packet exceeds declared size"));
             return;
         }
@@ -89,7 +97,7 @@ void TransferReceiver::processBinaryPacket(const QByteArray &data)
         updateProgress();
 
         // If all of the file has been received, move on to the next item
-        if(!mFileBytesRemaining) {
+        if (!mFileBytesRemaining) {
             mFile.close();
             nextItem();
         }
@@ -108,7 +116,7 @@ void TransferReceiver::processTransferHeader(const QJsonObject &object)
 {
     QString deviceName;
 
-    if(Json::objectContains(object, "name", deviceName) &&
+    if (Json::objectContains(object, "name", deviceName) &&
             Json::objectContains(object, "size", mTransferBytesTotal) &&
             Json::objectContains(object, "count", mTransferItemsRemaining)) {
 
@@ -128,7 +136,7 @@ void TransferReceiver::processItemHeader(const QJsonObject &object)
 {
     // Before doing anything, ensure that the entire contents of
     // the previous file were received and that the file was closed
-    if(mFile.isOpen()) {
+    if (mFile.isOpen()) {
         writeErrorPacket(tr("Item header received before previous file contents"));
         return;
     }
@@ -139,7 +147,7 @@ void TransferReceiver::processItemHeader(const QJsonObject &object)
     qint64 lastModified;
     qint64 lastRead;
 
-    if(Json::objectContains(object, "name", name) &&
+    if (Json::objectContains(object, "name", name) &&
             Json::objectContains(object, "directory", directory) &&
             Json::objectContains(object, "created", created) &&
             Json::objectContains(object, "last_modified", lastModified) &&
@@ -152,10 +160,10 @@ void TransferReceiver::processItemHeader(const QJsonObject &object)
 
         // If the item is a directory, attempt to create it
         // Otherwise, it's a file - open it for writing
-        if(directory) {
+        if (directory) {
 
             // Ensure the directory exists
-            if(!QDir(filename).mkpath(".")) {
+            if (!QDir(filename).mkpath(".")) {
                 writeErrorPacket(tr("Unable to create %1").arg(filename));
                 return;
             }
@@ -166,21 +174,27 @@ void TransferReceiver::processItemHeader(const QJsonObject &object)
         } else {
 
             // Ensure that the size was included
-            if(!Json::objectContains(object, "size", mFileBytesRemaining)) {
+            if (!Json::objectContains(object, "size", mFileBytesRemaining)) {
                 writeErrorPacket(tr("File size is missing from item header"));
+                return;
+            }
+
+            // Ensure the parent directory exists
+            if (!QDir(filename).mkpath("..")) {
+                writeErrorPacket(tr("Unable to create %1").arg(filename));
                 return;
             }
 
             // Abort if the file can't be opened
             mFile.setFileName(filename);
-            if(!openFile()) {
+            if (!openFile()) {
                 writeErrorPacket(tr("Unable to open %1").arg(filename));
                 return;
             }
 
             // If the file is empty, we'll never receive its contents (surprise!)
             // Therefore, we must immediately close the file and move to the next item
-            if(!mFileBytesRemaining) {
+            if (!mFileBytesRemaining) {
                 mFile.close();
                 nextItem();
             }
@@ -197,7 +211,7 @@ void TransferReceiver::nextItem()
     mTransferItemsRemaining -= 1;
 
     // If no more items remain, then write the success packet
-    if(!mTransferItemsRemaining) {
+    if (!mTransferItemsRemaining) {
         writeSuccessPacket();
     }
 }
@@ -212,20 +226,20 @@ bool TransferReceiver::openFile()
 
     // If overwrite is enabled OR the file doesn't exist, try
     // to open the file with the original filename
-    if(mOverwrite || !mFile.exists()) {
+    if (mOverwrite || !mFile.exists()) {
         return mFile.open(QIODevice::WriteOnly);
     }
 
     // Break the filename into its components
     QRegularExpression re("^(.*?)((?:\\.tar)?\\.[^\\/\\\\]*)?$");
     QRegularExpressionMatch match = re.match(mFile.fileName());
-    if(!match.hasMatch()) {
+    if (!match.hasMatch()) {
         return false;
     }
 
     // Try consecutive numbers
     int num = 2;
-    while(mFile.exists()) {
+    while (mFile.exists()) {
         mFile.setFileName(QString("%1-%2%3")
                 .arg(match.captured(1))
                 .arg(num++)

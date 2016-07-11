@@ -53,7 +53,7 @@ public:
 private Q_SLOTS:
 
     void processPing(const QString &uuid, const QString &name, Platform::OperatingSystem operatingSystem,
-                     const QHostAddress &address, quint16 port);
+                     const QHostAddress &address, quint16 port, bool usesTls);
     void update();
 
     void onSettingsChanged(const QList<Settings::Key> &keys = {});

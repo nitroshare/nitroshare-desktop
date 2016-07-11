@@ -23,7 +23,10 @@
  **/
 
 #include <QApplication>
+#include <QLibraryInfo>
+#include <QLocale>
 #include <QMessageBox>
+#include <QTranslator>
 
 #include "application/application.h"
 #include "application/splashdialog.h"
@@ -43,11 +46,24 @@ int main(int argc, char **argv)
     app.setOrganizationDomain(PROJECT_DOMAIN);
     app.setOrganizationName(PROJECT_AUTHOR);
 
+    // Set up translations for Qt
+    QTranslator qtTranslator;
+    if (qtTranslator.load(QString("qt_%1").arg(QLocale::system().name()),
+            QLibraryInfo::location(QLibraryInfo::TranslationsPath))) {
+        app.installTranslator(&qtTranslator);
+    }
+
+    // Set up translations for NitroShare
+    QTranslator nsTranslator;
+    if (nsTranslator.load(QString("nitroshare_%1").arg(QLocale::system().name()), ":/qm")) {
+        app.installTranslator(&nsTranslator);
+    }
+
     // Check to see if the splash screen has been displayed yet
     bool appSplash = Settings::instance()->get(Settings::Key::ApplicationSplash).toBool();
 
     // If not, display it and remember that the user has seen it
-    if(!appSplash) {
+    if (!appSplash) {
         SplashDialog().exec();
         Settings::instance()->set(Settings::Key::ApplicationSplash, true);
     }
@@ -55,7 +71,7 @@ int main(int argc, char **argv)
 #ifdef APPINDICATOR_FOUND
     // If the splash had not been seen and the user is running Gnome,
     // warn them that they need a special extension installed
-    if(!appSplash && Platform::currentDesktopEnvironment() ==
+    if (!appSplash && Platform::currentDesktopEnvironment() ==
             Platform::DesktopEnvironment::Gnome) {
         QMessageBox::about(nullptr, QObject::tr("Warning"), QObject::tr(
                 "Some versions of Gnome do not support AppIndicators. This prevents "

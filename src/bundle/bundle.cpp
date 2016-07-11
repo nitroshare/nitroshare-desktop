@@ -50,6 +50,17 @@ qint64 Bundle::totalSize() const
     return d->totalSize;
 }
 
+void Bundle::addItem(const QString &path)
+{
+    QFileInfo info(path);
+
+    if (info.isDir()) {
+        addDirectory(path);
+    } else {
+        addFile(path);
+    }
+}
+
 void Bundle::addFile(const QString &filename)
 {
     QFileInfo info(filename);
@@ -71,13 +82,13 @@ void Bundle::addDirectory(const QString &path)
     stack.push(root.absolutePath());
     root.cdUp();
 
-    while(stack.count()) {
+    while (stack.count()) {
         QString tos = stack.pop();
 
-        foreach(QFileInfo info, QDir(tos).entryInfoList(QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot)) {
+        foreach (QFileInfo info, QDir(tos).entryInfoList(QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot)) {
 
             // Skip symbolic links
-            if(info.isSymLink()) {
+            if (info.isSymLink()) {
                 continue;
             }
 
@@ -86,7 +97,7 @@ void Bundle::addDirectory(const QString &path)
 
             // If the item is a directory, add it to the stack
             // Otherwise, add its size to the total
-            if(info.isDir()) {
+            if (info.isDir()) {
                 stack.push(info.absoluteFilePath());
             } else {
                 d->totalSize += info.size();

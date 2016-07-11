@@ -56,6 +56,13 @@ void SettingsDialog::accept()
     settings->set(Settings::Key::BehaviorReceive, receiveFilesCheckBox->isChecked());
     settings->set(Settings::Key::BehaviorOverwrite, overwriteCheckBox->isChecked());
 
+    // Settings in the security tab
+    settings->set(Settings::Key::TLS, tlsCheckBox->isChecked());
+    settings->set(Settings::Key::TLSCACertificate, caCertificateEdit->text());
+    settings->set(Settings::Key::TLSCertificate, certificateEdit->text());
+    settings->set(Settings::Key::TLSPrivateKey, privateKeyEdit->text());
+    settings->set(Settings::Key::TLSPrivateKeyPassphrase, privateKeyPassphraseEdit->text());
+
     // Settings in the transfer section
     settings->set(Settings::Key::TransferPort, transferPortSpinBox->value());
     settings->set(Settings::Key::TransferBuffer, transferBufferSpinBox->value() * Settings::Constant::KiB);
@@ -86,17 +93,36 @@ void SettingsDialog::onResetButtonClicked()
     );
 
     // Perform the reset and then reload all of the settings
-    if(response == QMessageBox::Yes) {
+    if (response == QMessageBox::Yes) {
         Settings::instance()->reset();
         reload();
     }
 }
 
-void SettingsDialog::onTransferDirectoryButtonClicked()
+void SettingsDialog::onBrowseButtonClicked()
 {
-    QString path = QFileDialog::getExistingDirectory(this, tr("Select Directory"), transferDirectoryEdit->text());
-    if(!path.isNull()) {
-        transferDirectoryEdit->setText(path);
+    QPushButton *btn = qobject_cast<QPushButton*>(sender());
+    QLineEdit *edit = nullptr;
+    bool selectDir = false;
+
+    if (btn == transferDirectoryButton) {
+        edit = transferDirectoryEdit;
+        selectDir = true;
+    } else if (btn == caCertificateButton) {
+        edit = caCertificateEdit;
+    } else if (btn == certificateButton) {
+        edit = certificateEdit;
+    } else if (btn == privateKeyButton) {
+        edit = privateKeyEdit;
+    } else {
+        return;
+    }
+
+    QString path = selectDir ?
+            QFileDialog::getExistingDirectory(this, tr("Select Directory"), edit->text()) :
+            QFileDialog::getOpenFileName(this, tr("Select File"), edit->text());
+    if (!path.isNull()) {
+        edit->setText(path);
     }
 }
 
@@ -111,6 +137,16 @@ void SettingsDialog::reload()
     autoStartCheckBox->setChecked(mAutoStart);
     receiveFilesCheckBox->setChecked(settings->get(Settings::Key::BehaviorReceive).toBool());
     overwriteCheckBox->setChecked(settings->get(Settings::Key::BehaviorOverwrite).toBool());
+
+    // Security tab
+    tlsCheckBox->setChecked(settings->get(Settings::Key::TLS).toBool());
+    caCertificateEdit->setText(settings->get(Settings::Key::TLSCACertificate).toString());
+    certificateEdit->setText(settings->get(Settings::Key::TLSCertificate).toString());
+    privateKeyEdit->setText(settings->get(Settings::Key::TLSPrivateKey).toString());
+    privateKeyPassphraseEdit->setText(settings->get(Settings::Key::TLSPrivateKeyPassphrase).toString());
+
+    // Conditionally enable the security items if TLS is checked
+    emit tlsCheckBox->clicked(tlsCheckBox->isChecked());
 
     // Transfer section
     transferPortSpinBox->setValue(settings->get(Settings::Key::TransferPort).toLongLong());

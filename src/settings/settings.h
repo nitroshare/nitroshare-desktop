@@ -88,6 +88,16 @@ public:
         DeviceName,
         /// Whether to expose a local API
         LocalAPI,
+        /// Whether TLS support is enabled
+        TLS,
+        /// Path to CA certificate
+        TLSCACertificate,
+        /// Path to certificate signed by CA
+        TLSCertificate,
+        /// Path to private key for certificate
+        TLSPrivateKey,
+        /// Passphrase for decrypting private key
+        TLSPrivateKeyPassphrase,
         /// Port for receiving transfers
         TransferPort,
         /// Size (in bytes) of the buffer used for transferring file data

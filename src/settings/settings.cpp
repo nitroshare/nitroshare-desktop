@@ -55,6 +55,11 @@ const QMap<Settings::Key, KeyInfo> KeyMap = {
     DEFINE_SETTING(DeviceUUID, { return QUuid::createUuid().toString(); }),
     DEFINE_SETTING(DeviceName, { return QHostInfo::localHostName(); }),
     DEFINE_SETTING(LocalAPI, { return true; }),
+    DEFINE_SETTING(TLS, { return false; }),
+    DEFINE_SETTING(TLSCACertificate, { return ""; }),
+    DEFINE_SETTING(TLSCertificate, { return ""; }),
+    DEFINE_SETTING(TLSPrivateKey, { return ""; }),
+    DEFINE_SETTING(TLSPrivateKeyPassphrase, { return ""; }),
     DEFINE_SETTING(TransferPort, { return 40818; }),
     DEFINE_SETTING(TransferBuffer, { return 64 * Settings::Constant::KiB; }),
     DEFINE_SETTING(TransferDirectory, { return QDir::cleanPath(QStandardPaths::writableLocation(QStandardPaths::DownloadLocation) + QDir::separator() + "NitroShare"); }),
@@ -72,7 +77,7 @@ QVariant SettingsPrivate::get(Settings::Key key, Flag flag)
     QVariant value = settings.value(keyInfo.name);
 
     // If no value was set and initialization is permited, initialize the setting
-    if(value.isNull() && flag == Flag::Initialize) {
+    if (value.isNull() && flag == Flag::Initialize) {
         value = keyInfo.initialize();
         set(key, value);
     }
@@ -85,11 +90,11 @@ void SettingsPrivate::set(Settings::Key key, const QVariant &value, Flag flag)
     settings.setValue(KeyMap.value(key).name, value);
 
     // Take care of emitting the signal only if the appropriate flag was set
-    if(flag == Flag::EmitSignal) {
+    if (flag == Flag::EmitSignal) {
 
         // If multiSet is set, add the setting to the list
         // Otherwise, emit the signal indicating a change
-        if(multiSet) {
+        if (multiSet) {
             multiSetKeys.append(key);
         } else {
             emit q->settingsChanged({key});
@@ -104,7 +109,7 @@ QVariant Settings::get(Key key)
 
 void Settings::beginSet()
 {
-    if(d->multiSet) {
+    if (d->multiSet) {
         qWarning("beginSet() already invoked");
         return;
     }
@@ -118,21 +123,21 @@ void Settings::set(Key key, const QVariant &value)
     QVariant currentValue = d->get(key);
 
     // Set the value only if it has actually changed and emit the signal
-    if(currentValue != value) {
+    if (currentValue != value) {
         d->set(key, value, SettingsPrivate::Flag::EmitSignal);
     }
 }
 
 void Settings::endSet()
 {
-    if(!d->multiSet) {
+    if (!d->multiSet) {
         qWarning("beginSet() must be invoked before endSet()");
         return;
     }
 
     // If any keys were modified, emit the signal
     // with the list of keys and clear the list
-    if(d->multiSetKeys.count()) {
+    if (d->multiSetKeys.count()) {
         emit settingsChanged(d->multiSetKeys);
         d->multiSetKeys.clear();
     }
@@ -144,7 +149,7 @@ void Settings::reset()
 {
     beginSet();
 
-    for(QMap<Settings::Key, KeyInfo>::const_iterator i = KeyMap.constBegin(); i != KeyMap.constEnd(); ++i) {
+    for (QMap<Settings::Key, KeyInfo>::const_iterator i = KeyMap.constBegin(); i != KeyMap.constEnd(); ++i) {
         set(i.key(), i.value().initialize());
     }
 

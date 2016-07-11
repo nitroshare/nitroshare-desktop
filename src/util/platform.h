@@ -51,7 +51,8 @@ public:
         Unknown = 0,
         Windows,
         OSX,
-        Linux
+        Linux,
+        Android
     };
 
     /**

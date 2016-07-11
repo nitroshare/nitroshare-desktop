@@ -25,6 +25,8 @@
 #ifndef NS_TRANSFERWINDOW_H
 #define NS_TRANSFERWINDOW_H
 
+#include <QDragEnterEvent>
+#include <QDropEvent>
 #include <QMainWindow>
 
 #include "config.h"
@@ -33,10 +35,6 @@
 
 #ifdef Qt5WinExtras_FOUND
 #include <QWinTaskbarButton>
-#endif
-
-#ifdef UNITY_FOUND
-#include <unity/unity/unity.h>
 #endif
 
 /**
@@ -62,6 +60,8 @@ Q_SIGNALS:
     void sendFiles();
     void sendDirectory();
 
+    void itemsQueued(const QStringList &items);
+
 public Q_SLOTS:
 
     void onRowsInserted(const QModelIndex &parent, int first, int last);
@@ -69,13 +69,18 @@ public Q_SLOTS:
 
 private:
 
-#ifdef Qt5WinExtras_FOUND
     virtual void showEvent(QShowEvent *);
     virtual void hideEvent(QHideEvent *);
-#endif
+
+    void dragEnterEvent(QDragEnterEvent *event);
+    void dropEvent(QDropEvent *event);
 
     void updateProgressBar(int row);
     void updateButton(int row);
+
+#ifdef Q_OS_MAC
+    void setForeground(bool foreground);
+#endif
 
     TransferModel *const mModel;
 
@@ -83,8 +88,8 @@ private:
     QWinTaskbarButton *mTaskbarButton;
 #endif
 
-#ifdef UNITY_FOUND
-    UnityLauncherEntry *mLauncherEntry;
+#ifdef Q_OS_LINUX
+    void *mLauncherEntry;
 #endif
 };
 

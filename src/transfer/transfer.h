@@ -27,6 +27,8 @@
 
 #include <QFile>
 #include <QJsonObject>
+#include <QSslConfiguration>
+#include <QSslError>
 #include <QTcpSocket>
 
 #include "transfermodel.h"
@@ -53,8 +55,7 @@ class Transfer : public QObject
 
 public:
 
-    // "explicit" is not needed here since this class is abstract
-    Transfer(TransferModel::Direction direction);
+    Transfer(QSslConfiguration *configuration, TransferModel::Direction direction);
 
     QString deviceName() const { return mDeviceName; }
     int progress() const { return mProgress; }
@@ -62,7 +63,7 @@ public:
     TransferModel::State state() const { return mState; }
     QString error() const { return mError; }
 
-    virtual void start() = 0;
+    virtual void startConnect() = 0;
 
     void cancel();
     void restart();
@@ -71,14 +72,21 @@ Q_SIGNALS:
 
     void dataChanged(const QVector<int> &roles = {});
 
-private Q_SLOTS:
+protected Q_SLOTS:
 
     void onConnected();
+
+private Q_SLOTS:
+
+    void initTransfer();
     void onReadyRead();
     void onBytesWritten();
     void onError(QAbstractSocket::SocketError error);
+    void onSslErrors(const QList<QSslError> &errors);
 
 protected:
+
+    virtual void startTransfer() = 0;
 
     virtual void processJsonPacket(const QJsonObject &object) = 0;
     virtual void processBinaryPacket(const QByteArray &data) = 0;
@@ -92,7 +100,7 @@ protected:
 
     void updateProgress();
 
-    QTcpSocket mSocket;
+    QTcpSocket *mSocket;
     QString mDeviceName;
 
     enum class ProtocolState {

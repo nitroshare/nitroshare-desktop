@@ -161,6 +161,14 @@ public:
      */
     int combinedProgress() const;
 
+Q_SIGNALS:
+
+    /**
+     * @brief Indicate an error
+     * @param message description of the error
+     */
+    void error(const QString &message);
+
 public Q_SLOTS:
 
     /**

@@ -28,7 +28,8 @@
 #include "device.h"
 
 Device::Device(const QString &uuid)
-    : mUuid(uuid)
+    : mUuid(uuid),
+      mUsesTls(false)
 {
 }
 
@@ -37,7 +38,8 @@ bool Device::hasTimedOut() const
     return QDateTime::currentMSecsSinceEpoch() - mLastPing > Settings::instance()->get(Settings::Key::BroadcastTimeout).toLongLong();
 }
 
-bool Device::update(const QString &name, Platform::OperatingSystem operatingSystem, const QHostAddress &address, quint16 port)
+bool Device::update(const QString &name, Platform::OperatingSystem operatingSystem,
+                    const QHostAddress &address, quint16 port, bool usesTls)
 {
     // Check for any changes
     bool changed = name != mName || operatingSystem != mOperatingSystem || address != mAddress || port != mPort;
@@ -47,6 +49,7 @@ bool Device::update(const QString &name, Platform::OperatingSystem operatingSyst
     mOperatingSystem = operatingSystem;
     mAddress = address;
     mPort = port;
+    mUsesTls = usesTls;
 
     // Update the last ping
     mLastPing = QDateTime::currentMSecsSinceEpoch();

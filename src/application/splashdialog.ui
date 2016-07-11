@@ -31,13 +31,13 @@
   </property>
   <property name="styleSheet">
    <string notr="true">QDialog {
-    background-image: url(:/img/splash.png);
+    background-image: url(:/img/splash.svg);
 }</string>
   </property>
   <widget class="QPushButton" name="pushButton">
    <property name="geometry">
     <rect>
-     <x>510</x>
+     <x>20</x>
      <y>430</y>
      <width>100</width>
      <height>30</height>
@@ -45,6 +45,53 @@
    </property>
    <property name="text">
     <string>Close</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="introduction">
+   <property name="geometry">
+    <rect>
+     <x>16</x>
+     <y>16</y>
+     <width>611</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>32</pointsize>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">color: rgb(255, 255, 255);</string>
+   </property>
+   <property name="text">
+    <string>Introduction to NitroShare</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>176</x>
+     <y>96</y>
+     <width>451</width>
+     <height>211</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>13</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string>NitroShare is a desktop application that makes it easy to transfer files from one device to another.
+
+To transfer files, use the menu item in your system tray. After selecting the files you want to transfer, simply select the device you want to transfer them to and they will be instantly transferred.</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignJustify|Qt::AlignTop</set>
+   </property>
+   <property name="wordWrap">
+    <bool>true</bool>
    </property>
   </widget>
  </widget>

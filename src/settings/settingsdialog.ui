@@ -37,7 +37,45 @@
        <string>General</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_4">
-       <item row="3" column="0">
+       <item row="0" column="1">
+        <widget class="QLineEdit" name="deviceNameEdit"/>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="deviceNameLabel">
+         <property name="text">
+          <string>Device name:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0" colspan="2">
+        <widget class="Line" name="line_2">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <layout class="QHBoxLayout" name="transferDirectoryLayout">
+         <item>
+          <widget class="QLineEdit" name="transferDirectoryEdit"/>
+         </item>
+         <item>
+          <widget class="QPushButton" name="transferDirectoryButton">
+           <property name="text">
+            <string>...</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="transferDirectoryLabel">
+         <property name="text">
+          <string>Directory:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="9" column="0">
         <spacer name="verticalSpacer1">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -50,42 +88,89 @@
          </property>
         </spacer>
        </item>
-       <item row="0" column="1">
-        <widget class="QLineEdit" name="deviceNameEdit"/>
-       </item>
-       <item row="0" column="0">
-        <widget class="QLabel" name="deviceNameLabel">
+       <item row="3" column="0" colspan="2">
+        <widget class="QLabel" name="behaviorLabel">
+         <property name="font">
+          <font>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
          <property name="text">
-          <string>Device name:</string>
+          <string>Behavior</string>
          </property>
         </widget>
        </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="transferDirectoryLabel">
+       <item row="4" column="0" colspan="2">
+        <widget class="QCheckBox" name="localApiCheckBox">
          <property name="text">
-          <string>Directory:</string>
+          <string>Allow local applications to interact with NitroShare</string>
          </property>
         </widget>
        </item>
-       <item row="1" column="1">
-        <layout class="QHBoxLayout" name="transferDirectoryLayout">
+       <item row="5" column="0" colspan="2">
+        <widget class="QCheckBox" name="autoStartCheckBox">
+         <property name="text">
+          <string>Auto start after login</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="0" colspan="2">
+        <widget class="QCheckBox" name="receiveFilesCheckBox">
+         <property name="text">
+          <string>Receive files</string>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="0" colspan="2">
+        <widget class="QCheckBox" name="overwriteCheckBox">
+         <property name="text">
+          <string>Overwrite files with identical names</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="securityTab">
+      <attribute name="title">
+       <string>Security</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_2">
+       <item row="2" column="0">
+        <widget class="QCheckBox" name="tlsCheckBox">
+         <property name="text">
+          <string>Enable TLS</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QLabel" name="privateKeyLabel">
+         <property name="text">
+          <string>Private key:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="certificateLabel">
+         <property name="text">
+          <string>Certificate:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="1">
+        <widget class="QLineEdit" name="privateKeyPassphraseEdit">
+         <property name="echoMode">
+          <enum>QLineEdit::Password</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <layout class="QHBoxLayout" name="caCertificateLayout">
          <item>
-          <widget class="QLineEdit" name="transferDirectoryEdit"/>
+          <widget class="QLineEdit" name="caCertificateEdit"/>
          </item>
          <item>
-          <widget class="QPushButton" name="transferDirectoryButton">
-           <property name="minimumSize">
-            <size>
-             <width>35</width>
-             <height>0</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>35</width>
-             <height>16777215</height>
-            </size>
-           </property>
+          <widget class="QPushButton" name="caCertificateButton">
            <property name="text">
             <string>...</string>
            </property>
@@ -93,41 +178,76 @@
          </item>
         </layout>
        </item>
-       <item row="2" column="0" colspan="2">
-        <widget class="QGroupBox" name="behaviorGroupBox">
-         <property name="title">
-          <string>Behavior</string>
+       <item row="7" column="0">
+        <spacer name="verticalSpacer2">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
          </property>
-         <layout class="QVBoxLayout" name="verticalLayout_2">
-          <item>
-           <widget class="QCheckBox" name="localApiCheckBox">
-            <property name="text">
-             <string>Allow local applications to interact with NitroShare</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="autoStartCheckBox">
-            <property name="text">
-             <string>Auto start after login</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="receiveFilesCheckBox">
-            <property name="text">
-             <string>Receive files</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="overwriteCheckBox">
-            <property name="text">
-             <string>Overwrite files with identical names</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="4" column="1">
+        <layout class="QHBoxLayout" name="certificateLayout">
+         <item>
+          <widget class="QLineEdit" name="certificateEdit"/>
+         </item>
+         <item>
+          <widget class="QPushButton" name="certificateButton">
+           <property name="text">
+            <string>...</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="6" column="0">
+        <widget class="QLabel" name="privateKeypassphraseLabel">
+         <property name="text">
+          <string>Private key passphrase:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="1">
+        <layout class="QHBoxLayout" name="privateKeyLayout">
+         <item>
+          <widget class="QLineEdit" name="privateKeyEdit"/>
+         </item>
+         <item>
+          <widget class="QPushButton" name="privateKeyButton">
+           <property name="text">
+            <string>...</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="0" column="0" colspan="2">
+        <widget class="QLabel" name="securityLabel">
+         <property name="text">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Warning&lt;/span&gt;: If enabled, all other clients must share a common certificate authority (CA) and have TLS enabled.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="caCertificateLabel">
+         <property name="text">
+          <string>CA Certificate:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0" colspan="2">
+        <widget class="Line" name="line">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
         </widget>
        </item>
       </layout>
@@ -151,13 +271,6 @@
          </property>
          <property name="wordWrap">
           <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="0" colspan="2">
-        <widget class="QLabel" name="transferLabel">
-         <property name="text">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Transfer settings&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
         </widget>
        </item>
@@ -226,13 +339,6 @@
          </property>
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="0" colspan="2">
-        <widget class="QLabel" name="broadcastLabel">
-         <property name="text">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Broadcast settings&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
         </widget>
        </item>
@@ -321,7 +427,7 @@
         </widget>
        </item>
        <item row="10" column="0">
-        <spacer name="verticalSpacer2">
+        <spacer name="verticalSpacer3">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
@@ -332,6 +438,32 @@
           </size>
          </property>
         </spacer>
+       </item>
+       <item row="6" column="0" colspan="3">
+        <widget class="QLabel" name="broadcastLabel">
+         <property name="font">
+          <font>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>Broadcast Settings</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0" colspan="3">
+        <widget class="QLabel" name="transferLabel">
+         <property name="font">
+          <font>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>Transfer Settings</string>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>
@@ -411,7 +543,7 @@
    <sender>transferDirectoryButton</sender>
    <signal>clicked()</signal>
    <receiver>SettingsDialog</receiver>
-   <slot>onTransferDirectoryButtonClicked()</slot>
+   <slot>onBrowseButtonClicked()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>461</x>
@@ -423,9 +555,169 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>tlsCheckBox</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>privateKeyPassphraseEdit</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>99</x>
+     <y>59</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>332</x>
+     <y>189</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>tlsCheckBox</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>caCertificateEdit</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>99</x>
+     <y>59</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>311</x>
+     <y>91</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>tlsCheckBox</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>caCertificateButton</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>99</x>
+     <y>59</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>461</x>
+     <y>91</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>tlsCheckBox</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>certificateEdit</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>99</x>
+     <y>59</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>311</x>
+     <y>126</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>tlsCheckBox</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>certificateButton</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>99</x>
+     <y>59</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>461</x>
+     <y>126</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>tlsCheckBox</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>privateKeyEdit</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>99</x>
+     <y>59</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>311</x>
+     <y>161</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>tlsCheckBox</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>privateKeyButton</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>99</x>
+     <y>59</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>461</x>
+     <y>161</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>caCertificateButton</sender>
+   <signal>clicked()</signal>
+   <receiver>SettingsDialog</receiver>
+   <slot>onBrowseButtonClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>461</x>
+     <y>140</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>249</x>
+     <y>224</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>certificateButton</sender>
+   <signal>clicked()</signal>
+   <receiver>SettingsDialog</receiver>
+   <slot>onBrowseButtonClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>461</x>
+     <y>175</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>249</x>
+     <y>224</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>privateKeyButton</sender>
+   <signal>clicked()</signal>
+   <receiver>SettingsDialog</receiver>
+   <slot>onBrowseButtonClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>461</x>
+     <y>210</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>249</x>
+     <y>224</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>onResetButtonClicked()</slot>
-  <slot>onTransferDirectoryButtonClicked()</slot>
+  <slot>onBrowseButtonClicked()</slot>
  </slots>
 </ui>

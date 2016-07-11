@@ -26,12 +26,18 @@
 #define NS_TRANSFERMODELPRIVATE_H
 
 #include <QList>
+#include <QSslCertificate>
+#include <QSslConfiguration>
+#include <QSslKey>
 
+#include "../settings/settings.h"
 #include "transfer.h"
 #include "transfermodel.h"
 
-class TransferModelPrivate
+class TransferModelPrivate : public QObject
 {
+    Q_OBJECT
+
 public:
 
     explicit TransferModelPrivate(TransferModel *transferModel);
@@ -40,12 +46,20 @@ public:
     void add(Transfer *transfer);
     void remove(Transfer *transfer);
 
+    QSslCertificate loadCert(const QString &filename);
+    QSslKey loadKey(const QString &filename, const QByteArray &passphrase);
+
     TransferModel *const q;
 
+    QSslConfiguration *configuration;
     QList<Transfer*> transfers;
 
     int cachedProgress;
     qint64 cachedProgressAge;
+
+private Q_SLOTS:
+
+    void onSettingsChanged(const QList<Settings::Key> &keys = {});
 };
 
 #endif // NS_TRANSFERMODELPRIVATE_H

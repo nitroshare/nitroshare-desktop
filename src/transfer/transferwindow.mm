@@ -22,48 +22,15 @@
  * IN THE SOFTWARE.
  **/
 
-#ifndef NS_DEVICE_H
-#define NS_DEVICE_H
+#import "ApplicationServices/ApplicationServices.h"
+#import "Foundation/Foundation.h"
 
-#include <QHostAddress>
+#import "transferwindow.h"
 
-#include "../util/platform.h"
-
-/**
- * @brief Information about another device on the network
- *
- * The members of this class are populated by the DeviceModel class when pings
- * are received. The information needed to transfer files to the device are
- * contained here.
- */
-class Device
+void TransferWindow::setForeground(bool foreground)
 {
-public:
-
-    explicit Device(const QString &uuid);
-
-    QString uuid() const { return mUuid; }
-    QString name() const { return mName; }
-    Platform::OperatingSystem operatingSystem() const { return mOperatingSystem; }
-    QHostAddress address() const { return mAddress; }
-    quint16 port() const { return mPort; }
-    bool usesTls() const { return mUsesTls; }
-
-    bool hasTimedOut() const;
-    bool update(const QString &name, Platform::OperatingSystem operatingSystem,
-                const QHostAddress &address, quint16 port, bool usesTls);
-
-private:
-
-    const QString mUuid;
-
-    QString mName;
-    Platform::OperatingSystem mOperatingSystem;
-    QHostAddress mAddress;
-    quint16 mPort;
-    bool mUsesTls;
-
-    qint64 mLastPing = 0;
-};
-
-#endif // NS_DEVICE_H
+    ProcessSerialNumber psn = { 0, kCurrentProcess };
+    TransformProcessType(&psn, foreground ?
+            kProcessTransformToForegroundApplication :
+            kProcessTransformToUIElementApplication);
+}

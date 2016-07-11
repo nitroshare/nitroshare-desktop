@@ -25,6 +25,7 @@
 #include <QApplication>
 #include <QBrush>
 #include <QDateTime>
+#include <QFile>
 #include <QIcon>
 #include <QStyle>
 
@@ -34,10 +35,15 @@
 #include "transfersender.h"
 
 TransferModelPrivate::TransferModelPrivate(TransferModel *transferModel)
-    : q(transferModel),
+    : QObject(transferModel),
+      q(transferModel),
+      configuration(nullptr),
       cachedProgress(0),
       cachedProgressAge(0)
 {
+    connect(Settings::instance(), &Settings::settingsChanged, this, &TransferModelPrivate::onSettingsChanged);
+
+    onSettingsChanged();
 }
 
 TransferModelPrivate::~TransferModelPrivate()
@@ -53,14 +59,14 @@ void TransferModelPrivate::add(Transfer *transfer)
 
     // Whenever the transfer changes, emit the appropriate signal
     QObject::connect(transfer, &Transfer::dataChanged, [this, transfer](const QVector<int> &roles) {
-        if(!roles.contains(TransferModel::ProgressRole)) {
+        if (!roles.contains(TransferModel::ProgressRole)) {
             cachedProgressAge = 0;
         }
         int index = transfers.indexOf(transfer);
         emit q->dataChanged(q->index(index, 0), q->index(index, TransferModel::ColumnCount - 1), roles);
     });
 
-    transfer->start();
+    transfer->startConnect();
 }
 
 void TransferModelPrivate::remove(Transfer *transfer)
@@ -73,6 +79,87 @@ void TransferModelPrivate::remove(Transfer *transfer)
     emit q->endRemoveRows();
 
     delete transfer;
+}
+
+QSslCertificate TransferModelPrivate::loadCert(const QString &filename)
+{
+    QFile file(filename);
+    if (!file.open(QIODevice::ReadOnly)) {
+        emit q->error(tr("Unable to open %1").arg(filename));
+        return QSslCertificate();
+    }
+
+    QSslCertificate cert(&file, QSsl::Pem);
+    if (cert.isNull()) {
+        emit q->error(tr("%1 is not a valid CA certificate").arg(filename));
+        return QSslCertificate();
+    }
+
+    return cert;
+}
+
+QSslKey TransferModelPrivate::loadKey(const QString &filename, const QByteArray &passphrase)
+{
+    QFile file(filename);
+    if (!file.open(QIODevice::ReadOnly)) {
+        emit q->error(tr("Unable to open %1").arg(filename));
+        return QSslKey();
+    }
+
+    QSslKey key(&file, QSsl::Rsa, QSsl::Pem, QSsl::PrivateKey, passphrase);
+    if (key.isNull()) {
+        emit q->error(tr("Unable to load private key %1").arg(filename));
+        return QSslKey();
+    }
+
+    return key;
+}
+
+void TransferModelPrivate::onSettingsChanged(const QList<Settings::Key> &keys)
+{
+    Settings *settings = Settings::instance();
+
+    if (keys.isEmpty() || keys.contains(Settings::Key::TLS) ||
+            keys.contains(Settings::Key::TLSCACertificate) ||
+            keys.contains(Settings::Key::TLSCertificate) ||
+            keys.contains(Settings::Key::TLSPrivateKey) ||
+            keys.contains(Settings::Key::TLSPrivateKeyPassphrase)) {
+
+        // Begin by purging the existing configuration
+        if (configuration) {
+            delete configuration;
+            configuration = nullptr;
+        }
+
+        // Continue only if TLS is enabled
+        if (settings->get(Settings::Key::TLS).toBool()) {
+
+            // Create a new configuration
+            configuration = new QSslConfiguration;
+            configuration->setPeerVerifyMode(QSslSocket::VerifyPeer);
+
+            // Load the CA certificate
+            QSslCertificate caCert = loadCert(settings->get(Settings::Key::TLSCACertificate).toString());
+            if (!caCert.isNull()) {
+                configuration->setCaCertificates(QList<QSslCertificate>({caCert}));
+            }
+
+            // Load the client certificate
+            QSslCertificate cert = loadCert(settings->get(Settings::Key::TLSCertificate).toString());
+            if (!cert.isNull()) {
+                configuration->setLocalCertificate(cert);
+            }
+
+            // Load the private key
+            QSslKey key = loadKey(
+                settings->get(Settings::Key::TLSPrivateKey).toString(),
+                settings->get(Settings::Key::TLSPrivateKeyPassphrase).toByteArray()
+            );
+            if (!key.isNull()) {
+                configuration->setPrivateKey(key);
+            }
+        }
+    }
 }
 
 TransferModel::TransferModel(QObject *parent)
@@ -98,21 +185,21 @@ int TransferModel::columnCount(const QModelIndex &parent) const
 
 QVariant TransferModel::data(const QModelIndex &index, int role) const
 {
-    if(!index.isValid() || index.model() != this) {
+    if (!index.isValid() || index.model() != this) {
         return QVariant();
     }
 
     Transfer *transfer = d->transfers.at(index.row());
 
-    switch(role) {
+    switch (role) {
     case Qt::DisplayRole:
-        switch(index.column()) {
+        switch (index.column()) {
         case DeviceNameColumn:
             return transfer->deviceName();
         case ProgressColumn:
             return QString("%1%").arg(transfer->progress());
         case StateColumn:
-            switch(transfer->state()) {
+            switch (transfer->state()) {
             case Connecting:
                 return tr("Connecting");
             case InProgress:
@@ -125,8 +212,8 @@ QVariant TransferModel::data(const QModelIndex &index, int role) const
         }
         break;
     case Qt::DecorationRole:
-        if(index.column() == DeviceNameColumn) {
-            switch(transfer->direction()) {
+        if (index.column() == DeviceNameColumn) {
+            switch (transfer->direction()) {
             case Send:
                 return QApplication::style()->standardIcon(QStyle::SP_ArrowUp);
             case Receive:
@@ -134,9 +221,14 @@ QVariant TransferModel::data(const QModelIndex &index, int role) const
             }
         }
         break;
+    case Qt::TextAlignmentRole:
+        if (index.column() == StateColumn) {
+            return Qt::AlignCenter;
+        }
+        break;
     case Qt::ForegroundRole:
-        if(index.column() == StateColumn) {
-            switch(transfer->state()) {
+        if (index.column() == StateColumn) {
+            switch (transfer->state()) {
             case Failed:
                 return QBrush(Qt::darkRed);
             case Succeeded:
@@ -163,11 +255,11 @@ QVariant TransferModel::data(const QModelIndex &index, int role) const
 
 QVariant TransferModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-    if(orientation != Qt::Horizontal || role != Qt::DisplayRole) {
+    if (orientation != Qt::Horizontal || role != Qt::DisplayRole) {
         return QAbstractTableModel::headerData(section, orientation, role);
     }
 
-    switch(section) {
+    switch (section) {
     case DeviceNameColumn:
         return tr("Device Name");
     case ProgressColumn:
@@ -196,20 +288,20 @@ int TransferModel::combinedProgress() const
 {
     // If we're still within 200ms of the last call, return the cached value
     qint64 currentMSecs = QDateTime::currentMSecsSinceEpoch();
-    if(d->cachedProgressAge + 200 > currentMSecs) {
+    if (d->cachedProgressAge + 200 > currentMSecs) {
         return d->cachedProgress;
     }
 
     // Sum the progress of all transfers in progress
     int progress = 0;
     int progressCount = 0;
-    for(QList<Transfer*>::const_iterator i = d->transfers.constBegin(); i != d->transfers.constEnd(); ++i) {
-        if((*i)->state() == InProgress) {
+    for (QList<Transfer*>::const_iterator i = d->transfers.constBegin(); i != d->transfers.constEnd(); ++i) {
+        if ((*i)->state() == InProgress) {
             progress += (*i)->progress();
             progressCount++;
         }
     }
-    if(progressCount) {
+    if (progressCount) {
         progress /= progressCount;
     }
 
@@ -220,17 +312,17 @@ int TransferModel::combinedProgress() const
 
 void TransferModel::addReceiver(qintptr socketDescriptor)
 {
-    d->add(new TransferReceiver(socketDescriptor));
+    d->add(new TransferReceiver(d->configuration, socketDescriptor));
 }
 
 void TransferModel::addSender(const QString &deviceName, const QHostAddress &address, quint16 port, const Bundle *bundle)
 {
-    d->add(new TransferSender(deviceName, address, port, bundle));
+    d->add(new TransferSender(d->configuration, deviceName, address, port, bundle));
 }
 
 void TransferModel::cancel(int index)
 {
-    if(index < 0 || index >= d->transfers.count()) {
+    if (index < 0 || index >= d->transfers.count()) {
         qWarning("Invalid index supplied.");
         return;
     }
@@ -240,7 +332,7 @@ void TransferModel::cancel(int index)
 
 void TransferModel::restart(int index)
 {
-    if(index < 0 || index >= d->transfers.count()) {
+    if (index < 0 || index >= d->transfers.count()) {
         qWarning("Invalid index supplied.");
         return;
     }
@@ -250,14 +342,14 @@ void TransferModel::restart(int index)
 
 void TransferModel::dismiss(int index)
 {
-    if(index < 0 || index >= d->transfers.count()) {
+    if (index < 0 || index >= d->transfers.count()) {
         qWarning("Invalid index supplied.");
         return;
     }
 
     // Retrieve the transfer and ensure it is not in progress
     Transfer *transfer = d->transfers.at(index);
-    if(transfer->state() == TransferModel::Connecting || transfer->state() == TransferModel::InProgress) {
+    if (transfer->state() == TransferModel::Connecting || transfer->state() == TransferModel::InProgress) {
         qWarning("Cannot dismiss a transfer that is currently in progress.");
         return;
     }
@@ -268,11 +360,11 @@ void TransferModel::dismiss(int index)
 void TransferModel::clear()
 {
     // Iterate over the list in reverse to preserve indices when items are removed
-    for(int i = d->transfers.count() - 1; i >= 0; --i) {
+    for (int i = d->transfers.count() - 1; i >= 0; --i) {
         Transfer *transfer = d->transfers.at(i);
 
         // Remove only items that are finished
-        if(transfer->state() == Failed || transfer->state() == Succeeded) {
+        if (transfer->state() == Failed || transfer->state() == Succeeded) {
             d->remove(transfer);
         }
     }

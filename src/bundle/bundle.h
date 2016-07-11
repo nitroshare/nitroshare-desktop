@@ -70,6 +70,12 @@ public:
 public Q_SLOTS:
 
     /**
+     * @brief Add an item regardless of type
+     * @param path absolute path to item
+     */
+    void addItem(const QString &path);
+
+    /**
      * @brief Add a file to the bundle
      * @param filename name of the file to add
      * @return true if the file was added

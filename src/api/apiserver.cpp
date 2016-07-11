@@ -37,7 +37,7 @@ ApiServerPrivate::ApiServerPrivate(ApiServer *apiServer)
       handler(token),
       server(&handler)
 {
-    connect(&handler, &ApiHandler::bundleCreated, q, &ApiServer::bundleCreated, Qt::QueuedConnection);
+    connect(&handler, &ApiHandler::itemsQueued, q, &ApiServer::itemsQueued, Qt::QueuedConnection);
     connect(Settings::instance(), &Settings::settingsChanged, this, &ApiServerPrivate::onSettingsChanged);
 }
 

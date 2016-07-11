@@ -11,7 +11,7 @@ set(PROJECT_WEBSITE "https://${PROJECT_DOMAIN}")
 
 set(PROJECT_VERSION_MAJOR 0)
 set(PROJECT_VERSION_MINOR 3)
-set(PROJECT_VERSION_PATCH 1)
+set(PROJECT_VERSION_PATCH 2)
 set(PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
 
 # In order for the Inno Setup script to work correctly, the runtime files need
@@ -19,6 +19,7 @@ set(PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT
 # run the executable directly from the directory after building.
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/out")
 
+find_package(Qt5LinguistTools 5.1 REQUIRED)
 find_package(Qt5Network 5.1 REQUIRED)
 find_package(Qt5Widgets 5.1 REQUIRED)
 find_package(Qt5Svg 5.1 REQUIRED)
@@ -41,18 +42,21 @@ find_package(QHttpEngine)
 # libappindicator is an optional dependency that enables the application to
 # determine at runtime if the current desktop environment supports using an
 # application indicator instead of a QTrayIcon and use one instead
-# libunity is an optional dependency that enables the application to display
-# transfer progress in the Unity launcher.
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     find_package(PkgConfig)
     if(PKG_CONFIG_FOUND)
         pkg_check_modules(APPINDICATOR gtk+-2.0 appindicator-0.1 libnotify)
-        pkg_check_modules(UNITY unity)
     endif()
 endif()
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
+
+# Apple requires a couple extra flags
+if(APPLE)
+    set(CMAKE_CXX_FLAGS "-stdlib=libc++")
+    set(CMAKE_OSX_DEPLOYMENT_TARGET "10.8")
+endif()
 
 # Since Qt and GTK+ both define the symbol "signals", it is necessary to
 # ensure that it is not defined by Qt.
