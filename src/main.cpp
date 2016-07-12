@@ -39,6 +39,11 @@ int main(int argc, char **argv)
     QApplication app(argc, argv);
     app.setQuitOnLastWindowClosed(false);
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 6, 0))
+    // Enable DPI scaling on Qt 5.6+
+    app.setAttribute(Qt::AA_EnableHighDpiScaling);
+#endif
+
     // Set up application properties
     app.setApplicationDisplayName(PROJECT_NAME);
     app.setApplicationName(PROJECT_NAME);

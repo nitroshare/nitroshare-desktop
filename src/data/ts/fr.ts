@@ -4,12 +4,12 @@
 <context>
     <name>AboutDialog</name>
     <message>
-        <location filename="../../application/aboutdialog.ui" line="+26"/>
+        <location filename="../../application/aboutdialog.ui" line="+14"/>
         <source>NitroShare - About</source>
         <translation>NitroShare - À propos</translation>
     </message>
     <message>
-        <location line="+75"/>
+        <location line="+88"/>
         <source>Credits</source>
         <translation>Crédits</translation>
     </message>
@@ -135,7 +135,7 @@ Description : &quot;%2&quot;</translation>
 <context>
     <name>DeviceModel</name>
     <message>
-        <location filename="../../device/devicemodel.cpp" line="+178"/>
+        <location filename="../../device/devicemodel.cpp" line="+190"/>
         <source>Device Name</source>
         <translation>Nom de l&apos;appareil</translation>
     </message>
@@ -158,7 +158,7 @@ Description : &quot;%2&quot;</translation>
         <translation>Certaines versions de Gnome n&apos;ont pas AppIndicators. Ceci empêche NitroShare d&apos;afficher une notification dans la zone prévue. Assurez-vous que cette extension est installée avant de continuer:&lt;br&gt;&lt;br&gt;&lt;a href=&apos;%1&apos;&gt;%1&lt;/a&gt;</translation>
     </message>
     <message>
-        <location filename="../../util/platform.cpp" line="+145"/>
+        <location filename="../../util/platform.cpp" line="+147"/>
         <source>Windows</source>
         <translation>Windows</translation>
     </message>
@@ -171,6 +171,11 @@ Description : &quot;%2&quot;</translation>
         <location line="+2"/>
         <source>Linux</source>
         <translation>Linux</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Android</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+2"/>
@@ -364,7 +369,7 @@ Description : &quot;%2&quot;</translation>
         <translation>NitroShare - Introduction</translation>
     </message>
     <message>
-        <location line="+21"/>
+        <location line="+16"/>
         <source>Close</source>
         <translation>Fermer</translation>
     </message>
@@ -581,7 +586,7 @@ Pour transférer des fichiers, utiliser l&apos;élément menu depuis la zone de 
         <translation>Vider</translation>
     </message>
     <message>
-        <location filename="../../transfer/transferwindow.cpp" line="+211"/>
+        <location filename="../../transfer/transferwindow.cpp" line="+219"/>
         <source>Cancel</source>
         <translation>Annuler</translation>
     </message>
@@ -599,12 +604,12 @@ Pour transférer des fichiers, utiliser l&apos;élément menu depuis la zone de 
 <context>
     <name>TrayIcon</name>
     <message>
-        <location filename="../../icon/trayicon.cpp" line="+32"/>
+        <location filename="../../icon/trayicon.cpp" line="+40"/>
         <source>NitroShare</source>
         <translation>NitroShare</translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="+46"/>
         <source>NitroShare Notification</source>
         <translation>Notification de NitroShare</translation>
     </message>

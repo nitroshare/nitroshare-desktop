@@ -4,12 +4,12 @@
 <context>
     <name>AboutDialog</name>
     <message>
-        <location filename="../../application/aboutdialog.ui" line="+26"/>
+        <location filename="../../application/aboutdialog.ui" line="+14"/>
         <source>NitroShare - About</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+75"/>
+        <location line="+88"/>
         <source>Credits</source>
         <translation type="unfinished"></translation>
     </message>
@@ -367,7 +367,7 @@ Description: &quot;%2&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+21"/>
+        <location line="+16"/>
         <source>Close</source>
         <translation type="unfinished"></translation>
     </message>
@@ -600,12 +600,12 @@ To transfer files, use the menu item in your system tray. After selecting the fi
 <context>
     <name>TrayIcon</name>
     <message>
-        <location filename="../../icon/trayicon.cpp" line="+32"/>
+        <location filename="../../icon/trayicon.cpp" line="+40"/>
         <source>NitroShare</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="+46"/>
         <source>NitroShare Notification</source>
         <translation type="unfinished"></translation>
     </message>
