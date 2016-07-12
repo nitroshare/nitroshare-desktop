@@ -22,7 +22,6 @@
  * IN THE SOFTWARE.
  **/
 
-#include <QPixmap>
 #include <QFont>
 
 #include "../util/image.h"
@@ -63,6 +62,9 @@ AboutDialog::AboutDialog()
 {
     setupUi(this);
 
+    layout()->setAlignment(logo, Qt::AlignHCenter);
+    logo->load(QString(":/img/logo.svg"));
+
     QFont font = lblProjectTitle->font();
     font.setBold(true);
     lblProjectTitle->setFont(font);
@@ -92,9 +94,4 @@ void AboutDialog::onCreditsOrLicenceClicked(bool checked)
 
     textBrowser->setVisible(checked);
     wdtContent->setVisible(!checked);
-}
-
-void AboutDialog::showEvent(QShowEvent *)
-{
-    lblLogo->setPixmap(Image::renderSvg(":/img/logo.svg", lblLogo));
 }

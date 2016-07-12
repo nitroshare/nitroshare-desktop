@@ -10,18 +10,6 @@
     <height>400</height>
    </rect>
   </property>
-  <property name="minimumSize">
-   <size>
-    <width>450</width>
-    <height>400</height>
-   </size>
-  </property>
-  <property name="maximumSize">
-   <size>
-    <width>450</width>
-    <height>400</height>
-   </size>
-  </property>
   <property name="windowTitle">
    <string>NitroShare - About</string>
   </property>
@@ -33,8 +21,8 @@
    <bool>false</bool>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
-   <item alignment="Qt::AlignHCenter">
-    <widget class="QLabel" name="lblLogo">
+   <item>
+    <widget class="QSvgWidget" name="logo" native="true">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
        <horstretch>0</horstretch>
@@ -164,7 +152,14 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <customwidgets>
+  <customwidget>
+   <class>QSvgWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">QSvgWidget</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <connections>
   <connection>
    <sender>btnClose</sender>

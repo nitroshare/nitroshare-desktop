@@ -26,7 +26,6 @@
 #define NS_ABOUTDIALOG_H
 
 #include <QDialog>
-#include <QShowEvent>
 
 #include "ui_aboutdialog.h"
 
@@ -44,10 +43,6 @@ public:
 private Q_SLOTS:
 
     void onCreditsOrLicenceClicked(bool checked);
-
-private:
-
-    virtual void showEvent(QShowEvent *event);
 };
 
 #endif // NS_ABOUTDIALOG_H
