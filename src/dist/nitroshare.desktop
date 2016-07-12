@@ -2,7 +2,9 @@
 Version=1.0
 Type=Application
 Name=NitroShare
+Name[fr]=NitroShare
 Comment=Network File Transfer Application
+Comment[fr]=Application de transfert de fichier
 Icon=nitroshare
 Exec=nitroshare
 Categories=Network;FileTransfer;
