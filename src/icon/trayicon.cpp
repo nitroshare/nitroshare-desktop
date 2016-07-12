@@ -22,8 +22,12 @@
  * IN THE SOFTWARE.
  **/
 
+#include <QApplication>
+#include <QDesktopWidget>
 #include <QIcon>
+#include <QPoint>
 #include <QRect>
+#include <QScreen>
 
 #include "../util/image.h"
 #include "trayicon.h"
@@ -31,18 +35,22 @@
 TrayIcon::TrayIcon()
 {
     mTrayIcon.setContextMenu(&mMenu);
+    mTrayIcon.setToolTip(tr("NitroShare"));
+    mTrayIcon.show();
 
     // KDE 5 requires that we load the SVG and render it to a pixmap - this is
     // also required to get retina-style icons in OS X
     QRect rect = mTrayIcon.geometry();
-    QPixmap *pixmap = Image::renderSvg(":/img/tray.svg", QSize(rect.width(), rect.height()));
+    int minSize = qMin(rect.width(), rect.height());
+    QScreen *screen = QApplication::screens().at(
+        QApplication::desktop()->screenNumber(QPoint(rect.x(), rect.y()))
+    );
+    minSize *= screen->devicePixelRatio();
+    QPixmap *pixmap = Image::renderSvg(":/img/tray.svg", QSize(minSize, minSize));
 
     // *Now* we can set the icon
     mTrayIcon.setIcon(QIcon(*pixmap));
     delete pixmap;
-
-    mTrayIcon.setToolTip(tr("NitroShare"));
-    mTrayIcon.show();
 }
 
 void TrayIcon::addAction(const QString &text, QObject *receiver, const char *member)
