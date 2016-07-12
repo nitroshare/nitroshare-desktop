@@ -1,5 +1,6 @@
 ## NitroShare
 
+[![Current tagged release](https://img.shields.io/github/tag/nitroshare/nitroshare.svg)](https://github.com/nitroshare/nitroshare-desktop/releases/latest)
 [![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](http://opensource.org/licenses/MIT)
 [![Join the chat at https://gitter.im/nitroshare/nitroshare-desktop](http://img.shields.io/badge/gitter-JOIN_CHAT-green.svg?style=flat)](https://gitter.im/nitroshare/nitroshare-desktop?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
