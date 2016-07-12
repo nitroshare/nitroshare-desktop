@@ -26,6 +26,7 @@
 #include <QLibraryInfo>
 #include <QLocale>
 #include <QMessageBox>
+#include <QProcessEnvironment>
 #include <QTranslator>
 
 #include "application/application.h"
@@ -40,8 +41,8 @@ int main(int argc, char **argv)
     app.setQuitOnLastWindowClosed(false);
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 6, 0))
-    // Enable DPI scaling on Qt 5.6+
-    app.setAttribute(Qt::AA_EnableHighDpiScaling);
+    // Enable DPI scaling on Qt 5.6+ (a hack, yes, but it works)
+    QProcessEnvironment::systemEnvironment().insert("QT_AUTO_SCREEN_SCALE_FACTOR", "1");
 #endif
 
     // Set up application properties
