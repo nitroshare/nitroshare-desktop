@@ -55,6 +55,7 @@ TrayIcon::TrayIcon()
 
     // Determine the dimension with the smallest size and scale it
     int minSize = qMin(rect.width(), rect.height());
+    minSize = qMax(minSize, 48);
     minSize *= screen->devicePixelRatio();
 
     // Create an empty pixmap with that size and make it transparent
