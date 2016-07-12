@@ -148,7 +148,7 @@ Description : &quot;%2&quot;</translation>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../../main.cpp" line="+76"/>
+        <location filename="../../main.cpp" line="+82"/>
         <source>Warning</source>
         <translation>Avertissement</translation>
     </message>
