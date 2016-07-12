@@ -23,8 +23,11 @@
  **/
 
 #include <QIcon>
+#include <QPainter>
+#include <QPixmap>
+#include <QRect>
+#include <QSvgRenderer>
 
-#include "../util/image.h"
 #include "trayicon.h"
 
 TrayIcon::TrayIcon()
@@ -33,14 +36,21 @@ TrayIcon::TrayIcon()
     mTrayIcon.setToolTip(tr("NitroShare"));
     mTrayIcon.show();
 
-    // Ensure the icon is square
+    // It isn't enough to simply create an icon from the SVG. KDE 5 requires
+    // that we load the SVG, render it to a pixmap at a sufficiently high
+    // resolution, and then pass that to QIcon - fortunately that doesn't seem
+    // to break any other platforms - but it is a real pain
     QRect rect = mTrayIcon.geometry();
     int minSize = qMin(rect.width(), rect.height());
-    rect.setWidth(minSize);
-    rect.setHeight(minSize);
+    QPixmap pixmap(minSize, minSize);
+    pixmap.fill(Qt::transparent);
+
+    QSvgRenderer renderer(QString(":/img/tray.svg"));
+    QPainter painter(&pixmap);
+    renderer.render(&painter);
 
     // *Now* we can set the icon
-    mTrayIcon.setIcon(QIcon(Image::renderSvg(":/img/tray.svg", rect)));
+    mTrayIcon.setIcon(QIcon(pixmap));
 }
 
 void TrayIcon::addAction(const QString &text, QObject *receiver, const char *member)

@@ -24,7 +24,6 @@
 
 #include <QFont>
 
-#include "../util/image.h"
 #include "../util/platform.h"
 #include "aboutdialog.h"
 #include "config.h"
