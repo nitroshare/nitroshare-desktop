@@ -22,10 +22,14 @@
  * IN THE SOFTWARE.
  **/
 
+#include <QApplication>
+#include <QDesktopWidget>
 #include <QIcon>
 #include <QPainter>
 #include <QPixmap>
+#include <QPoint>
 #include <QRect>
+#include <QScreen>
 #include <QSvgRenderer>
 
 #include "trayicon.h"
@@ -36,15 +40,28 @@ TrayIcon::TrayIcon()
     mTrayIcon.setToolTip(tr("NitroShare"));
     mTrayIcon.show();
 
-    // It isn't enough to simply create an icon from the SVG. KDE 5 requires
-    // that we load the SVG, render it to a pixmap at a sufficiently high
-    // resolution, and then pass that to QIcon - fortunately that doesn't seem
-    // to break any other platforms - but it is a real pain
+    // The following code has a single purpose - to determine the appropriate
+    // size for the tray icon - this is done by determining the scaling factor
+    // for the screen containing the tray icon and setting the size
+    // accordingly - simply calling QIcon("[...].svg") doesn't work in KDE
+
+    // Retrieve the geometry for the tray icon
     QRect rect = mTrayIcon.geometry();
+
+    // Obtain the screen for the tray icon
+    QScreen *screen = QApplication::screens().at(
+        QApplication::desktop()->screenNumber(QPoint(rect.x(), rect.y()))
+    );
+
+    // Determine the dimension with the smallest size and scale it
     int minSize = qMin(rect.width(), rect.height());
+    minSize *= screen->devicePixelRatio();
+
+    // Create an empty pixmap with that size and make it transparent
     QPixmap pixmap(minSize, minSize);
     pixmap.fill(Qt::transparent);
 
+    // Render the SVG (finally!)
     QSvgRenderer renderer(QString(":/img/tray.svg"));
     QPainter painter(&pixmap);
     renderer.render(&painter);
