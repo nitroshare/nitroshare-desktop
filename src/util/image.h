@@ -22,40 +22,35 @@
  * IN THE SOFTWARE.
  **/
 
-#include <QIcon>
-#include <QRect>
+#ifndef NS_IMAGE_H
+#define NS_IMAGE_H
 
-#include "../util/image.h"
-#include "trayicon.h"
+#include <QPixmap>
+#include <QSize>
+#include <QWidget>
 
-TrayIcon::TrayIcon()
+/**
+ * @brief Utility methods for working with images
+ */
+class Image
 {
-    mTrayIcon.setContextMenu(&mMenu);
+public:
 
-    // KDE 5 requires that we load the SVG and render it to a pixmap - this is
-    // also required to get retina-style icons in OS X
-    QRect rect = mTrayIcon.geometry();
-    QPixmap *pixmap = Image::renderSvg(":/img/tray.svg", QSize(rect.width(), rect.height()));
+    /**
+     * @brief Render an SVG file to the provided pixmap sized appropriately for the given widget
+     * @param filename SVG file
+     * @param widget used for determining the correct size
+     * @return pixmap with rendered content
+     */
+    static QPixmap *renderSvg(const QString &filename, QWidget *widget);
 
-    // *Now* we can set the icon
-    mTrayIcon.setIcon(QIcon(*pixmap));
-    delete pixmap;
+    /**
+     * @brief Render an SVG file to the provided pixmap using the given size
+     * @param filename SVG file
+     * @param size target size of the pixmap
+     * @return pixmap with rendered content
+     */
+    static QPixmap *renderSvg(const QString &filename, const QSize &size);
+};
 
-    mTrayIcon.setToolTip(tr("NitroShare"));
-    mTrayIcon.show();
-}
-
-void TrayIcon::addAction(const QString &text, QObject *receiver, const char *member)
-{
-    mMenu.addAction(text, receiver, member);
-}
-
-void TrayIcon::addSeparator()
-{
-    mMenu.addSeparator();
-}
-
-void TrayIcon::showMessage(const QString &message)
-{
-    mTrayIcon.showMessage(tr("NitroShare Notification"), message);
-}
+#endif // NS_IMAGE_H
