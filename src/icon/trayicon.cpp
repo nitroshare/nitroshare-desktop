@@ -22,13 +22,29 @@
  * IN THE SOFTWARE.
  **/
 
+#include <QIcon>
+#include <QPainter>
+#include <QPixmap>
+#include <QSvgRenderer>
+
 #include "trayicon.h"
 
 TrayIcon::TrayIcon()
 {
     mTrayIcon.setContextMenu(&mMenu);
 
-    mTrayIcon.setIcon(QIcon(":/img/tray.svg"));
+    // It isn't enough to simply create an icon from the SVG. KDE 5 requires
+    // that we load the SVG, render it to a pixmap at a sufficiently high
+    // resolution, and then pass that to QIcon - fortunately that doesn't seem
+    // to break any other platforms - but it is a real pain
+    QSvgRenderer renderer(QString(":/img/tray.svg"));
+    QPixmap pixmap(48, 48);
+    pixmap.fill(Qt::transparent);
+    QPainter painter(&pixmap);
+    renderer.render(&painter);
+
+    // *Now* we can set the icon
+    mTrayIcon.setIcon(QIcon(pixmap));
     mTrayIcon.setToolTip(tr("NitroShare"));
 
     mTrayIcon.show();
