@@ -26,7 +26,7 @@
 #define NS_IMAGE_H
 
 #include <QPixmap>
-#include <QSize>
+#include <QRect>
 #include <QWidget>
 
 /**
@@ -42,15 +42,15 @@ public:
      * @param widget used for determining the correct size
      * @return pixmap with rendered content
      */
-    static QPixmap *renderSvg(const QString &filename, QWidget *widget);
+    static QPixmap renderSvg(const QString &filename, QWidget *widget);
 
     /**
      * @brief Render an SVG file to the provided pixmap using the given size
      * @param filename SVG file
-     * @param size target size of the pixmap
+     * @param rect target rect for the pixmap
      * @return pixmap with rendered content
      */
-    static QPixmap *renderSvg(const QString &filename, const QSize &size);
+    static QPixmap renderSvg(const QString &filename, const QRect &rect);
 };
 
 #endif // NS_IMAGE_H

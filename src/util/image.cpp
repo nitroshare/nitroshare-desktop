@@ -22,26 +22,42 @@
  * IN THE SOFTWARE.
  **/
 
+#include <QApplication>
+#include <QDesktopWidget>
 #include <QPainter>
+#include <QScreen>
 #include <QSvgRenderer>
 #include <QWindow>
 
 #include "image.h"
 
-QPixmap *Image::renderSvg(const QString &filename, QWidget *widget)
+QPixmap Image::renderSvg(const QString &filename, QWidget *widget)
 {
-    return renderSvg(filename, widget->size());
+    QRect rect = widget->rect();
+
+    QPoint point = widget->mapToGlobal(widget->pos());
+    rect.moveTo(point.x(), point.y());
+
+    return renderSvg(filename, rect);
 }
 
-QPixmap *Image::renderSvg(const QString &filename, const QSize &size)
+QPixmap Image::renderSvg(const QString &filename, const QRect &rect)
 {
+    // Determine the correct screen for the top-left corner of the rect
+    QScreen *screen = QApplication::screens().at(
+        QApplication::desktop()->screenNumber(QPoint(rect.x(), rect.y()))
+    );
+
     // Prepare the pixmap for rendering
-    QPixmap *pixmap = new QPixmap(size.width(), size.height());
-    pixmap->fill(Qt::transparent);
+    QPixmap pixmap(
+        rect.width() * screen->devicePixelRatio(),
+        rect.height() * screen->devicePixelRatio()
+    );
+    pixmap.fill(Qt::transparent);
 
     // Render the contents
     QSvgRenderer renderer(filename);
-    QPainter painter(pixmap);
+    QPainter painter(&pixmap);
     renderer.render(&painter);
 
     return pixmap;

@@ -34,7 +34,20 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item alignment="Qt::AlignHCenter">
-    <widget class="QLabel" name="lblLogo"/>
+    <widget class="QLabel" name="lblLogo">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>128</width>
+       <height>128</height>
+      </size>
+     </property>
+    </widget>
    </item>
    <item alignment="Qt::AlignHCenter">
     <widget class="QLabel" name="lblProjectTitle"/>
@@ -42,9 +55,9 @@
    <item>
     <widget class="QWidget" name="wdtContent" native="true">
      <layout class="QVBoxLayout" name="vBoxLytContent">
-     <item alignment="Qt::AlignHCenter">
-      <widget class="QLabel" name="lblDescription"/>
-     </item>
+      <item alignment="Qt::AlignHCenter">
+       <widget class="QLabel" name="lblDescription"/>
+      </item>
       <item alignment="Qt::AlignHCenter">
        <widget class="QLabel" name="lblVersion"/>
       </item>

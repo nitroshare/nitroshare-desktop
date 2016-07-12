@@ -25,6 +25,7 @@
 #include <QPixmap>
 #include <QFont>
 
+#include "../util/image.h"
 #include "../util/platform.h"
 #include "aboutdialog.h"
 #include "config.h"
@@ -62,8 +63,6 @@ AboutDialog::AboutDialog()
 {
     setupUi(this);
 
-    lblLogo->setPixmap(QPixmap(":/img/logo.svg").scaled(128, 128));
-
     QFont font = lblProjectTitle->font();
     font.setBold(true);
     lblProjectTitle->setFont(font);
@@ -93,4 +92,9 @@ void AboutDialog::onCreditsOrLicenceClicked(bool checked)
 
     textBrowser->setVisible(checked);
     wdtContent->setVisible(!checked);
+}
+
+void AboutDialog::showEvent(QShowEvent *)
+{
+    lblLogo->setPixmap(Image::renderSvg(":/img/logo.svg", lblLogo));
 }
