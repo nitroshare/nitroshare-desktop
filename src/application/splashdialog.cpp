@@ -24,13 +24,16 @@
 
 #include <QApplication>
 #include <QDesktopWidget>
-#include <QStyle>
 
 #include "splashdialog.h"
 
 SplashDialog::SplashDialog()
 {
     setupUi(this);
+
+    // Load the splash image and put it in the back
+    splash->load(QString(":/img/splash.svg"));
+    splash->lower();
 
     // Remove the frame and center the window
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);

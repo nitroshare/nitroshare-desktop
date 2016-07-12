@@ -29,11 +29,6 @@
    <iconset resource="../data/resource.qrc">
     <normaloff>:/img/logo.svg</normaloff>:/img/logo.svg</iconset>
   </property>
-  <property name="styleSheet">
-   <string notr="true">QDialog {
-    background-image: url(:/img/splash.svg);
-}</string>
-  </property>
   <widget class="QPushButton" name="pushButton">
    <property name="geometry">
     <rect>
@@ -94,7 +89,25 @@ To transfer files, use the menu item in your system tray. After selecting the fi
     <bool>true</bool>
    </property>
   </widget>
+  <widget class="QSvgWidget" name="splash" native="true">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>640</width>
+     <height>480</height>
+    </rect>
+   </property>
+  </widget>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QSvgWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">QSvgWidget</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="../data/resource.qrc"/>
  </resources>
