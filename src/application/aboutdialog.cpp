@@ -30,10 +30,12 @@
 
 const QString Credits =
     "<html><head><meta name='qrichtext' content='1'/></head><body>"
-    "<table><tr><td>Created by:</td>"
-    "<td><a href='http://quickmediasolutions.com'>Nathan Osman</a></td></tr>"
-    "<tr><td></td><td><a href='http://matthewjumpdesign.com'>Matthew Jump</a></td></tr>"
-    "<tr><td></td><td><a href='mailto:daniel.samrocha@gmail.com'>Daniel San</a></td></tr>"
+    "<table><tr><td>Created by: </td>"
+    "<td><a href='http://quickmediasolutions.com'>Nathan Osman</a><br>"
+    "<a href='http://matthewjumpdesign.com'>Matthew Jump</a></td></tr>"
+    "<a href='mailto:daniel.samrocha@gmail.com'>Daniel San</a></td></tr>"
+    "<tr><td colspan='2'></td></tr><tr><td>Translated by: </td>"
+    "<td><a href='http://askubuntu.com/users/527600/edity'>Edity</a> (Korean)</td>"
     "</table></body></html>";
 
 const QString License =
