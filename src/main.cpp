@@ -61,7 +61,7 @@ int main(int argc, char **argv)
 
     // Set up translations for NitroShare
     QTranslator nsTranslator;
-    if (nsTranslator.load(QString("nitroshare_%1").arg(QLocale::system().name()), ":/qm")) {
+    if (nsTranslator.load(QString("%1").arg(QLocale::system().name()), ":/qm")) {
         app.installTranslator(&nsTranslator);
     }
 
