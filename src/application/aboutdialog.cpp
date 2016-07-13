@@ -34,9 +34,11 @@ const QString Credits =
     "<td><a href='http://quickmediasolutions.com'>Nathan Osman</a><br>"
     "<a href='http://matthewjumpdesign.com'>Matthew Jump</a></td></tr>"
     "<a href='mailto:daniel.samrocha@gmail.com'>Daniel San</a></td></tr>"
-    "<tr><td colspan='2'></td></tr><tr><td>Translated by: </td>"
-    "<td><a href='http://askubuntu.com/users/527600/edity'>Edity</a> (Korean)</td>"
-    "</table></body></html>";
+    "<tr><td colspan='2'></td></tr><tr><td>Translated by: </td><td>"
+    "<a href='mailto:david.david@mageialinux-online.org'>David Geiger</a> (French)<br>"
+    "<a href='mailto:papoteur@mageialinux-online.org'>Papoteur</a> (French)<br>"
+    "<a href='http://askubuntu.com/users/527600/edity'>Edity</a> (Korean)"
+    "</td></tr></table></body></html>";
 
 const QString License =
     "The MIT License (MIT)\n\n"

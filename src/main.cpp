@@ -26,8 +26,11 @@
 #include <QLibraryInfo>
 #include <QLocale>
 #include <QMessageBox>
-#include <QProcessEnvironment>
 #include <QTranslator>
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 6, 0))
+#include <QProcessEnvironment>
+#endif
 
 #include "application/application.h"
 #include "application/splashdialog.h"
