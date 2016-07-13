@@ -175,7 +175,7 @@ Description : &quot;%2&quot;</translation>
     <message>
         <location line="+2"/>
         <source>Android</source>
-        <translation type="unfinished"></translation>
+        <translation>Android</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -348,7 +348,7 @@ Description : &quot;%2&quot;</translation>
     <message>
         <location line="+1"/>
         <source>Are you sure you want to reset all settings to their default values? This cannot be undone.</source>
-        <translation>Êtes-vous sûr de vouloir réinitialiser tous les réglages à leurs valeurs par défaut ? Ça ne peut pas être annulé.</translation>
+        <translation>Êtes-vous sûr de vouloir réinitialiser tous les réglages à leurs valeurs par défaut ? Cette action est sans retour.</translation>
     </message>
     <message>
         <location line="+30"/>
