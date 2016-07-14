@@ -41,3 +41,8 @@ QString Device::name() const
 {
     return d->name;
 }
+
+void Device::setName(const QString &name)
+{
+    d->name = name;
+}

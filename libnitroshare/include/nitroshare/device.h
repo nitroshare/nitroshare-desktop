@@ -37,6 +37,7 @@ class NITROSHARE_EXPORT DevicePrivate;
 class NITROSHARE_EXPORT Device : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(QString name READ name WRITE getName)
 
 public:
 
@@ -47,10 +48,16 @@ public:
     Device(QObject *parent = nullptr);
 
     /**
-     * @brief Retrieve device name set by the peer
-     * @return name of the device
+     * @brief Retrieve device name
+     * @return name human-friendly device identifier
      */
     QString name() const;
+
+    /**
+     * @brief Set device name
+     * @param name human-friendly device identifier
+     */
+    void setName(const QString &name);
 
 private:
 
