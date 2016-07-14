@@ -46,3 +46,23 @@ void Device::setName(const QString &name)
 {
     d->name = name;
 }
+
+QHostAddress Device::address() const
+{
+    return d->address;
+}
+
+void Device::setAddress(const QHostAddress &address) const
+{
+    d->address = address;
+}
+
+quint16 Device::port() const
+{
+    return d->port;
+}
+
+void Device::setPort(quint16 port)
+{
+    d->port = port;
+}

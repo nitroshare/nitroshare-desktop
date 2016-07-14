@@ -25,6 +25,7 @@
 #ifndef LIBNITROSHARE_DEVICE_H
 #define LIBNITROSHARE_DEVICE_H
 
+#include <QHostAddress>
 #include <QObject>
 
 #include "config.h"
@@ -37,7 +38,9 @@ class NITROSHARE_EXPORT DevicePrivate;
 class NITROSHARE_EXPORT Device : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QString name READ name WRITE getName)
+    Q_PROPERTY(QString name READ name WRITE setName)
+    Q_PROPERTY(QHostAddress address READ address WRITE setAddress)
+    Q_PROPERTY(quint16 port READ port WRITE setPort)
 
 public:
 
@@ -49,7 +52,7 @@ public:
 
     /**
      * @brief Retrieve device name
-     * @return name human-friendly device identifier
+     * @return human-friendly device identifier
      */
     QString name() const;
 
@@ -58,6 +61,30 @@ public:
      * @param name human-friendly device identifier
      */
     void setName(const QString &name);
+
+    /**
+     * @brief Retrieve device address
+     * @return peer remote address
+     */
+    QHostAddress address() const;
+
+    /**
+     * @brief Set device address
+     * @param address peer remote address
+     */
+    void setAddress(const QHostAddress &address) const;
+
+    /**
+     * @brief Retrieve transfer port
+     * @return file transfer port
+     */
+    quint16 port() const;
+
+    /**
+     * @brief Set transfer port
+     * @param port file transfer port
+     */
+    void setPort(quint16 port);
 
 private:
 
