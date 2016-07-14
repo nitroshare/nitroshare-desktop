@@ -266,7 +266,7 @@ Descripción: &quot;%2&quot;</translation>
     <message>
         <location line="+21"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Warning&lt;/span&gt;: If enabled, all other clients must share a common certificate authority (CA) and have TLS enabled.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Aviso&lt;/span&gt;: Si permitido, todos de otros clientes necesitan compartir un autoridad de certificado commún (CA) y tienen TLS permitido.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Aviso&lt;/span&gt;: Si está activado, todos los demás clientes deben compartir un certificado de autoridad común (CA) y tener TLS habilitado.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -287,7 +287,7 @@ Descripción: &quot;%2&quot;</translation>
     <message>
         <location line="-10"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Warning:&lt;/span&gt; Changing the settings below may cause NitroShare to stop functioning or use excessive bandwidth. Proceed with caution.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Aviso:&lt;/span&gt; Cambiar las siguientes preferencias puede causar NitroShare a no funcionar o usa mucho ancho de banda. Usa con cuidado.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Aviso:&lt;/span&gt; Cambiar los ajustes siguientes puede hacer que NitroShare deje de funcionar o utilizar excesivo ancho de banda. Proceda con precaución.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location line="+39"/>
@@ -328,7 +328,7 @@ Descripción: &quot;%2&quot;</translation>
     <message>
         <location line="+13"/>
         <source>Reset</source>
-        <translation>Reajustar</translation>
+        <translation>Restablecer</translation>
     </message>
     <message>
         <location filename="../../settings/settingsdialog.cpp" line="+78"/>
@@ -343,12 +343,12 @@ Descripción: &quot;%2&quot;</translation>
     <message>
         <location line="+13"/>
         <source>Confirm Reset</source>
-        <translation>Confirme Reajustar</translation>
+        <translation>Restablecer configuración</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Are you sure you want to reset all settings to their default values? This cannot be undone.</source>
-        <translation>¿Estás seguro que quieras reajustar todas las preferencias al valor por defecto?</translation>
+        <translation>¿Estás seguro que quieras restablecertodas las preferencias al valor por defecto?</translation>
     </message>
     <message>
         <location line="+30"/>
