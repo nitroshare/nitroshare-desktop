@@ -31,9 +31,14 @@ DeviceModelPrivate::DeviceModelPrivate(QObject *parent)
 {
 }
 
-int DeviceModel::rowCount(const QModelIndex &parent) const
+DeviceModelPrivate::~DeviceModelPrivate()
 {
-    return 0;
+    qDeleteAll(devices);
+}
+
+int DeviceModel::rowCount(const QModelIndex &) const
+{
+    return d->devices.count();
 }
 
 QVariant DeviceModel::data(const QModelIndex &index, int role) const
@@ -48,7 +53,7 @@ QVariant DeviceModel::headerData(int section, Qt::Orientation orientation, int r
 
 QHash<int, QByteArray> DeviceModel::roleNames() const
 {
-    return QHash<int, QByteArray>();
+    return QHash<int, QByteArray>({});
 }
 
 DeviceModel::DeviceModel(QObject *parent)

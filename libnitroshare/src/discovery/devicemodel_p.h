@@ -25,7 +25,10 @@
 #ifndef LIBNITROSHARE_DEVICEMODEL_P_H
 #define LIBNITROSHARE_DEVICEMODEL_P_H
 
+#include <QHash>
 #include <QObject>
+
+#include <nitroshare/device.h>
 
 class DeviceModelPrivate : public QObject
 {
@@ -33,7 +36,10 @@ class DeviceModelPrivate : public QObject
 
 public:
 
-    DeviceModelPrivate(QObject *parent);
+    explicit DeviceModelPrivate(QObject *parent);
+    virtual ~DeviceModelPrivate();
+
+    QHash<QString, Device*> devices;
 };
 
 #endif // LIBNITROSHARE_DEVICEMODEL_P_H

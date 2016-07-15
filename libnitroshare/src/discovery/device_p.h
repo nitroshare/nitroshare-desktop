@@ -25,11 +25,13 @@
 #ifndef LIBNITROSHARE_DEVICE_P_H
 #define LIBNITROSHARE_DEVICE_P_H
 
+#include <QObject>
+
 class DevicePrivate : public QObject
 {
 public:
 
-    DevicePrivate(QObject *parent);
+    explicit DevicePrivate(QObject *parent);
 
     QString uuid;
     QString name;
