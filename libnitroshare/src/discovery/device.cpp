@@ -37,6 +37,16 @@ Device::Device(QObject *parent)
 {
 }
 
+QString Device::uuid() const
+{
+    return d->uuid;
+}
+
+void Device::setUuid(const QString &uuid)
+{
+    d->uuid = uuid;
+}
+
 QString Device::name() const
 {
     return d->name;
@@ -47,12 +57,12 @@ void Device::setName(const QString &name)
     d->name = name;
 }
 
-QHostAddress Device::address() const
+QString Device::address() const
 {
     return d->address;
 }
 
-void Device::setAddress(const QHostAddress &address) const
+void Device::setAddress(const QString &address) const
 {
     d->address = address;
 }

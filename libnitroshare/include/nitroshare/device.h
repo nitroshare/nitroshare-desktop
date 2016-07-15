@@ -25,7 +25,6 @@
 #ifndef LIBNITROSHARE_DEVICE_H
 #define LIBNITROSHARE_DEVICE_H
 
-#include <QHostAddress>
 #include <QObject>
 
 #include "config.h"
@@ -38,8 +37,9 @@ class NITROSHARE_EXPORT DevicePrivate;
 class NITROSHARE_EXPORT Device : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(QString uuid READ uuid WRITE setUuid)
     Q_PROPERTY(QString name READ name WRITE setName)
-    Q_PROPERTY(QHostAddress address READ address WRITE setAddress)
+    Q_PROPERTY(QString address READ address WRITE setAddress)
     Q_PROPERTY(quint16 port READ port WRITE setPort)
 
 public:
@@ -49,6 +49,18 @@ public:
      * @param parent QObject
      */
     Device(QObject *parent = nullptr);
+
+    /**
+     * @brief Retrieve device identifier
+     * @return unique device identifier
+     */
+    QString uuid() const;
+
+    /**
+     * @brief Set device identifier
+     * @param uuid unique device identifier
+     */
+    void setUuid(const QString &uuid);
 
     /**
      * @brief Retrieve device name
@@ -66,13 +78,13 @@ public:
      * @brief Retrieve device address
      * @return peer remote address
      */
-    QHostAddress address() const;
+    QString address() const;
 
     /**
      * @brief Set device address
      * @param address peer remote address
      */
-    void setAddress(const QHostAddress &address) const;
+    void setAddress(const QString &address) const;
 
     /**
      * @brief Retrieve transfer port

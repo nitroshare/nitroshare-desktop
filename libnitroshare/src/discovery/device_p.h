@@ -25,16 +25,15 @@
 #ifndef LIBNITROSHARE_DEVICE_P_H
 #define LIBNITROSHARE_DEVICE_P_H
 
-#include <QHostAddress>
-
 class DevicePrivate : public QObject
 {
 public:
 
     DevicePrivate(QObject *parent);
 
+    QString uuid;
     QString name;
-    QHostAddress address;
+    QString address;
     quint16 port;
 };
 
