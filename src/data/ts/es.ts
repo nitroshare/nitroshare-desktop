@@ -29,14 +29,14 @@
     <message>
         <location filename="../../api/apiserver.cpp" line="+70"/>
         <source>Unable to find an available port for the local API</source>
-        <translation>No puedo buscar un puerto libre para el API local</translation>
+        <translation>No se puede encontrar un puerto disponible para la API local</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Unable to open %1
 
 Description: &quot;%2&quot;</source>
-        <translation>No puedo abrir %1
+        <translation>No se puede abrir %1
 
 Descripción: &quot;%2&quot;</translation>
     </message>
@@ -66,7 +66,7 @@ Descripción: &quot;%2&quot;</translation>
     <message>
         <location line="+2"/>
         <source>About...</source>
-        <translation>Informacion...</translation>
+        <translation>Información...</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -348,7 +348,7 @@ Descripción: &quot;%2&quot;</translation>
     <message>
         <location line="+1"/>
         <source>Are you sure you want to reset all settings to their default values? This cannot be undone.</source>
-        <translation>¿Estás seguro que quieras restablecertodas las preferencias al valor por defecto?</translation>
+        <translation>¿Estás seguro que quieres restablecer todas las preferencias al valor por defecto?</translation>
     </message>
     <message>
         <location line="+30"/>
@@ -383,9 +383,9 @@ Descripción: &quot;%2&quot;</translation>
         <source>NitroShare is a desktop application that makes it easy to transfer files from one device to another.
 
 To transfer files, use the menu item in your system tray. After selecting the files you want to transfer, simply select the device you want to transfer them to and they will be instantly transferred.</source>
-        <translation>NitroShare es una applicación de PC que permita un método fácil parta transferir archivos de un aparato a un otro.
+        <translation>NitroShare es una aplicación de escritorio que hace que sea fácil de transferir archivos de un dispositivo a otro.
 
-Para transferir archivos, usa el menú en tu bandeja sistema. Después de escoger tus archivos, simplamente seleccionar el dispositivo que quieras usar como destino, y NitroShare los transferiré instantáneamente.</translation>
+Para transferir archivos, utilizar el elemento de menú en la bandeja del sistema. Después de seleccionar los archivos que desea transferir, sólo tiene que seleccionar el dispositivo que desea transferir y serán trasladados al instante.</translation>
     </message>
 </context>
 <context>
