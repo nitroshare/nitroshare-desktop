@@ -403,7 +403,7 @@ Para transferir archivos, utilizar el elemento de menú en la bandeja del sistem
     <message>
         <location line="+141"/>
         <source>Unable to read JSON packet</source>
-        <translation>No se puede leer paquetes JSON/translation>
+        <translation>No se puede leer paquetes JSON</translation>
     </message>
     <message>
         <location line="+12"/>
