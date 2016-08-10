@@ -40,6 +40,11 @@ public:
     virtual ~DeviceModelPrivate();
 
     QHash<QString, Device*> devices;
+
+public Q_SLOTS:
+
+    void onDeviceAdded(Device *device);
+    void onDeviceRemoved(const QString &uuid);
 };
 
 #endif // LIBNITROSHARE_DEVICEMODEL_P_H

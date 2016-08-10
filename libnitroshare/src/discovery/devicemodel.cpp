@@ -36,6 +36,20 @@ DeviceModelPrivate::~DeviceModelPrivate()
     qDeleteAll(devices);
 }
 
+void DeviceModelPrivate::onDeviceAdded(Device *device)
+{
+}
+
+void DeviceModelPrivate::onDeviceRemoved(const QString &uuid)
+{
+}
+
+void DeviceModel::addEnumerator(DeviceEnumerator *enumerator)
+{
+    connect(enumerator, &DeviceEnumerator::deviceAdded, d, &DeviceModelPrivate::onDeviceAdded);
+    connect(enumerator, &DeviceEnumerator::deviceRemoved, d, &DeviceModelPrivate::onDeviceRemoved);
+}
+
 int DeviceModel::rowCount(const QModelIndex &) const
 {
     return d->devices.count();

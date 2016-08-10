@@ -38,20 +38,19 @@ class NITROSHARE_EXPORT DeviceEnumerator : public QObject
 {
     Q_OBJECT
 
-public:
-
-    /**
-     * @brief Begin enumerating devices
-     */
-    virtual void start() = 0;
-
 Q_SIGNALS:
 
     /**
-     * @brief Indicate a new device was found
-     * @param device newly discovered device
+     * @brief Indicate a device was added
+     * @param device newly added device
      */
-    void deviceFound(Device *device);
+    void deviceAdded(Device *device);
+
+    /**
+     * @brief Indicate a device was removed
+     * @param uuid identifier of device being removed
+     */
+    void deviceRemoved(const QString &uuid);
 };
 
 struct NITROSHARE_EXPORT DeviceEnumeratorFactoryInterface
