@@ -22,8 +22,8 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef LIBNITROSHARE_DEVICEENUMERATORPLUGIN_H
-#define LIBNITROSHARE_DEVICEENUMERATORPLUGIN_H
+#ifndef LIBNITROSHARE_DEVICEENUMERATOR_H
+#define LIBNITROSHARE_DEVICEENUMERATOR_H
 
 #include <QObject>
 
@@ -31,15 +31,10 @@
 
 #include "config.h"
 
-#define DeviceEnumeratorInterface_iid "net.nitroshare.NitroShare.DeviceEnumeratorInterface"
-
 /**
- * @brief Interface for enumerating devices available for transfer
- *
- * This class must be used when writing a plugin that "discovers" or "finds"
- * devices for transfers.
+ * @brief Enumerating devices available for transfers
  */
-class NITROSHARE_EXPORT DeviceEnumeratorPlugin : public QObject
+class NITROSHARE_EXPORT DeviceEnumerator : public QObject
 {
     Q_OBJECT
 
@@ -59,4 +54,13 @@ Q_SIGNALS:
     void deviceFound(Device *device);
 };
 
-#endif // LIBNITROSHARE_DEVICEENUMERATORPLUGIN_H
+struct NITROSHARE_EXPORT DeviceEnumeratorFactoryInterface
+{
+    virtual DeviceEnumerator *create() = 0;
+    virtual ~DeviceEnumeratorFactoryInterface();
+};
+
+#define DeviceEnumeratorFactoryInterface_iid "net.nitroshare.NitroShare.DeviceEnumeratorFactoryInterface/1.0"
+Q_DECLARE_INTERFACE(DeviceEnumeratorFactoryInterface, DeviceEnumeratorFactoryInterface_iid)
+
+#endif // LIBNITROSHARE_DEVICEENUMERATOR_H
