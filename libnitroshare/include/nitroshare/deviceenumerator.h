@@ -57,7 +57,7 @@ Q_SIGNALS:
 struct NITROSHARE_EXPORT DeviceEnumeratorFactoryInterface
 {
     virtual DeviceEnumerator *create() = 0;
-    virtual ~DeviceEnumeratorFactoryInterface();
+    virtual ~DeviceEnumeratorFactoryInterface() {}
 };
 
 #define DeviceEnumeratorFactoryInterface_iid "net.nitroshare.NitroShare.DeviceEnumeratorFactoryInterface/1.0"
