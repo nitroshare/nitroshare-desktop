@@ -12,4 +12,4 @@ set(CMAKE_AUTOMOC ON)
 
 add_subdirectory(libnitroshare)
 add_subdirectory(daemon)
-add_subdirectory(ui)
+add_subdirectory(plugins)
