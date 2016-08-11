@@ -26,13 +26,23 @@
 #define LIBNITROSHARE_DEVICEENUMERATOR_H
 
 #include <QObject>
+#include <QVariantMap>
 
 #include <nitroshare/device.h>
 
 #include "config.h"
 
 /**
- * @brief Enumerating devices available for transfers
+ * @brief Enumerate devices available for transfers
+ *
+ * Plugins that provide discovery for devices must derive from this class and
+ * use its signals to indicate when devices are added, updated, and removed.
+ *
+ * When a device is found, the deviceUpdated() signal should be used.
+ * Likewise, when a device is no longer accessible, the deviceRemoved() signal
+ * should be used. An IPv4 broadcast enumerator might, for example, emit the
+ * deviceUpdated() signal when a UDP packet is received and the
+ * deviceRemoved() signal after a predefined timeout.
  */
 class NITROSHARE_EXPORT DeviceEnumerator : public QObject
 {
@@ -41,14 +51,16 @@ class NITROSHARE_EXPORT DeviceEnumerator : public QObject
 Q_SIGNALS:
 
     /**
-     * @brief Indicate a device was added
-     * @param device newly added device
+     * @brief Indicate a device has been added or updated
+     * @param uuid unique identifier for the device
+     * @param addresses peer addresses for the device
+     * @param properties device properties
      */
-    void deviceAdded(Device *device);
+    void deviceUpdated(const QString &uuid, const QStringList &addresses, const QVariantMap &properties);
 
     /**
-     * @brief Indicate a device was removed
-     * @param uuid identifier of device being removed
+     * @brief Indicate a device has been removed
+     * @param uuid unique identifier for the device
      */
     void deviceRemoved(const QString &uuid);
 };

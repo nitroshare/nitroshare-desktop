@@ -27,6 +27,8 @@
 
 #include <QAbstractListModel>
 
+#include <nitroshare/deviceenumerator.h>
+
 #include "config.h"
 
 class NITROSHARE_EXPORT DeviceModelPrivate;
@@ -40,6 +42,25 @@ class NITROSHARE_EXPORT DeviceModel : public QAbstractListModel
 
 public:
 
+    enum Role {
+        UuidRole = Qt::UserRole,
+        NameRole,
+        AddressesRole,
+        PortRole
+    };
+
+    /**
+     * @brief Create a device model
+     * @param parent QObject
+     */
+    explicit DeviceModel(QObject *parent = nullptr);
+
+    /**
+     * @brief Add an enumerator to the model
+     * @param enumerator device enumerator
+     */
+    void addEnumerator(DeviceEnumerator *enumerator);
+
     // Reimplemented virtual methods
     virtual int rowCount(const QModelIndex &parent) const;
     virtual QVariant data(const QModelIndex &index, int role) const;
@@ -48,10 +69,8 @@ public:
 
 private:
 
-    // Private constructor prevents class from being instantiated
-    DeviceModel(QObject *parent = nullptr);
-
     DeviceModelPrivate *const d;
+    friend class DeviceModelPrivate;
 };
 
 #endif // LIBNITROSHARE_DEVICEMODEL_H

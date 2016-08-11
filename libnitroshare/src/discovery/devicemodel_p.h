@@ -25,10 +25,12 @@
 #ifndef LIBNITROSHARE_DEVICEMODEL_P_H
 #define LIBNITROSHARE_DEVICEMODEL_P_H
 
-#include <QHash>
+#include <QList>
 #include <QObject>
+#include <QVariantMap>
 
 #include <nitroshare/device.h>
+#include <nitroshare/devicemodel.h>
 
 class DeviceModelPrivate : public QObject
 {
@@ -36,14 +38,18 @@ class DeviceModelPrivate : public QObject
 
 public:
 
-    explicit DeviceModelPrivate(QObject *parent);
+    explicit DeviceModelPrivate(DeviceModel *model);
     virtual ~DeviceModelPrivate();
 
-    QHash<QString, Device*> devices;
+    Device *findDevice(const QString &uuid);
+
+    DeviceModel *const q;
+
+    QList<Device*> devices;
 
 public Q_SLOTS:
 
-    void onDeviceAdded(Device *device);
+    void onDeviceUpdated(const QString &uuid, const QStringList &addresses, const QVariantMap &properties);
     void onDeviceRemoved(const QString &uuid);
 };
 
