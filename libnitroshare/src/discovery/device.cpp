@@ -60,8 +60,10 @@ QStringList Device::addresses() const
 
 void Device::addAddress(const QString &address)
 {
-    d->addresses.append(address);
-    emit addressesChanged(d->addresses);
+    if (!d->addresses.contains(address)) {
+        d->addresses.append(address);
+        emit addressesChanged(d->addresses);
+    }
 }
 
 quint16 Device::port() const

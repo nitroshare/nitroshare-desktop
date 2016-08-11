@@ -78,6 +78,9 @@ public:
     /**
      * @brief Add a device address
      * @param address peer remote address
+     *
+     * If the address already exists in the list, it will not be added a
+     * second time.
      */
     Q_INVOKABLE void addAddress(const QString &address);
 
