@@ -26,6 +26,7 @@
 #define LIBNITROSHARE_DEVICE_H
 
 #include <QObject>
+#include <QStringList>
 
 #include "config.h"
 
@@ -37,10 +38,10 @@ class NITROSHARE_EXPORT DevicePrivate;
 class NITROSHARE_EXPORT Device : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QString uuid READ uuid WRITE setUuid)
-    Q_PROPERTY(QString name READ name WRITE setName)
-    Q_PROPERTY(QString address READ address WRITE setAddress)
-    Q_PROPERTY(quint16 port READ port WRITE setPort)
+    Q_PROPERTY(QString uuid READ uuid)
+    Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
+    Q_PROPERTY(QStringList addresses READ addresses NOTIFY addressesChanged)
+    Q_PROPERTY(quint16 port READ port WRITE setPort NOTIFY portChanged)
 
 public:
 
@@ -48,19 +49,13 @@ public:
      * @brief Create an uninitialized device object
      * @param parent QObject
      */
-    Device(QObject *parent = nullptr);
+    Device(const QString &uuid, QObject *parent = nullptr);
 
     /**
      * @brief Retrieve device identifier
      * @return unique device identifier
      */
     QString uuid() const;
-
-    /**
-     * @brief Set device identifier
-     * @param uuid unique device identifier
-     */
-    void setUuid(const QString &uuid);
 
     /**
      * @brief Retrieve device name
@@ -75,16 +70,16 @@ public:
     void setName(const QString &name);
 
     /**
-     * @brief Retrieve device address
-     * @return peer remote address
+     * @brief Retrieve device addresses
+     * @return peer remote addresses
      */
-    QString address() const;
+    QStringList addresses() const;
 
     /**
-     * @brief Set device address
+     * @brief Add a device address
      * @param address peer remote address
      */
-    void setAddress(const QString &address) const;
+    Q_INVOKABLE void addAddress(const QString &address);
 
     /**
      * @brief Retrieve transfer port
@@ -97,6 +92,26 @@ public:
      * @param port file transfer port
      */
     void setPort(quint16 port);
+
+Q_SIGNALS:
+
+    /**
+     * @brief Indicate the device name changed
+     * @param name human-friendly device identifier
+     */
+    void nameChanged(const QString &name);
+
+    /**
+     * @brief Indicate the list of device addresses has changed
+     * @param addresses peer remote addresses
+     */
+    void addressesChanged(const QStringList &addresses);
+
+    /**
+     * @brief Indicate the transfer port changed
+     * @param port file transfer port
+     */
+    void portChanged(quint16 port);
 
 private:
 

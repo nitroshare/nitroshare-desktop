@@ -26,6 +26,7 @@
 #define LIBNITROSHARE_DEVICE_P_H
 
 #include <QObject>
+#include <QStringList>
 
 class DevicePrivate : public QObject
 {
@@ -35,7 +36,7 @@ public:
 
     QString uuid;
     QString name;
-    QString address;
+    QStringList addresses;
     quint16 port;
 };
 

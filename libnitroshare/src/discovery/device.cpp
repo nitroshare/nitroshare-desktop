@@ -31,20 +31,16 @@ DevicePrivate::DevicePrivate(QObject *parent)
 {
 }
 
-Device::Device(QObject *parent)
+Device::Device(const QString &uuid, QObject *parent)
     : QObject(parent)
     , d(new DevicePrivate(this))
 {
+    d->uuid = uuid;
 }
 
 QString Device::uuid() const
 {
     return d->uuid;
-}
-
-void Device::setUuid(const QString &uuid)
-{
-    d->uuid = uuid;
 }
 
 QString Device::name() const
@@ -54,17 +50,18 @@ QString Device::name() const
 
 void Device::setName(const QString &name)
 {
-    d->name = name;
+    emit nameChanged(d->name = name);
 }
 
-QString Device::address() const
+QStringList Device::addresses() const
 {
-    return d->address;
+    return d->addresses;
 }
 
-void Device::setAddress(const QString &address) const
+void Device::addAddress(const QString &address)
 {
-    d->address = address;
+    d->addresses.append(address);
+    emit addressesChanged(d->addresses);
 }
 
 quint16 Device::port() const
@@ -74,5 +71,5 @@ quint16 Device::port() const
 
 void Device::setPort(quint16 port)
 {
-    d->port = port;
+    emit portChanged(d->port = port);
 }
