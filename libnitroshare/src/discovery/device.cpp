@@ -50,7 +50,9 @@ QString Device::name() const
 
 void Device::setName(const QString &name)
 {
-    emit nameChanged(d->name = name);
+    if (d->name != name) {
+        emit nameChanged(d->name = name);
+    }
 }
 
 QStringList Device::addresses() const
@@ -73,5 +75,7 @@ quint16 Device::port() const
 
 void Device::setPort(quint16 port)
 {
-    emit portChanged(d->port = port);
+    if (d->port != port) {
+        emit portChanged(d->port = port);
+    }
 }
