@@ -6,6 +6,7 @@ set(HEADERS "${HEADERS}" "${CMAKE_CURRENT_BINARY_DIR}/config.h")
 set(SRC
     src/discovery/device.cpp
     src/discovery/devicemodel.cpp
+    src/util/settings.cpp
 )
 
 add_library(nitroshare SHARED ${HEADERS} ${SRC})
