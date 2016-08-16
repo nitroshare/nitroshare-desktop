@@ -38,3 +38,7 @@ install(TARGETS nitroshare
 install(EXPORT nitroshare-export
     DESTINATION lib/cmake/nitroshare
 )
+
+if(BUILD_TESTS)
+    add_subdirectory(tests)
+endif()
