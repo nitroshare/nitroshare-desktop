@@ -42,6 +42,7 @@ private Q_SLOTS:
     void testAddDevice();
     void testUpdateDevice();
     void testRemoveDevice();
+    void testRemoveEnumerator();
 
 private:
 
@@ -65,6 +66,7 @@ void TestDeviceModel::testAddDevice()
     QCOMPARE(spy.at(0).at(2).toInt(), 0);
 
     // Ensure the row contains the expected values
+    QCOMPARE(model.rowCount(QModelIndex()), 1);
     QModelIndex index = model.index(0, 0);
     QCOMPARE(model.data(index, DeviceModel::UuidRole).toString(), TestUuid);
     QCOMPARE(model.data(index, DeviceModel::NameRole).toString(), TestName);
@@ -76,12 +78,66 @@ void TestDeviceModel::testAddDevice()
 
 void TestDeviceModel::testUpdateDevice()
 {
-    //...
+    DeviceModel model;
+    model.addEnumerator(&enumerator);
+    addDevice();
+
+    // Update the device with identical data
+    QSignalSpy spy(&model, &DeviceModel::dataChanged);
+    addDevice();
+
+    // No signal should be emitted
+    QCOMPARE(spy.count(), 0);
+
+    // Make a change - remove one of the addresses
+    emit enumerator.deviceUpdated(TestUuid, {
+        { "addresses", QStringList({ TestAddress1 }) }
+    });
+
+    // Ensure the dataChanged signal was emitted
+    QCOMPARE(spy.count(), 1);
+    QCOMPARE(spy.at(0).at(0).toModelIndex().row(), 0);
+    QCOMPARE(spy.at(0).at(1).toModelIndex().row(), 0);
+
+    // Ensure the row was updated
+    QModelIndex index = model.index(0, 0);
+    QStringList addresses = model.data(index, DeviceModel::AddressesRole).toStringList();
+    QCOMPARE(addresses.count(), 1);
+    QVERIFY(addresses.contains(TestAddress1));
 }
 
 void TestDeviceModel::testRemoveDevice()
 {
-    //...
+    DeviceModel model;
+    model.addEnumerator(&enumerator);
+    addDevice();
+
+    // Watch for removal of the device
+    QSignalSpy spy(&model, &DeviceModel::rowsRemoved);
+    emit enumerator.deviceRemoved(TestUuid);
+
+    // Ensure one row was removed
+    QCOMPARE(spy.count(), 1);
+    QCOMPARE(spy.at(0).at(1).toInt(), 0);
+    QCOMPARE(spy.at(0).at(2).toInt(), 0);
+
+    // Ensure there is nothing left in the model
+    QCOMPARE(model.rowCount(QModelIndex()), 0);
+}
+
+void TestDeviceModel::testRemoveEnumerator()
+{
+    DeviceModel model;
+    model.addEnumerator(&enumerator);
+    addDevice();
+
+    // Watch for removal of the device once the enumerator is removed
+    QSignalSpy spy(&model, &DeviceModel::rowsRemoved);
+    model.removeEnumerator(&enumerator);
+
+    // Ensure a row was removed
+    QCOMPARE(spy.count(), 1);
+    QCOMPARE(model.rowCount(QModelIndex()), 0);
 }
 
 void TestDeviceModel::addDevice()
