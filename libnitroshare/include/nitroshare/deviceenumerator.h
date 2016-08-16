@@ -28,8 +28,6 @@
 #include <QObject>
 #include <QVariantMap>
 
-#include <nitroshare/device.h>
-
 #include "config.h"
 
 /**
@@ -43,6 +41,19 @@
  * should be used. An IPv4 broadcast enumerator might, for example, emit the
  * deviceUpdated() signal when a UDP packet is received and the
  * deviceRemoved() signal after a predefined timeout.
+ *
+ * The properties map passed to deviceUpdated() should contain information
+ * about the device. The following properties are recognized:
+ *
+ * - name (string)
+ * - version (string)
+ * - operating_system (string)
+ * - addresses (list of strings)
+ * - port (integer)
+ * - tls (bool)
+ *
+ * If a property was previously supplied, passing it again to deviceUpdated()
+ * will cause the value to be replaced.
  */
 class NITROSHARE_EXPORT DeviceEnumerator : public QObject
 {
@@ -53,10 +64,9 @@ Q_SIGNALS:
     /**
      * @brief Indicate a device has been added or updated
      * @param uuid unique identifier for the device
-     * @param addresses peer addresses for the device
      * @param properties device properties
      */
-    void deviceUpdated(const QString &uuid, const QStringList &addresses, const QVariantMap &properties);
+    void deviceUpdated(const QString &uuid, const QVariantMap &properties);
 
     /**
      * @brief Indicate a device has been removed
@@ -65,10 +75,23 @@ Q_SIGNALS:
     void deviceRemoved(const QString &uuid);
 };
 
-struct NITROSHARE_EXPORT DeviceEnumeratorFactoryInterface
+/**
+ * @brief Factory interface for creating DeviceEnumerator instances
+ */
+class NITROSHARE_EXPORT DeviceEnumeratorFactoryInterface
 {
-    virtual DeviceEnumerator *create() = 0;
+public:
+
+    /**
+     * @brief Destroy the factory
+     */
     virtual ~DeviceEnumeratorFactoryInterface() {}
+
+    /**
+     * @brief Create an instance of the device enumerator
+     * @return newly created instance
+     */
+    virtual DeviceEnumerator *createDeviceEnumerator() = 0;
 };
 
 #define DeviceEnumeratorFactoryInterface_iid "net.nitroshare.NitroShare.DeviceEnumeratorFactoryInterface/1.0"

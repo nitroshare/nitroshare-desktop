@@ -22,22 +22,34 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef LIBNITROSHARE_DEVICE_P_H
-#define LIBNITROSHARE_DEVICE_P_H
+#ifndef LIBNITROSHARE_DEVICE_H
+#define LIBNITROSHARE_DEVICE_H
 
+#include <QMap>
 #include <QObject>
-#include <QStringList>
+#include <QVariantMap>
 
-class DevicePrivate : public QObject
+/**
+ * @brief Maintain information about a specific device
+ *
+ * Since multiple enumerators can discover the same device, it is important
+ * that the addresses associated with the device are organized in a map that
+ * remembers which enumerator provided them. Removing an enumerator, for
+ * example, requires all associated addresses to be removed.
+ */
+class Device
 {
 public:
 
-    explicit DevicePrivate(QObject *parent);
+    /**
+     * @brief Retrieve all addresses for the device
+     * @return list of unique addresses
+     */
+    QStringList addresses() const;
 
     QString uuid;
-    QString name;
-    QStringList addresses;
-    quint16 port;
+    QVariantMap properties;
+    QMap<QObject*, QStringList> addressMap;
 };
 
-#endif // LIBNITROSHARE_DEVICE_P_H
+#endif // LIBNITROSHARE_DEVICE_H

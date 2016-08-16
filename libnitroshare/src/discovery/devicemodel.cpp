@@ -28,6 +28,14 @@
 
 #include "devicemodel_p.h"
 
+const char *UuidName = "uuid";
+const char *NameName = "name";
+const char *VersionName = "version";
+const char *OperatingSystemName = "operating_system";
+const char *AddressesName = "addresses";
+const char *PortName = "port";
+const char *TlsName = "tls";
+
 DeviceModelPrivate::DeviceModelPrivate(DeviceModel *model)
     : QObject(model),
       q(model)
@@ -39,69 +47,102 @@ DeviceModelPrivate::~DeviceModelPrivate()
     qDeleteAll(devices);
 }
 
-Device *DeviceModelPrivate::findDevice(const QString &uuid)
+int DeviceModelPrivate::findDevice(const QString &uuid)
 {
-    Device *device = nullptr;
-    foreach (Device *d, devices) {
-        if (d->uuid() == uuid) {
-            device = d;
+    // Search for an existing device with the UUID
+    for (int i = 0; i < devices.count(); ++i) {
+        if (devices.at(i)->uuid == uuid) {
+            return i;
         }
     }
-    return device;
+
+    // Return an invalid index if the file was not found
+    return -1;
 }
 
-void DeviceModelPrivate::onDeviceUpdated(const QString &uuid, const QStringList &addresses, const QVariantMap &properties)
+bool DeviceModelPrivate::removeEnumerator(QObject *enumerator, int index)
 {
-    // If no matching device was found, create one
-    Device *device = findDevice(uuid);
-    bool created = false;
-    if (!device) {
-        device = new Device(uuid, this);
-        devices.append(device);
-        created = true;
-    }
+    Device *device = devices.at(index);
 
-    // Add the addresses for the device
-    foreach (QString address, addresses) {
-        device->addAddress(address);
-    }
+    // Determine if the enumerator provided any addresses and then remove it
+    // from the address map for the device
+    bool empty = device->addressMap.value(enumerator).isEmpty();
+    bool removed = device->addressMap.remove(enumerator);
 
-    // Update the properties for the device
-    auto i = properties.constBegin();
-    while (i != properties.constEnd()) {
-        if (i.key() == "name") {
-            device->setName(i.value().toString());
-        } else if (i.key() == "port") {
-            device->setPort(i.value().toInt());
-        }
-        ++i;
-    }
+    // If no addresses remain, remove the device and delete it
+    if (device->addressMap.isEmpty()) {
 
-    // Emit the appropriate signal(s)
-    if (created) {
-        q->beginInsertRows(QModelIndex(), devices.count(), devices.count());
-        devices.append(device);
-        q->endInsertRows();
-    } else {
-        QModelIndex index = q->index(devices.indexOf(device, 0));
-        emit q->dataChanged(index, index);
-    }
-}
-
-void DeviceModelPrivate::onDeviceRemoved(const QString &uuid)
-{
-    // Attempt to find the device
-    Device *device = findDevice(uuid);
-
-    // If found, remove it from the list
-    if (device) {
-        int index = devices.indexOf(device);
-
+        // Indicate to the model that the device is gone
         q->beginRemoveRows(QModelIndex(), index, index);
         devices.removeAt(index);
         q->endRemoveRows();
 
         delete device;
+        return true;
+    }
+
+    // If addresses were removed,
+    if (!empty && removed) {
+        emit q->dataChanged(q->index(index), q->index(index));
+    }
+
+    return false;
+}
+
+void DeviceModelPrivate::onDeviceUpdated(const QString &uuid, const QVariantMap &properties)
+{
+    Device *device = nullptr;
+    int index = findDevice(uuid);
+    if (index != -1) {
+        device = devices.at(index);
+    }
+
+    // If the device does not exist, create it
+    if (!device) {
+        device = new Device;
+        device->uuid = uuid;
+        devices.append(device);
+    }
+
+    // Update the properties for the device, taking note of anything that changed
+    bool changed = false;
+    auto i = properties.constBegin();
+    while (i != properties.constEnd()) {
+        if (i.key() == NameName ||
+                i.key() == VersionName ||
+                i.key() == OperatingSystemName ||
+                i.key() == PortName ||
+                i.key() == TlsName) {
+            if (device->properties.value(i.key()) != i.value()) {
+                device->properties.insert(i.key(), i.value());
+                changed = true;
+            }
+        } else if (i.key() == AddressesName) {
+            QStringList addresses = i.value().toStringList();
+            qSort(addresses.begin(), addresses.end());
+            if (device->addressMap.value(sender()) != addresses) {
+                device->addressMap.insert(sender(), addresses);
+                changed = true;
+            }
+        }
+        ++i;
+    }
+
+    // Emit the appropriate signal(s)
+    if (index == -1) {
+        q->beginInsertRows(QModelIndex(), devices.count(), devices.count());
+        devices.append(device);
+        q->endInsertRows();
+    } else if (changed) {
+        emit q->dataChanged(q->index(index), q->index(index));
+    }
+}
+
+void DeviceModelPrivate::onDeviceRemoved(const QString &uuid)
+{
+    int index = findDevice(uuid);
+    if (index != -1) {
+        removeEnumerator(sender(), index);
     }
 }
 
@@ -115,6 +156,18 @@ void DeviceModel::addEnumerator(DeviceEnumerator *enumerator)
 {
     connect(enumerator, &DeviceEnumerator::deviceUpdated, d, &DeviceModelPrivate::onDeviceUpdated);
     connect(enumerator, &DeviceEnumerator::deviceRemoved, d, &DeviceModelPrivate::onDeviceRemoved);
+}
+
+void DeviceModel::removeEnumerator(DeviceEnumerator *enumerator)
+{
+    disconnect(enumerator, &DeviceEnumerator::deviceUpdated, d, &DeviceModelPrivate::onDeviceUpdated);
+    disconnect(enumerator, &DeviceEnumerator::deviceRemoved, d, &DeviceModelPrivate::onDeviceRemoved);
+
+    for (int i = 0; i < d->devices.count(); ++i) {
+        if (d->removeEnumerator(enumerator, i)) {
+            --i;
+        }
+    }
 }
 
 int DeviceModel::rowCount(const QModelIndex &) const
@@ -133,29 +186,29 @@ QVariant DeviceModel::data(const QModelIndex &index, int role) const
 
     switch (role) {
     case UuidRole:
-        return device->uuid();
+        return device->uuid;
     case NameRole:
-        return device->name();
+    case VersionRole:
+    case OperatingSystemRole:
+    case PortRole:
+    case TlsRole:
+        return device->properties.value(roleNames().value(role));
     case AddressesRole:
         return device->addresses();
-    case PortRole:
-        return device->port();
     }
 
-    return QVariant();
-}
-
-QVariant DeviceModel::headerData(int, Qt::Orientation, int) const
-{
     return QVariant();
 }
 
 QHash<int, QByteArray> DeviceModel::roleNames() const
 {
     return {
-        { UuidRole, "uuid" },
-        { NameRole, "name" },
-        { AddressesRole, "addresses" },
-        { PortRole, "port" }
+        { UuidRole, UuidName },
+        { NameRole, NameName },
+        { VersionRole, VersionName },
+        { OperatingSystemRole, OperatingSystemName },
+        { AddressesRole, AddressesName },
+        { PortRole, PortName },
+        { TlsRole, TlsName }
     };
 }

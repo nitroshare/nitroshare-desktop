@@ -22,60 +22,21 @@
  * IN THE SOFTWARE.
  */
 
-#include <nitroshare/device.h>
+#include <QSet>
 
-#include "device_p.h"
-
-DevicePrivate::DevicePrivate(QObject *parent)
-    : QObject(parent)
-{
-}
-
-Device::Device(const QString &uuid, QObject *parent)
-    : QObject(parent)
-    , d(new DevicePrivate(this))
-{
-    d->uuid = uuid;
-}
-
-QString Device::uuid() const
-{
-    return d->uuid;
-}
-
-QString Device::name() const
-{
-    return d->name;
-}
-
-void Device::setName(const QString &name)
-{
-    if (d->name != name) {
-        emit nameChanged(d->name = name);
-    }
-}
+#include "device.h"
 
 QStringList Device::addresses() const
 {
-    return d->addresses;
-}
+    QSet<QString> uniqueAddresses;
 
-void Device::addAddress(const QString &address)
-{
-    if (!d->addresses.contains(address)) {
-        d->addresses.append(address);
-        emit addressesChanged(d->addresses);
+    auto i = addressMap.constBegin();
+    while (i != addressMap.constEnd()) {
+        foreach (QString address, i.value()) {
+            uniqueAddresses.insert(address);
+        }
+        ++i;
     }
-}
 
-quint16 Device::port() const
-{
-    return d->port;
-}
-
-void Device::setPort(quint16 port)
-{
-    if (d->port != port) {
-        emit portChanged(d->port = port);
-    }
+    return uniqueAddresses.toList();
 }

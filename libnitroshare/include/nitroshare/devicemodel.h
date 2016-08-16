@@ -45,8 +45,11 @@ public:
     enum Role {
         UuidRole = Qt::UserRole,
         NameRole,
+        VersionRole,
+        OperatingSystemRole,
         AddressesRole,
-        PortRole
+        PortRole,
+        TlsRole
     };
 
     /**
@@ -61,10 +64,15 @@ public:
      */
     void addEnumerator(DeviceEnumerator *enumerator);
 
+    /**
+     * @brief Remove the enumerator from the model
+     * @param enumerator device enumerator
+     */
+    void removeEnumerator(DeviceEnumerator *enumerator);
+
     // Reimplemented virtual methods
     virtual int rowCount(const QModelIndex &parent) const;
     virtual QVariant data(const QModelIndex &index, int role) const;
-    virtual QVariant headerData(int section, Qt::Orientation orientation, int role) const;
     virtual QHash<int, QByteArray> roleNames() const;
 
 private:

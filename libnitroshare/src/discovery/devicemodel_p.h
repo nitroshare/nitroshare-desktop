@@ -29,8 +29,10 @@
 #include <QObject>
 #include <QVariantMap>
 
-#include <nitroshare/device.h>
+#include <nitroshare/deviceenumerator.h>
 #include <nitroshare/devicemodel.h>
+
+#include "device.h"
 
 class DeviceModelPrivate : public QObject
 {
@@ -41,7 +43,8 @@ public:
     explicit DeviceModelPrivate(DeviceModel *model);
     virtual ~DeviceModelPrivate();
 
-    Device *findDevice(const QString &uuid);
+    int findDevice(const QString &uuid);
+    bool removeEnumerator(QObject *enumerator, int index);
 
     DeviceModel *const q;
 
@@ -49,7 +52,7 @@ public:
 
 public Q_SLOTS:
 
-    void onDeviceUpdated(const QString &uuid, const QStringList &addresses, const QVariantMap &properties);
+    void onDeviceUpdated(const QString &uuid, const QVariantMap &properties);
     void onDeviceRemoved(const QString &uuid);
 };
 
