@@ -5,7 +5,6 @@ set(HEADERS "${HEADERS}" "${CMAKE_CURRENT_BINARY_DIR}/config.h")
 
 set(SRC
     src/discovery/device.cpp
-    src/discovery/deviceenumerator.cpp
     src/discovery/devicemodel.cpp
 )
 

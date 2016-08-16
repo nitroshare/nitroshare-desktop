@@ -59,13 +59,6 @@ class NITROSHARE_EXPORT DeviceEnumerator : public QObject
 {
     Q_OBJECT
 
-public:
-
-    /**
-     * @brief Destroy the device enumerator
-     */
-    virtual ~DeviceEnumerator();
-
 Q_SIGNALS:
 
     /**
@@ -92,7 +85,7 @@ public:
     /**
      * @brief Destroy the factory
      */
-    virtual ~DeviceEnumeratorFactoryInterface();
+    virtual ~DeviceEnumeratorFactoryInterface() {}
 
     /**
      * @brief Create an instance of the device enumerator
