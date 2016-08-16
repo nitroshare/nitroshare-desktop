@@ -1,6 +1,3 @@
-# libnitroshare - core application functionality
-# Copyright 2016 - Nathan Osman
-
 configure_file(config.h.in "${CMAKE_CURRENT_BINARY_DIR}/config.h")
 
 file(GLOB HEADERS include/nitroshare/*.h)
@@ -8,10 +5,11 @@ set(HEADERS "${HEADERS}" "${CMAKE_CURRENT_BINARY_DIR}/config.h")
 
 set(SRC
     src/discovery/device.cpp
+    src/discovery/deviceenumerator.cpp
     src/discovery/devicemodel.cpp
 )
 
-add_library(nitroshare SHARED ${SRC})
+add_library(nitroshare SHARED ${HEADERS} ${SRC})
 
 set_target_properties(nitroshare PROPERTIES
     CXX_STANDARD  11

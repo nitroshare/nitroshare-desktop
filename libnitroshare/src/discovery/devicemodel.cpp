@@ -101,7 +101,6 @@ void DeviceModelPrivate::onDeviceUpdated(const QString &uuid, const QVariantMap 
     if (!device) {
         device = new Device;
         device->uuid = uuid;
-        devices.append(device);
     }
 
     // Update the properties for the device, taking note of anything that changed
