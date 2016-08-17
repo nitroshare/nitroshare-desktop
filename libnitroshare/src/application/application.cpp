@@ -22,9 +22,18 @@
  * IN THE SOFTWARE.
  */
 
+#include <QHostInfo>
+#include <QUuid>
+
 #include <nitroshare/application.h>
 
 #include "application_p.h"
+
+const QString DeviceUuid = "DeviceUuid";
+const QString DeviceName = "DeviceName";
+
+QVariant DeviceUuidDefault() { return QUuid::createUuid().toString(); }
+QVariant DeviceNameDefault() { return QHostInfo::localHostName(); }
 
 ApplicationPrivate::ApplicationPrivate(QObject *parent)
     : QObject(parent),
@@ -36,6 +45,16 @@ Application::Application(QObject *parent)
     : QObject(parent),
       d(new ApplicationPrivate(this))
 {
+}
+
+QString Application::deviceUuid() const
+{
+    return d->settings.get(DeviceUuid, &DeviceUuidDefault).toString();
+}
+
+QString Application::deviceName() const
+{
+    return d->settings.get(DeviceName, &DeviceNameDefault).toString();
 }
 
 DeviceModel *Application::deviceModel() const

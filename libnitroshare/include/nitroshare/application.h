@@ -54,6 +54,18 @@ public:
     explicit Application(QObject *parent = nullptr);
 
     /**
+     * @brief Retrieve the device UUID
+     * @return unique device ID
+     */
+    QString deviceUuid() const;
+
+    /**
+     * @brief Retrieve the device name
+     * @return name assigned to device
+     */
+    QString deviceName() const;
+
+    /**
      * @brief Retrieve the global DeviceModel instance
      * @return pointer to DeviceModel
      */
