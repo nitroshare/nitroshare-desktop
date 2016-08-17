@@ -27,10 +27,10 @@
 
 #include <QObject>
 
-#include <nitroshare/devicemodel.h>
-#include <nitroshare/settings.h>
-
 #include "config.h"
+
+class DeviceModel;
+class Settings;
 
 class NITROSHARE_EXPORT ApplicationPrivate;
 
