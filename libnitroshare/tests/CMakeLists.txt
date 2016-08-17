@@ -1,5 +1,6 @@
 set(TESTS
     TestDeviceModel
+    TestSettings
 )
 
 foreach(_test ${TESTS})
