@@ -25,17 +25,23 @@
 #ifndef BROADCASTPLUGIN_H
 #define BROADCASTPLUGIN_H
 
-#include <nitroshare/deviceenumerator.h>
+#include <nitroshare/applicationplugin.h>
 
-class BroadcastPlugin : public QObject, public DeviceEnumeratorFactoryInterface
+#include "broadcastenumerator.h"
+
+class BroadcastPlugin : public ApplicationPlugin
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID DeviceEnumeratorFactoryInterface_iid)
-    Q_INTERFACES(DeviceEnumeratorFactoryInterface)
+    Q_PLUGIN_METADATA(IID ApplicationPlugin_iid)
 
 public:
 
-    virtual DeviceEnumerator *createDeviceEnumerator();
+    virtual void init(Application *application);
+    virtual void cleanup(Application *application);
+
+private:
+
+    BroadcastEnumerator *mEnumerator;
 };
 
 #endif // BROADCASTPLUGIN_H

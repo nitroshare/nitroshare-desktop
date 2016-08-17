@@ -22,4 +22,133 @@
  * IN THE SOFTWARE.
  */
 
+#include <QDateTime>
+#include <QHostAddress>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QNetworkAddressEntry>
+#include <QNetworkInterface>
+#include <QSet>
+#include <QVariantMap>
+
+#include <nitroshare/application.h>
+#include <nitroshare/settings.h>
+
 #include "broadcastenumerator.h"
+
+const QString BroadcastInterval = "BroadcastInterval";
+const QString BroadcastExpiry = "BroadcastExpiry";
+const QString BroadcastPort = "BroadcastPort";
+
+QVariant BroadcastIntervalDefault() { return 5000; }
+QVariant BroadcastExpiryDefault() { return 30000; }
+QVariant BroadcastPortDefault() { return 40816; }
+
+BroadcastEnumerator::BroadcastEnumerator(Application *application)
+    : mApplication(application)
+{
+    connect(&mBroadcastTimer, &QTimer::timeout, this, &BroadcastEnumerator::onBroadcastTimeout);
+    connect(&mExpiryTimer, &QTimer::timeout, this, &BroadcastEnumerator::onExpiryTimeout);
+    connect(&mSocket, &QUdpSocket::readyRead, this, &BroadcastEnumerator::onReadyRead);
+    connect(mApplication->settings(), &Settings::settingsChanged, this, &BroadcastEnumerator::onSettingsChanged);
+
+    // Trigger loading the initial settings
+    onSettingsChanged({ BroadcastInterval, BroadcastExpiry, BroadcastPort });
+}
+
+void BroadcastEnumerator::onBroadcastTimeout()
+{
+    // Build a list of all IPv4 broadcast addresses
+    QSet<QHostAddress> addresses;
+    foreach (QNetworkInterface interface, QNetworkInterface::allInterfaces()) {
+        if (interface.flags() & QNetworkInterface::CanBroadcast) {
+            foreach (QNetworkAddressEntry entry, interface.addressEntries()) {
+                if (!entry.broadcast().isNull()) {
+                    addresses.insert(entry.broadcast());
+                }
+            }
+        }
+    }
+
+    // Build the packet that will be broadcast
+    QJsonObject object({
+        { "uuid", mApplication->deviceUuid() },
+        { "name", mApplication->deviceName() }
+    });
+    QByteArray data = QJsonDocument(object).toJson(QJsonDocument::Compact);
+
+    // Broadcast the packet
+    foreach (QHostAddress address, addresses) {
+        mSocket.writeDatagram(data, address, mSocket.localPort());
+    }
+}
+
+void BroadcastEnumerator::onExpiryTimeout()
+{
+    // Grab the current time in MS and the timeout interval
+    qlonglong ms = QDateTime::currentMSecsSinceEpoch();
+    int expiry = mApplication->settings()->get(BroadcastExpiry, &BroadcastExpiryDefault).toInt();
+
+    // Remove any devices that have expired
+    auto i = mDevices.begin();
+    while (i != mDevices.end()) {
+        if (ms - i.value() > expiry) {
+            mDevices.erase(i);
+            emit deviceRemoved(i.key());
+        }
+        ++i;
+    }
+}
+
+void BroadcastEnumerator::onReadyRead()
+{
+    while (mSocket.hasPendingDatagrams()) {
+
+        // Capture both the data and the address
+        QByteArray data;
+        QHostAddress address;
+
+        // Receive the packet
+        data.resize(mSocket.pendingDatagramSize());
+        mSocket.readDatagram(data.data(), data.size(), &address);
+
+        // Extract the data from the packet
+        QVariantMap properties = QJsonDocument::fromJson(data).object().toVariantMap();
+        properties.insert("addresses", QStringList({ address.toString() }));
+
+        // Emit an update for the device
+        QString uuid = properties.take("uuid").toString();
+        emit deviceUpdated(uuid, properties);
+    }
+}
+
+void BroadcastEnumerator::onSettingsChanged(const QStringList &keys)
+{
+    if (keys.contains(BroadcastInterval)) {
+        mBroadcastTimer.stop();
+        mBroadcastTimer.setInterval(
+            mApplication->settings()->get(BroadcastInterval, &BroadcastIntervalDefault).toInt()
+        );
+        onBroadcastTimeout();
+        mBroadcastTimer.start();
+    }
+
+    if (keys.contains(BroadcastExpiry)) {
+        mExpiryTimer.stop();
+        mExpiryTimer.setInterval(
+            mApplication->settings()->get(BroadcastExpiry, &BroadcastExpiryDefault).toInt()
+        );
+        onExpiryTimeout();
+        mExpiryTimer.start();
+    }
+
+    // TODO: this should raise an error if it fails
+
+    if (keys.contains(BroadcastPort)) {
+        mSocket.close();
+        mSocket.bind(
+            QHostAddress::Any,
+            mApplication->settings()->get(BroadcastPort, &BroadcastPortDefault).toInt()
+        );
+    }
+}

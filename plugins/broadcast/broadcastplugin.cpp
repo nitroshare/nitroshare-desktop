@@ -22,10 +22,20 @@
  * IN THE SOFTWARE.
  */
 
-#include "broadcastenumerator.h"
+#include <nitroshare/application.h>
+#include <nitroshare/devicemodel.h>
+
 #include "broadcastplugin.h"
 
-DeviceEnumerator *BroadcastPlugin::createDeviceEnumerator()
+void BroadcastPlugin::init(Application *application)
 {
-    return new BroadcastEnumerator();
+    mEnumerator = new BroadcastEnumerator(application);
+    application->deviceModel()->addEnumerator(mEnumerator);
+}
+
+void BroadcastPlugin::cleanup(Application *application)
+{
+    application->deviceModel()->removeEnumerator(mEnumerator);
+    delete mEnumerator;
+    emit finishedCleanup();
 }

@@ -25,11 +25,47 @@
 #ifndef BROADCASTENUMERATOR_H
 #define BROADCASTENUMERATOR_H
 
+#include <QMap>
+#include <QTimer>
+#include <QUdpSocket>
+
 #include <nitroshare/deviceenumerator.h>
 
+class Application;
+
+/**
+ * @brief Discover devices through IPv4 broadcast
+ *
+ * This plugin allows for interoperability with the 0.3.x releases which use
+ * IPv4 broadcast for device discovery. The mDNS plugin will eventually
+ * replace this plugin due to its support for IPv6 and less noise.
+ *
+ * If no ping is received from a device after a fixed amount of time has
+ * expired, the device is considered "expired" and is removed.
+ */
 class BroadcastEnumerator : public DeviceEnumerator
 {
     Q_OBJECT
+
+public:
+
+    BroadcastEnumerator(Application *application);
+
+private slots:
+
+    void onBroadcastTimeout();
+    void onExpiryTimeout();
+    void onReadyRead();
+    void onSettingsChanged(const QStringList &keys);
+
+private:
+
+    Application *mApplication;
+
+    QTimer mBroadcastTimer;
+    QTimer mExpiryTimer;
+    QUdpSocket mSocket;
+    QMap<QString, qlonglong> mDevices;
 };
 
 #endif // BROADCASTENUMERATOR_H
