@@ -28,13 +28,13 @@
 
 #include "devicemodel_p.h"
 
-const char *UuidName = "uuid";
-const char *NameName = "name";
-const char *VersionName = "version";
-const char *OperatingSystemName = "operating_system";
-const char *AddressesName = "addresses";
-const char *PortName = "port";
-const char *TlsName = "tls";
+const QByteArray UuidName = "uuid";
+const QByteArray NameName = "name";
+const QByteArray VersionName = "version";
+const QByteArray OperatingSystemName = "operating_system";
+const QByteArray AddressesName = "addresses";
+const QByteArray PortName = "port";
+const QByteArray TlsName = "tls";
 
 DeviceModelPrivate::DeviceModelPrivate(DeviceModel *model)
     : QObject(model),

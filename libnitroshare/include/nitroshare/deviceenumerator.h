@@ -74,27 +74,4 @@ Q_SIGNALS:
      */
     void deviceRemoved(const QString &uuid);
 };
-
-/**
- * @brief Factory interface for creating DeviceEnumerator instances
- */
-class NITROSHARE_EXPORT DeviceEnumeratorFactoryInterface
-{
-public:
-
-    /**
-     * @brief Destroy the factory
-     */
-    virtual ~DeviceEnumeratorFactoryInterface() {}
-
-    /**
-     * @brief Create an instance of the device enumerator
-     * @return newly created instance
-     */
-    virtual DeviceEnumerator *createDeviceEnumerator() = 0;
-};
-
-#define DeviceEnumeratorFactoryInterface_iid "net.nitroshare.NitroShare.DeviceEnumeratorFactoryInterface/1.0"
-Q_DECLARE_INTERFACE(DeviceEnumeratorFactoryInterface, DeviceEnumeratorFactoryInterface_iid)
-
 #endif // LIBNITROSHARE_DEVICEENUMERATOR_H
