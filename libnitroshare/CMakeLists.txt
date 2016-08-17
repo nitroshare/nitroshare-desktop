@@ -4,6 +4,7 @@ file(GLOB HEADERS include/nitroshare/*.h)
 set(HEADERS "${HEADERS}" "${CMAKE_CURRENT_BINARY_DIR}/config.h")
 
 set(SRC
+    src/application/application.cpp
     src/discovery/device.cpp
     src/discovery/devicemodel.cpp
     src/util/settings.cpp
