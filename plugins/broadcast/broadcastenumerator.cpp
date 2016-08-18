@@ -32,9 +32,12 @@
 #include <QVariantMap>
 
 #include <nitroshare/application.h>
+#include <nitroshare/logger.h>
 #include <nitroshare/settings.h>
 
 #include "broadcastenumerator.h"
+
+const QString LoggerTag = "broadcast";
 
 const QString BroadcastInterval = "BroadcastInterval";
 const QString BroadcastExpiry = "BroadcastExpiry";
@@ -142,13 +145,11 @@ void BroadcastEnumerator::onSettingsChanged(const QStringList &keys)
         mExpiryTimer.start();
     }
 
-    // TODO: this should raise an error if it fails
-
     if (keys.contains(BroadcastPort)) {
         mSocket.close();
-        mSocket.bind(
-            QHostAddress::Any,
-            mApplication->settings()->get(BroadcastPort, &BroadcastPortDefault).toInt()
-        );
+        if (!mSocket.bind(QHostAddress::Any,
+                mApplication->settings()->get(BroadcastPort, &BroadcastPortDefault).toInt())) {
+            emit mApplication->logger()->error(LoggerTag, mSocket.errorString());
+        }
     }
 }
