@@ -28,6 +28,7 @@
 #include <QSettings>
 
 #include <nitroshare/devicemodel.h>
+#include <nitroshare/logger.h>
 #include <nitroshare/settings.h>
 
 class ApplicationPrivate : public QObject
@@ -41,6 +42,7 @@ public:
     QSettings baseSettings;
 
     DeviceModel deviceModel;
+    Logger logger;
     Settings settings;
 };
 

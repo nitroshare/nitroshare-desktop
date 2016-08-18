@@ -62,6 +62,11 @@ DeviceModel *Application::deviceModel() const
     return &d->deviceModel;
 }
 
+Logger *Application::logger() const
+{
+    return &d->logger;
+}
+
 Settings *Application::settings() const
 {
     return &d->settings;

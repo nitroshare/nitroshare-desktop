@@ -30,6 +30,7 @@
 #include "config.h"
 
 class DeviceModel;
+class Logger;
 class Settings;
 
 class NITROSHARE_EXPORT ApplicationPrivate;
@@ -70,6 +71,12 @@ public:
      * @return pointer to DeviceModel
      */
     DeviceModel *deviceModel() const;
+
+    /**
+     * @brief Retrieve the global Logger instance
+     * @return pointer to Logger
+     */
+    Logger *logger() const;
 
     /**
      * @brief Retrieve the global settings instance
