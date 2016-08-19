@@ -16,5 +16,5 @@ set_target_properties(broadcast PROPERTIES
 target_link_libraries(broadcast nitroshare Qt5::Network)
 
 install(TARGETS broadcast
-    DESTINATION plugins/broadcast
+    DESTINATION plugins
 )

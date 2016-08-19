@@ -6,9 +6,14 @@ set(VERSION_MINOR 4)
 set(VERSION_PATCH 0)
 set(VERSION ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH})
 
+option(BUILD_API "Build local API" ON)
 option(BUILD_TESTS "Build test suite" OFF)
 
 find_package(Qt5Network 5.4 REQUIRED)
+
+if(BUILD_API)
+    find_package(QHttpEngine REQUIRED)
+endif()
 
 if(BUILD_TESTS)
     find_package(Qt5Test 5.4 REQUIRED)
