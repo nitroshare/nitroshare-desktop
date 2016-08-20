@@ -67,6 +67,11 @@ Logger *Application::logger() const
     return &d->logger;
 }
 
+PluginManager *Application::pluginManager() const
+{
+    return &d->pluginManager;
+}
+
 Settings *Application::settings() const
 {
     return &d->settings;

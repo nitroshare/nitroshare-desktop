@@ -29,6 +29,7 @@
 
 #include <nitroshare/devicemodel.h>
 #include <nitroshare/logger.h>
+#include <nitroshare/pluginmanager.h>
 #include <nitroshare/settings.h>
 
 class ApplicationPrivate : public QObject
@@ -43,6 +44,7 @@ public:
 
     DeviceModel deviceModel;
     Logger logger;
+    PluginManager pluginManager;
     Settings settings;
 };
 
