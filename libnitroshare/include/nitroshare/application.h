@@ -31,7 +31,7 @@
 
 class DeviceModel;
 class Logger;
-class PluginManager;
+class PluginModel;
 class Settings;
 
 class NITROSHARE_EXPORT ApplicationPrivate;
@@ -80,10 +80,10 @@ public:
     Logger *logger() const;
 
     /**
-     * @brief Retrieve the global PluginManager instance
-     * @return pointer to PluginManager
+     * @brief Retrieve the global PluginModel instance
+     * @return pointer to PluginModel
      */
-    PluginManager *pluginManager() const;
+    PluginModel *pluginModel() const;
 
     /**
      * @brief Retrieve the global settings instance

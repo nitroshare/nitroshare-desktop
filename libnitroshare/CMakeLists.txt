@@ -8,7 +8,7 @@ set(SRC
     src/discovery/device.cpp
     src/discovery/devicemodel.cpp
     src/plugin/plugin.cpp
-    src/plugin/pluginmanager.cpp
+    src/plugin/pluginmodel.cpp
     src/util/logger.cpp
     src/util/settings.cpp
 )

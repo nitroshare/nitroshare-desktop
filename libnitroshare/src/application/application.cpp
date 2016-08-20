@@ -67,9 +67,9 @@ Logger *Application::logger() const
     return &d->logger;
 }
 
-PluginManager *Application::pluginManager() const
+PluginModel *Application::pluginModel() const
 {
-    return &d->pluginManager;
+    return &d->pluginModel;
 }
 
 Settings *Application::settings() const

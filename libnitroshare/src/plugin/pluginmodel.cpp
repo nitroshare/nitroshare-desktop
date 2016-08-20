@@ -22,29 +22,41 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef LIBNITROSHARE_PLUGINMANAGER_H
-#define LIBNITROSHARE_PLUGINMANAGER_H
+#include <QHash>
 
-#include <QObject>
+#include <nitroshare/pluginmodel.h>
 
-#include "config.h"
+#include "pluginmodel_p.h"
 
-class NITROSHARE_EXPORT PluginManagerPrivate;
-
-/**
- * @brief Plugin loader and manager
- */
-class NITROSHARE_EXPORT PluginManager : public QObject
+PluginModelPrivate::PluginModelPrivate(QObject *parent)
+    : QObject(parent)
 {
-    Q_OBJECT
+    //...
+}
 
-public:
+PluginModel::PluginModel(QObject *parent)
+    : QAbstractListModel(parent),
+      d(new PluginModelPrivate(this))
+{
+    //...
+}
 
-    explicit PluginManager(QObject *parent = nullptr);
+void PluginModel::loadPlugins(const QString &directory)
+{
+    //...
+}
 
-private:
+int PluginModel::rowCount(const QModelIndex &parent) const
+{
+    return 0;
+}
 
-    PluginManagerPrivate *const d;
-};
+QVariant PluginModel::data(const QModelIndex &index, int role) const
+{
+    return QVariant();
+}
 
-#endif // LIBNITROSHARE_PLUGINMANAGER_H
+QHash<int, QByteArray> PluginModel::roleNames() const
+{
+    return QHash<int, QByteArray>();
+}
