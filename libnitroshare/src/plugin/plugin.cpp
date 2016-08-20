@@ -22,20 +22,4 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef APIPLUGIN_H
-#define APIPLUGIN_H
-
 #include <nitroshare/plugin.h>
-
-class ApiPlugin : public Plugin
-{
-    Q_OBJECT
-    Q_PLUGIN_METADATA(IID Plugin_iid)
-
-public:
-
-    virtual void init(Application *application);
-    virtual void cleanup(Application *application);
-};
-
-#endif // APIPLUGIN_H

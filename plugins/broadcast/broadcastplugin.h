@@ -25,14 +25,14 @@
 #ifndef BROADCASTPLUGIN_H
 #define BROADCASTPLUGIN_H
 
-#include <nitroshare/applicationplugin.h>
+#include <nitroshare/plugin.h>
 
 #include "broadcastenumerator.h"
 
-class BroadcastPlugin : public ApplicationPlugin
+class BroadcastPlugin : public Plugin
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID ApplicationPlugin_iid)
+    Q_PLUGIN_METADATA(IID Plugin_iid)
 
 public:
 

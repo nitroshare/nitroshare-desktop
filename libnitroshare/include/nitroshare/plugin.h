@@ -22,14 +22,14 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef LIBNITROSHARE_APPLICATIONPLUGIN_H
-#define LIBNITROSHARE_APPLICATIONPLUGIN_H
+#ifndef LIBNITROSHARE_PLUGIN_H
+#define LIBNITROSHARE_PLUGIN_H
 
 #include <QObject>
 
 #include "config.h"
 
-#define ApplicationPlugin_iid "net.nitroshare.NitroShare.ApplicationPlugin"
+#define Plugin_iid "net.nitroshare.NitroShare.Plugin"
 
 class Application;
 
@@ -45,7 +45,7 @@ class Application;
  * access to most of the application functionality through the Application
  * pointer passed to init().
  */
-class NITROSHARE_EXPORT ApplicationPlugin : public QObject
+class NITROSHARE_EXPORT Plugin : public QObject
 {
     Q_OBJECT
 
@@ -79,4 +79,4 @@ Q_SIGNALS:
     void finishedCleanup();
 };
 
-#endif // LIBNITROSHARE_APPLICATIONPLUGIN_H
+#endif // LIBNITROSHARE_PLUGIN_H
