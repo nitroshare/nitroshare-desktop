@@ -35,8 +35,10 @@ const QString DeviceName = "DeviceName";
 QVariant DeviceUuidDefault() { return QUuid::createUuid().toString(); }
 QVariant DeviceNameDefault() { return QHostInfo::localHostName(); }
 
-ApplicationPrivate::ApplicationPrivate(QObject *parent)
-    : QObject(parent),
+ApplicationPrivate::ApplicationPrivate(Application *application)
+    : QObject(application),
+      q(application),
+      pluginModel(application),
       settings(&baseSettings)
 {
 }

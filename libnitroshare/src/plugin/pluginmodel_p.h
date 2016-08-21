@@ -27,8 +27,9 @@
 
 #include <QList>
 #include <QObject>
+#include <QPluginLoader>
 
-#include <nitroshare/plugin.h>
+#include <nitroshare/application.h>
 
 class PluginModelPrivate : public QObject
 {
@@ -36,9 +37,11 @@ class PluginModelPrivate : public QObject
 
 public:
 
-    explicit PluginModelPrivate(QObject *parent);
+    PluginModelPrivate(QObject *parent, Application *application);
+    virtual ~PluginModelPrivate();
 
-    QList<Plugin*> plugins;
+    Application *application;
+    QList<QPluginLoader*> plugins;
 };
 
 #endif // LIBNITROSHARE_PLUGINMODEL_P_H

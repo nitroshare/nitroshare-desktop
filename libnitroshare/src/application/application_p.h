@@ -27,6 +27,7 @@
 
 #include <QSettings>
 
+#include <nitroshare/application.h>
 #include <nitroshare/devicemodel.h>
 #include <nitroshare/logger.h>
 #include <nitroshare/pluginmodel.h>
@@ -38,7 +39,9 @@ class ApplicationPrivate : public QObject
 
 public:
 
-    explicit ApplicationPrivate(QObject *parent);
+    explicit ApplicationPrivate(Application *application);
+
+    Application *const q;
 
     QSettings baseSettings;
 

@@ -29,6 +29,8 @@
 
 #include "config.h"
 
+class Application;
+
 class NITROSHARE_EXPORT PluginModelPrivate;
 
 /**
@@ -40,13 +42,22 @@ class NITROSHARE_EXPORT PluginModel : public QAbstractListModel
 
 public:
 
-    explicit PluginModel(QObject *parent = nullptr);
+    enum Role {
+        FilenameRole = Qt::UserRole
+    };
 
     /**
-     * @brief Load the plugins in the specified directory
-     * @param directory directory containing
+     * @brief Create a new plugin manager
+     * @param application pointer to application
+     * @param parent QObject
      */
-    void loadPlugins(const QString &directory);
+    PluginModel(Application *application, QObject *parent = nullptr);
+
+    /**
+     * @brief Add the plugins in the specified directory
+     * @param directory absolute path
+     */
+    void addPlugins(const QString &directory);
 
     // Reimplemented virtual methods
     virtual int rowCount(const QModelIndex &parent) const;

@@ -22,41 +22,91 @@
  * IN THE SOFTWARE.
  */
 
-#include <QHash>
+#include <QDir>
+#include <QLibrary>
 
+#include <nitroshare/plugin.h>
 #include <nitroshare/pluginmodel.h>
 
 #include "pluginmodel_p.h"
 
-PluginModelPrivate::PluginModelPrivate(QObject *parent)
-    : QObject(parent)
+PluginModelPrivate::PluginModelPrivate(QObject *parent, Application *application)
+    : QObject(parent),
+      application(application)
 {
-    //...
 }
 
-PluginModel::PluginModel(QObject *parent)
+PluginModelPrivate::~PluginModelPrivate()
+{
+    qDeleteAll(plugins);
+}
+
+PluginModel::PluginModel(Application *application, QObject *parent)
     : QAbstractListModel(parent),
-      d(new PluginModelPrivate(this))
+      d(new PluginModelPrivate(this, application))
 {
-    //...
 }
 
-void PluginModel::loadPlugins(const QString &directory)
+void PluginModel::addPlugins(const QString &directory)
 {
-    //...
+    // Attempt to load each of the plugins
+    foreach (QString filename, QDir(directory).entryList(QDir::Files)) {
+
+        // First verify that the file is indeed a library (by extension)
+        if (!QLibrary::isLibrary(filename)) {
+            continue;
+        }
+
+        // Attempt to load the plugin
+        QPluginLoader *loader = new QPluginLoader(filename);
+        if (loader->isLoaded()) {
+
+            // The plugin must derive from the Plugin class
+            Plugin *plugin = qobject_cast<Plugin*>(loader->instance());
+            if (plugin) {
+
+                // Add the plugin to the list
+                beginInsertRows(QModelIndex(), d->plugins.count(), d->plugins.count());
+                d->plugins.append(loader);
+                endInsertRows();
+
+                // Initialize the plugin
+                plugin->init(d->application);
+
+                continue;
+            }
+        }
+
+        // The plugin failed to load, free the memory
+        delete loader;
+    }
 }
 
 int PluginModel::rowCount(const QModelIndex &parent) const
 {
-    return 0;
+    return d->plugins.count();
 }
 
 QVariant PluginModel::data(const QModelIndex &index, int role) const
 {
+    // Ensure the index points to a valid row
+    if (!index.isValid() || index.row() < 0 || index.row() >= d->plugins.count()) {
+        return QVariant();
+    }
+
+    QPluginLoader *loader = d->plugins.at(index.row());
+
+    switch(role) {
+    case FilenameRole:
+        return loader->fileName();
+    }
+
     return QVariant();
 }
 
 QHash<int, QByteArray> PluginModel::roleNames() const
 {
-    return QHash<int, QByteArray>();
+    return {
+        { FilenameRole, "filename" }
+    };
 }
