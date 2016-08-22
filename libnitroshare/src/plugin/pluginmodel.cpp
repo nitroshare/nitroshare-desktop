@@ -50,7 +50,8 @@ PluginModel::PluginModel(Application *application, QObject *parent)
 void PluginModel::addPlugins(const QString &directory)
 {
     // Attempt to load each of the plugins
-    foreach (QString filename, QDir(directory).entryList(QDir::Files)) {
+    QDir pluginDir(directory);
+    foreach (QString filename, pluginDir.entryList(QDir::Files)) {
 
         // First verify that the file is indeed a library (by extension)
         if (!QLibrary::isLibrary(filename)) {
@@ -58,8 +59,8 @@ void PluginModel::addPlugins(const QString &directory)
         }
 
         // Attempt to load the plugin
-        QPluginLoader *loader = new QPluginLoader(filename);
-        if (loader->isLoaded()) {
+        QPluginLoader *loader = new QPluginLoader(pluginDir.absoluteFilePath(filename));
+        if (loader->load()) {
 
             // The plugin must derive from the Plugin class
             Plugin *plugin = qobject_cast<Plugin*>(loader->instance());

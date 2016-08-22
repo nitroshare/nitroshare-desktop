@@ -16,6 +16,7 @@ if(BUILD_API)
 endif()
 
 if(BUILD_TESTS)
+    enable_testing()
     find_package(Qt5Test 5.4 REQUIRED)
 endif()
 

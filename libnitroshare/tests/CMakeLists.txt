@@ -3,6 +3,7 @@ add_subdirectory(dummy)
 
 set(TESTS
     TestDeviceModel
+    TestPluginModel
     TestSettings
 )
 
@@ -13,6 +14,9 @@ foreach(_test ${TESTS})
     )
     target_link_libraries(${_test} nitroshare Qt5::Test)
     add_test(NAME ${_test}
-        COMMAND ${_test} "$<TARGET_FILE_DIR:dummy>"
+        COMMAND ${_test}
+    )
+    set_tests_properties(${_test} PROPERTIES
+        ENVIRONMENT "PLUGIN_DIR=$<TARGET_FILE_DIR:dummy>"
     )
 endforeach()
