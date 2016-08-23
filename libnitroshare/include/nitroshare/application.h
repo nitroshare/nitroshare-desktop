@@ -68,6 +68,12 @@ public:
     QString deviceName() const;
 
     /**
+     * @brief Retrieve the application version
+     * @return application version
+     */
+    QString version() const;
+
+    /**
      * @brief Retrieve the global DeviceModel instance
      * @return pointer to DeviceModel
      */

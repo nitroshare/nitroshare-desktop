@@ -59,6 +59,11 @@ QString Application::deviceName() const
     return d->settings.get(DeviceName, &DeviceNameDefault).toString();
 }
 
+QString Application::version() const
+{
+    return PROJECT_VERSION;
+}
+
 DeviceModel *Application::deviceModel() const
 {
     return &d->deviceModel;
