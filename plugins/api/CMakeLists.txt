@@ -1,6 +1,10 @@
 set(SRC
+    apihandler.h
+    apihandler.cpp
     apiplugin.h
     apiplugin.cpp
+    apiserver.h
+    apiserver.cpp
 )
 
 add_library(api MODULE ${SRC})

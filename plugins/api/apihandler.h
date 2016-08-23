@@ -22,15 +22,40 @@
  * IN THE SOFTWARE.
  */
 
-#include "apiplugin.h"
+#ifndef APIHANDLER_H
+#define APIHANDLER_H
 
-void ApiPlugin::init(Application *application)
-{
-    mServer = new ApiServer(application);
-}
+#include <QVariantMap>
 
-void ApiPlugin::cleanup(Application *)
+#include <QHttpEngine/QHttpSocket>
+#include <QHttpEngine/QObjectHandler>
+
+class Application;
+
+/**
+ * @brief HTTP handler for API requests
+ *
+ * The handler must override process() since it needs to confirm the presence
+ * of the authentication token.
+ */
+class ApiHandler : public QObjectHandler
 {
-    delete mServer;
-    emit finishedCleanup();
-}
+    Q_OBJECT
+
+public:
+
+    ApiHandler(Application *application, const QString &token);
+
+public slots:
+
+    QVariantMap version(const QVariantMap &params);
+
+private:
+
+    virtual void process(QHttpSocket *socket, const QString &path);
+
+    Application *const mApplication;
+    const QString mToken;
+};
+
+#endif // APIHANDLER_H

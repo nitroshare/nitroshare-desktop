@@ -22,15 +22,45 @@
  * IN THE SOFTWARE.
  */
 
-#include "apiplugin.h"
+#ifndef APISERVER_H
+#define APISERVER_H
 
-void ApiPlugin::init(Application *application)
-{
-    mServer = new ApiServer(application);
-}
+#include <QHttpEngine/QHttpServer>
+#include <QHttpEngine/QLocalFile>
 
-void ApiPlugin::cleanup(Application *)
+#include "apihandler.h"
+
+class Application;
+
+/**
+ * @brief Expose application functionality through HTTP
+ *
+ * This plugin exposes an HTTP server available to local processes that can be
+ * used to control the application while it is running.
+ */
+class ApiServer : public QHttpServer
 {
-    delete mServer;
-    emit finishedCleanup();
-}
+    Q_OBJECT
+
+public:
+
+    explicit ApiServer(Application *application);
+    virtual ~ApiServer();
+
+private slots:
+
+    void onSettingsChanged(const QStringList &keys);
+
+private:
+
+    void start();
+    void stop();
+
+    Application *const mApplication;
+
+    const QString mToken;
+    QLocalFile mLocalFile;
+    ApiHandler mHandler;
+};
+
+#endif // APISERVER_H

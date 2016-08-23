@@ -27,7 +27,9 @@
 
 #include <nitroshare/plugin.h>
 
-class ApiPlugin : public Plugin
+#include "apiserver.h"
+
+class Q_DECL_EXPORT ApiPlugin : public Plugin
 {
     Q_OBJECT
     Q_PLUGIN_METADATA(IID Plugin_iid)
@@ -36,6 +38,10 @@ public:
 
     virtual void init(Application *application);
     virtual void cleanup(Application *application);
+
+private:
+
+    ApiServer *mServer;
 };
 
 #endif // APIPLUGIN_H

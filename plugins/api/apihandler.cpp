@@ -22,15 +22,31 @@
  * IN THE SOFTWARE.
  */
 
-#include "apiplugin.h"
+#include <nitroshare/application.h>
 
-void ApiPlugin::init(Application *application)
+#include "apihandler.h"
+
+ApiHandler::ApiHandler(Application *application, const QString &token)
+    : mApplication(application),
+      mToken(token)
 {
-    mServer = new ApiServer(application);
 }
 
-void ApiPlugin::cleanup(Application *)
+QVariantMap ApiHandler::version(const QVariantMap &)
 {
-    delete mServer;
-    emit finishedCleanup();
+    return {
+        { "version", mApplication->version() }
+    };
+}
+
+void ApiHandler::process(QHttpSocket *socket, const QString &path)
+{
+    // Ensure that the correct authentication token was provided
+    if (socket->headers().value("X-Auth-Token") != mToken) {
+        socket->writeError(QHttpSocket::Forbidden);
+        return;
+    }
+
+    // If authenticated, have QObjectHandler process the request
+    QObjectHandler::process(socket, path);
 }
