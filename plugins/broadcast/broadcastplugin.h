@@ -29,7 +29,7 @@
 
 #include "broadcastenumerator.h"
 
-class BroadcastPlugin : public Plugin
+class Q_DECL_EXPORT BroadcastPlugin : public Plugin
 {
     Q_OBJECT
     Q_PLUGIN_METADATA(IID Plugin_iid)

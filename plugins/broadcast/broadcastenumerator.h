@@ -49,7 +49,7 @@ class BroadcastEnumerator : public DeviceEnumerator
 
 public:
 
-    BroadcastEnumerator(Application *application);
+    explicit BroadcastEnumerator(Application *application);
 
 private slots:
 
