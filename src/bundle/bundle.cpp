@@ -85,7 +85,7 @@ void Bundle::addDirectory(const QString &path)
     while (stack.count()) {
         QString tos = stack.pop();
 
-        foreach (QFileInfo info, QDir(tos).entryInfoList(QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot)) {
+        foreach (QFileInfo info, QDir(tos).entryInfoList(QDir::Dirs | QDir::Files | QDir::Hidden | QDir::NoDotAndDotDot)) {
 
             // Skip symbolic links
             if (info.isSymLink()) {
