@@ -65,7 +65,7 @@ private:
     QTimer mBroadcastTimer;
     QTimer mExpiryTimer;
     QUdpSocket mSocket;
-    QMap<QString, qlonglong> mDevices;
+    QMap<QString, qint64> mDevices;
 };
 
 #endif // BROADCASTENUMERATOR_H

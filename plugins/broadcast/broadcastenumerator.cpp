@@ -89,7 +89,7 @@ void BroadcastEnumerator::onBroadcastTimeout()
 void BroadcastEnumerator::onExpiryTimeout()
 {
     // Grab the current time in MS and the timeout interval
-    qlonglong ms = QDateTime::currentMSecsSinceEpoch();
+    qint64 ms = QDateTime::currentMSecsSinceEpoch();
     int expiry = mApplication->settings()->get(BroadcastExpiry, &BroadcastExpiryDefault).toInt();
 
     // Remove any devices that have expired
