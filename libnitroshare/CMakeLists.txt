@@ -10,6 +10,7 @@ set(SRC
     src/discovery/devicemodel.cpp
     src/plugin/plugin.cpp
     src/plugin/pluginmodel.cpp
+    src/transfer/transfer.cpp
     src/transfer/transfermodel.cpp
     src/util/logger.cpp
     src/util/settings.cpp
