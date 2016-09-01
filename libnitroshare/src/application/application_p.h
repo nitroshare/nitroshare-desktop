@@ -32,6 +32,7 @@
 #include <nitroshare/logger.h>
 #include <nitroshare/pluginmodel.h>
 #include <nitroshare/settings.h>
+#include <nitroshare/transfermodel.h>
 
 class ApplicationPrivate : public QObject
 {
@@ -49,6 +50,7 @@ public:
     Logger logger;
     PluginModel pluginModel;
     Settings settings;
+    TransferModel transferModel;
 };
 
 #endif // LIBNITROSHARE_APPLICATION_P_H

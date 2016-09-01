@@ -83,3 +83,8 @@ Settings *Application::settings() const
 {
     return &d->settings;
 }
+
+TransferModel *Application::transferModel() const
+{
+    return &d->transferModel;
+}

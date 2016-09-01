@@ -33,6 +33,7 @@ class DeviceModel;
 class Logger;
 class PluginModel;
 class Settings;
+class TransferModel;
 
 class NITROSHARE_EXPORT ApplicationPrivate;
 
@@ -96,6 +97,12 @@ public:
      * @return pointer to Settings
      */
     Settings *settings() const;
+
+    /**
+     * @brief Retrieve the global TransferModel instance
+     * @return pointer to TransferModel
+     */
+    TransferModel *transferModel() const;
 
 private:
 
