@@ -25,7 +25,10 @@
 #ifndef LIBNITROSHARE_TRANSFERMODEL_P_H
 #define LIBNITROSHARE_TRANSFERMODEL_P_H
 
+#include <QList>
 #include <QObject>
+
+#include "transfer.h"
 
 class TransferModelPrivate : public QObject
 {
@@ -34,6 +37,8 @@ class TransferModelPrivate : public QObject
 public:
 
     explicit TransferModelPrivate(QObject *parent);
+
+    QList<Transfer*> transfers;
 };
 
 #endif // LIBNITROSHARE_TRANSFERMODEL_P_H

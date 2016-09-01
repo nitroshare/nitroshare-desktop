@@ -43,9 +43,9 @@ TransferModel::TransferModel(QObject *parent)
 {
 }
 
-int TransferModel::rowCount(const QModelIndex &parent) const
+int TransferModel::rowCount(const QModelIndex &) const
 {
-    return 0;
+    return d->transfers.count();
 }
 
 QVariant TransferModel::data(const QModelIndex &index, int role) const
