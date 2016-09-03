@@ -107,22 +107,16 @@ void DeviceModelPrivate::onDeviceUpdated(const QString &uuid, const QVariantMap 
     bool changed = false;
     auto i = properties.constBegin();
     while (i != properties.constEnd()) {
-        if (i.key() == NameName ||
-                i.key() == VersionName ||
-                i.key() == OperatingSystemName ||
-                i.key() == PortName ||
-                i.key() == TlsName) {
-            if (device->properties.value(i.key()) != i.value()) {
-                device->properties.insert(i.key(), i.value());
-                changed = true;
-            }
-        } else if (i.key() == AddressesName) {
+        if (i.key() == AddressesName) {
             QStringList addresses = i.value().toStringList();
             qSort(addresses.begin(), addresses.end());
             if (device->addressMap.value(sender()) != addresses) {
                 device->addressMap.insert(sender(), addresses);
                 changed = true;
             }
+        } else if (device->properties.value(i.key()) != i.value()) {
+            device->properties.insert(i.key(), i.value());
+            changed = true;
         }
         ++i;
     }
