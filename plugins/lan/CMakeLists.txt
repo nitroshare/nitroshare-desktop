@@ -1,6 +1,10 @@
 set(SRC
     lanplugin.h
     lanplugin.cpp
+    lantransport.h
+    lantransport.cpp
+    lantransportserver.h
+    lantransportserver.cpp
 )
 
 add_library(lan MODULE ${SRC})
