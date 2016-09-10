@@ -153,7 +153,7 @@ Description: &quot;%2&quot;</source>
     <message>
         <location line="+0"/>
         <source>Some versions of Gnome do not support AppIndicators. This prevents NitroShare from displaying an indicator in the notification area. Please ensure you have this extension installed before continuing:&lt;br&gt;&lt;br&gt;&lt;a href=&apos;%1&apos;&gt;%1&lt;/a&gt;</source>
-        <translation>Niektóre wersje Gnome nie obsługują AppIndicators. Nie ozwala to NitroShare pokazywać powiadomień. Przed kontynuacją upewnij się że masz zainstalowane rozszerzenie:&lt;br&gt;&lt;br&gt;&lt;a href=&apos;%1&apos;&gt;%1&lt;/a&gt; </translation>
+        <translation>Niektóre wersje Gnome nie obsługują AppIndicators. Nie pozwala to NitroShare pokazywać powiadomień. Przed kontynuacją upewnij się, że masz zainstalowane rozszerzenie:&lt;br&gt;&lt;br&gt;&lt;a href=&apos;%1&apos;&gt;%1&lt;/a&gt; </translation>
     </message>
     <message>
         <location filename="../../util/platform.cpp" line="+147"/>
@@ -259,7 +259,7 @@ Description: &quot;%2&quot;</source>
     <message>
         <location line="+55"/>
         <source>Private key passphrase:</source>
-        <translation>Hsło klucza prywatnego:</translation>
+        <translation>Hasło klucza prywatnego:</translation>
     </message>
     <message>
         <location line="+21"/>
@@ -346,7 +346,7 @@ Description: &quot;%2&quot;</source>
     <message>
         <location line="+1"/>
         <source>Are you sure you want to reset all settings to their default values? This cannot be undone.</source>
-        <translation>Czy na pewno chcesz zresetować wszystkie ustwieni do wartoci domyślnych? Ta operacja nie może być cofnięta.</translation>
+        <translation>Czy na pewno chcesz zresetować wszystkie ustawienia do wartości domyślnych? Ta operacja nie może być cofnięta.</translation>
     </message>
     <message>
         <location line="+30"/>
@@ -383,7 +383,7 @@ Description: &quot;%2&quot;</source>
 To transfer files, use the menu item in your system tray. After selecting the files you want to transfer, simply select the device you want to transfer them to and they will be instantly transferred.</source>
         <translation>NitroShare to aplikacja, która pozwala w łatwy sposób przesyłać pliki z jednego urządzenia na inne.
 
-Aby przesyłać pliki, użyj menu z zasobnika systemowego. Po wybraniu plików, które chcesz przesłać po rostu wybierz urządzenie do którego chcesz wysłać pliki - zostaną one natychmiast przesłane.</translation>
+Aby przesyłać pliki, użyj menu z zasobnika systemowego. Po wybraniu plików, które chcesz przesłać po prostu wybierz urządzenie do którego chcesz wysłać pliki - zostaną one natychmiast przesłane.</translation>
     </message>
 </context>
 <context>
@@ -550,7 +550,7 @@ Aby przesyłać pliki, użyj menu z zasobnika systemowego. Po wybraniu plików, 
     <message>
         <location line="+28"/>
         <source>Unable to read from %1</source>
-        <translation>Nie można czytć z %1</translation>
+        <translation>Nie można czytać z %1</translation>
     </message>
 </context>
 <context>
