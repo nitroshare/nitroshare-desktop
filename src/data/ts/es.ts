@@ -226,7 +226,7 @@ Descripción: &quot;%2&quot;</translation>
     <message>
         <location line="+7"/>
         <source>Auto start after login</source>
-        <translation>iniciará automáticamente después de inicio de sesión</translation>
+        <translation>iniciará automáticamente después del inicio de sesión</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -287,7 +287,7 @@ Descripción: &quot;%2&quot;</translation>
     <message>
         <location line="-10"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Warning:&lt;/span&gt; Changing the settings below may cause NitroShare to stop functioning or use excessive bandwidth. Proceed with caution.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Aviso:&lt;/span&gt; Cambiar los ajustes siguientes puede hacer que NitroShare deje de funcionar o utilizar excesivo ancho de banda. Proceda con precaución.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Aviso:&lt;/span&gt; Cambiar los siguientes ajustes puede hacer que NitroShare deje de funcionar o utilizar un excesivo ancho de banda. Proceda con precaución.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location line="+39"/>
@@ -318,12 +318,12 @@ Descripción: &quot;%2&quot;</translation>
     <message>
         <location line="+32"/>
         <source>Broadcast Settings</source>
-        <translation>Preferencias para Transmitir</translation>
+        <translation>Preferencias de Transmisión</translation>
     </message>
     <message>
         <location line="+13"/>
         <source>Transfer Settings</source>
-        <translation>Preferencias para Transferencia</translation>
+        <translation>Preferencias de Transferencia</translation>
     </message>
     <message>
         <location line="+13"/>
