@@ -51,7 +51,7 @@ Descripción: &quot;%2&quot;</translation>
     <message>
         <location line="+1"/>
         <source>Send Directory...</source>
-        <translation>Enviar Directorios...</translation>
+        <translation>Enviar Carpetas...</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -116,7 +116,7 @@ Descripción: &quot;%2&quot;</translation>
     <message>
         <location line="+15"/>
         <source>Select Directory</source>
-        <translation>Seleccionar Directorio</translation>
+        <translation>Seleccionar Carpetas</translation>
     </message>
 </context>
 <context>
