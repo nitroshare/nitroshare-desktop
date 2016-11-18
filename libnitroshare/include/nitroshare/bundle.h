@@ -25,26 +25,54 @@
 #ifndef LIBNITROSHARE_BUNDLE_H
 #define LIBNITROSHARE_BUNDLE_H
 
-#include <QObject>
+#include <QAbstractListModel>
 
 #include "config.h"
+
+class Item;
 
 class NITROSHARE_EXPORT BundlePrivate;
 
 /**
  * @brief Bundle for transfer
  */
-class NITROSHARE_EXPORT Bundle : public QObject
+class NITROSHARE_EXPORT Bundle : public QAbstractListModel
 {
     Q_OBJECT
+    Q_PROPERTY(qint64 totalSize READ totalSize)
 
 public:
+
+    enum Role {
+        TypeRole = Qt::UserRole,
+        NameRole,
+        SizeRole
+    };
 
     /**
      * @brief Create a new (empty) bundle
      * @param parent QObject
      */
     explicit Bundle(QObject *parent = nullptr);
+
+    /**
+     * @brief Add an item to the bundle
+     * @param item to add
+     *
+     * The bundle assumes ownership of the item.
+     */
+    void addItem(Item *item);
+
+    /**
+     * @brief Total size of bundle contents
+     * @return size in bytes
+     */
+    qint64 totalSize() const;
+
+    // Reimplemented virtual methods
+    virtual int rowCount(const QModelIndex &parent) const;
+    virtual QVariant data(const QModelIndex &index, int role) const;
+    virtual QHash<int, QByteArray> roleNames() const;
 
 private:
 

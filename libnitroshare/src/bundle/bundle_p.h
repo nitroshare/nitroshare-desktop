@@ -25,7 +25,10 @@
 #ifndef LIBNITROSHARE_BUNDLE_P_H
 #define LIBNITROSHARE_BUNDLE_P_H
 
+#include <QList>
 #include <QObject>
+
+class Item;
 
 class BundlePrivate : public QObject
 {
@@ -34,6 +37,10 @@ class BundlePrivate : public QObject
 public:
 
     explicit BundlePrivate(QObject *parent);
+    virtual ~BundlePrivate();
+
+    QList<Item*> items;
+    qint64 totalSize;
 };
 
 #endif // LIBNITROSHARE_BUNDLE_P_H

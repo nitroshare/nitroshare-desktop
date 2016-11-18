@@ -23,16 +23,72 @@
  */
 
 #include <nitroshare/bundle.h>
+#include <nitroshare/item.h>
 
 #include "bundle_p.h"
 
+const QByteArray TypeName = "type";
+const QByteArray NameName = "name";
+const QByteArray SizeName = "size";
+
 BundlePrivate::BundlePrivate(QObject *parent)
-    : QObject(parent)
+    : QObject(parent),
+      totalSize(0)
 {
 }
 
+BundlePrivate::~BundlePrivate()
+{
+    qDeleteAll(items);
+}
+
 Bundle::Bundle(QObject *parent)
-    : QObject(parent),
+    : QAbstractListModel(parent),
       d(new BundlePrivate(this))
 {
+}
+
+void Bundle::addItem(Item *item)
+{
+    d->items.append(item);
+}
+
+qint64 Bundle::totalSize() const
+{
+    return d->totalSize;
+}
+
+int Bundle::rowCount(const QModelIndex &parent) const
+{
+    return d->items.count();
+}
+
+QVariant Bundle::data(const QModelIndex &index, int role) const
+{
+    // Ensure the index points to a valid row
+    if (!index.isValid() || index.row() < 0 || index.row() >= d->items.count()) {
+        return QVariant();
+    }
+
+    Item *item = d->items.at(index.row());
+
+    switch (role) {
+    case TypeRole:
+        return item->type();
+    case NameRole:
+        return item->name();
+    case SizeRole:
+        return item->size();
+    }
+
+    return QVariant();
+}
+
+QHash<int, QByteArray> Bundle::roleNames() const
+{
+    return {
+        { TypeRole, TypeName },
+        { NameRole, NameName },
+        { SizeRole, SizeName }
+    };
 }
