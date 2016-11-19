@@ -51,6 +51,7 @@ Bundle::Bundle(QObject *parent)
 void Bundle::addItem(Item *item)
 {
     d->items.append(item);
+    d->totalSize += item->size();
 }
 
 qint64 Bundle::totalSize() const
