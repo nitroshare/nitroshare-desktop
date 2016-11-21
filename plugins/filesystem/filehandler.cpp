@@ -22,44 +22,10 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef FILE_H
-#define FILE_H
+#include "file.h"
+#include "filehandler.h"
 
-#include <QDateTime>
-#include <QDir>
-#include <QFileInfo>
-#include <QVariantMap>
-
-#include <nitroshare/item.h>
-
-/**
- * @brief Item for reading and writing files in the local filesystem
- */
-class File : public Item
+Item *FileHandler::createItem(const QString &, const QVariantMap &properties)
 {
-    Q_OBJECT
-
-public:
-
-    File(const QVariantMap &properties);
-    File(const QDir &root, const QFileInfo &info);
-
-    // Reimplemented virtual methods
-    virtual QVariantMap properties() const;
-    virtual QIODevice *createReader();
-    virtual QIODevice *createWriter();
-
-private:
-
-    QString mLocalFilename;
-    QString mRelativeFilename;
-
-    qint64 mSize;
-    bool mReadOnly;
-
-    QDateTime mCreated;
-    QDateTime mLastRead;
-    QDateTime mLastModified;
-};
-
-#endif // FILE_H
+    return new File(properties);
+}

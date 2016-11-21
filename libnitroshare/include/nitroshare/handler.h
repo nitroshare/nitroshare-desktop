@@ -22,62 +22,35 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef LIBNITROSHARE_ITEM_H
-#define LIBNITROSHARE_ITEM_H
+#ifndef LIBNITROSHARE_HANDLER_H
+#define LIBNITROSHARE_HANDLER_H
 
-#include <QObject>
+#include <QString>
 #include <QVariantMap>
 
 #include "config.h"
 
-class QIODevice;
+class Item;
 
 /**
- * @brief Individual item for transfer
+ * @brief Handler for creating items that can be sent and received in a transfer
  *
- * Each item in a bundle is an instance of a class that derives from this one.
+ * In order to transfer a specific type of item (such as a file or directory),
+ * a class that derives from Handler must be registered with
+ * Application::registerHandler(). The handler's methods will be invoked as
+ * necessary to create Item instances for items in a bundle.
  */
-class NITROSHARE_EXPORT Item : public QObject
+class NITROSHARE_EXPORT Handler
 {
-    Q_OBJECT
-
 public:
 
     /**
-     * @brief Key for retrieving item type
+     * @brief Create an item for the specified type
+     * @param type identifier
+     * @param properties map of properties
+     * @return newly created item
      */
-    static const QString TypeKey;
-
-    /**
-     * @brief Key for retrieving item name
-     */
-    static const QString NameKey;
-
-    /**
-     * @brief Key for retrieving item size (in bytes)
-     */
-    static const QString SizeKey;
-
-    /**
-     * @brief Retrieve custom properties for the item
-     * @return property map
-     *
-     * The map should (at minimum) include values for the TypeKey, NameKey,
-     * and SizeKey keys.
-     */
-    virtual QVariantMap properties() const = 0;
-
-    /**
-     * @brief Create a reader for the item
-     * @return QIODevice
-     */
-    virtual QIODevice *createReader() = 0;
-
-    /**
-     * @brief Create a writer for the item
-     * @return QIODevice
-     */
-    virtual QIODevice *createWriter() = 0;
+    virtual Item *createItem(const QString &type, const QVariantMap &properties) = 0;
 };
 
-#endif // LIBNITROSHARE_ITEM_H
+#endif // LIBNITROSHARE_HANDLER_H

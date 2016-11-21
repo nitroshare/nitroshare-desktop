@@ -31,10 +31,18 @@ const QString CreatedMsKey = "created_ms";
 const QString LastReadMsKey = "last_read_ms";
 const QString LastModifiedMsKey = "last_modified_ms";
 
-File::File()
-    : mSize(0),
-      mReadOnly(false)
+File::File(const QVariantMap &properties)
 {
+    // TODO: set mLocalFilename
+
+    mRelativeFilename = properties.value(NameKey).toString();
+
+    mSize = properties.value(SizeKey).toLongLong();
+    mReadOnly = properties.value(ReadOnlyKey).toBool();
+
+    mCreated = QDateTime::fromMSecsSinceEpoch(properties.value(CreatedMsKey).toInt());
+    mLastRead = QDateTime::fromMSecsSinceEpoch(properties.value(LastReadMsKey).toInt());
+    mLastModified = QDateTime::fromMSecsSinceEpoch(properties.value(LastModifiedMsKey).toInt());
 }
 
 File::File(const QDir &root, const QFileInfo &info)
@@ -50,15 +58,10 @@ File::File(const QDir &root, const QFileInfo &info)
     mLastModified = info.lastModified();
 }
 
-QString File::type() const
-{
-    return TypeValue;
-}
-
 QVariantMap File::properties() const
 {
     return {
-        { TypeKey, "file" },
+        { TypeKey, TypeValue },
         { NameKey, mRelativeFilename },
         { SizeKey, mSize },
         { ReadOnlyKey, mReadOnly },
@@ -66,18 +69,6 @@ QVariantMap File::properties() const
         { LastReadMsKey, mLastRead.toMSecsSinceEpoch() },
         { LastModifiedMsKey, mLastModified.toMSecsSinceEpoch() }
     };
-}
-
-void File::setProperties(const QVariantMap &properties)
-{
-    mRelativeFilename = properties.value(NameKey).toString();
-
-    mSize = properties.value(SizeKey).toLongLong();
-    mReadOnly = properties.value(ReadOnlyKey).toBool();
-
-    mCreated = QDateTime::fromMSecsSinceEpoch(properties.value(CreatedMsKey).toInt());
-    mLastRead = QDateTime::fromMSecsSinceEpoch(properties.value(LastReadMsKey).toInt());
-    mLastModified = QDateTime::fromMSecsSinceEpoch(properties.value(LastModifiedMsKey).toInt());
 }
 
 QIODevice *File::createReader()

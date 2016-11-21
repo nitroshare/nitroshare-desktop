@@ -22,62 +22,19 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef LIBNITROSHARE_ITEM_H
-#define LIBNITROSHARE_ITEM_H
+#ifndef FILEHANDLER_H
+#define FILEHANDLER_H
 
-#include <QObject>
-#include <QVariantMap>
-
-#include "config.h"
-
-class QIODevice;
+#include <nitroshare/handler.h>
 
 /**
- * @brief Individual item for transfer
- *
- * Each item in a bundle is an instance of a class that derives from this one.
+ * @brief Handler for files on the local filesystem
  */
-class NITROSHARE_EXPORT Item : public QObject
+class FileHandler : public Handler
 {
-    Q_OBJECT
-
 public:
 
-    /**
-     * @brief Key for retrieving item type
-     */
-    static const QString TypeKey;
-
-    /**
-     * @brief Key for retrieving item name
-     */
-    static const QString NameKey;
-
-    /**
-     * @brief Key for retrieving item size (in bytes)
-     */
-    static const QString SizeKey;
-
-    /**
-     * @brief Retrieve custom properties for the item
-     * @return property map
-     *
-     * The map should (at minimum) include values for the TypeKey, NameKey,
-     * and SizeKey keys.
-     */
-    virtual QVariantMap properties() const = 0;
-
-    /**
-     * @brief Create a reader for the item
-     * @return QIODevice
-     */
-    virtual QIODevice *createReader() = 0;
-
-    /**
-     * @brief Create a writer for the item
-     * @return QIODevice
-     */
-    virtual QIODevice *createWriter() = 0;
+    virtual Item *createItem(const QString &type, const QVariantMap &properties);
 };
 
-#endif // LIBNITROSHARE_ITEM_H
+#endif // FILEHANDLER_H

@@ -1,6 +1,8 @@
 set(SRC
     file.h
     file.cpp
+    filehandler.h
+    filehandler.cpp
     filesystemplugin.h
     filesystemplugin.cpp
 )
