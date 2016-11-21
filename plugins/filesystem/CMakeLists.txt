@@ -1,4 +1,6 @@
 set(SRC
+    file.h
+    file.cpp
     filesystemplugin.h
     filesystemplugin.cpp
 )

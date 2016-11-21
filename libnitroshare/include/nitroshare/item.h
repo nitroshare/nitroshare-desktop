@@ -26,38 +26,51 @@
 #define LIBNITROSHARE_ITEM_H
 
 #include <QObject>
+#include <QVariantMap>
 
 class QIODevice;
 
 /**
  * @brief Individual item for transfer
+ *
+ * Each item in a bundle is an instance of a class that derives from this one.
  */
 class Item : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QString type READ type)
-    Q_PROPERTY(QString name READ name)
-    Q_PROPERTY(qint64 size READ size)
 
 public:
 
     /**
-     * @brief Item type
-     * @return string
+     * @brief Key for retrieving item type
      */
-    virtual QString type() const = 0;
+    static const QString TypeKey;
 
     /**
-     * @brief Item name
-     * @return string
+     * @brief Key for retrieving item name
      */
-    virtual QString name() const = 0;
+    static const QString NameKey;
 
     /**
-     * @brief Item size
-     * @return size in bytes
+     * @brief Key for retrieving item size (in bytes)
      */
-    virtual qint64 size() const = 0;
+    static const QString SizeKey;
+
+    /**
+     * @brief Retrieve custom properties for the item
+     * @return property map
+     *
+     * The map should (at minimum) include values for the TypeKey, NameKey,
+     * and SizeKey keys.
+     */
+    virtual QVariantMap properties() const = 0;
+
+    /**
+     * @brief Set custom properties for the item
+     *
+     * This will be invoked before createWriter() is called.
+     */
+    virtual void setProperties(const QVariantMap &properties) = 0;
 
     /**
      * @brief Create a reader for the item

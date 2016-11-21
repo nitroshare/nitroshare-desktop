@@ -6,6 +6,7 @@ set(HEADERS "${HEADERS}" "${CMAKE_CURRENT_BINARY_DIR}/config.h")
 set(SRC
     src/application/application.cpp
     src/bundle/bundle.cpp
+    src/bundle/item.cpp
     src/discovery/device.cpp
     src/discovery/devicemodel.cpp
     src/plugin/plugin.cpp

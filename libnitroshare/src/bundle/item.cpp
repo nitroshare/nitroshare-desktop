@@ -22,13 +22,8 @@
  * IN THE SOFTWARE.
  */
 
-#include "filesystemplugin.h"
+#include <nitroshare/item.h>
 
-void FilesystemPlugin::init(Application *application)
-{
-}
-
-void FilesystemPlugin::cleanup(Application *application)
-{
-    emit finishedCleanup();
-}
+const QString Item::TypeKey = "type";
+const QString Item::NameKey = "name";
+const QString Item::SizeKey = "size";
