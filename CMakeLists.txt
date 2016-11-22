@@ -7,12 +7,18 @@ set(VERSION_PATCH 0)
 set(VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH})
 
 option(BUILD_API "Build local API" ON)
+option(BUILD_INDICATOR "Build application indicator" OFF)
 option(BUILD_TESTS "Build test suite" OFF)
 
 find_package(Qt5Network 5.4 REQUIRED)
 
 if(BUILD_API)
     find_package(QHttpEngine REQUIRED)
+endif()
+
+if(BUILD_INDICATOR)
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(appindicator REQUIRED gtk+-2.0 appindicator-0.1 libnotify)
 endif()
 
 if(BUILD_TESTS)
