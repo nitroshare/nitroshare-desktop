@@ -22,21 +22,19 @@
  * IN THE SOFTWARE.
  */
 
-#include <nitroshare/actionmodel.h>
-#include <nitroshare/application.h>
+#include "sendfilesaction.h"
 
-#include "file.h"
-#include "filesystemplugin.h"
-
-void FilesystemPlugin::init(Application *application)
+QString SendFilesAction::name() const
 {
-    application->addHandler(File::Type, &handler);
-    application->actionModel()->addAction(&sendFilesAction);
+    return "sendFiles";
 }
 
-void FilesystemPlugin::cleanup(Application *application)
+QString SendFilesAction::text() const
 {
-    application->removeHandler(File::Type);
+    return tr("Send Files...");
+}
 
-    emit finishedCleanup();
+void SendFilesAction::invoke()
+{
+    //...
 }

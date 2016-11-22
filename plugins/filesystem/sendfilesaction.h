@@ -22,21 +22,26 @@
  * IN THE SOFTWARE.
  */
 
-#include <nitroshare/actionmodel.h>
-#include <nitroshare/application.h>
+#ifndef SENDFILESACTION_H
+#define SENDFILESACTION_H
 
-#include "file.h"
-#include "filesystemplugin.h"
+#include <nitroshare/action.h>
 
-void FilesystemPlugin::init(Application *application)
+/**
+ * @brief Display a file selection dialog and
+ */
+class SendFilesAction : public Action
 {
-    application->addHandler(File::Type, &handler);
-    application->actionModel()->addAction(&sendFilesAction);
-}
+    Q_OBJECT
 
-void FilesystemPlugin::cleanup(Application *application)
-{
-    application->removeHandler(File::Type);
+public:
 
-    emit finishedCleanup();
-}
+    virtual QString name() const;
+    virtual QString text() const;
+
+public Q_SLOTS:
+
+    virtual void invoke();
+};
+
+#endif // SENDFILESACTION_H

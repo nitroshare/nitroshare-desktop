@@ -60,8 +60,10 @@ public:
     /**
      * @brief Whether the action is currently enabled
      * @return true if enabled
+     *
+     * Actions are enabled by default.
      */
-    virtual bool enabled() const = 0;
+    virtual bool enabled() const;
 
 Q_SIGNALS:
 

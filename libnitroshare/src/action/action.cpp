@@ -22,21 +22,9 @@
  * IN THE SOFTWARE.
  */
 
-#include <nitroshare/actionmodel.h>
-#include <nitroshare/application.h>
+#include <nitroshare/action.h>
 
-#include "file.h"
-#include "filesystemplugin.h"
-
-void FilesystemPlugin::init(Application *application)
+bool Action::enabled() const
 {
-    application->addHandler(File::Type, &handler);
-    application->actionModel()->addAction(&sendFilesAction);
-}
-
-void FilesystemPlugin::cleanup(Application *application)
-{
-    application->removeHandler(File::Type);
-
-    emit finishedCleanup();
+    return true;
 }
