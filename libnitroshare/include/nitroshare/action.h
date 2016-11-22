@@ -40,7 +40,8 @@ class NITROSHARE_EXPORT Action : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString name READ name NOTIFY nameChanged)
-    Q_PROPERTY(QString caption READ caption NOTIFY captionChanged)
+    Q_PROPERTY(QString text READ text NOTIFY textChanged)
+    Q_PROPERTY(bool enabled READ enabled NOTIFY enabledChanged)
 
 public:
 
@@ -51,10 +52,16 @@ public:
     virtual QString name() const = 0;
 
     /**
-     * @brief Localized caption to display for the action
-     * @return caption
+     * @brief Localized text to display for the action
+     * @return text
      */
-    virtual QString caption() const = 0;
+    virtual QString text() const = 0;
+
+    /**
+     * @brief Whether the action is currently enabled
+     * @return true if enabled
+     */
+    virtual bool enabled() const = 0;
 
 Q_SIGNALS:
 
@@ -65,10 +72,16 @@ Q_SIGNALS:
     void nameChanged(const QString &name);
 
     /**
-     * @brief Indicate that the caption has changed
-     * @param caption new caption
+     * @brief Indicate that the text has changed
+     * @param text new text
      */
-    void captionChanged(const QString &caption);
+    void textChanged(const QString &text);
+
+    /**
+     * @brief Indicate that the enabled state has changed
+     * @param enabled true if the action is now enabled
+     */
+    void enabledChanged(bool enabled);
 
 public Q_SLOTS:
 

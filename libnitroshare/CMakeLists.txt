@@ -4,6 +4,7 @@ file(GLOB HEADERS include/nitroshare/*.h)
 set(HEADERS "${HEADERS}" "${CMAKE_CURRENT_BINARY_DIR}/config.h")
 
 set(SRC
+    src/action/actionmodel.cpp
     src/application/application.cpp
     src/bundle/bundle.cpp
     src/bundle/item.cpp
