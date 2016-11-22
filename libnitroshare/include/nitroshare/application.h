@@ -29,6 +29,7 @@
 
 #include "config.h"
 
+class ActionModel;
 class DeviceModel;
 class Handler;
 class Logger;
@@ -74,6 +75,12 @@ public:
      * @return application version
      */
     QString version() const;
+
+    /**
+     * @brief Retrieve the global ActionModel instance
+     * @return pointer to ActionModel
+     */
+    ActionModel *actionModel() const;
 
     /**
      * @brief Retrieve the global DeviceModel instance

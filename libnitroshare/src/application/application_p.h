@@ -28,6 +28,7 @@
 #include <QMap>
 #include <QSettings>
 
+#include <nitroshare/actionmodel.h>
 #include <nitroshare/application.h>
 #include <nitroshare/devicemodel.h>
 #include <nitroshare/logger.h>
@@ -49,6 +50,7 @@ public:
 
     QSettings baseSettings;
 
+    ActionModel actionModel;
     DeviceModel deviceModel;
     Logger logger;
     PluginModel pluginModel;
