@@ -22,13 +22,18 @@
  * IN THE SOFTWARE.
  */
 
+#include <nitroshare/application.h>
+
+#include "file.h"
 #include "filesystemplugin.h"
 
 void FilesystemPlugin::init(Application *application)
 {
+    application->addHandler(File::Type, &handler);
 }
 
 void FilesystemPlugin::cleanup(Application *application)
 {
+    application->removeHandler(File::Type);
     emit finishedCleanup();
 }

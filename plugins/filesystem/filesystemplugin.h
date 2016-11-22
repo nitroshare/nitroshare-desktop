@@ -27,6 +27,8 @@
 
 #include <nitroshare/plugin.h>
 
+#include "filehandler.h"
+
 class Q_DECL_EXPORT FilesystemPlugin : public Plugin
 {
     Q_OBJECT
@@ -36,6 +38,10 @@ public:
 
     virtual void init(Application *application);
     virtual void cleanup(Application *application);
+
+private:
+
+    FileHandler handler;
 };
 
 #endif // FILESYSTEMPLUGIN_H

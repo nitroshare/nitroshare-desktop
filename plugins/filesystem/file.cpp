@@ -24,7 +24,7 @@
 
 #include "file.h"
 
-const QString TypeValue = "file";
+const QString File::Type = "file";
 
 const QString ReadOnlyKey = "read_only";
 const QString CreatedMsKey = "created_ms";
@@ -61,7 +61,7 @@ File::File(const QDir &root, const QFileInfo &info)
 QVariantMap File::properties() const
 {
     return {
-        { TypeKey, TypeValue },
+        { TypeKey, Type },
         { NameKey, mRelativeFilename },
         { SizeKey, mSize },
         { ReadOnlyKey, mReadOnly },

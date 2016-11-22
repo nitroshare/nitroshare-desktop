@@ -41,6 +41,8 @@ class File : public Item
 
 public:
 
+    static const QString Type;
+
     File(const QVariantMap &properties);
     File(const QDir &root, const QFileInfo &info);
 
