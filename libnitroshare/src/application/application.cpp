@@ -29,6 +29,8 @@
 
 #include "application_p.h"
 
+const QString LoggerTag = "application";
+
 const QString DeviceUuid = "DeviceUuid";
 const QString DeviceName = "DeviceName";
 
@@ -87,4 +89,19 @@ Settings *Application::settings() const
 TransferModel *Application::transferModel() const
 {
     return &d->transferModel;
+}
+
+void Application::addHandler(const QString &type, Handler *handler)
+{
+    d->handlers.insert(type, handler);
+}
+
+void Application::removeHandler(const QString &type)
+{
+    d->handlers.remove(type);
+}
+
+Handler *Application::handlerForType(const QString &type)
+{
+    return d->handlers.value(type);
 }

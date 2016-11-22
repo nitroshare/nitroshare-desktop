@@ -25,6 +25,7 @@
 #ifndef LIBNITROSHARE_APPLICATION_P_H
 #define LIBNITROSHARE_APPLICATION_P_H
 
+#include <QMap>
 #include <QSettings>
 
 #include <nitroshare/application.h>
@@ -33,6 +34,8 @@
 #include <nitroshare/pluginmodel.h>
 #include <nitroshare/settings.h>
 #include <nitroshare/transfermodel.h>
+
+class Handler;
 
 class ApplicationPrivate : public QObject
 {
@@ -51,6 +54,8 @@ public:
     PluginModel pluginModel;
     Settings settings;
     TransferModel transferModel;
+
+    QMap<QString, Handler*> handlers;
 };
 
 #endif // LIBNITROSHARE_APPLICATION_P_H

@@ -30,6 +30,7 @@
 #include "config.h"
 
 class DeviceModel;
+class Handler;
 class Logger;
 class PluginModel;
 class Settings;
@@ -103,6 +104,26 @@ public:
      * @return pointer to TransferModel
      */
     TransferModel *transferModel() const;
+
+    /**
+     * @brief Add a handler for the specified type
+     * @param type identifier
+     * @param handler pointer to Handler instance
+     */
+    void addHandler(const QString &type, Handler *handler);
+
+    /**
+     * @brief Remove the handler for the specified type
+     * @param type identifier
+     */
+    void removeHandler(const QString &type);
+
+    /**
+     * @brief Retrieve the handler for the specified type
+     * @param type identifier
+     * @return pointer to Handler instance or nullptr
+     */
+    Handler *handlerForType(const QString &type);
 
 private:
 
