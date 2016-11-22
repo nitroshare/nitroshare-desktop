@@ -63,7 +63,7 @@ QString Application::deviceName() const
 
 QString Application::version() const
 {
-    return PROJECT_VERSION;
+    return NITROSHARE_VERSION;
 }
 
 DeviceModel *Application::deviceModel() const
