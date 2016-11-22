@@ -28,14 +28,6 @@
 
 #include "devicemodel_p.h"
 
-const QByteArray UuidName = "uuid";
-const QByteArray NameName = "name";
-const QByteArray VersionName = "version";
-const QByteArray OperatingSystemName = "operating_system";
-const QByteArray AddressesName = "addresses";
-const QByteArray PortName = "port";
-const QByteArray TlsName = "tls";
-
 DeviceModelPrivate::DeviceModelPrivate(DeviceModel *model)
     : QObject(model),
       q(model)
@@ -107,7 +99,7 @@ void DeviceModelPrivate::onDeviceUpdated(const QString &uuid, const QVariantMap 
     bool changed = false;
     auto i = properties.constBegin();
     while (i != properties.constEnd()) {
-        if (i.key() == AddressesName) {
+        if (i.key() == DeviceEnumerator::AddressesKey) {
             QStringList addresses = i.value().toStringList();
             qSort(addresses.begin(), addresses.end());
             if (device->addressMap.value(sender()) != addresses) {
@@ -184,7 +176,6 @@ QVariant DeviceModel::data(const QModelIndex &index, int role) const
     case VersionRole:
     case OperatingSystemRole:
     case PortRole:
-    case TlsRole:
         return device->properties.value(roleNames().value(role));
     case AddressesRole:
         return device->addresses();
@@ -196,12 +187,11 @@ QVariant DeviceModel::data(const QModelIndex &index, int role) const
 QHash<int, QByteArray> DeviceModel::roleNames() const
 {
     return {
-        { UuidRole, UuidName },
-        { NameRole, NameName },
-        { VersionRole, VersionName },
-        { OperatingSystemRole, OperatingSystemName },
-        { AddressesRole, AddressesName },
-        { PortRole, PortName },
-        { TlsRole, TlsName }
+        { UuidRole, DeviceEnumerator::UuidKey.toUtf8() },
+        { NameRole, DeviceEnumerator::NameKey.toUtf8() },
+        { VersionRole, DeviceEnumerator::VersionKey.toUtf8() },
+        { OperatingSystemRole, DeviceEnumerator::OperatingSystemKey.toUtf8() },
+        { AddressesRole, DeviceEnumerator::AddressesKey.toUtf8() },
+        { PortRole, DeviceEnumerator::PortKey.toUtf8() }
     };
 }

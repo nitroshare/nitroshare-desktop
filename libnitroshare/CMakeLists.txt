@@ -8,6 +8,7 @@ set(SRC
     src/bundle/bundle.cpp
     src/bundle/item.cpp
     src/discovery/device.cpp
+    src/discovery/deviceenumerator.cpp
     src/discovery/devicemodel.cpp
     src/plugin/plugin.cpp
     src/plugin/pluginmodel.cpp

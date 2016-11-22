@@ -75,8 +75,8 @@ void BroadcastEnumerator::onBroadcastTimeout()
 
     // Build the packet that will be broadcast
     QJsonObject object({
-        { "uuid", mApplication->deviceUuid() },
-        { "name", mApplication->deviceName() }
+        { DeviceEnumerator::UuidKey, mApplication->deviceUuid() },
+        { DeviceEnumerator::NameKey, mApplication->deviceName() }
     });
     QByteArray data = QJsonDocument(object).toJson(QJsonDocument::Compact);
 
