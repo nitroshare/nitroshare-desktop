@@ -22,7 +22,51 @@
  * IN THE SOFTWARE.
  */
 
+#include <QCommandLineOption>
+#include <QCommandLineParser>
+#include <QCoreApplication>
+#include <QDir>
+
+#include <nitroshare/application.h>
+#include <nitroshare/pluginmodel.h>
+
 int main(int argc, char **argv)
 {
-    return 0;
+    QCoreApplication app(argc, argv);
+    Application application;
+
+    // Initialize the application
+    app.setApplicationName("NitroShare");
+    app.setApplicationVersion(application.version());
+    app.setOrganizationName("Nathan Osman");
+    app.setOrganizationDomain("nitroshare.net");
+
+    // Create the parser and add the command line options
+    QCommandLineParser parser;
+    parser.setApplicationDescription("NitroShare");
+    parser.addHelpOption();
+    parser.addVersionOption();
+
+    QCommandLineOption pluginDirOption("plugin-dir", "Directory to load plugins from", "directory", QDir::currentPath());
+    parser.addOption(pluginDirOption);
+
+    // Parse the command line
+    if (!parser.parse(app.arguments())) {
+        app.exit(1);
+    }
+
+    // Process the help option
+    if (parser.isSet("help")) {
+        parser.showHelp();
+    }
+
+    // Process the version option
+    if (parser.isSet("version")) {
+        parser.showVersion();
+    }
+
+    application.pluginModel()->addPlugins(parser.value(pluginDirOption));
+    qDebug("%d plugins loaded", application.pluginModel()->rowCount(QModelIndex()));
+
+    return app.exec();
 }
