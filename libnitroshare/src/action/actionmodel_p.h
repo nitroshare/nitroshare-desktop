@@ -29,6 +29,7 @@
 #include <QObject>
 
 class Action;
+class ActionModel;
 
 class ActionModelPrivate : public QObject
 {
@@ -36,9 +37,15 @@ class ActionModelPrivate : public QObject
 
 public:
 
-    explicit ActionModelPrivate(QObject *parent);
+    explicit ActionModelPrivate(ActionModel *parent);
+
+    ActionModel *const q;
 
     QList<Action*> actions;
+
+public Q_SLOTS:
+
+    void emitDataChanged();
 };
 
 #endif // LIBNITROSHARE_ACTIONMODEL_P_H

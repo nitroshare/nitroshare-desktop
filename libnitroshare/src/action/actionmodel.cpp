@@ -31,9 +31,17 @@ const QByteArray NameName = "name";
 const QByteArray TextName = "text";
 const QByteArray DisabledName = "enabled";
 
-ActionModelPrivate::ActionModelPrivate(QObject *parent)
-    : QObject(parent)
+ActionModelPrivate::ActionModelPrivate(ActionModel *parent)
+    : QObject(parent),
+      q(parent)
 {
+}
+
+void ActionModelPrivate::emitDataChanged()
+{
+    Action *action = qobject_cast<Action*>(sender());
+    int row = actions.indexOf(action);
+    emit q->dataChanged(q->index(row, 0), q->index(row, 0));
 }
 
 ActionModel::ActionModel(QObject *parent)
@@ -44,6 +52,8 @@ ActionModel::ActionModel(QObject *parent)
 
 void ActionModel::addAction(Action *action)
 {
+    connect(action, &Action::propertyChanged, d, &ActionModelPrivate::emitDataChanged);
+
     beginInsertRows(QModelIndex(), d->actions.count(), d->actions.count());
     d->actions.append(action);
     endInsertRows();
@@ -53,6 +63,8 @@ void ActionModel::removeAction(Action *action)
 {
     int row = d->actions.indexOf(action);
     if (row != -1) {
+        disconnect(action, &Action::propertyChanged, d, &ActionModelPrivate::emitDataChanged);
+
         beginRemoveRows(QModelIndex(), row, row);
         d->actions.removeAt(row);
         endRemoveRows();
