@@ -23,6 +23,8 @@
  */
 
 #include <nitroshare/transfermodel.h>
+#include <nitroshare/transport.h>
+#include <nitroshare/transportserver.h>
 
 #include "transfermodel_p.h"
 
@@ -31,10 +33,24 @@ TransferModelPrivate::TransferModelPrivate(QObject *parent)
 {
 }
 
+void TransferModelPrivate::processTransport(Transport *transport)
+{
+}
+
 TransferModel::TransferModel(QObject *parent)
     : QAbstractListModel(parent),
       d(new TransferModelPrivate(this))
 {
+}
+
+void TransferModel::addTransportServer(TransportServer *server)
+{
+    connect(server, &TransportServer::transportReceived, d, &TransferModelPrivate::processTransport);
+}
+
+void TransferModel::removeTransportServer(TransportServer *server)
+{
+    disconnect(server, &TransportServer::transportReceived, d, &TransferModelPrivate::processTransport);
 }
 
 int TransferModel::rowCount(const QModelIndex &) const

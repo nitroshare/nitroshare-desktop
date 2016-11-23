@@ -27,9 +27,9 @@
 
 #include <QAbstractListModel>
 
-#include <nitroshare/deviceenumerator.h>
-
 #include "config.h"
+
+class DeviceEnumerator;
 
 class NITROSHARE_EXPORT DeviceModelPrivate;
 

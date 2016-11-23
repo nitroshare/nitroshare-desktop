@@ -30,6 +30,8 @@
 
 #include "transfer.h"
 
+class Transport;
+
 class TransferModelPrivate : public QObject
 {
     Q_OBJECT
@@ -39,6 +41,10 @@ public:
     explicit TransferModelPrivate(QObject *parent);
 
     QList<Transfer*> transfers;
+
+public Q_SLOTS:
+
+    void processTransport(Transport *transport);
 };
 
 #endif // LIBNITROSHARE_TRANSFERMODEL_P_H

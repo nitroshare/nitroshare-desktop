@@ -29,6 +29,8 @@
 
 #include "config.h"
 
+class TransportServer;
+
 class NITROSHARE_EXPORT TransferModelPrivate;
 
 /**
@@ -67,6 +69,18 @@ public:
      * @param parent QObject
      */
     explicit TransferModel(QObject *parent = nullptr);
+
+    /**
+     * @brief Add a transport server
+     * @param server pointer to TransportServer
+     */
+    void addTransportServer(TransportServer *server);
+
+    /**
+     * @brief Remove a transport server
+     * @param server pointer to TransportServer
+     */
+    void removeTransportServer(TransportServer *server);
 
     // Reimplemented virtual methods
     virtual int rowCount(const QModelIndex &parent) const;
