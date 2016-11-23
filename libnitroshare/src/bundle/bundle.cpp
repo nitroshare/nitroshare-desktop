@@ -51,7 +51,7 @@ Bundle::Bundle(QObject *parent)
 void Bundle::addItem(Item *item)
 {
     d->items.append(item);
-    d->totalSize += item->properties().value(Item::SizeKey).toLongLong();
+    d->totalSize += item->property(Item::SizeKey).toLongLong();
 }
 
 qint64 Bundle::totalSize() const
@@ -75,11 +75,11 @@ QVariant Bundle::data(const QModelIndex &index, int role) const
 
     switch (role) {
     case TypeRole:
-        return item->properties().value(Item::TypeKey);
+        return item->property(Item::TypeKey);
     case NameRole:
-        return item->properties().value(Item::NameKey);
+        return item->property(Item::NameKey);
     case SizeRole:
-        return item->properties().value(Item::SizeKey);
+        return item->property(Item::SizeKey);
     }
 
     return QVariant();

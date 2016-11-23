@@ -24,6 +24,6 @@
 
 #include <nitroshare/item.h>
 
-const QString Item::TypeKey = "type";
-const QString Item::NameKey = "name";
-const QString Item::SizeKey = "size";
+const char *Item::TypeKey = "type";
+const char *Item::NameKey = "name";
+const char *Item::SizeKey = "size";

@@ -25,8 +25,9 @@
 #ifndef LIBNITROSHARE_ITEM_H
 #define LIBNITROSHARE_ITEM_H
 
-#include <QObject>
 #include <QVariantMap>
+
+#include <nitroshare/object.h>
 
 #include "config.h"
 
@@ -37,35 +38,20 @@ class QIODevice;
  *
  * Each item in a bundle is an instance of a class that derives from this one.
  */
-class NITROSHARE_EXPORT Item : public QObject
+class NITROSHARE_EXPORT Item : public Object
 {
     Q_OBJECT
 
 public:
 
-    /**
-     * @brief Key for retrieving item type
-     */
-    static const QString TypeKey;
+    /// Unique type identifier
+    static const char *TypeKey;
 
-    /**
-     * @brief Key for retrieving item name
-     */
-    static const QString NameKey;
+    /// Name of the item
+    static const char *NameKey;
 
-    /**
-     * @brief Key for retrieving item size (in bytes)
-     */
-    static const QString SizeKey;
-
-    /**
-     * @brief Retrieve custom properties for the item
-     * @return property map
-     *
-     * The map should (at minimum) include values for the TypeKey, NameKey,
-     * and SizeKey keys.
-     */
-    virtual QVariantMap properties() const = 0;
+    /// Size (in bytes) of the item
+    static const char *SizeKey;
 
     /**
      * @brief Create a reader for the item

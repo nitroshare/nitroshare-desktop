@@ -40,8 +40,7 @@ void FilesystemPlugin::cleanup(Application *application)
 {
     application->removeHandler(File::Type);
 
-    // TODO: remove action
-
+    application->actionModel()->removeAction(mSendAction);
     delete mSendAction;
 
     emit finishedCleanup();
