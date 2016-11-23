@@ -49,6 +49,16 @@ void ActionModel::addAction(Action *action)
     endInsertRows();
 }
 
+void ActionModel::removeAction(Action *action)
+{
+    int row = d->actions.indexOf(action);
+    if (row != -1) {
+        beginRemoveRows(QModelIndex(), row, row);
+        d->actions.removeAt(row);
+        endRemoveRows();
+    }
+}
+
 int ActionModel::rowCount(const QModelIndex &parent) const
 {
     return d->actions.count();

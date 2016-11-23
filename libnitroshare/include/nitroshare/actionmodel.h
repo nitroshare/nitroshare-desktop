@@ -63,6 +63,12 @@ public:
      */
     void addAction(Action *action);
 
+    /**
+     * @brief Remove an action from the model
+     * @param action pointer to Action instance
+     */
+    void removeAction(Action *action);
+
     // Reimplemented virtual methods
     virtual int rowCount(const QModelIndex &parent) const;
     virtual QVariant data(const QModelIndex &index, int role) const;
