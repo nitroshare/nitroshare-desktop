@@ -22,29 +22,22 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef FILESYSTEMPLUGIN_H
-#define FILESYSTEMPLUGIN_H
+#include <nitroshare/application.h>
+#include <nitroshare/bundle.h>
 
-#include <nitroshare/plugin.h>
-
-#include "filehandler.h"
 #include "sendaction.h"
 
-class Q_DECL_EXPORT FilesystemPlugin : public Plugin
+SendAction::SendAction(Application *application)
+    : mApplication(application)
 {
-    Q_OBJECT
-    Q_PLUGIN_METADATA(IID Plugin_iid)
+    setProperty(NameKey, "send");
+}
 
-public:
+bool SendAction::invoke(const QVariantMap &params)
+{
+    Bundle *bundle = new Bundle();
 
-    virtual void init(Application *application);
-    virtual void cleanup(Application *application);
+    //...
 
-private:
-
-    FileHandler mFileHandler;
-
-    SendAction *mSendAction;
-};
-
-#endif // FILESYSTEMPLUGIN_H
+    return true;
+}

@@ -30,13 +30,19 @@
 
 void FilesystemPlugin::init(Application *application)
 {
-    application->addHandler(File::Type, &handler);
-    application->actionModel()->addAction(&sendFilesAction);
+    mSendAction = new SendAction(application);
+
+    application->addHandler(File::Type, &mFileHandler);
+    application->actionModel()->addAction(mSendAction);
 }
 
 void FilesystemPlugin::cleanup(Application *application)
 {
     application->removeHandler(File::Type);
+
+    // TODO: remove action
+
+    delete mSendAction;
 
     emit finishedCleanup();
 }

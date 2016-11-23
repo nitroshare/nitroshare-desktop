@@ -29,7 +29,7 @@
 
 const QByteArray NameName = "name";
 const QByteArray TextName = "text";
-const QByteArray EnabledName = "enabled";
+const QByteArray DisabledName = "enabled";
 
 ActionModelPrivate::ActionModelPrivate(QObject *parent)
     : QObject(parent)
@@ -65,11 +65,11 @@ QVariant ActionModel::data(const QModelIndex &index, int role) const
 
     switch(role) {
     case NameRole:
-        return action->name();
+        return action->property(Action::NameKey);
     case TextRole:
-        return action->text();
-    case EnabledRole:
-        return action->enabled();
+        return action->property(Action::TextKey);
+    case DisabledRole:
+        return action->property(Action::DisabledKey);
     }
 
     return QVariant();
@@ -80,6 +80,6 @@ QHash<int, QByteArray> ActionModel::roleNames() const
     return {
         { NameRole, NameName },
         { TextRole, TextName },
-        { EnabledRole, EnabledName }
+        { DisabledRole, DisabledName }
     };
 }

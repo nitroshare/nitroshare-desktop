@@ -25,7 +25,9 @@
 #ifndef LIBNITROSHARE_ACTION_H
 #define LIBNITROSHARE_ACTION_H
 
-#include <QObject>
+#include <QVariantMap>
+
+#include <nitroshare/object.h>
 
 #include "config.h"
 
@@ -36,61 +38,32 @@
  * must derive from this class. The invoke() slot is used to invoke the
  * action.
  */
-class NITROSHARE_EXPORT Action : public QObject
+class NITROSHARE_EXPORT Action : public Object
 {
     Q_OBJECT
-    Q_PROPERTY(QString name READ name NOTIFY nameChanged)
-    Q_PROPERTY(QString text READ text NOTIFY textChanged)
-    Q_PROPERTY(bool enabled READ enabled NOTIFY enabledChanged)
 
 public:
 
-    /**
-     * @brief Internal identifier for the action
-     * @return identifier
-     */
-    virtual QString name() const = 0;
+    /// Unique identifier for the action
+    static const char *NameKey;
 
-    /**
-     * @brief Localized text to display for the action
-     * @return text
-     */
-    virtual QString text() const = 0;
+    /// Human friendly description of the action
+    static const char *TextKey;
 
-    /**
-     * @brief Whether the action is currently enabled
-     * @return true if enabled
-     *
-     * Actions are enabled by default.
-     */
-    virtual bool enabled() const;
+    /// Show the item as disabled in the UI
+    static const char *DisabledKey;
 
-Q_SIGNALS:
-
-    /**
-     * @brief Indicate that the name has changed
-     * @param name new name
-     */
-    void nameChanged(const QString &name);
-
-    /**
-     * @brief Indicate that the text has changed
-     * @param text new text
-     */
-    void textChanged(const QString &text);
-
-    /**
-     * @brief Indicate that the enabled state has changed
-     * @param enabled true if the action is now enabled
-     */
-    void enabledChanged(bool enabled);
+    /// Show the item in UI elements
+    static const char *ShowInUiKey;
 
 public Q_SLOTS:
 
     /**
      * @brief Invoke the action
+     * @param params parameters for the action
+     * @return true if the action succeeded
      */
-    virtual void invoke() = 0;
+    virtual bool invoke(const QVariantMap &params = QVariantMap()) = 0;
 };
 
 #endif // LIBNITROSHARE_ACTION_H

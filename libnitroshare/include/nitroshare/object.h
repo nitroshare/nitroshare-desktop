@@ -22,29 +22,46 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef FILESYSTEMPLUGIN_H
-#define FILESYSTEMPLUGIN_H
+#ifndef LIBNITROSHARE_OBJECT_H
+#define LIBNITROSHARE_OBJECT_H
 
-#include <nitroshare/plugin.h>
+#include <QObject>
 
-#include "filehandler.h"
-#include "sendaction.h"
+#include "config.h"
 
-class Q_DECL_EXPORT FilesystemPlugin : public Plugin
+/**
+ * @brief Object that provides notifications when properties change
+ *
+ * Unfortunately, QObject does not provide a signal for changes to dynamic
+ * properties. This class overrides the setProperty() method and causes it to
+ * emit a signal when invoked.
+ */
+class NITROSHARE_EXPORT Object : public QObject
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID Plugin_iid)
 
 public:
 
-    virtual void init(Application *application);
-    virtual void cleanup(Application *application);
+    /**
+     * @brief Create a new object
+     * @param parent QObject
+     */
+    explicit Object(QObject *parent = nullptr);
 
-private:
+    /**
+     * @brief Set the specified property to the specified value
+     * @param name property name
+     * @param value property value
+     */
+    void setProperty(const char *name, const QVariant &value);
 
-    FileHandler mFileHandler;
+Q_SIGNALS:
 
-    SendAction *mSendAction;
+    /**
+     * @brief Indicate that a property value has been changed
+     * @param name property name
+     */
+    void propertyChanged(const char *name);
 };
 
-#endif // FILESYSTEMPLUGIN_H
+#endif // LIBNITROSHARE_OBJECT_H

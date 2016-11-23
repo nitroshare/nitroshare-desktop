@@ -48,7 +48,7 @@ public:
     enum Role {
         NameRole = Qt::UserRole,
         TextRole,
-        EnabledRole
+        DisabledRole
     };
 
     /**

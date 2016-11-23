@@ -22,26 +22,36 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef SENDFILESACTION_H
-#define SENDFILESACTION_H
+#ifndef SENDACTION_H
+#define SENDACTION_H
 
 #include <nitroshare/action.h>
 
+class Application;
+
 /**
- * @brief Display a file selection dialog and
+ * @brief Send a bundle to the specified device with the specified files and directories
+ *
+ * The action expects two parameters:
+ *
+ * - "device" - UUID of the device to send the bundle to
+ * - "items" - string list of file and directories to send
  */
-class SendFilesAction : public Action
+class SendAction : public Action
 {
     Q_OBJECT
 
 public:
 
-    virtual QString name() const;
-    virtual QString text() const;
+    SendAction(Application *application);
 
 public Q_SLOTS:
 
-    virtual void invoke();
+    virtual bool invoke(const QVariantMap &params);
+
+private:
+
+    Application *mApplication;
 };
 
-#endif // SENDFILESACTION_H
+#endif // SENDACTION_H

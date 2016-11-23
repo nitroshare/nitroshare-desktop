@@ -22,19 +22,19 @@
  * IN THE SOFTWARE.
  */
 
-#include "sendfilesaction.h"
+#include <QVariant>
 
-QString SendFilesAction::name() const
+#include <nitroshare/object.h>
+
+Object::Object(QObject *parent)
+    : QObject(parent)
 {
-    return "sendFiles";
 }
 
-QString SendFilesAction::text() const
+void Object::setProperty(const char *name, const QVariant &value)
 {
-    return tr("Send Files...");
-}
-
-void SendFilesAction::invoke()
-{
-    //...
+    if (property(name) != value) {
+        QObject::setProperty(name, value);
+        emit propertyChanged(name);
+    }
 }
