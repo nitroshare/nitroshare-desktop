@@ -81,7 +81,7 @@ QVariant ActionModel::data(const QModelIndex &index, int role) const
 
     Action *action = d->actions.at(index.row());
 
-    switch(role) {
+    switch (role) {
     case NameRole:
         return action->property(Action::NameKey);
     case TextRole:

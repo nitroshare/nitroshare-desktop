@@ -26,12 +26,6 @@
 
 #include "transfermodel_p.h"
 
-const QByteArray DeviceNameName = "name";
-const QByteArray ProgressName = "progress";
-const QByteArray DirectionName = "direction";
-const QByteArray StateName = "state";
-const QByteArray ErrorName = "error";
-
 TransferModelPrivate::TransferModelPrivate(QObject *parent)
     : QObject(parent)
 {
@@ -50,16 +44,23 @@ int TransferModel::rowCount(const QModelIndex &) const
 
 QVariant TransferModel::data(const QModelIndex &index, int role) const
 {
+    // Ensure the index points to a valid row
+    if (!index.isValid() || index.row() < 0 || index.row() >= d->transfers.count()) {
+        return QVariant();
+    }
+
+    Transfer *transfer = d->transfers.at(index.row());
+
     return QVariant();
 }
 
 QHash<int, QByteArray> TransferModel::roleNames() const
 {
     return {
-        { DeviceNameRole, DeviceNameName },
-        { ProgressRole, ProgressName },
-        { DirectionRole, DirectionName },
-        { StateRole, StateName },
-        { ErrorRole, ErrorName }
+        { DeviceNameRole, "device_name" },
+        { ProgressRole, "progress" },
+        { DirectionRole, "direction" },
+        { StateRole, "state" },
+        { ErrorRole, "error" }
     };
 }

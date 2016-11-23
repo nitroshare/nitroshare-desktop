@@ -97,7 +97,7 @@ QVariant PluginModel::data(const QModelIndex &index, int role) const
 
     QPluginLoader *loader = d->plugins.at(index.row());
 
-    switch(role) {
+    switch (role) {
     case FilenameRole:
         return loader->fileName();
     }
