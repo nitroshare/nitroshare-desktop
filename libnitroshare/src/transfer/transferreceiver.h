@@ -27,13 +27,41 @@
 
 #include "transfer.h"
 
+class QJsonObject;
+
+class Transport;
+
+/**
+ * @brief Transfer initiated by a remote peer to receive items
+ *
+ * Raw data from the transfer is consumed by onDataReceived() as it is
+ * received from the transport. From there, it is dispatched to the
+ * appropriate method based on the current protocol state.
+ */
 class TransferReceiver : public Transfer
 {
     Q_OBJECT
 
 public:
 
-    TransferReceiver();
+    /**
+     * @brief Create a transfer to receive items
+     * @param transport pointer to Transport
+     */
+    TransferReceiver(Transport *transport);
+
+private Q_SLOTS:
+
+    void onDataReceived(const QByteArray &data);
+
+private:
+
+    enum { InvalidSize = -1 };
+
+    void processPacket(const QByteArray &packet);
+
+    qint32 mNextPacketSize;
+    QByteArray mReadBuffer;
 };
 
 #endif // LIBNITROSHARE_TRANSFERRECEIVER_H

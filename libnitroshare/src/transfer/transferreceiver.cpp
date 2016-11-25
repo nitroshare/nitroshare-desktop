@@ -22,11 +22,63 @@
  * IN THE SOFTWARE.
  */
 
+#include <cstring>
+
+#include <QtEndian>
+
 #include <nitroshare/transfermodel.h>
+#include <nitroshare/transport.h>
 
 #include "transferreceiver.h"
 
-TransferReceiver::TransferReceiver()
-    : Transfer(TransferModel::Receive)
+TransferReceiver::TransferReceiver(Transport *transport)
+    : Transfer(TransferModel::Receive),
+      mNextPacketSize(InvalidSize)
 {
+    connect(transport, &Transport::dataReceived, this, &TransferReceiver::onDataReceived);
+}
+
+void TransferReceiver::onDataReceived(const QByteArray &data)
+{
+    mReadBuffer.append(data);
+
+    // Continue processing complete packets until none remain in the buffer
+    forever {
+
+        // Ignore any packets if transfer has completed
+        if (mProtocolState == Finished) {
+            break;
+        }
+
+        // If mNextPacketSize is unset, attempt to read it
+        if (mNextPacketSize == InvalidSize) {
+
+            // Determine if there is enough data in the buffer to read the size
+            if (static_cast<size_t>(mReadBuffer.size()) >= sizeof(mNextPacketSize)) {
+
+                // memcpy must be used in order to avoid alignment issues
+                memcpy(&mNextPacketSize, mReadBuffer.constData(), sizeof(mNextPacketSize));
+
+                // Byte order is little-endian by default - ensure conformance
+                mNextPacketSize = qFromLittleEndian(mNextPacketSize);
+
+                // Remove the size from the beginning of the packet
+                mReadBuffer.remove(0, sizeof(mNextPacketSize));
+            } else {
+                break;
+            }
+        }
+
+        // If the buffer contains enough data, process the packet
+        if (mReadBuffer.size() >= mNextPacketSize) {
+            processPacket(mReadBuffer.left(mNextPacketSize));
+            mReadBuffer.remove(0, mNextPacketSize);
+            mNextPacketSize = InvalidSize;
+        }
+    }
+}
+
+void TransferReceiver::processPacket(const QByteArray &packet)
+{
+    //...
 }
