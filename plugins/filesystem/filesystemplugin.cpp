@@ -24,6 +24,7 @@
 
 #include <nitroshare/actionmodel.h>
 #include <nitroshare/application.h>
+#include <nitroshare/handlerregistry.h>
 
 #include "file.h"
 #include "filesystemplugin.h"
@@ -32,15 +33,15 @@ void FilesystemPlugin::init(Application *application)
 {
     mSendAction = new SendAction(application);
 
-    application->addHandler(File::Type, &mFileHandler);
+    application->handlerRegistry()->addHandler(File::Type, &mFileHandler);
     application->actionModel()->addAction(mSendAction);
 }
 
 void FilesystemPlugin::cleanup(Application *application)
 {
-    application->removeHandler(File::Type);
-
+    application->handlerRegistry()->removeHandler(File::Type);
     application->actionModel()->removeAction(mSendAction);
+
     delete mSendAction;
 
     emit finishedCleanup();

@@ -22,39 +22,23 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef LIBNITROSHARE_APPLICATION_P_H
-#define LIBNITROSHARE_APPLICATION_P_H
+#ifndef LIBNITROSHARE_HANDLERREGISTRY_P_H
+#define LIBNITROSHARE_HANDLERREGISTRY_P_H
 
-#include <QSettings>
+#include <QMap>
+#include <QObject>
 
-#include <nitroshare/actionmodel.h>
-#include <nitroshare/application.h>
-#include <nitroshare/devicemodel.h>
-#include <nitroshare/handlerregistry.h>
-#include <nitroshare/logger.h>
-#include <nitroshare/pluginmodel.h>
-#include <nitroshare/settings.h>
-#include <nitroshare/transfermodel.h>
+class Handler;
 
-class ApplicationPrivate : public QObject
+class HandlerRegistryPrivate : public QObject
 {
     Q_OBJECT
 
 public:
 
-    explicit ApplicationPrivate(Application *application);
+    explicit HandlerRegistryPrivate(QObject *parent);
 
-    Application *const q;
-
-    QSettings baseSettings;
-
-    ActionModel actionModel;
-    DeviceModel deviceModel;
-    HandlerRegistry handlerRegistry;
-    Logger logger;
-    PluginModel pluginModel;
-    Settings settings;
-    TransferModel transferModel;
+    QMap<QString, Handler*> handlers;
 };
 
-#endif // LIBNITROSHARE_APPLICATION_P_H
+#endif // LIBNITROSHARE_HANDLERREGISTRY_P_H

@@ -13,6 +13,7 @@ set(SRC
     src/discovery/device.cpp
     src/discovery/deviceenumerator.cpp
     src/discovery/devicemodel.cpp
+    src/handler/handlerregistry.cpp
     src/plugin/plugin.cpp
     src/plugin/pluginmodel.cpp
     src/transfer/transfer.cpp

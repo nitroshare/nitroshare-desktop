@@ -76,6 +76,11 @@ DeviceModel *Application::deviceModel() const
     return &d->deviceModel;
 }
 
+HandlerRegistry *Application::handlerRegistry() const
+{
+    return &d->handlerRegistry;
+}
+
 Logger *Application::logger() const
 {
     return &d->logger;
@@ -94,19 +99,4 @@ Settings *Application::settings() const
 TransferModel *Application::transferModel() const
 {
     return &d->transferModel;
-}
-
-void Application::addHandler(const QString &type, Handler *handler)
-{
-    d->handlers.insert(type, handler);
-}
-
-void Application::removeHandler(const QString &type)
-{
-    d->handlers.remove(type);
-}
-
-Handler *Application::handlerForType(const QString &type)
-{
-    return d->handlers.value(type);
 }
