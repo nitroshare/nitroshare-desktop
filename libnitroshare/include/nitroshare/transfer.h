@@ -30,6 +30,7 @@
 #include "config.h"
 
 class Bundle;
+class HandlerRegistry;
 class Transport;
 
 class NITROSHARE_EXPORT TransferPrivate;
@@ -78,18 +79,20 @@ public:
 
     /**
      * @brief Create a transfer to receive items
+     * @param handlerRegistry pointer to HandlerRegistry
      * @param transport pointer to Transport
      * @param parent QObject
      */
-    Transfer(Transport *transport, QObject *parent = nullptr);
+    Transfer(HandlerRegistry *handlerRegistry, Transport *transport, QObject *parent = nullptr);
 
     /**
      * @brief Create a transfer to send items
+     * @param handlerRegistry pointer to HandlerRegistry
      * @param transport pointer to Transport
      * @param bundle pointer to Bundle
      * @param parent QObject
      */
-    Transfer(Transport *transport, Bundle *bundle, QObject *parent = nullptr);
+    Transfer(HandlerRegistry *handlerRegistry, Transport *transport, Bundle *bundle, QObject *parent = nullptr);
 
     /**
      * @brief Retrieve the direction of transfer

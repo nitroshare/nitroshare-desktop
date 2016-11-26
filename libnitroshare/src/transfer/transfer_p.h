@@ -29,6 +29,7 @@
 
 #include <nitroshare/transfer.h>
 
+class HandlerRegistry;
 class Transport;
 
 class TransferPrivate : public QObject
@@ -37,12 +38,13 @@ class TransferPrivate : public QObject
 
 public:
 
-    TransferPrivate(Transfer *parent, Transport *transport, Transfer::Direction direction);
+    TransferPrivate(Transfer *parent, HandlerRegistry *handlerRegistry, Transport *transport, Transfer::Direction direction);
 
     void processPacket(const QByteArray &packet);
 
     Transfer *const q;
 
+    HandlerRegistry *handlerRegistry;
     Transport *transport;
 
     enum {

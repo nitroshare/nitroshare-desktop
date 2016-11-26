@@ -31,9 +31,10 @@
 
 #include "transfer_p.h"
 
-TransferPrivate::TransferPrivate(Transfer *parent, Transport *transport, Transfer::Direction direction)
+TransferPrivate::TransferPrivate(Transfer *parent, HandlerRegistry *handlerRegistry, Transport *transport, Transfer::Direction direction)
     : QObject(parent),
       q(parent),
+      handlerRegistry(handlerRegistry),
       transport(transport),
       protocolState(TransferHeader),
       direction(direction),
@@ -108,15 +109,15 @@ void TransferPrivate::onDataReceived(const QByteArray &data)
     }
 }
 
-Transfer::Transfer(Transport *transport, QObject *parent)
+Transfer::Transfer(HandlerRegistry *handlerRegistry, Transport *transport, QObject *parent)
     : QObject(parent),
-      d(new TransferPrivate(this, transport, Transfer::Receive))
+      d(new TransferPrivate(this, handlerRegistry, transport, Transfer::Receive))
 {
 }
 
-Transfer::Transfer(Transport *transport, Bundle *bundle, QObject *parent)
+Transfer::Transfer(HandlerRegistry *handlerRegistry, Transport *transport, Bundle *bundle, QObject *parent)
     : QObject(parent),
-      d(new TransferPrivate(this, transport, Transfer::Send))
+      d(new TransferPrivate(this, handlerRegistry, transport, Transfer::Send))
 {
 }
 
