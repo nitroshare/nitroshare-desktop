@@ -17,8 +17,6 @@ set(SRC
     src/plugin/pluginmodel.cpp
     src/transfer/transfer.cpp
     src/transfer/transfermodel.cpp
-    src/transfer/transferreceiver.cpp
-    src/transfer/transfersender.cpp
     src/util/logger.cpp
     src/util/settings.cpp
 )

@@ -22,46 +22,48 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef LIBNITROSHARE_TRANSFERRECEIVER_H
-#define LIBNITROSHARE_TRANSFERRECEIVER_H
+#ifndef LIBNITROSHARE_TRANSFER_P_H
+#define LIBNITROSHARE_TRANSFER_P_H
 
-#include "transfer.h"
+#include <QObject>
 
-class QJsonObject;
+#include <nitroshare/transfer.h>
 
 class Transport;
 
-/**
- * @brief Transfer initiated by a remote peer to receive items
- *
- * Raw data from the transfer is consumed by onDataReceived() as it is
- * received from the transport. From there, it is dispatched to the
- * appropriate method based on the current protocol state.
- */
-class TransferReceiver : public Transfer
+class TransferPrivate : public QObject
 {
     Q_OBJECT
 
 public:
 
-    /**
-     * @brief Create a transfer to receive items
-     * @param transport pointer to Transport
-     */
-    TransferReceiver(Transport *transport);
-
-private Q_SLOTS:
-
-    void onDataReceived(const QByteArray &data);
-
-private:
-
-    enum { InvalidSize = -1 };
+    TransferPrivate(Transfer *parent, Transport *transport, Transfer::Direction direction);
 
     void processPacket(const QByteArray &packet);
 
-    qint32 mNextPacketSize;
-    QByteArray mReadBuffer;
+    Transfer *const q;
+
+    Transport *transport;
+
+    enum {
+        TransferHeader,
+        ItemHeader,
+        Item,
+        Finished
+    } protocolState;
+
+    Transfer::Direction direction;
+    Transfer::State state;
+    int progress;
+    QString deviceName;
+    QString error;
+
+    qint32 nextPacketSize;
+    QByteArray readBuffer;
+
+public Q_SLOTS:
+
+    void onDataReceived(const QByteArray &data);
 };
 
-#endif // LIBNITROSHARE_TRANSFERRECEIVER_H
+#endif // LIBNITROSHARE_TRANSFER_P_H
