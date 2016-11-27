@@ -24,8 +24,12 @@
 
 #include <cstring>
 
+#include <QIODevice>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QtEndian>
 
+#include <nitroshare/item.h>
 #include <nitroshare/transfer.h>
 #include <nitroshare/transport.h>
 
@@ -40,7 +44,9 @@ TransferPrivate::TransferPrivate(Transfer *parent, HandlerRegistry *handlerRegis
       direction(direction),
       state(Transfer::Connecting),
       progress(0),
-      nextPacketSize(0)
+      nextPacketSize(0),
+      currentItem(nullptr),
+      currentDevice(nullptr)
 {
     connect(transport, &Transport::dataReceived, this, &TransferPrivate::onDataReceived);
 }
@@ -52,21 +58,39 @@ void TransferPrivate::processPacket(const QByteArray &packet)
     } else {
         switch (protocolState) {
         case TransferHeader:
-            // processTransferHeader(packet);
+            processTransferHeader(QJsonDocument::fromJson(packet).object());
             return;
         case ItemHeader:
-            // processItemHeader(packet);
+            processItemHeader(QJsonDocument::fromJson(packet).object());
             return;
-        case Item:
-            // processItem(packet);
+        case ItemContent:
+            currentDevice->write(packet);
             return;
         }
     }
 
     // The packet was unexpected - assume an error and ignore it
+    sendError(tr("protocol error - unexpected packet"));
+}
+
+void TransferPrivate::processTransferHeader(const QJsonObject &object)
+{
+    //...
+}
+
+void TransferPrivate::processItemHeader(const QJsonObject &object)
+{
+    //...
+}
+
+void TransferPrivate::sendError(const QString &message)
+{
     protocolState = Finished;
-    emit q->stateChanged(state = Transfer::Failed);
-    emit q->errorChanged(error = tr("protocol error - unexpected packet"));
+    state = Transfer::Failed;
+    error = message;
+
+    emit q->stateChanged(state);
+    emit q->errorChanged(error);
 }
 
 void TransferPrivate::onDataReceived(const QByteArray &data)

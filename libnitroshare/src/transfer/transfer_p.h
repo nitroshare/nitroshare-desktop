@@ -29,7 +29,11 @@
 
 #include <nitroshare/transfer.h>
 
+class QIODevice;
+class QJsonObject;
+
 class HandlerRegistry;
+class Item;
 class Transport;
 
 class TransferPrivate : public QObject
@@ -41,6 +45,10 @@ public:
     TransferPrivate(Transfer *parent, HandlerRegistry *handlerRegistry, Transport *transport, Transfer::Direction direction);
 
     void processPacket(const QByteArray &packet);
+    void processTransferHeader(const QJsonObject &object);
+    void processItemHeader(const QJsonObject &object);
+
+    void sendError(const QString &message);
 
     Transfer *const q;
 
@@ -50,7 +58,7 @@ public:
     enum {
         TransferHeader,
         ItemHeader,
-        Item,
+        ItemContent,
         Finished
     } protocolState;
 
@@ -62,6 +70,9 @@ public:
 
     qint32 nextPacketSize;
     QByteArray readBuffer;
+
+    Item *currentItem;
+    QIODevice *currentDevice;
 
 public Q_SLOTS:
 
