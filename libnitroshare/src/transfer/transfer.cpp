@@ -29,21 +29,21 @@
 #include <QJsonObject>
 #include <QtEndian>
 
+#include <nitroshare/bundle.h>
 #include <nitroshare/handler.h>
 #include <nitroshare/handlerregistry.h>
 #include <nitroshare/item.h>
-#include <nitroshare/settings.h>
+#include <nitroshare/packet.h>
 #include <nitroshare/transfer.h>
 #include <nitroshare/transport.h>
 
 #include "transfer_p.h"
 
-TransferPrivate::TransferPrivate(Transfer *parent, Settings *settings, HandlerRegistry *handlerRegistry,
-                                 Transport *transport, Bundle *bundle, Transfer::Direction direction)
+TransferPrivate::TransferPrivate(Transfer *parent, HandlerRegistry *handlerRegistry, Transport *transport,
+                                 Bundle *bundle, Transfer::Direction direction)
     : QObject(parent),
       q(parent),
       handlerRegistry(handlerRegistry),
-      settings(settings),
       transport(transport),
       bundle(bundle),
       protocolState(TransferHeader),
@@ -51,9 +51,9 @@ TransferPrivate::TransferPrivate(Transfer *parent, Settings *settings, HandlerRe
       state(Transfer::Connecting),
       progress(0),
       itemIndex(0),
-      itemCount(0),
+      itemCount(bundle ? bundle->rowCount(QModelIndex()) : 0),
       bytesTransferred(0),
-      bytesTotal(0),
+      bytesTotal(bundle ? bundle->totalSize() : 0),
       nextPacketSize(0),
       currentItem(nullptr),
       currentDevice(nullptr),
@@ -63,58 +63,13 @@ TransferPrivate::TransferPrivate(Transfer *parent, Settings *settings, HandlerRe
     // If sending data, trigger the first packet after connection
     if (direction == Transfer::Send) {
         connect(transport, &Transport::connected, [this]() {
-            onDataWritten(0);
+            onPacketSent();
         });
     }
 
-    connect(transport, &Transport::dataReceived, this, &TransferPrivate::onDataReceived);
-    connect(transport, &Transport::dataWritten, this, &TransferPrivate::onDataWritten);
+    connect(transport, &Transport::packetReceived, this, &TransferPrivate::onPacketReceived);
+    connect(transport, &Transport::packetSent, this, &TransferPrivate::onPacketSent);
     connect(transport, &Transport::error, this, &TransferPrivate::onError);
-}
-
-void TransferPrivate::sendPacket(PacketType packetType, const QByteArray &data)
-{
-    qint32 packetSize = qToLittleEndian(data.length() + 1);
-    transport->write(QByteArray(reinterpret_cast<const char*>(&packetSize), sizeof(packetSize)));
-    transport->write(QByteArray(reinterpret_cast<const char*>(&packetType), sizeof(packetType)));
-    transport->write(data);
-}
-
-void TransferPrivate::processPacket(PacketType packetType, const QByteArray &packet)
-{
-    // If an error packet is received, set the error and quit
-    if (packetType == PacketType::Error) {
-        setError(packet);
-        return;
-    }
-
-    if (direction == Transfer::Send) {
-
-        // The only packet expected when sending items is the success packet
-        // which indicates the receiver got all of the files
-        if (protocolState == Finished && packetType == PacketType::Success) {
-            setSuccess();
-            return;
-        }
-
-    } else {
-
-        // Dispatch the packet to the appropriate method based on state
-        switch (protocolState) {
-        case TransferHeader:
-            processTransferHeader(QJsonDocument::fromJson(packet).object());
-            return;
-        case ItemHeader:
-            processItemHeader(QJsonDocument::fromJson(packet).object());
-            return;
-        case ItemContent:
-            processItemContent(packet);
-            return;
-        }
-    }
-
-    // Any other packet was unexpected - assume this is an error
-    setError(tr("protocol error - unexpected packet"), true);
 }
 
 void TransferPrivate::processTransferHeader(const QJsonObject &object)
@@ -174,13 +129,13 @@ void TransferPrivate::processItemHeader(const QJsonObject &object)
     }
 }
 
-void TransferPrivate::processItemContent(const QByteArray &packet)
+void TransferPrivate::processItemContent(const QByteArray &content)
 {
-    currentDevice->write(packet);
+    currentDevice->write(content);
 
     // Add the number of bytes to the global & current item totals
-    bytesTransferred += packet.size();
-    currentItemBytesTransferred -= packet.size();
+    bytesTransferred += content.size();
+    currentItemBytesTransferred -= content.size();
 
     updateProgress();
 
@@ -217,7 +172,8 @@ void TransferPrivate::updateProgress()
 void TransferPrivate::setSuccess(bool send)
 {
     if (send) {
-        sendPacket(PacketType::Success);
+        Packet packet(Packet::Success);
+        transport->sendPacket(&packet);
     }
 
     emit q->stateChanged(state = Transfer::Succeeded);
@@ -229,7 +185,8 @@ void TransferPrivate::setSuccess(bool send)
 void TransferPrivate::setError(const QString &message, bool send)
 {
     if (send) {
-        sendPacket(PacketType::Error);
+        Packet packet(Packet::Error, message.toUtf8());
+        transport->sendPacket(&packet);
     }
 
     emit q->errorChanged(error = message);
@@ -238,59 +195,46 @@ void TransferPrivate::setError(const QString &message, bool send)
     transport->close();
 }
 
-void TransferPrivate::onDataReceived(const QByteArray &data)
+void TransferPrivate::onPacketReceived(Packet *packet)
 {
-    readBuffer.append(data);
+    // If an error packet is received, set the error and quit
+    if (packet->type() == Packet::Error) {
+        setError(packet->content());
+        return;
+    }
 
-    // Continue processing complete packets until none remain in the buffer
-    forever {
+    if (direction == Transfer::Send) {
 
-        // Ignore any packets if transfer has completed
-        if (protocolState == Finished) {
-            break;
+        // The only packet expected when sending items is the success packet
+        // which indicates the receiver got all of the files
+        if (protocolState == Finished && packet->type() == Packet::Success) {
+            setSuccess();
+            return;
         }
 
-        // If mNextPacketSize is unset, attempt to read it
-        if (!nextPacketSize) {
+    } else {
 
-            // Determine if there is enough data in the buffer to read the size
-            if (static_cast<size_t>(readBuffer.size()) >= sizeof(nextPacketSize)) {
-
-                // memcpy must be used in order to avoid alignment issues
-                memcpy(&nextPacketSize, readBuffer.constData(), sizeof(nextPacketSize));
-
-                // Byte order is little-endian by default - ensure conformance
-                nextPacketSize = qFromLittleEndian(nextPacketSize);
-
-                // Remove the size from the beginning of the packet
-                readBuffer.remove(0, sizeof(nextPacketSize));
-            } else {
-                break;
-            }
-        }
-
-        // If the buffer contains enough data, process the packet
-        if (readBuffer.size() >= nextPacketSize) {
-
-            // Read the packet type and data
-            PacketType packetType = static_cast<PacketType>(readBuffer.at(0));
-            QByteArray packetData = readBuffer.mid(1, nextPacketSize - 1);
-
-            // Remove the packet from the buffer
-            readBuffer.remove(0, nextPacketSize);
-            nextPacketSize = 0;
-
-            processPacket(packetType, packetData);
+        // Dispatch the packet to the appropriate method based on state
+        switch (protocolState) {
+        case TransferHeader:
+            processTransferHeader(QJsonDocument::fromJson(packet->content()).object());
+            return;
+        case ItemHeader:
+            processItemHeader(QJsonDocument::fromJson(packet->content()).object());
+            return;
+        case ItemContent:
+            processItemContent(packet->content());
+            return;
         }
     }
+
+    // Any other packet was unexpected - assume this is an error
+    setError(tr("protocol error - unexpected packet"), true);
 }
 
-void TransferPrivate::onDataWritten(qint64 bytes)
+void TransferPrivate::onPacketSent()
 {
-    // Having this method called indicates that the next packet should
-    // be sent
-
-    // TODO: ensure that the unacknowledged amount never exceeds the buffer size
+    //...
 }
 
 void TransferPrivate::onError(const QString &message)
@@ -298,15 +242,15 @@ void TransferPrivate::onError(const QString &message)
     setError(message);
 }
 
-Transfer::Transfer(Settings *settings, HandlerRegistry *handlerRegistry, Transport *transport, QObject *parent)
+Transfer::Transfer(HandlerRegistry *handlerRegistry, Transport *transport, QObject *parent)
     : QObject(parent),
-      d(new TransferPrivate(this, settings, handlerRegistry, transport, nullptr, Transfer::Receive))
+      d(new TransferPrivate(this, handlerRegistry, transport, nullptr, Transfer::Receive))
 {
 }
 
-Transfer::Transfer(Settings *settings, HandlerRegistry *handlerRegistry, Transport *transport, Bundle *bundle, QObject *parent)
+Transfer::Transfer(HandlerRegistry *handlerRegistry, Transport *transport, Bundle *bundle, QObject *parent)
     : QObject(parent),
-      d(new TransferPrivate(this, settings, handlerRegistry, transport, bundle, Transfer::Send))
+      d(new TransferPrivate(this, handlerRegistry, transport, bundle, Transfer::Send))
 {
 }
 
@@ -337,4 +281,5 @@ QString Transfer::error() const
 
 void Transfer::cancel()
 {
+    d->setError(tr("transfer cancelled"));
 }

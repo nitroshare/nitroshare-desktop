@@ -26,18 +26,18 @@
 #define LIBNITROSHARE_TRANSPORT_H
 
 #include <QObject>
-#include <QVariantMap>
 
 #include "config.h"
+
+class Packet;
 
 /**
  * @brief Method for transmitting bundles to other devices
  *
- * Data is sent to another device using a transport, such as a simple TCP
- * socket or an encrypted TLS session. The information necessary to connect to
- * the remote device and initiate the transfer is passed to start(). Once the
- * connection succeeds and is ready for data transfer, the connected() signal
- * is emitted.
+ * Data is sent to another device as packets using a transport. A transport
+ * could be as a TCP socket but could also be an encrypted TLS session. Once
+ * the connection succeeds and is ready for data transfer, the connected()
+ * signal is emitted.
  *
  * In order to avoid blocking the UI thread, all of the virtual methods are
  * invoked asynchronously. Errors are communicated through the error() signal.
@@ -49,16 +49,10 @@ class NITROSHARE_EXPORT Transport : public QObject
 public:
 
     /**
-     * @brief Initiate a transfer
-     * @param properties device properties
+     * @brief Send a packet on the transport
+     * @param packet pointer to Packet
      */
-    virtual void start(const QVariantMap &properties) = 0;
-
-    /**
-     * @brief Write data to the transport
-     * @param data information to send
-     */
-    virtual void write(const QByteArray &data) = 0;
+    virtual void sendPacket(Packet *packet) = 0;
 
     /**
      * @brief Disconnect and close the transport.
@@ -73,16 +67,18 @@ Q_SIGNALS:
     void connected();
 
     /**
-     * @brief Indicate that data has been received from the transport
-     * @param data information received
+     * @brief Indicate that a packet has been received from the transport
+     * @param packet pointer to Packet
      */
-    void dataReceived(const QByteArray &data);
+    void packetReceived(Packet *packet);
 
     /**
-     * @brief Indicate that data has been written to the transport
-     * @param bytes number of bytes written
+     * @brief Indicate that the previous packet has been sent
+     *
+     * This signals to the transfer code that the next packet may be sent
+     * through the transport.
      */
-    void dataWritten(qint64 bytes);
+    void packetSent();
 
     /**
      * @brief Indicate an error has occurred

@@ -35,7 +35,7 @@ class QJsonObject;
 class Bundle;
 class HandlerRegistry;
 class Item;
-class Settings;
+class Packet;
 class Transport;
 
 class TransferPrivate : public QObject
@@ -44,22 +44,12 @@ class TransferPrivate : public QObject
 
 public:
 
-    enum class PacketType : char {
-        Success = 0,
-        Error,
-        Json,
-        Binary
-    };
+    TransferPrivate(Transfer *parent, HandlerRegistry *handlerRegistry, Transport *transport,
+                    Bundle *bundle, Transfer::Direction direction);
 
-    TransferPrivate(Transfer *parent, Settings *settings, HandlerRegistry *handlerRegistry,
-                    Transport *transport, Bundle *bundle, Transfer::Direction direction);
-
-    void sendPacket(PacketType packetType, const QByteArray &packet = QByteArray());
-
-    void processPacket(PacketType packetType, const QByteArray &packet);
     void processTransferHeader(const QJsonObject &object);
     void processItemHeader(const QJsonObject &object);
-    void processItemContent(const QByteArray &packet);
+    void processItemContent(const QByteArray &content);
 
     void updateProgress();
 
@@ -68,7 +58,6 @@ public:
 
     Transfer *const q;
 
-    Settings *settings;
     HandlerRegistry *handlerRegistry;
     Transport *transport;
     Bundle *bundle;
@@ -102,8 +91,8 @@ public:
 
 public Q_SLOTS:
 
-    void onDataReceived(const QByteArray &data);
-    void onDataWritten(qint64 bytes);
+    void onPacketReceived(Packet *packet);
+    void onPacketSent();
     void onError(const QString &message);
 };
 

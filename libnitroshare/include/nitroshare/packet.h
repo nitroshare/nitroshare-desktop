@@ -66,7 +66,7 @@ public:
      * @param content payload
      * @param parent QObject
      */
-    Packet(Type type, const QByteArray &content, QObject *parent = nullptr);
+    Packet(Type type, const QByteArray &content = QByteArray(), QObject *parent = nullptr);
 
     /**
      * @brief Retrieve the packet type
