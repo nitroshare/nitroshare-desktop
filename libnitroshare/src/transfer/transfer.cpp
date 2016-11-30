@@ -32,16 +32,18 @@
 #include <nitroshare/handler.h>
 #include <nitroshare/handlerregistry.h>
 #include <nitroshare/item.h>
+#include <nitroshare/settings.h>
 #include <nitroshare/transfer.h>
 #include <nitroshare/transport.h>
 
 #include "transfer_p.h"
 
-TransferPrivate::TransferPrivate(Transfer *parent, HandlerRegistry *handlerRegistry, Transport *transport,
-                                 Bundle *bundle, Transfer::Direction direction)
+TransferPrivate::TransferPrivate(Transfer *parent, Settings *settings, HandlerRegistry *handlerRegistry,
+                                 Transport *transport, Bundle *bundle, Transfer::Direction direction)
     : QObject(parent),
       q(parent),
       handlerRegistry(handlerRegistry),
+      settings(settings),
       transport(transport),
       bundle(bundle),
       protocolState(TransferHeader),
@@ -296,15 +298,15 @@ void TransferPrivate::onError(const QString &message)
     setError(message);
 }
 
-Transfer::Transfer(HandlerRegistry *handlerRegistry, Transport *transport, QObject *parent)
+Transfer::Transfer(Settings *settings, HandlerRegistry *handlerRegistry, Transport *transport, QObject *parent)
     : QObject(parent),
-      d(new TransferPrivate(this, handlerRegistry, transport, nullptr, Transfer::Receive))
+      d(new TransferPrivate(this, settings, handlerRegistry, transport, nullptr, Transfer::Receive))
 {
 }
 
-Transfer::Transfer(HandlerRegistry *handlerRegistry, Transport *transport, Bundle *bundle, QObject *parent)
+Transfer::Transfer(Settings *settings, HandlerRegistry *handlerRegistry, Transport *transport, Bundle *bundle, QObject *parent)
     : QObject(parent),
-      d(new TransferPrivate(this, handlerRegistry, transport, bundle, Transfer::Send))
+      d(new TransferPrivate(this, settings, handlerRegistry, transport, bundle, Transfer::Send))
 {
 }
 

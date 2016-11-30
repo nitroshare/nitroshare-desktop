@@ -31,6 +31,7 @@
 
 class Bundle;
 class HandlerRegistry;
+class Settings;
 class Transport;
 
 class NITROSHARE_EXPORT TransferPrivate;
@@ -79,20 +80,22 @@ public:
 
     /**
      * @brief Create a transfer to receive items
+     * @param settings pointer to Settings
      * @param handlerRegistry pointer to HandlerRegistry
      * @param transport pointer to Transport
      * @param parent QObject
      */
-    Transfer(HandlerRegistry *handlerRegistry, Transport *transport, QObject *parent = nullptr);
+    Transfer(Settings *settings, HandlerRegistry *handlerRegistry, Transport *transport, QObject *parent = nullptr);
 
     /**
      * @brief Create a transfer to send items
+     * @param settings pointer to Settings
      * @param handlerRegistry pointer to HandlerRegistry
      * @param transport pointer to Transport
      * @param bundle pointer to Bundle
      * @param parent QObject
      */
-    Transfer(HandlerRegistry *handlerRegistry, Transport *transport, Bundle *bundle, QObject *parent = nullptr);
+    Transfer(Settings *settings, HandlerRegistry *handlerRegistry, Transport *transport, Bundle *bundle, QObject *parent = nullptr);
 
     /**
      * @brief Retrieve the direction of transfer

@@ -35,6 +35,7 @@ class QJsonObject;
 class Bundle;
 class HandlerRegistry;
 class Item;
+class Settings;
 class Transport;
 
 class TransferPrivate : public QObject
@@ -50,8 +51,8 @@ public:
         Binary
     };
 
-    TransferPrivate(Transfer *parent, HandlerRegistry *handlerRegistry, Transport *transport,
-                    Bundle *bundle, Transfer::Direction direction);
+    TransferPrivate(Transfer *parent, Settings *settings, HandlerRegistry *handlerRegistry,
+                    Transport *transport, Bundle *bundle, Transfer::Direction direction);
 
     void sendPacket(PacketType packetType, const QByteArray &packet = QByteArray());
 
@@ -67,6 +68,7 @@ public:
 
     Transfer *const q;
 
+    Settings *settings;
     HandlerRegistry *handlerRegistry;
     Transport *transport;
     Bundle *bundle;
