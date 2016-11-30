@@ -16,6 +16,7 @@ set(SRC
     src/handler/handlerregistry.cpp
     src/plugin/plugin.cpp
     src/plugin/pluginmodel.cpp
+    src/transfer/packet.cpp
     src/transfer/transfer.cpp
     src/transfer/transfermodel.cpp
     src/util/logger.cpp
