@@ -63,7 +63,7 @@ public:
     /**
      * @brief Disconnect and close the transport.
      */
-    virtual void abort() = 0;
+    virtual void close() = 0;
 
 Q_SIGNALS:
 

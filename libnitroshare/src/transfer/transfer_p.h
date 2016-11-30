@@ -32,6 +32,7 @@
 class QIODevice;
 class QJsonObject;
 
+class Bundle;
 class HandlerRegistry;
 class Item;
 class Transport;
@@ -42,18 +43,33 @@ class TransferPrivate : public QObject
 
 public:
 
-    TransferPrivate(Transfer *parent, HandlerRegistry *handlerRegistry, Transport *transport, Transfer::Direction direction);
+    enum class PacketType : char {
+        Success = 0,
+        Error,
+        Json,
+        Binary
+    };
 
-    void processPacket(const QByteArray &packet);
+    TransferPrivate(Transfer *parent, HandlerRegistry *handlerRegistry, Transport *transport,
+                    Bundle *bundle, Transfer::Direction direction);
+
+    void sendPacket(PacketType packetType, const QByteArray &packet = QByteArray());
+
+    void processPacket(PacketType packetType, const QByteArray &packet);
     void processTransferHeader(const QJsonObject &object);
     void processItemHeader(const QJsonObject &object);
+    void processItemContent(const QByteArray &packet);
 
-    void sendError(const QString &message);
+    void updateProgress();
+
+    void setSuccess(bool send = false);
+    void setError(const QString &message, bool send = false);
 
     Transfer *const q;
 
     HandlerRegistry *handlerRegistry;
     Transport *transport;
+    Bundle *bundle;
 
     enum {
         TransferHeader,
@@ -68,15 +84,25 @@ public:
     QString deviceName;
     QString error;
 
+    qint32 itemIndex;
+    qint32 itemCount;
+    qint64 bytesTransferred;
+    qint64 bytesTotal;
+
     qint32 nextPacketSize;
     QByteArray readBuffer;
 
     Item *currentItem;
     QIODevice *currentDevice;
 
+    qint64 currentItemBytesTransferred;
+    qint64 currentItemBytesTotal;
+
 public Q_SLOTS:
 
     void onDataReceived(const QByteArray &data);
+    void onDataWritten(qint64 bytes);
+    void onError(const QString &message);
 };
 
 #endif // LIBNITROSHARE_TRANSFER_P_H

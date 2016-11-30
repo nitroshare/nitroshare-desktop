@@ -156,16 +156,9 @@ Q_SIGNALS:
 public Q_SLOTS:
 
     /**
-     * @brief Attempt to gracefully abort the transfer
+     * @brief Attempt to gracefully cancel the transfer
      */
-    void abort();
-
-    /**
-     * @brief Attempt to restart the transfer
-     *
-     * This method will only have an effect on
-     */
-    void restart();
+    void cancel();
 
 private:
 
