@@ -27,10 +27,6 @@
 
 #include "bundle_p.h"
 
-const QByteArray TypeName = "type";
-const QByteArray NameName = "name";
-const QByteArray SizeName = "size";
-
 BundlePrivate::BundlePrivate(QObject *parent)
     : QObject(parent),
       totalSize(0)
@@ -50,6 +46,7 @@ Bundle::Bundle(QObject *parent)
 
 void Bundle::addItem(Item *item)
 {
+    item->setParent(this);
     d->items.append(item);
     d->totalSize += item->property(Item::SizeKey).toLongLong();
 }
@@ -67,19 +64,8 @@ int Bundle::rowCount(const QModelIndex &parent) const
 QVariant Bundle::data(const QModelIndex &index, int role) const
 {
     // Ensure the index points to a valid row
-    if (!index.isValid() || index.row() < 0 || index.row() >= d->items.count()) {
-        return QVariant();
-    }
-
-    Item *item = d->items.at(index.row());
-
-    switch (role) {
-    case TypeRole:
-        return item->property(Item::TypeKey);
-    case NameRole:
-        return item->property(Item::NameKey);
-    case SizeRole:
-        return item->property(Item::SizeKey);
+    if (index.isValid() && index.row() >= 0 && index.row() < d->items.count() && role == Qt::UserRole) {
+        return QVariant::fromValue(d->items.at(index.row()));
     }
 
     return QVariant();
@@ -87,9 +73,5 @@ QVariant Bundle::data(const QModelIndex &index, int role) const
 
 QHash<int, QByteArray> Bundle::roleNames() const
 {
-    return {
-        { TypeRole, TypeName },
-        { NameRole, NameName },
-        { SizeRole, SizeName }
-    };
+    return { { Qt::UserRole, "item" } };
 }

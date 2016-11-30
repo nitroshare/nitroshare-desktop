@@ -43,12 +43,6 @@ class NITROSHARE_EXPORT Bundle : public QAbstractListModel
 
 public:
 
-    enum Role {
-        TypeRole = Qt::UserRole,
-        NameRole,
-        SizeRole
-    };
-
     /**
      * @brief Create a new (empty) bundle
      * @param parent QObject
