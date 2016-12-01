@@ -29,7 +29,6 @@
 
 #include <nitroshare/transfer.h>
 
-class QIODevice;
 class QJsonObject;
 
 class Bundle;
@@ -84,8 +83,6 @@ public:
     QByteArray readBuffer;
 
     Item *currentItem;
-    QIODevice *currentDevice;
-
     qint64 currentItemBytesTransferred;
     qint64 currentItemBytesTotal;
 

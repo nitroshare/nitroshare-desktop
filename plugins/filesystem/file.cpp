@@ -24,59 +24,100 @@
 
 #include "file.h"
 
-const QString File::Type = "file";
-
-const QString ReadOnlyKey = "read_only";
-const QString CreatedMsKey = "created_ms";
-const QString LastReadMsKey = "last_read_ms";
-const QString LastModifiedMsKey = "last_modified_ms";
-
 File::File(const QVariantMap &properties)
 {
-    // TODO: set mLocalFilename
+    // TODO: set mFile
 
-    mRelativeFilename = properties.value(NameKey).toString();
+    mRelativeFilename = properties.value("name").toString();
 
-    mSize = properties.value(SizeKey).toLongLong();
-    mReadOnly = properties.value(ReadOnlyKey).toBool();
+    mSize = properties.value("size").toLongLong();
+    mReadOnly = properties.value("read_only").toBool();
+    mExecutable = properties.value("executable").toBool();
 
-    mCreated = QDateTime::fromMSecsSinceEpoch(properties.value(CreatedMsKey).toInt());
-    mLastRead = QDateTime::fromMSecsSinceEpoch(properties.value(LastReadMsKey).toInt());
-    mLastModified = QDateTime::fromMSecsSinceEpoch(properties.value(LastModifiedMsKey).toInt());
+    mCreated = QDateTime::fromMSecsSinceEpoch(properties.value("created").toInt());
+    mLastRead = QDateTime::fromMSecsSinceEpoch(properties.value("last_read").toInt());
+    mLastModified = QDateTime::fromMSecsSinceEpoch(properties.value("last_modified").toInt());
 }
 
-File::File(const QDir &root, const QFileInfo &info)
+File::File(const QDir &root, const QFileInfo &info, int blockSize)
 {
-    mLocalFilename = info.absoluteFilePath();
-    mRelativeFilename = root.relativeFilePath(mLocalFilename);
+    mFile.setFileName(info.absoluteFilePath());
+    mBlockSize = blockSize;
+
+    mRelativeFilename = root.relativeFilePath(info.absoluteFilePath());
 
     mSize = info.size();
     mReadOnly = !info.isWritable();
+    mExecutable = info.isExecutable();
 
     mCreated = info.created();
     mLastRead = info.lastRead();
     mLastModified = info.lastModified();
 }
 
-QVariantMap File::properties() const
+bool File::readOnly() const
 {
-    return {
-        { TypeKey, Type },
-        { NameKey, mRelativeFilename },
-        { SizeKey, mSize },
-        { ReadOnlyKey, mReadOnly },
-        { CreatedMsKey, mCreated.toMSecsSinceEpoch() },
-        { LastReadMsKey, mLastRead.toMSecsSinceEpoch() },
-        { LastModifiedMsKey, mLastModified.toMSecsSinceEpoch() }
-    };
+    return mReadOnly;
 }
 
-QIODevice *File::createReader()
+bool File::executable() const
 {
-    return nullptr;
+    return mExecutable;
 }
 
-QIODevice *File::createWriter()
+QDateTime File::created() const
 {
-    return nullptr;
+    return mCreated;
+}
+
+QDateTime File::lastRead() const
+{
+    return mLastRead;
+}
+
+QDateTime File::lastModified() const
+{
+    return mLastModified;
+}
+
+QString File::type() const
+{
+    return "file";
+}
+
+QString File::name() const
+{
+    return mRelativeFilename;
+}
+
+qint64 File::size() const
+{
+    return mSize;
+}
+
+bool File::open(OpenMode openMode)
+{
+    return mFile.open(openMode == Read ? QIODevice::ReadOnly : QIODevice::WriteOnly);
+}
+
+bool File::read(QByteArray &data)
+{
+    // Allocate a full block and then resize to actual data length
+    data.resize(mBlockSize);
+    qint64 bytesRead = mFile.read(data.data(), mBlockSize);
+    data.resize(bytesRead);
+
+    return bytesRead != -1;
+}
+
+bool File::write(const QByteArray &data)
+{
+    return mFile.write(data) != -1;
+}
+
+void File::close()
+{
+    mFile.close();
+
+    // TODO: set attributes
 }

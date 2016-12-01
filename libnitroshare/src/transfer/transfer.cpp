@@ -24,7 +24,6 @@
 
 #include <cstring>
 
-#include <QIODevice>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QtEndian>
@@ -56,7 +55,6 @@ TransferPrivate::TransferPrivate(Transfer *parent, HandlerRegistry *handlerRegis
       bytesTotal(bundle ? bundle->totalSize() : 0),
       nextPacketSize(0),
       currentItem(nullptr),
-      currentDevice(nullptr),
       currentItemBytesTransferred(0),
       currentItemBytesTotal(0)
 {
@@ -113,15 +111,14 @@ void TransferPrivate::processItemHeader(const QJsonObject &object)
     // Use the handler to create an item and open it
     currentItem = handler->createItem(type, object.toVariantMap());
     currentItem->setParent(this);
-    currentDevice = currentItem->createWriter();
-    if (!currentDevice) {
-        setError(tr("unable to write \"%1\"").arg(object.value("name").toString()));
+    if (!currentItem->open(Item::Write)) {
+        setError(tr("unable to open \"%1\" for writing").arg(currentItem->name()));
         return;
     }
 
     // Record the size of the item
     currentItemBytesTransferred = 0;
-    currentItemBytesTotal = object.value("size").toString().toLongLong();
+    currentItemBytesTotal = currentItem->size();
 
     // Prepare to receive item contents (if size > 0)
     if (currentItemBytesTotal) {
@@ -131,7 +128,7 @@ void TransferPrivate::processItemHeader(const QJsonObject &object)
 
 void TransferPrivate::processItemContent(const QByteArray &content)
 {
-    currentDevice->write(content);
+    currentItem->write(content);
 
     // Add the number of bytes to the global & current item totals
     bytesTransferred += content.size();
@@ -142,7 +139,8 @@ void TransferPrivate::processItemContent(const QByteArray &content)
     // If the current item is complete, advance to the next item or finish
     if (currentItemBytesTransferred >= currentItemBytesTotal) {
 
-        // Free the current item (device is a child and also deleted)
+        // Free the current item
+        currentItem->close();
         delete currentItem;
 
         // Increment the index of the next item to transfer

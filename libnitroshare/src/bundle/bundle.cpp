@@ -48,7 +48,7 @@ void Bundle::addItem(Item *item)
 {
     item->setParent(this);
     d->items.append(item);
-    d->totalSize += item->property(Item::SizeKey).toLongLong();
+    d->totalSize += item->size();
 }
 
 qint64 Bundle::totalSize() const

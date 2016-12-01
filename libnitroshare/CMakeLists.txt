@@ -8,7 +8,6 @@ set(SRC
     src/action/actionmodel.cpp
     src/application/application.cpp
     src/bundle/bundle.cpp
-    src/bundle/item.cpp
     src/core/object.cpp
     src/discovery/device.cpp
     src/discovery/deviceenumerator.cpp

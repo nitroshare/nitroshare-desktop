@@ -27,6 +27,7 @@
 
 #include <QDateTime>
 #include <QDir>
+#include <QFile>
 #include <QFileInfo>
 #include <QVariantMap>
 
@@ -38,26 +39,42 @@
 class File : public Item
 {
     Q_OBJECT
+    Q_PROPERTY(bool readOnly READ readOnly)
+    Q_PROPERTY(bool executable READ executable)
+    Q_PROPERTY(QDateTime created READ created)
+    Q_PROPERTY(QDateTime lastRead READ lastRead)
+    Q_PROPERTY(QDateTime lastModified)
 
 public:
 
-    static const QString Type;
-
     File(const QVariantMap &properties);
-    File(const QDir &root, const QFileInfo &info);
+    File(const QDir &root, const QFileInfo &info, int blockSize);
+
+    bool readOnly() const;
+    bool executable() const;
+    QDateTime created() const;
+    QDateTime lastRead() const;
+    QDateTime lastModified() const;
 
     // Reimplemented virtual methods
-    virtual QVariantMap properties() const;
-    virtual QIODevice *createReader();
-    virtual QIODevice *createWriter();
+    virtual QString type() const;
+    virtual QString name() const;
+    virtual qint64 size() const;
+    virtual bool open(OpenMode openMode);
+    virtual bool read(QByteArray &data);
+    virtual bool write(const QByteArray &data);
+    virtual void close();
 
 private:
 
-    QString mLocalFilename;
+    QFile mFile;
+    int mBlockSize;
+
     QString mRelativeFilename;
 
     qint64 mSize;
     bool mReadOnly;
+    bool mExecutable;
 
     QDateTime mCreated;
     QDateTime mLastRead;

@@ -25,45 +25,82 @@
 #ifndef LIBNITROSHARE_ITEM_H
 #define LIBNITROSHARE_ITEM_H
 
-#include <QVariantMap>
-
-#include <nitroshare/object.h>
+#include <QObject>
 
 #include "config.h"
-
-class QIODevice;
 
 /**
  * @brief Individual item for transfer
  *
  * Each item in a bundle is an instance of a class that derives from this one.
+ * Properties should be used for attributes that should be included in the
+ * metadata sent in a transfer.
  */
-class NITROSHARE_EXPORT Item : public Object
+class NITROSHARE_EXPORT Item : public QObject
 {
     Q_OBJECT
+    Q_ENUMS(OpenMode)
+    Q_PROPERTY(QString type READ type)
+    Q_PROPERTY(QString name READ name)
+    Q_PROPERTY(qint64 size READ size)
 
 public:
 
-    /// Unique type identifier
-    static const char *TypeKey;
-
-    /// Name of the item
-    static const char *NameKey;
-
-    /// Size (in bytes) of the item
-    static const char *SizeKey;
+    /**
+     * @brief Mode used for opening the file
+     */
+    enum OpenMode {
+        Read,
+        Write
+    };
 
     /**
-     * @brief Create a reader for the item
-     * @return QIODevice
+     * @brief Retrieve the unique identifier for the item
+     * @return identifier
      */
-    virtual QIODevice *createReader() = 0;
+    virtual QString type() const = 0;
 
     /**
-     * @brief Create a writer for the item
-     * @return QIODevice
+     * @brief Retrieve the name of the item
+     * @return item name
      */
-    virtual QIODevice *createWriter() = 0;
+    virtual QString name() const = 0;
+
+    /**
+     * @brief Retrieve the size of the item
+     * @return item size
+     */
+    virtual qint64 size() const = 0;
+
+    /**
+     * @brief Open the item for reading or writing
+     * @param openMode mode used for opening the file
+     * @return true if the item was opened
+     */
+    virtual bool open(OpenMode openMode) = 0;
+
+    /**
+     * @brief Read data from the item
+     * @param data storage for the data
+     * @return true if data was read
+     *
+     * This method should avoid storing large amounts of data in the byte
+     * array to avoid excess memory usage. Instead, store successive portions
+     * of the file in the array with each call.
+     */
+    virtual bool read(QByteArray &data) = 0;
+
+    /**
+     * @brief Write data to the item
+     * @param data information to write
+     * @return true if the data was written
+     */
+    virtual bool write(const QByteArray &data) = 0;
+
+    /**
+     * @brief Close the item
+     */
+    virtual void close() = 0;
 };
 
 #endif // LIBNITROSHARE_ITEM_H
