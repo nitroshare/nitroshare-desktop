@@ -100,19 +100,24 @@ bool File::open(OpenMode openMode)
     return mFile.open(openMode == Read ? QIODevice::ReadOnly : QIODevice::WriteOnly);
 }
 
-bool File::read(QByteArray &data)
+QByteArray File::read()
 {
     // Allocate a full block and then resize to actual data length
+    QByteArray data;
     data.resize(mBlockSize);
     qint64 bytesRead = mFile.read(data.data(), mBlockSize);
     data.resize(bytesRead);
 
-    return bytesRead != -1;
+    if (bytesRead == -1) {
+        emit error(mFile.errorString());
+    }
 }
 
-bool File::write(const QByteArray &data)
+void File::write(const QByteArray &data)
 {
-    return mFile.write(data) != -1;
+    if (mFile.write(data) == -1) {
+        emit error(mFile.errorString());
+    }
 }
 
 void File::close()

@@ -29,8 +29,6 @@
 
 #include <nitroshare/transfer.h>
 
-class QJsonObject;
-
 class Bundle;
 class HandlerRegistry;
 class Item;
@@ -46,9 +44,15 @@ public:
     TransferPrivate(Transfer *parent, HandlerRegistry *handlerRegistry, Transport *transport,
                     Bundle *bundle, Transfer::Direction direction);
 
-    void processTransferHeader(const QJsonObject &object);
-    void processItemHeader(const QJsonObject &object);
-    void processItemContent(const QByteArray &content);
+    void sendTransferHeader();
+    void sendItemHeader();
+    void sendItemContent();
+    void sendNext();
+
+    void processTransferHeader(Packet *packet);
+    void processItemHeader(Packet *packet);
+    void processItemContent(Packet *packet);
+    void processNext();
 
     void updateProgress();
 
@@ -78,9 +82,6 @@ public:
     qint32 itemCount;
     qint64 bytesTransferred;
     qint64 bytesTotal;
-
-    qint32 nextPacketSize;
-    QByteArray readBuffer;
 
     Item *currentItem;
     qint64 currentItemBytesTransferred;

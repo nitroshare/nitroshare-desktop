@@ -33,7 +33,7 @@
  * @brief Individual item for transfer
  *
  * Each item in a bundle is an instance of a class that derives from this one.
- * Properties should be used for attributes that should be included in the
+ * Properties should be used for attributes that need to be included in the
  * metadata sent in a transfer.
  */
 class NITROSHARE_EXPORT Item : public QObject
@@ -81,26 +81,38 @@ public:
 
     /**
      * @brief Read data from the item
-     * @param data storage for the data
-     * @return true if data was read
+     * @return array of bytes
      *
-     * This method should avoid storing large amounts of data in the byte
-     * array to avoid excess memory usage. Instead, store successive portions
-     * of the file in the array with each call.
+     * This method should avoid returning large amounts of data in order to
+     * avoid excess memory usage. Instead, return successive portions of the
+     * item with each call.
+     *
+     * Use the error() signal to indicate an error.
      */
-    virtual bool read(QByteArray &data) = 0;
+    virtual QByteArray read() = 0;
 
     /**
      * @brief Write data to the item
      * @param data information to write
-     * @return true if the data was written
+     *
+     * Use the error() signal to indicate an error.
      */
-    virtual bool write(const QByteArray &data) = 0;
+    virtual void write(const QByteArray &data) = 0;
 
     /**
      * @brief Close the item
+     *
+     * Use the error() signal to indicate an error.
      */
     virtual void close() = 0;
+
+Q_SIGNALS:
+
+    /**
+     * @brief Indicate an error has occurred
+     * @param message description of the error
+     */
+    void error(const QString &message);
 };
 
 #endif // LIBNITROSHARE_ITEM_H

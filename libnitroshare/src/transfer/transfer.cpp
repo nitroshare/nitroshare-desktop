@@ -26,6 +26,8 @@
 
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QMetaObject>
+#include <QMetaProperty>
 #include <QtEndian>
 
 #include <nitroshare/bundle.h>
@@ -53,7 +55,6 @@ TransferPrivate::TransferPrivate(Transfer *parent, HandlerRegistry *handlerRegis
       itemCount(bundle ? bundle->rowCount(QModelIndex()) : 0),
       bytesTransferred(0),
       bytesTotal(bundle ? bundle->totalSize() : 0),
-      nextPacketSize(0),
       currentItem(nullptr),
       currentItemBytesTransferred(0),
       currentItemBytesTotal(0)
@@ -70,13 +71,99 @@ TransferPrivate::TransferPrivate(Transfer *parent, HandlerRegistry *handlerRegis
     connect(transport, &Transport::error, this, &TransferPrivate::onError);
 }
 
-void TransferPrivate::processTransferHeader(const QJsonObject &object)
+void TransferPrivate::sendTransferHeader()
 {
+    QJsonObject object{
+        { "name", "unknown" },
+        { "count", QString::number(bundle->rowCount(QModelIndex())) },
+        { "size", QString::number(bundle->totalSize()) }
+    };
+
+    Packet packet(Packet::Json, QJsonDocument(object).toJson());
+    transport->sendPacket(&packet);
+
+    // The next packet will be an item header
+    protocolState = ItemHeader;
+}
+
+void TransferPrivate::sendItemHeader()
+{
+    // Grab the next item and attempt to open it
+    currentItem = bundle->data(bundle->index(itemIndex, 0), Qt::UserRole).value<Item*>();
+    if (!currentItem->open(Item::Read)) {
+        setError(tr("unable to open \"%1\" for reading").arg(currentItem->name()), true);
+        return;
+    }
+
+    // Reset transfer stats
+    currentItemBytesTransferred = 0;
+    currentItemBytesTotal = currentItem->size();
+
+    // Build a JSON object with all of the properties
+    const QMetaObject *metaObj = currentItem->metaObject();
+    QJsonObject object;
+
+    for (int i = metaObj->propertyOffset(); i < metaObj->propertyCount(); ++i) {
+        const char *name = metaObj->property(i).name();
+        object.insert(name, QJsonValue::fromVariant(currentItem->property(name)));
+    }
+
+    // Send the item header
+    Packet packet(Packet::Json, QJsonDocument(object).toJson());
+    transport->sendPacket(&packet);
+
+    // If the item has a size, switch states; otherwise send the next item
+    if (currentItemBytesTotal) {
+        protocolState = ItemContent;
+    } else {
+        sendNext();
+    }
+}
+
+void TransferPrivate::sendItemContent()
+{
+    QByteArray data = currentItem->read();
+    Packet packet(Packet::Binary, data);
+    transport->sendPacket(&packet);
+
+    // Increment the number of bytes written to the socket
+    bytesTransferred += data.length();
+    currentItemBytesTransferred += data.length();
+
+    updateProgress();
+
+    // If the item completed, send the next one
+    if (currentItemBytesTransferred >= currentItemBytesTotal) {
+        sendNext();
+    }
+}
+
+void TransferPrivate::sendNext()
+{
+    // Close the current item and increment the index
+    currentItem->close();
+    ++itemIndex;
+
+    // If all items have been sent, move to the finished state and wait for
+    // the success packet; otherwise, prepare to send the next item
+    if (itemIndex == itemCount) {
+        protocolState = Finished;
+    } else {
+        protocolState = ItemHeader;
+    }
+}
+
+void TransferPrivate::processTransferHeader(Packet *packet)
+{
+    QJsonObject object = QJsonDocument::fromJson(packet->content()).object();
+
+    // If the device name was provided, use it
     deviceName = object.value("name").toString();
     if (!deviceName.isEmpty()) {
         emit q->deviceNameChanged(deviceName);
     }
 
+    // Strings must be used for 64-bit numbers
     itemCount = object.value("count").toString().toInt();
     bytesTotal = object.value("size").toString().toLongLong();
 
@@ -84,12 +171,13 @@ void TransferPrivate::processTransferHeader(const QJsonObject &object)
     protocolState = ItemHeader;
 }
 
-void TransferPrivate::processItemHeader(const QJsonObject &object)
+void TransferPrivate::processItemHeader(Packet *packet)
 {
+    QJsonObject object = QJsonDocument::fromJson(packet->content()).object();
+
     // In order to maintain compatibility with legacy versions (which is very
     // desirable), if "type" is not in the object, assume "file" unless
     // "directory" is present (in which case, use that)
-
     QString type;
     if (object.contains("type")) {
         type = object.value("type").toString();
@@ -104,7 +192,7 @@ void TransferPrivate::processItemHeader(const QJsonObject &object)
     // Attempt to locate a handler for the type
     Handler *handler = handlerRegistry->handlerForType(type);
     if (!handler) {
-        setError(tr("unrecognized item type \"%1\"").arg(type));
+        setError(tr("unrecognized item type \"%1\"").arg(type), true);
         return;
     }
 
@@ -112,46 +200,50 @@ void TransferPrivate::processItemHeader(const QJsonObject &object)
     currentItem = handler->createItem(type, object.toVariantMap());
     currentItem->setParent(this);
     if (!currentItem->open(Item::Write)) {
-        setError(tr("unable to open \"%1\" for writing").arg(currentItem->name()));
+        setError(tr("unable to open \"%1\" for writing").arg(currentItem->name()), true);
         return;
     }
 
-    // Record the size of the item
+    // Reset transfer stats
     currentItemBytesTransferred = 0;
     currentItemBytesTotal = currentItem->size();
 
-    // Prepare to receive item contents (if size > 0)
+    // If the item has a size, switch states; otherwise receive the next item
     if (currentItemBytesTotal) {
         protocolState = ItemContent;
+    } else {
+        processNext();
     }
 }
 
-void TransferPrivate::processItemContent(const QByteArray &content)
+void TransferPrivate::processItemContent(Packet *packet)
 {
-    currentItem->write(content);
+    currentItem->write(packet->content());
 
     // Add the number of bytes to the global & current item totals
-    bytesTransferred += content.size();
-    currentItemBytesTransferred -= content.size();
+    bytesTransferred += packet->content().size();
+    currentItemBytesTransferred += packet->content().size();
 
     updateProgress();
 
     // If the current item is complete, advance to the next item or finish
     if (currentItemBytesTransferred >= currentItemBytesTotal) {
+        processNext();
+    }
+}
 
-        // Free the current item
-        currentItem->close();
-        delete currentItem;
+void TransferPrivate::processNext()
+{
+    // Close & free the current item and increment the index
+    currentItem->close();
+    delete currentItem;
+    ++itemIndex;
 
-        // Increment the index of the next item to transfer
-        ++itemIndex;
-
-        // If there are no more items, send the success packet
-        if (itemIndex == itemCount) {
-            setSuccess(true);
-        } else {
-            protocolState = ItemHeader;
-        }
+    // If there are no more items, send the success packet
+    if (itemIndex == itemCount) {
+        setSuccess(true);
+    } else {
+        protocolState = ItemHeader;
     }
 }
 
@@ -190,6 +282,7 @@ void TransferPrivate::setError(const QString &message, bool send)
     emit q->errorChanged(error = message);
     emit q->stateChanged(state = Transfer::Failed);
 
+    // An error on either end necessitates the transport be closed
     transport->close();
 }
 
@@ -215,13 +308,13 @@ void TransferPrivate::onPacketReceived(Packet *packet)
         // Dispatch the packet to the appropriate method based on state
         switch (protocolState) {
         case TransferHeader:
-            processTransferHeader(QJsonDocument::fromJson(packet->content()).object());
+            processTransferHeader(packet);
             return;
         case ItemHeader:
-            processItemHeader(QJsonDocument::fromJson(packet->content()).object());
+            processItemHeader(packet);
             return;
         case ItemContent:
-            processItemContent(packet->content());
+            processItemContent(packet);
             return;
         }
     }
@@ -232,12 +325,19 @@ void TransferPrivate::onPacketReceived(Packet *packet)
 
 void TransferPrivate::onPacketSent()
 {
-    //...
+    switch (protocolState) {
+    case TransferHeader:
+        sendTransferHeader();
+    case ItemHeader:
+        sendItemHeader();
+    case ItemContent:
+        sendItemContent();
+    }
 }
 
 void TransferPrivate::onError(const QString &message)
 {
-    setError(message);
+    setError(message, true);
 }
 
 Transfer::Transfer(HandlerRegistry *handlerRegistry, Transport *transport, QObject *parent)
@@ -279,5 +379,5 @@ QString Transfer::error() const
 
 void Transfer::cancel()
 {
-    d->setError(tr("transfer cancelled"));
+    d->setError(tr("transfer cancelled"), true);
 }
