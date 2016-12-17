@@ -22,22 +22,47 @@
  * IN THE SOFTWARE.
  */
 
+#include <QDir>
+#include <QFileInfo>
+
 #include <nitroshare/application.h>
 #include <nitroshare/bundle.h>
+#include <nitroshare/devicemodel.h>
+#include <nitroshare/handler.h>
+#include <nitroshare/handlerregistry.h>
 
+#include "file.h"
 #include "sendaction.h"
 
 SendAction::SendAction(Application *application)
     : mApplication(application)
 {
-    setProperty(NameKey, "send");
+}
+
+QString SendAction::name() const
+{
+    return "send";
 }
 
 bool SendAction::invoke(const QVariantMap &params)
 {
-    Bundle *bundle = new Bundle();
+    // Attempt to retrieve the device identified by the given name
+    QString deviceName = params.value("device").toString();
 
-    //...
+    // TODO
+
+    // Retrieve the root and list of items to add
+    QDir root(params.value("root").toString());
+    QStringList items = params.value("items").toStringList();
+
+    // TODO: symlinks not handled correctly below
+
+    // Create a bundle with the items added
+    Bundle *bundle = new Bundle();
+    foreach (QString item, items) {
+        QFileInfo info(root.absoluteFilePath(item));
+        bundle->addItem(new File(root, info, 0));
+    }
 
     return true;
 }

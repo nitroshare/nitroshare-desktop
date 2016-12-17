@@ -32,10 +32,11 @@ class Application;
 /**
  * @brief Send a bundle to the specified device with the specified files and directories
  *
- * The action expects two parameters:
+ * The action expects three parameters:
  *
- * - "device" - UUID of the device to send the bundle to
- * - "items" - string list of file and directories to send
+ * - "device" (QString) - name of the device to send the bundle to
+ * - "root" (QString) - directory to which all item paths will be relative
+ * - "items" (QStringList) - list of items
  */
 class SendAction : public Action
 {
@@ -44,6 +45,8 @@ class SendAction : public Action
 public:
 
     SendAction(Application *application);
+
+    virtual QString name() const;
 
 public Q_SLOTS:
 

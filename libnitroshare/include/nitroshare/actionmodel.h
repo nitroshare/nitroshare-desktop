@@ -45,13 +45,6 @@ class NITROSHARE_EXPORT ActionModel : public QAbstractListModel
 
 public:
 
-    enum Role {
-        NameRole = Qt::UserRole,
-        TextRole,
-        DisabledRole,
-        ShowInUiRole
-    };
-
     /**
      * @brief Create a new model for Action instances
      * @param parent QObject

@@ -25,9 +25,8 @@
 #ifndef LIBNITROSHARE_ACTION_H
 #define LIBNITROSHARE_ACTION_H
 
+#include <QObject>
 #include <QVariantMap>
-
-#include <nitroshare/object.h>
 
 #include "config.h"
 
@@ -38,23 +37,67 @@
  * must derive from this class. The invoke() slot is used to invoke the
  * action.
  */
-class NITROSHARE_EXPORT Action : public Object
+class NITROSHARE_EXPORT Action : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(QString name READ name)
+    Q_PROPERTY(QString text READ text NOTIFY textChanged)
+    Q_PROPERTY(bool disabled READ disabled NOTIFY disabledChanged)
+    Q_PROPERTY(bool showInUi READ showInUi NOTIFY showInUiChanged)
 
 public:
 
-    /// Unique identifier for the action
-    static const char *NameKey;
+    /**
+     * @brief Retrieve the internal identifier for the action
+     * @return action identifier
+     */
+    virtual QString name() const = 0;
 
-    /// Human friendly description of the action
-    static const char *TextKey;
+    /**
+     * @brief Retrieve a descriptive label for the action
+     * @return descriptive label
+     *
+     * The return value of this method is used in the UI when showing the
+     * action in menus, etc. In order to show up in the UI, showInUi() must
+     * return true.
+     */
+    virtual QString text() const;
 
-    /// Show the item as disabled in the UI
-    static const char *DisabledKey;
+    /**
+     * @brief Determine if the action is disabled
+     * @return true if disabled
+     *
+     * Actions are enabled by default.
+     */
+    virtual bool disabled() const;
 
-    /// Show the item in UI elements
-    static const char *ShowInUiKey;
+    /**
+     * @brief Determine if the actions should be shown in the UI
+     * @return true to show in the UI
+     *
+     * Actions are not shown in the UI by default.
+     */
+    virtual bool showInUi() const;
+
+Q_SIGNALS:
+
+    /**
+     * @brief Indicate that the descriptive label for the action has changed
+     * @param text new label
+     */
+    void textChanged(const QString &text);
+
+    /**
+     * @brief Indicate that the action's state has changed
+     * @param disabled true if the action is now disabled
+     */
+    void disabledChanged(bool disabled);
+
+    /**
+     * @brief Indicate that the action's visibility in the UI has changed
+     * @param showInUi true to now show the action in the UI
+     */
+    void showInUiChanged(bool showInUi);
 
 public Q_SLOTS:
 

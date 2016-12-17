@@ -24,7 +24,17 @@
 
 #include <nitroshare/action.h>
 
-const char *Action::NameKey = "name";
-const char *Action::TextKey = "text";
-const char *Action::DisabledKey = "disabled";
-const char *Action::ShowInUiKey = "show_in_ui";
+QString Action::text() const
+{
+    return QString();
+}
+
+bool Action::disabled() const
+{
+    return true;
+}
+
+bool Action::showInUi() const
+{
+    return false;
+}

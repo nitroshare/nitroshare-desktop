@@ -48,7 +48,9 @@ ActionModel::ActionModel(QObject *parent)
 
 void ActionModel::addAction(Action *action)
 {
-    connect(action, &Action::propertyChanged, d, &ActionModelPrivate::emitDataChanged);
+    connect(action, &Action::textChanged, d, &ActionModelPrivate::emitDataChanged);
+    connect(action, &Action::disabledChanged, d, &ActionModelPrivate::emitDataChanged);
+    connect(action, &Action::showInUiChanged, d, &ActionModelPrivate::emitDataChanged);
 
     beginInsertRows(QModelIndex(), d->actions.count(), d->actions.count());
     d->actions.append(action);
@@ -59,7 +61,9 @@ void ActionModel::removeAction(Action *action)
 {
     int row = d->actions.indexOf(action);
     if (row != -1) {
-        disconnect(action, &Action::propertyChanged, d, &ActionModelPrivate::emitDataChanged);
+        disconnect(action, &Action::textChanged, d, &ActionModelPrivate::emitDataChanged);
+        disconnect(action, &Action::disabledChanged, d, &ActionModelPrivate::emitDataChanged);
+        disconnect(action, &Action::showInUiChanged, d, &ActionModelPrivate::emitDataChanged);
 
         beginRemoveRows(QModelIndex(), row, row);
         d->actions.removeAt(row);
@@ -75,21 +79,8 @@ int ActionModel::rowCount(const QModelIndex &parent) const
 QVariant ActionModel::data(const QModelIndex &index, int role) const
 {
     // Ensure the index points to a valid row
-    if (!index.isValid() || index.row() < 0 || index.row() >= d->actions.count()) {
-        return QVariant();
-    }
-
-    Action *action = d->actions.at(index.row());
-
-    switch (role) {
-    case NameRole:
-        return action->property(Action::NameKey);
-    case TextRole:
-        return action->property(Action::TextKey);
-    case DisabledRole:
-        return action->property(Action::DisabledKey);
-    case ShowInUiRole:
-        return action->property(Action::ShowInUiKey);
+    if (index.isValid() && index.row() >= 0 && index.row() < d->actions.count() && role == Qt::UserRole) {
+        return QVariant::fromValue(d->actions.at(index.row()));
     }
 
     return QVariant();
@@ -97,10 +88,5 @@ QVariant ActionModel::data(const QModelIndex &index, int role) const
 
 QHash<int, QByteArray> ActionModel::roleNames() const
 {
-    return {
-        { NameRole, "name" },
-        { TextRole, "text" },
-        { DisabledRole, "disabled" },
-        { ShowInUiRole, "show_in_ui" }
-    };
+    return { { Qt::UserRole, "action" } };
 }

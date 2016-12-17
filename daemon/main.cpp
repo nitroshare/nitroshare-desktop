@@ -47,7 +47,12 @@ int main(int argc, char **argv)
     parser.addHelpOption();
     parser.addVersionOption();
 
-    QCommandLineOption pluginDirOption("plugin-dir", "Directory to load plugins from", "directory", QDir::currentPath());
+    QCommandLineOption pluginDirOption(
+        "plugin-dir",
+        "Directory to load plugins from",
+        "directory",
+        QDir::currentPath() + QDir::separator() + "plugins"
+    );
     parser.addOption(pluginDirOption);
 
     // Parse the command line
