@@ -23,3 +23,42 @@
  */
 
 #include "lantransport.h"
+
+LanTransport::LanTransport(QSslConfiguration *configuration, const QHostAddress &address, quint16 port)
+    : LanTransport(configuration)
+{
+    //...
+}
+
+LanTransport::LanTransport(QSslConfiguration *configuration, qintptr socketDescriptor)
+    : LanTransport(configuration)
+{
+    //...
+}
+
+void LanTransport::start()
+{
+    //...
+}
+
+void LanTransport::write(const QByteArray &data)
+{
+    //...
+}
+
+void LanTransport::abort()
+{
+    //...
+}
+
+LanTransport::LanTransport(QSslConfiguration *configuration)
+    : mSocket(nullptr),
+      mSslSocket(nullptr)
+{
+    if (configuration) {
+        mSocket = mSslSocket = new QSslSocket(this);
+        // mSslSocket->setSslConfiguration(configuration);
+    } else {
+        mSocket = new QTcpSocket(this);
+    }
+}

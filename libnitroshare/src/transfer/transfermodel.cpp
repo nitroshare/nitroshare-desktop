@@ -28,13 +28,27 @@
 
 #include "transfermodel_p.h"
 
-TransferModelPrivate::TransferModelPrivate(QObject *parent)
-    : QObject(parent)
+TransferModelPrivate::TransferModelPrivate(TransferModel *model)
+    : QObject(model),
+      q(model)
 {
+}
+
+TransferModelPrivate::~TransferModelPrivate()
+{
+    // TODO: stop transfers gracefully (?)
+    qDeleteAll(transfers);
+}
+
+void TransferModelPrivate::addTransfer(Transfer *transfer)
+{
+    // TODO: monitor transfer for changes & update models
+    // TODO: insert row (transfer) into model
 }
 
 void TransferModelPrivate::processTransport(Transport *transport)
 {
+    //...
 }
 
 TransferModel::TransferModel(QObject *parent)

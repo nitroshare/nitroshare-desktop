@@ -22,4 +22,16 @@
  * IN THE SOFTWARE.
  */
 
+#include <nitroshare/application.h>
+
 #include "lanplugin.h"
+
+void LanPlugin::init(Application *application)
+{
+    //...
+}
+
+void LanPlugin::cleanup(Application *application)
+{
+    //...
+}

@@ -25,6 +25,46 @@
 #ifndef LANTRANSPORT_H
 #define LANTRANSPORT_H
 
-//...
+#include <QHostAddress>
+#include <QSslConfiguration>
+#include <QSslSocket>
+#include <QTcpSocket>
+
+#include <nitroshare/transport.h>
+
+class Application;
+
+/**
+ * @brief Local network transport
+ *
+ * This class facilitates transfers between devices on a local network. This
+ * consists of simple TCP connections with optional TLS encryption (and
+ * verification).
+ */
+class LanTransport : public Transport
+{
+    Q_OBJECT
+
+public:
+
+    LanTransport(QSslConfiguration *configuration, const QHostAddress &address, quint16 port);
+    LanTransport(QSslConfiguration *configuration, qintptr socketDescriptor);
+
+    virtual void start();
+    virtual void write(const QByteArray &data);
+    virtual void abort();
+
+private slots:
+
+    void onEncrypted();
+    void onReadyRead();
+
+private:
+
+    LanTransport(QSslConfiguration *configuration);
+
+    QTcpSocket *mSocket;
+    QSslSocket *mSslSocket;
+};
 
 #endif // LANTRANSPORT_H

@@ -27,6 +27,11 @@
 
 #include <nitroshare/plugin.h>
 
+#include "lantransportserver.h"
+
+/**
+ * @brief Provide a transport for transfers over a local network
+ */
 class Q_DECL_EXPORT LanPlugin : public Plugin
 {
     Q_OBJECT
@@ -36,6 +41,10 @@ public:
 
     virtual void init(Application *application);
     virtual void cleanup(Application *application);
+
+private:
+
+    //...
 };
 
 #endif // LANPLUGIN_H

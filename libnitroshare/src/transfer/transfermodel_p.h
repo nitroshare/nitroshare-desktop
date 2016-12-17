@@ -28,6 +28,8 @@
 #include <QList>
 #include <QObject>
 
+class Transfer;
+class TransferModel;
 class Transport;
 
 class TransferModelPrivate : public QObject
@@ -36,7 +38,12 @@ class TransferModelPrivate : public QObject
 
 public:
 
-    explicit TransferModelPrivate(QObject *parent);
+    explicit TransferModelPrivate(TransferModel *model);
+    virtual ~TransferModelPrivate();
+
+    void addTransfer(Transfer *transfer);
+
+    TransferModel *const q;
 
     QList<Transfer*> transfers;
 

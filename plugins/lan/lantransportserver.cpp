@@ -23,3 +23,22 @@
  */
 
 #include "lantransportserver.h"
+
+
+////////////
+#include <QString>
+#include <QVariant>
+////////////
+
+
+const QString LoggerTag = "lan";
+
+const QString TlsEnabled = "TlsEnabled";
+const QString TlsCA = "TlsCA";
+const QString TlsCertificate = "TlsCertificate";
+const QString TlsPrivateKey = "TlsPrivateKey";
+
+QVariant TlsEnabledDefault() { return false; }
+QVariant TlsCADefault() { return ""; }
+QVariant TlsCertificateDefault() { return ""; }
+QVariant TlsPrivateKeyDefault() { return ""; }
