@@ -28,8 +28,6 @@
 #include <QList>
 #include <QObject>
 
-#include "transfer.h"
-
 class Transport;
 
 class TransferModelPrivate : public QObject
