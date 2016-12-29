@@ -14,6 +14,11 @@ set(VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH})
 # At the very minimum, Qt 5.4+ is required to compile the application
 find_package(Qt5Network 5.4 REQUIRED)
 
+# Allow file output and installation directories to be customized
+set(INSTALL_BIN_PATH bin CACHE STRING "Binary installation directory")
+set(INSTALL_LIB_PATH lib CACHE STRING "Shared library installation directory")
+set(INSTALL_PLUGIN_PATH "${INSTALL_LIB_PATH}/plugins" CACHE STRING "Plugin installation directory")
+
 # Test suite is always disabled by default
 option(BUILD_TESTS "Build test suite" OFF)
 if(BUILD_TESTS)
@@ -42,5 +47,5 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 add_subdirectory(libnitroshare)
-add_subdirectory(daemon)
 add_subdirectory(plugins)
+add_subdirectory(daemon)

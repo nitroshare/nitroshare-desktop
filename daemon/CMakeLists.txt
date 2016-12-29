@@ -12,5 +12,5 @@ set_target_properties(nitroshare-daemon PROPERTIES
 target_link_libraries(nitroshare-daemon nitroshare Qt5::Core)
 
 install(TARGETS nitroshare-daemon
-    DESTINATION bin
+    RUNTIME DESTINATION "${INSTALL_BIN_PATH}"
 )

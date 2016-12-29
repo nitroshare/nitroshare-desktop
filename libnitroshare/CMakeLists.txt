@@ -43,8 +43,8 @@ target_link_libraries(nitroshare Qt5::Network)
 
 install(TARGETS nitroshare
     EXPORT nitroshare-export
-    RUNTIME       DESTINATION bin
-    LIBRARY       DESTINATION lib
+    RUNTIME       DESTINATION "${INSTALL_BIN_PATH}"
+    LIBRARY       DESTINATION "${INSTALL_LIB_PATH}"
     PUBLIC_HEADER DESTINATION include/nitroshare
 )
 
