@@ -43,7 +43,7 @@ class File : public Item
     Q_PROPERTY(bool executable READ executable)
     Q_PROPERTY(QDateTime created READ created)
     Q_PROPERTY(QDateTime lastRead READ lastRead)
-    Q_PROPERTY(QDateTime lastModified)
+    Q_PROPERTY(QDateTime lastModified READ lastModified)
 
 public:
 
