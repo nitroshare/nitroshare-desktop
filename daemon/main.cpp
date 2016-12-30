@@ -25,10 +25,11 @@
 #include <QCommandLineOption>
 #include <QCommandLineParser>
 #include <QCoreApplication>
-#include <QDir>
 
 #include <nitroshare/application.h>
 #include <nitroshare/pluginmodel.h>
+
+#include "config.h"
 
 int main(int argc, char **argv)
 {
@@ -51,7 +52,7 @@ int main(int argc, char **argv)
         "plugin-dir",
         "Directory to load plugins from",
         "directory",
-        QDir::currentPath() + QDir::separator() + "plugins"
+        PLUGIN_PATH
     );
     parser.addOption(pluginDirOption);
 
