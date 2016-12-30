@@ -28,7 +28,7 @@
 #include <QObject>
 #include <QVariantMap>
 
-#include "config.h"
+#include <nitroshare/config.h>
 
 /**
  * @brief Procedure that can be invoked upon request

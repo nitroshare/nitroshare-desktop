@@ -27,7 +27,7 @@
 
 #include <QObject>
 
-#include "config.h"
+#include <nitroshare/config.h>
 
 /**
  * @brief Object that provides notifications when properties change

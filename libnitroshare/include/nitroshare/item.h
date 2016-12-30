@@ -27,7 +27,7 @@
 
 #include <QObject>
 
-#include "config.h"
+#include <nitroshare/config.h>
 
 /**
  * @brief Individual item for transfer

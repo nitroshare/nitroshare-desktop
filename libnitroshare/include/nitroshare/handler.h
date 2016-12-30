@@ -28,7 +28,7 @@
 #include <QString>
 #include <QVariantMap>
 
-#include "config.h"
+#include <nitroshare/config.h>
 
 class Item;
 

@@ -27,7 +27,7 @@
 
 #include <QObject>
 
-#include "config.h"
+#include <nitroshare/config.h>
 
 class Bundle;
 class HandlerRegistry;

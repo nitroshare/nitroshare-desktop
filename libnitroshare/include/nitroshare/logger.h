@@ -27,7 +27,7 @@
 
 #include <QObject>
 
-#include "config.h"
+#include <nitroshare/config.h>
 
 /**
  * @brief Manage status and error message from the application and its plugins

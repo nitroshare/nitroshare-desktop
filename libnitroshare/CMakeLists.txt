@@ -1,7 +1,7 @@
-configure_file(config.h.in "${CMAKE_CURRENT_BINARY_DIR}/config.h")
+configure_file(config.h.in "${CMAKE_CURRENT_BINARY_DIR}/nitroshare/config.h")
 
 file(GLOB HEADERS include/nitroshare/*.h)
-set(HEADERS "${HEADERS}" "${CMAKE_CURRENT_BINARY_DIR}/config.h")
+set(HEADERS "${HEADERS}" "${CMAKE_CURRENT_BINARY_DIR}/nitroshare/config.h")
 
 set(SRC
     src/action/action.cpp

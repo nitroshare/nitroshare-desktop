@@ -27,7 +27,7 @@
 
 #include <QObject>
 
-#include "config.h"
+#include <nitroshare/config.h>
 
 #define Plugin_iid "net.nitroshare.NitroShare.Plugin"
 
