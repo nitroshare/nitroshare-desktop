@@ -118,6 +118,13 @@ public:
      */
     TransferModel *transferModel() const;
 
+public Q_SLOTS:
+
+    /**
+     * @brief Shutdown the application
+     */
+    void quit();
+
 private:
 
     ApplicationPrivate *const d;

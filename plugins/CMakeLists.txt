@@ -3,6 +3,10 @@ add_subdirectory(filesystem)
 add_subdirectory(lan)
 add_subdirectory(mdns)
 
+if(Qt5Widgets_FOUND)
+    add_subdirectory(tray)
+endif()
+
 if(BUILD_API)
     add_subdirectory(api)
 endif()

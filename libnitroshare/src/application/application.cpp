@@ -22,6 +22,7 @@
  * IN THE SOFTWARE.
  */
 
+#include <QCoreApplication>
 #include <QHostInfo>
 #include <QUuid>
 
@@ -99,4 +100,9 @@ Settings *Application::settings() const
 TransferModel *Application::transferModel() const
 {
     return &d->transferModel;
+}
+
+void Application::quit()
+{
+    QCoreApplication::quit();
 }

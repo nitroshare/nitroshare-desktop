@@ -13,6 +13,7 @@ set(VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH})
 
 # At the very minimum, Qt 5.4+ is required to compile the application
 find_package(Qt5Network 5.4 REQUIRED)
+find_package(Qt5Widgets 5.4)
 
 # Allow file installation directories to be customized
 set(INSTALL_BIN_PATH bin CACHE STRING "Application installation directory")
