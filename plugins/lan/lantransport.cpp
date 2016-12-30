@@ -51,6 +51,16 @@ void LanTransport::abort()
     //...
 }
 
+void LanTransport::onEncrypted()
+{
+    //...
+}
+
+void LanTransport::onReadyRead()
+{
+    //...
+}
+
 LanTransport::LanTransport(QSslConfiguration *configuration)
     : mSocket(nullptr),
       mSslSocket(nullptr)

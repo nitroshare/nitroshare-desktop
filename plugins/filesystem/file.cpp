@@ -111,6 +111,8 @@ QByteArray File::read()
     if (bytesRead == -1) {
         emit error(mFile.errorString());
     }
+
+    return data;
 }
 
 void File::write(const QByteArray &data)

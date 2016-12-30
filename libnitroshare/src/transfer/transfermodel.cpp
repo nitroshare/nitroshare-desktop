@@ -22,6 +22,7 @@
  * IN THE SOFTWARE.
  */
 
+#include <nitroshare/transfer.h>
 #include <nitroshare/transfermodel.h>
 #include <nitroshare/transport.h>
 #include <nitroshare/transportserver.h>

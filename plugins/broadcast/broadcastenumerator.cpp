@@ -117,7 +117,7 @@ void BroadcastEnumerator::onReadyRead()
 
         // Extract the data from the packet
         QVariantMap properties = QJsonDocument::fromJson(data).object().toVariantMap();
-        properties.insert("addresses", QStringList({ address.toString() }));
+        properties.insert("addresses", QStringList{ address.toString() });
 
         // Emit an update for the device
         QString uuid = properties.take("uuid").toString();
