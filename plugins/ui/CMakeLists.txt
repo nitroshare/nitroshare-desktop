@@ -1,3 +1,5 @@
+configure_file(uiplugin.json.in "${CMAKE_CURRENT_BINARY_DIR}/uiplugin.json")
+
 set(SRC
     uiplugin.h
     uiplugin.cpp

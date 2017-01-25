@@ -1,0 +1,8 @@
+{
+    "Name": "ui",
+    "Title": "UI",
+    "Vendor": "Nathan Osman",
+    "Version": "${VERSION}",
+    "Description": "Allow graphical plugins to function",
+    "Dependencies": []
+}
