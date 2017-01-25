@@ -14,7 +14,7 @@ set(SRC
     src/discovery/devicemodel.cpp
     src/handler/handlerregistry.cpp
     src/plugin/plugin.cpp
-    src/plugin/pluginmodel.cpp
+    src/plugin/pluginregistry.cpp
     src/transfer/packet.cpp
     src/transfer/transfer.cpp
     src/transfer/transfermodel.cpp

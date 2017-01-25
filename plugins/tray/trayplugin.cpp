@@ -26,7 +26,7 @@
 
 #include "trayplugin.h"
 
-void TrayPlugin::init(Application *application)
+void TrayPlugin::initialize(Application *application)
 {
     mIcon = new QSystemTrayIcon;
     mMenu = new QMenu;

@@ -26,7 +26,7 @@
 
 #include "lanplugin.h"
 
-void LanPlugin::init(Application *application)
+void LanPlugin::initialize(Application *application)
 {
     //...
 }

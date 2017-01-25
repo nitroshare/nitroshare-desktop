@@ -22,26 +22,27 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef LIBNITROSHARE_PLUGINMODEL_P_H
-#define LIBNITROSHARE_PLUGINMODEL_P_H
+#ifndef LIBNITROSHARE_PLUGIN_P_H
+#define LIBNITROSHARE_PLUGIN_P_H
 
-#include <QList>
 #include <QObject>
 #include <QPluginLoader>
 
-#include <nitroshare/application.h>
+class Application;
+class IPlugin;
 
-class PluginModelPrivate : public QObject
+class PluginPrivate : public QObject
 {
     Q_OBJECT
 
 public:
 
-    PluginModelPrivate(QObject *parent, Application *application);
-    virtual ~PluginModelPrivate();
+    PluginPrivate(QObject *parent, Application *application, const QString &filename);
+    virtual ~PluginPrivate();
 
     Application *application;
-    QList<QPluginLoader*> plugins;
+    QPluginLoader loader;
+    IPlugin *iplugin;
 };
 
-#endif // LIBNITROSHARE_PLUGINMODEL_P_H
+#endif // LIBNITROSHARE_PLUGIN_P_H

@@ -25,26 +25,28 @@
 #ifndef TRAYPLUGIN_H
 #define TRAYPLUGIN_H
 
+#include <QApplication>
 #include <QMenu>
 #include <QSystemTrayIcon>
 
-#include <nitroshare/plugin.h>
+#include <nitroshare/iplugin.h>
 
 /**
  * @brief Provide a system tray icon
  */
-class Q_DECL_EXPORT TrayPlugin : public Plugin
+class Q_DECL_EXPORT TrayPlugin : public IPlugin
 {
     Q_OBJECT
     Q_PLUGIN_METADATA(IID Plugin_iid)
 
 public:
 
-    virtual void init(Application *application);
+    virtual void initialize(Application *application);
     virtual void cleanup(Application *application);
 
 private:
 
+    QApplication *mApplication;
     QSystemTrayIcon *mIcon;
     QMenu *mMenu;
 };

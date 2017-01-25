@@ -25,21 +25,21 @@
 #ifndef LANPLUGIN_H
 #define LANPLUGIN_H
 
-#include <nitroshare/plugin.h>
+#include <nitroshare/iplugin.h>
 
 #include "lantransportserver.h"
 
 /**
  * @brief Provide a transport for transfers over a local network
  */
-class Q_DECL_EXPORT LanPlugin : public Plugin
+class Q_DECL_EXPORT LanPlugin : public IPlugin
 {
     Q_OBJECT
     Q_PLUGIN_METADATA(IID Plugin_iid)
 
 public:
 
-    virtual void init(Application *application);
+    virtual void initialize(Application *application);
     virtual void cleanup(Application *application);
 
 private:

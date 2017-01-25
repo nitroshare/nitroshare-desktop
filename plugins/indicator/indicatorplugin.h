@@ -25,16 +25,16 @@
 #ifndef INDICATORPLUGIN_H
 #define INDICATORPLUGIN_H
 
-#include <nitroshare/plugin.h>
+#include <nitroshare/iplugin.h>
 
-class Q_DECL_EXPORT IndicatorPlugin : public Plugin
+class Q_DECL_EXPORT IndicatorPlugin : public IPlugin
 {
     Q_OBJECT
     Q_PLUGIN_METADATA(IID Plugin_iid)
 
 public:
 
-    virtual void init(Application *application);
+    virtual void initialize(Application *application);
     virtual void cleanup(Application *application);
 };
 

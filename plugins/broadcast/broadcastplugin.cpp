@@ -27,7 +27,7 @@
 
 #include "broadcastplugin.h"
 
-void BroadcastPlugin::init(Application *application)
+void BroadcastPlugin::initialize(Application *application)
 {
     mEnumerator = new BroadcastEnumerator(application);
     application->deviceModel()->addEnumerator(mEnumerator);

@@ -25,18 +25,18 @@
 #ifndef APIPLUGIN_H
 #define APIPLUGIN_H
 
-#include <nitroshare/plugin.h>
+#include <nitroshare/iplugin.h>
 
 #include "apiserver.h"
 
-class Q_DECL_EXPORT ApiPlugin : public Plugin
+class Q_DECL_EXPORT ApiPlugin : public IPlugin
 {
     Q_OBJECT
     Q_PLUGIN_METADATA(IID Plugin_iid)
 
 public:
 
-    virtual void init(Application *application);
+    virtual void initialize(Application *application);
     virtual void cleanup(Application *application);
 
 private:

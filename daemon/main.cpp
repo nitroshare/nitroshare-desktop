@@ -27,7 +27,7 @@
 #include <QCoreApplication>
 
 #include <nitroshare/application.h>
-#include <nitroshare/pluginmodel.h>
+#include <nitroshare/pluginregistry.h>
 
 #include "config.h"
 
@@ -71,8 +71,10 @@ int main(int argc, char **argv)
         parser.showVersion();
     }
 
-    application.pluginModel()->addPlugins(parser.value(pluginDirOption));
-    qDebug("%d plugins loaded", application.pluginModel()->rowCount(QModelIndex()));
+    application.pluginRegistry()->loadPluginsFromDirectories(
+        QStringList{parser.value(pluginDirOption)}
+    );
+    qDebug("%d plugins loaded", application.pluginRegistry()->plugins().length());
 
     return app.exec();
 }

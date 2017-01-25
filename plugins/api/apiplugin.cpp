@@ -24,7 +24,7 @@
 
 #include "apiplugin.h"
 
-void ApiPlugin::init(Application *application)
+void ApiPlugin::initialize(Application *application)
 {
     mServer = new ApiServer(application);
 }

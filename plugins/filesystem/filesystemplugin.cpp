@@ -29,7 +29,7 @@
 #include "file.h"
 #include "filesystemplugin.h"
 
-void FilesystemPlugin::init(Application *application)
+void FilesystemPlugin::initialize(Application *application)
 {
     mSendAction = new SendAction(application);
 

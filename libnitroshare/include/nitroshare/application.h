@@ -33,7 +33,7 @@ class ActionModel;
 class DeviceModel;
 class HandlerRegistry;
 class Logger;
-class PluginModel;
+class PluginRegistry;
 class Settings;
 class TransferModel;
 
@@ -101,10 +101,10 @@ public:
     Logger *logger() const;
 
     /**
-     * @brief Retrieve the global PluginModel instance
-     * @return pointer to PluginModel
+     * @brief Retrieve the global PluginRegistry instance
+     * @return pointer to PluginRegistry
      */
-    PluginModel *pluginModel() const;
+    PluginRegistry *pluginRegistry() const;
 
     /**
      * @brief Retrieve the global settings instance

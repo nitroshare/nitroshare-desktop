@@ -25,19 +25,19 @@
 #ifndef FILESYSTEMPLUGIN_H
 #define FILESYSTEMPLUGIN_H
 
-#include <nitroshare/plugin.h>
+#include <nitroshare/iplugin.h>
 
 #include "filehandler.h"
 #include "sendaction.h"
 
-class Q_DECL_EXPORT FilesystemPlugin : public Plugin
+class Q_DECL_EXPORT FilesystemPlugin : public IPlugin
 {
     Q_OBJECT
     Q_PLUGIN_METADATA(IID Plugin_iid)
 
 public:
 
-    virtual void init(Application *application);
+    virtual void initialize(Application *application);
     virtual void cleanup(Application *application);
 
 private:

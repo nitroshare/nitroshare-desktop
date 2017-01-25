@@ -22,51 +22,31 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef LIBNITROSHARE_PLUGINMODEL_H
-#define LIBNITROSHARE_PLUGINMODEL_H
+#ifndef LIBNITROSHARE_PLUGINREGISTRY_P_H
+#define LIBNITROSHARE_PLUGINREGISTRY_P_H
 
-#include <QAbstractListModel>
-
-#include <nitroshare/config.h>
+#include <QList>
+#include <QObject>
 
 class Application;
+class Plugin;
+class PluginRegistry;
 
-class NITROSHARE_EXPORT PluginModelPrivate;
-
-/**
- * @brief Model representing currently loaded plugins
- */
-class NITROSHARE_EXPORT PluginModel : public QAbstractListModel
+class PluginRegistryPrivate : public QObject
 {
     Q_OBJECT
 
 public:
 
-    enum Role {
-        FilenameRole = Qt::UserRole
-    };
+    PluginRegistryPrivate(PluginRegistry *parent, Application *application);
+    virtual ~PluginRegistryPrivate();
 
-    /**
-     * @brief Create a new plugin manager
-     * @param application pointer to application
-     * @param parent QObject
-     */
-    PluginModel(Application *application, QObject *parent = nullptr);
+    void unloadPlugin(int index);
 
-    /**
-     * @brief Add the plugins in the specified directory
-     * @param directory absolute path
-     */
-    void addPlugins(const QString &directory);
+    PluginRegistry *const q;
 
-    // Reimplemented virtual methods
-    virtual int rowCount(const QModelIndex &parent) const;
-    virtual QVariant data(const QModelIndex &index, int role) const;
-    virtual QHash<int, QByteArray> roleNames() const;
-
-private:
-
-    PluginModelPrivate *const d;
+    Application *application;
+    QList<Plugin*> plugins;
 };
 
-#endif // LIBNITROSHARE_PLUGINMODEL_H
+#endif // LIBNITROSHARE_PLUGINREGISTRY_P_H

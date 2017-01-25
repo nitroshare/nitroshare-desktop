@@ -32,7 +32,7 @@
 #include <nitroshare/devicemodel.h>
 #include <nitroshare/handlerregistry.h>
 #include <nitroshare/logger.h>
-#include <nitroshare/pluginmodel.h>
+#include <nitroshare/pluginregistry.h>
 #include <nitroshare/settings.h>
 #include <nitroshare/transfermodel.h>
 
@@ -52,7 +52,7 @@ public:
     DeviceModel deviceModel;
     HandlerRegistry handlerRegistry;
     Logger logger;
-    PluginModel pluginModel;
+    PluginRegistry pluginRegistry;
     Settings settings;
     TransferModel transferModel;
 };

@@ -29,54 +29,84 @@
 
 #include <nitroshare/config.h>
 
-#define Plugin_iid "net.nitroshare.NitroShare.Plugin"
-
 class Application;
 
+class NITROSHARE_EXPORT PluginPrivate;
+
 /**
- * @brief Base class for plugins that add additional functionality
+ * @brief Plugin providing additional functionality
  *
- * Plugins provide the ability to add features to the application without
- * requiring the application to be rebuilt. Each plugin must provide a class
- * that extends this one.
+ * Plugins enable additional functionality without the need to recompile the
+ * library. They also allow the code to be organized in a more modular fashion.
  *
- * Whenever a plugin is loaded, the init() method is invoked and whenever the
- * plugin is being unloaded, the cleanup() method is invoked. The plugin has
- * access to most of the application functionality through the Application
- * pointer passed to init().
+ * Although this class will return a list of dependencies, it does not take
+ * them into account when loading or unloading the plugin.
  */
 class NITROSHARE_EXPORT Plugin : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(QString name READ name)
+    Q_PROPERTY(QString title READ title)
+    Q_PROPERTY(QString vendor READ vendor)
+    Q_PROPERTY(QString version READ version)
+    Q_PROPERTY(QString description READ description)
+    Q_PROPERTY(QStringList dependencies READ dependencies)
 
 public:
 
     /**
+     * @brief Create a plugin from the specified loader
+     * @param application pointer to Application
+     * @param filename plugin filename
+     * @param parent parent QObject
+     */
+    Plugin(Application *application, const QString &filename, QObject *parent = nullptr);
+
+    /**
+     * @brief Load the plugin from disk
+     * @return true if the plugin was successfully loaded
+     */
+    bool load();
+
+    /**
      * @brief Initialize the plugin
-     * @param application pointer to global application object
+     * @return true if the plugin was successfully initialized
      */
-    virtual void init(Application *application) = 0;
+    bool initialize();
 
     /**
-     * @brief Prepare the plugin for removal
-     * @param application pointer to global application object
-     *
-     * This is an asynchronous request - the plugin need not complete the
-     * cleanup process before returning. However, it should emit the
-     * finishedCleanup() signal when it completes so that the plugin
-     * can be unloaded.
+     * @brief Retrieve the plugin's unique name
      */
-    virtual void cleanup(Application *application) = 0;
-
-Q_SIGNALS:
+    QString name() const;
 
     /**
-     * @brief Indicate that cleanup has finished
-     *
-     * All resources must be freed when this signal is emitted since it
-     * indicates to the plugin system that it is safe to unload the plugin.
+     * @brief Retrieve the plugin's human-friendly title
      */
-    void finishedCleanup();
+    QString title() const;
+
+    /**
+     * @brief Retrieve the plugin's vendor (author or company)
+     */
+    QString vendor() const;
+
+    /**
+     * @brief Retrieve the plugin's version
+     */
+    QString version() const;
+
+    /**
+     * @brief Retrieve the plugin's brief description
+     */
+    QString description() const;
+
+    /**
+     * @brief Retrieve the names of plugins required by this one
+     */
+    QStringList dependencies() const;
+
+private:
+
+    PluginPrivate *const d;
 };
 
 #endif // LIBNITROSHARE_PLUGIN_H

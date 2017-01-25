@@ -24,7 +24,7 @@
 
 #include "indicatorplugin.h"
 
-void IndicatorPlugin::init(Application *application)
+void IndicatorPlugin::initialize(Application *application)
 {
 }
 

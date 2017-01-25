@@ -41,7 +41,7 @@ QVariant DeviceNameDefault() { return QHostInfo::localHostName(); }
 ApplicationPrivate::ApplicationPrivate(Application *application)
     : QObject(application),
       q(application),
-      pluginModel(application),
+      pluginRegistry(application),
       settings(&baseSettings)
 {
 }
@@ -87,9 +87,9 @@ Logger *Application::logger() const
     return &d->logger;
 }
 
-PluginModel *Application::pluginModel() const
+PluginRegistry *Application::pluginRegistry() const
 {
-    return &d->pluginModel;
+    return &d->pluginRegistry;
 }
 
 Settings *Application::settings() const

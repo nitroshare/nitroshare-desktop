@@ -22,4 +22,90 @@
  * IN THE SOFTWARE.
  */
 
+#include <QJsonArray>
+#include <QJsonObject>
+
+#include <nitroshare/iplugin.h>
 #include <nitroshare/plugin.h>
+
+#include "plugin_p.h"
+
+const QString NameKey = "name";
+const QString TitleKey = "title";
+const QString VendorKey = "vendor";
+const QString VersionKey = "version";
+const QString DescriptionKey = "description";
+const QString DependenciesKey = "dependencies";
+
+PluginPrivate::PluginPrivate(QObject *parent, Application *application, const QString &filename)
+    : QObject(parent),
+      application(application),
+      loader(filename),
+      iplugin(nullptr)
+{
+}
+
+PluginPrivate::~PluginPrivate()
+{
+    if (iplugin) {
+        iplugin->cleanup(application);
+    }
+}
+
+Plugin::Plugin(Application *application, const QString &filename, QObject *parent)
+    : QObject(parent),
+      d(new PluginPrivate(this, application, filename))
+{
+}
+
+bool Plugin::load()
+{
+    return d->loader.load();
+}
+
+bool Plugin::initialize()
+{
+    d->iplugin = qobject_cast<IPlugin*>(d->loader.instance());
+    if (d->iplugin) {
+        d->iplugin->initialize(d->application);
+    }
+    return d->iplugin;
+}
+
+// TODO: some of these values could be cached
+// (trading off memory usage for speed)
+
+QString Plugin::name() const
+{
+    return d->loader.metaData().value(NameKey).toString();
+}
+
+QString Plugin::title() const
+{
+    return d->loader.metaData().value(TitleKey).toString();
+}
+
+QString Plugin::vendor() const
+{
+    return d->loader.metaData().value(VendorKey).toString();
+}
+
+QString Plugin::version() const
+{
+    return d->loader.metaData().value(VersionKey).toString();
+}
+
+QString Plugin::description() const
+{
+    return d->loader.metaData().value(DescriptionKey).toString();
+}
+
+QStringList Plugin::dependencies() const
+{
+    QJsonArray array = d->loader.metaData().value(DependenciesKey).toArray();
+    QStringList list;
+    foreach (QJsonValue value, array) {
+        list.append(value.toString());
+    }
+    return list;
+}
