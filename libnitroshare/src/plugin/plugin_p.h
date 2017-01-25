@@ -25,6 +25,7 @@
 #ifndef LIBNITROSHARE_PLUGIN_P_H
 #define LIBNITROSHARE_PLUGIN_P_H
 
+#include <QJsonObject>
 #include <QObject>
 #include <QPluginLoader>
 
@@ -42,6 +43,7 @@ public:
 
     Application *application;
     QPluginLoader loader;
+    QJsonObject metadata;
     IPlugin *iplugin;
 };
 

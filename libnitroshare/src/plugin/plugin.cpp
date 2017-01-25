@@ -30,12 +30,12 @@
 
 #include "plugin_p.h"
 
-const QString NameKey = "name";
-const QString TitleKey = "title";
-const QString VendorKey = "vendor";
-const QString VersionKey = "version";
-const QString DescriptionKey = "description";
-const QString DependenciesKey = "dependencies";
+const QString NameKey = "Name";
+const QString TitleKey = "Title";
+const QString VendorKey = "Vendor";
+const QString VersionKey = "Version";
+const QString DescriptionKey = "Description";
+const QString DependenciesKey = "Dependencies";
 
 PluginPrivate::PluginPrivate(QObject *parent, Application *application, const QString &filename)
     : QObject(parent),
@@ -60,7 +60,10 @@ Plugin::Plugin(Application *application, const QString &filename, QObject *paren
 
 bool Plugin::load()
 {
-    return d->loader.load();
+    if (d->loader.load()) {
+        d->metadata = d->loader.metaData().value("MetaData").toObject();
+    }
+    return d->loader.isLoaded();
 }
 
 bool Plugin::initialize()
@@ -72,37 +75,34 @@ bool Plugin::initialize()
     return d->iplugin;
 }
 
-// TODO: some of these values could be cached
-// (trading off memory usage for speed)
-
 QString Plugin::name() const
 {
-    return d->loader.metaData().value(NameKey).toString();
+    return d->metadata.value(NameKey).toString();
 }
 
 QString Plugin::title() const
 {
-    return d->loader.metaData().value(TitleKey).toString();
+    return d->metadata.value(TitleKey).toString();
 }
 
 QString Plugin::vendor() const
 {
-    return d->loader.metaData().value(VendorKey).toString();
+    return d->metadata.value(VendorKey).toString();
 }
 
 QString Plugin::version() const
 {
-    return d->loader.metaData().value(VersionKey).toString();
+    return d->metadata.value(VersionKey).toString();
 }
 
 QString Plugin::description() const
 {
-    return d->loader.metaData().value(DescriptionKey).toString();
+    return d->metadata.value(DescriptionKey).toString();
 }
 
 QStringList Plugin::dependencies() const
 {
-    QJsonArray array = d->loader.metaData().value(DependenciesKey).toArray();
+    QJsonArray array = d->metadata.value(DependenciesKey).toArray();
     QStringList list;
     foreach (QJsonValue value, array) {
         list.append(value.toString());
