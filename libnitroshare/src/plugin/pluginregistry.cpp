@@ -82,6 +82,7 @@ void PluginRegistry::loadPluginsFromDirectories(const QStringList &directories)
     foreach (QString directory, directories) {
         QDir dir(directory);
         foreach (QString filename, dir.entryList(QDir::Files)) {
+            filename = dir.absoluteFilePath(filename);
             if (!QLibrary::isLibrary(filename)) {
                 continue;
             }
@@ -108,6 +109,8 @@ void PluginRegistry::loadPluginsFromDirectories(const QStringList &directories)
             }
             if (dependenciesMet) {
                 plugin->initialize();
+                uninitializedPlugins.removeOne(plugin);
+                d->plugins.append(plugin);
                 emit pluginLoaded(plugin->name());
                 ++numPluginsInitialized;
             }
