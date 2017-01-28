@@ -22,22 +22,25 @@
  * IN THE SOFTWARE.
  */
 
+#include <QIcon>
+
 #include <nitroshare/application.h>
 
 #include "trayplugin.h"
 
 void TrayPlugin::initialize(Application *application)
 {
-    mIcon = new QSystemTrayIcon;
     mMenu = new QMenu;
-
-    mIcon->setContextMenu(mMenu);
-
     mMenu->addAction(tr("Quit"), application, SLOT(quit()));
+
+    mIcon = new QSystemTrayIcon;
+    mIcon->setContextMenu(mMenu);
+    mIcon->setIcon(QIcon(":/icon/icon.png"));
+    mIcon->show();
 }
 
 void TrayPlugin::cleanup(Application *)
 {
-    delete mMenu;
     delete mIcon;
+    delete mMenu;
 }

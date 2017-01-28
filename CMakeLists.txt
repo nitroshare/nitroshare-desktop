@@ -54,6 +54,7 @@ if(LINUX)
 endif()
 
 set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
 
 add_subdirectory(libnitroshare)
 add_subdirectory(plugins)

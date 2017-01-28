@@ -1,0 +1,10 @@
+{
+    "Name": "tray",
+    "Title": "System Tray Icon",
+    "Vendor": "Nathan Osman",
+    "Version": "${VERSION}",
+    "Description": "Add a system tray icon",
+    "Dependencies": [
+        "ui"
+    ]
+}

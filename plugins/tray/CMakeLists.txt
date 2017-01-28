@@ -1,4 +1,7 @@
+configure_file(trayplugin.json.in "${CMAKE_CURRENT_BINARY_DIR}/trayplugin.json")
+
 set(SRC
+    resource.qrc
     trayplugin.h
     trayplugin.cpp
 )
@@ -13,6 +16,7 @@ set_target_properties(tray PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY "${PLUGIN_OUTPUT_DIRECTORY}"
 )
 
+target_include_directories(tray PUBLIC "${CMAKE_CURRENT_BINARY_DIR}")
 target_link_libraries(tray nitroshare Qt5::Widgets)
 
 install(TARGETS tray
