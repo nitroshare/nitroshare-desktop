@@ -15,6 +15,7 @@ set_target_properties(ui PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY "${PLUGIN_OUTPUT_DIRECTORY}"
 )
 
+target_include_directories(ui PUBLIC "${CMAKE_CURRENT_BINARY_DIR}")
 target_link_libraries(ui nitroshare Qt5::Widgets)
 
 install(TARGETS ui

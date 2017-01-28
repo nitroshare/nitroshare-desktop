@@ -35,7 +35,7 @@
 class Q_DECL_EXPORT UiPlugin : public IPlugin
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID Plugin_iid)
+    Q_PLUGIN_METADATA(IID Plugin_iid FILE "uiplugin.json")
 
 public:
 
