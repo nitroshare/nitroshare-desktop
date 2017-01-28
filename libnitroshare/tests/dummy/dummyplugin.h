@@ -25,16 +25,16 @@
 #ifndef DUMMYPLUGIN_H
 #define DUMMYPLUGIN_H
 
-#include <nitroshare/plugin.h>
+#include <nitroshare/iplugin.h>
 
-class DummyPlugin : public Plugin
+class DummyPlugin : public IPlugin
 {
     Q_OBJECT
     Q_PLUGIN_METADATA(IID Plugin_iid)
 
 public:
 
-    virtual void init(Application *application);
+    virtual void initialize(Application *application);
     virtual void cleanup(Application *application);
 };
 

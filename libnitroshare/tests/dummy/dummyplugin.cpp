@@ -24,7 +24,7 @@
 
 #include "dummyplugin.h"
 
-void DummyPlugin::init(Application *)
+void DummyPlugin::initialize(Application *)
 {
 }
 
