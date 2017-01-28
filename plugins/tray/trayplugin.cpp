@@ -33,7 +33,7 @@ void TrayPlugin::initialize(Application *application)
 
     mIcon->setContextMenu(mMenu);
 
-    mMenu->addAction(tr("Quit"), application, &Application::quit);
+    mMenu->addAction(tr("Quit"), application, SLOT(quit()));
 }
 
 void TrayPlugin::cleanup(Application *)
