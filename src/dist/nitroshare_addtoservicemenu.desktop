@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Service
+ServiceTypes=KonqPopupMenu/Plugin
+Actions=sendWithNitroshare
+MimeType=all/allfiles;inode/directory;
+
+[Desktop Action sendWithNitroshare]
+Name=Send with NitroShare
+Exec=nitroshare-send %F
+Icon=nitroshare
+Name[de]=Mit NitroShare versenden

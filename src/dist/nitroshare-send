@@ -1,0 +1,38 @@
+#!/usr/bin/python3
+import os
+import sys
+import json
+import subprocess
+import argparse
+
+import requests
+
+
+desc = ("Send file(s) using NitroShare. NitroShare needs to be running for " +
+        "this to work.")
+parser = argparse.ArgumentParser(description=desc)
+parser.add_argument("files", metavar="file", nargs="+",
+                    help="File to be sent.")
+args = parser.parse_args()
+
+
+config_file = os.path.join(os.path.expanduser("~"), ".NitroShare")
+
+try:
+    with open(config_file) as f:
+        cfg = json.load(f)
+    port = cfg["port"]
+    token = cfg["token"]
+except Exception as e:
+    subprocess.run(["kdialog", "--error", "Unable read NitroShare config "
+                        "file. Is NitroShare running?"])
+    sys.exit(1)
+
+try:
+    requests.post(url="http://127.0.0.1:{}/sendItems".format(port),
+                  json={"items": [os.path.abspath(f) for f in args.files]},
+                  headers={"X-Auth-Token": token})
+except Exception as e:
+    subprocess.run(["kdialog", "--error", "Unable to communicate with "
+                        "NitroShare. Is NitroShare running?"])
+    sys.exit(2)
