@@ -247,4 +247,15 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
             RENAME nitroshare.py
         )
     endforeach()
+
+    # Install service files for the Dolphin file manager
+    set(KDE_SERVICE_INSTALL_PATH "${CMAKE_INSTALL_DATAROOTDIR}/kservices5"
+        CACHE PATH "Path for installation of KDE services"
+    )
+    install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/dist/nitroshare_addtoservicemenu.desktop"
+        DESTINATION "${KDE_SERVICE_INSTALL_PATH}"
+    )
+    install(PROGRAMS "${CMAKE_CURRENT_SOURCE_DIR}/dist/nitroshare-send"
+        DESTINATION "${CMAKE_INSTALL_BINDIR}"
+    )
 endif()
