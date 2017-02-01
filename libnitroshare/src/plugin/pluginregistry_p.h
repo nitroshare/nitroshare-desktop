@@ -38,7 +38,7 @@ class PluginRegistryPrivate : public QObject
 
 public:
 
-    PluginRegistryPrivate(PluginRegistry *parent, Application *application, bool ui);
+    PluginRegistryPrivate(PluginRegistry *parent, Application *application);
     virtual ~PluginRegistryPrivate();
 
     void unloadPlugin(int index);
@@ -47,7 +47,6 @@ public:
 
     Application *application;
     QList<Plugin*> plugins;
-    bool ui;
 };
 
 #endif // LIBNITROSHARE_PLUGINREGISTRY_P_H

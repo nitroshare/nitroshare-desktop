@@ -42,7 +42,7 @@ class ApplicationPrivate : public QObject
 
 public:
 
-    explicit ApplicationPrivate(Application *application);
+    explicit ApplicationPrivate(Application *application, bool uiEnabled);
 
     Application *const q;
 
@@ -55,6 +55,8 @@ public:
     PluginRegistry pluginRegistry;
     Settings settings;
     TransferModel transferModel;
+
+    bool uiEnabled;
 };
 
 #endif // LIBNITROSHARE_APPLICATION_P_H

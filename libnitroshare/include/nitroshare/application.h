@@ -54,9 +54,10 @@ public:
 
     /**
      * @brief Create a new application object
+     * @param ui true to enable UI
      * @param parent QObject
      */
-    explicit Application(QObject *parent = nullptr);
+    explicit Application(bool ui = false, QObject *parent = nullptr);
 
     /**
      * @brief Retrieve the device UUID
@@ -117,6 +118,12 @@ public:
      * @return pointer to TransferModel
      */
     TransferModel *transferModel() const;
+
+    /**
+     * @brief Determine if UI is enabled
+     * @return true if UI is enabled
+     */
+    bool isUiEnabled() const;
 
 public Q_SLOTS:
 

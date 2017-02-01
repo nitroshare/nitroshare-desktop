@@ -25,16 +25,16 @@
 #include <QDir>
 #include <QLibrary>
 
+#include <nitroshare/application.h>
 #include <nitroshare/plugin.h>
 #include <nitroshare/pluginregistry.h>
 
 #include "pluginregistry_p.h"
 
-PluginRegistryPrivate::PluginRegistryPrivate(PluginRegistry *parent, Application *application, bool ui)
+PluginRegistryPrivate::PluginRegistryPrivate(PluginRegistry *parent, Application *application)
     : QObject(parent),
       q(parent),
-      application(application),
-      ui(ui)
+      application(application)
 {
 }
 
@@ -54,9 +54,9 @@ void PluginRegistryPrivate::unloadPlugin(int index)
     emit q->pluginUnloaded(pluginName);
 }
 
-PluginRegistry::PluginRegistry(Application *application, bool ui, QObject *parent)
+PluginRegistry::PluginRegistry(Application *application, QObject *parent)
     : QObject(parent),
-      d(new PluginRegistryPrivate(this, application, ui))
+      d(new PluginRegistryPrivate(this, application))
 {
 }
 
@@ -104,7 +104,8 @@ void PluginRegistry::loadPluginsFromDirectories(const QStringList &directories)
         foreach (Plugin *plugin, uninitializedPlugins) {
             bool dependenciesMet = true;
             foreach (QString dependency, plugin->dependencies()) {
-                if ((dependency == "ui" && !d->ui) || !pluginByName(dependency)) {
+                if ((dependency == "ui" && !d->application->isUiEnabled()) ||
+                        !pluginByName(dependency)) {
                     dependenciesMet = false;
                 }
             }
