@@ -50,9 +50,13 @@ public:
     /**
      * @brief Create a new plugin registry
      * @param application pointer to Application
+     * @param ui true to enable UI plugins
      * @param parent QObject
+     *
+     * If ui is true, plugins that depend on the "ui" virtual plugin will be
+     * loaded. If not, their dependencies will fail to resolve.
      */
-    PluginRegistry(Application *application, QObject *parent = nullptr);
+    PluginRegistry(Application *application, bool ui=false, QObject *parent = nullptr);
 
     /**
      * @brief Retrieve a list of all plugins

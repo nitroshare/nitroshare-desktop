@@ -30,10 +30,11 @@
 
 #include "pluginregistry_p.h"
 
-PluginRegistryPrivate::PluginRegistryPrivate(PluginRegistry *parent, Application *application)
+PluginRegistryPrivate::PluginRegistryPrivate(PluginRegistry *parent, Application *application, bool ui)
     : QObject(parent),
       q(parent),
-      application(application)
+      application(application),
+      ui(ui)
 {
 }
 
@@ -53,9 +54,9 @@ void PluginRegistryPrivate::unloadPlugin(int index)
     emit q->pluginUnloaded(pluginName);
 }
 
-PluginRegistry::PluginRegistry(Application *application, QObject *parent)
+PluginRegistry::PluginRegistry(Application *application, bool ui, QObject *parent)
     : QObject(parent),
-      d(new PluginRegistryPrivate(this, application))
+      d(new PluginRegistryPrivate(this, application, ui))
 {
 }
 
@@ -103,7 +104,7 @@ void PluginRegistry::loadPluginsFromDirectories(const QStringList &directories)
         foreach (Plugin *plugin, uninitializedPlugins) {
             bool dependenciesMet = true;
             foreach (QString dependency, plugin->dependencies()) {
-                if (!pluginByName(dependency)) {
+                if ((dependency == "ui" && !d->ui) || !pluginByName(dependency)) {
                     dependenciesMet = false;
                 }
             }
