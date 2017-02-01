@@ -8,6 +8,7 @@ configure_file(config.h.in "${CMAKE_CURRENT_BINARY_DIR}/config.h")
 
 set(SRC
     main.cpp
+    signal.cpp
 )
 
 add_executable(nitroshare-cli ${SRC})
