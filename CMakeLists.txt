@@ -11,13 +11,15 @@ set(VERSION_MINOR 4)
 set(VERSION_PATCH 0)
 set(VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH})
 
-# At the very minimum, Qt 5.4+ is required to compile the daemon
+# At the very minimum, Qt 5.4+ is required
 find_package(Qt5Network 5.4 REQUIRED)
-
-# QtWidgets is required to compile the client
 find_package(Qt5Widgets 5.4)
+
+# CLI and client are always available, UI is available if Qt5Widgets is available
+option(BUILD_CLI "Build the NitroShare CLI app" ON)
+option(BUILD_CLIENT "Build the NitroShare client app" ON)
 if(Qt5Widgets_FOUND)
-    option(BUILD_CLIENT "Build the NitroShare client" ON)
+    option(BUILD_UI "Build the NitroShare UI app" ON)
 endif()
 
 # Allow file installation directories to be customized
@@ -63,8 +65,15 @@ set(CMAKE_AUTORCC ON)
 
 add_subdirectory(libnitroshare)
 add_subdirectory(plugins)
-add_subdirectory(daemon)
+
+if(BUILD_CLI)
+    add_subdirectory(cli)
+endif()
 
 if(BUILD_CLIENT)
     add_subdirectory(client)
+endif()
+
+if(BUILD_UI)
+    add_subdirectory(ui)
 endif()
