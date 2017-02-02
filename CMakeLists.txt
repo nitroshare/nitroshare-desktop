@@ -63,8 +63,14 @@ endif()
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
+# The library and plugins are always built
 add_subdirectory(libnitroshare)
 add_subdirectory(plugins)
+
+# The CLI and UI apps share some common code
+if(BUILD_CLI OR BUILD_UI)
+    add_subdirectory(common)
+endif()
 
 if(BUILD_CLI)
     add_subdirectory(cli)
