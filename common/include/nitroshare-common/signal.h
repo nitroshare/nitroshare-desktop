@@ -22,22 +22,34 @@
  * IN THE SOFTWARE.
  */
 
-#include <QCoreApplication>
+#ifndef COMMON_SIGNAL_H
+#define COMMON_SIGNAL_H
 
-#include <nitroshare/application.h>
-#include <nitroshare-common/init.h>
-#include <nitroshare-common/signal.h>
+#include <QObject>
 
-int main(int argc, char **argv)
+/**
+ * @brief Emit a signal when SIGINT or SIGTERM is caught
+ */
+class Signal : public QObject
 {
-    QCoreApplication app(argc, argv);
+    Q_OBJECT
 
-    // Initialize the application
-    Application application;
-    init(&application);
+public:
 
-    // Quit when a Unix signal is received
-    QObject::connect(Signal::instance(), &Signal::signal, &app, &QCoreApplication::quit);
+    Signal();
 
-    return app.exec();
-}
+    /**
+     * @brief Retrieve the global Signal instance
+     * @return pointer to Signal
+     */
+    static Signal *instance();
+
+Q_SIGNALS:
+
+    /**
+     * @brief Indicate that a signal was caught
+     */
+    void signal();
+};
+
+#endif // COMMON_SIGNAL_H

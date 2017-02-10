@@ -42,7 +42,7 @@ class ApplicationPrivate : public QObject
 
 public:
 
-    explicit ApplicationPrivate(Application *application, bool uiEnabled);
+    explicit ApplicationPrivate(Application *application);
 
     Application *const q;
 

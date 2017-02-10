@@ -22,22 +22,50 @@
  * IN THE SOFTWARE.
  */
 
+#include <QCommandLineOption>
+#include <QCommandLineParser>
 #include <QCoreApplication>
 
 #include <nitroshare/application.h>
+#include <nitroshare/pluginregistry.h>
 #include <nitroshare-common/init.h>
-#include <nitroshare-common/signal.h>
 
-int main(int argc, char **argv)
+void init(Application *application)
 {
-    QCoreApplication app(argc, argv);
+    // Retrieve a pointer to the global application instance
+    QCoreApplication *app = QCoreApplication::instance();
 
     // Initialize the application
-    Application application;
-    init(&application);
+    app->setApplicationName("NitroShare");
+    app->setApplicationVersion(application->version());
+    app->setOrganizationName("Nathan Osman");
+    app->setOrganizationDomain("nitroshare.net");
 
-    // Quit when a Unix signal is received
-    QObject::connect(Signal::instance(), &Signal::signal, &app, &QCoreApplication::quit);
+    // Create the parser and add the command line options
+    QCommandLineParser parser;
+    parser.setApplicationDescription("NitroShare");
+    parser.addHelpOption();
+    parser.addVersionOption();
 
-    return app.exec();
+    QCommandLineOption pluginDirOption(
+        "plugin-dir",
+        "Directory to load plugins from",
+        "directory"
+    );
+    parser.addOption(pluginDirOption);
+
+    QCommandLineOption blacklistOption(
+        "blacklist",
+        "Plugin to blacklist from loading",
+        "plugin"
+    );
+    parser.addOption(blacklistOption);
+
+    // Parse the command line (exit on failure)
+    parser.process(*app);
+
+    // Apply the options
+    application->pluginRegistry()->loadPluginsFromDirectories(
+        parser.values(pluginDirOption)
+    );
 }

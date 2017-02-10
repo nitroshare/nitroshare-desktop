@@ -1,11 +1,18 @@
+file(GLOB HEADERS include/nitroshare-common/*.h)
+
 set(SRC
-    signal.cpp
+    src/init.cpp
+    src/signal.cpp
 )
 
-add_library(nitroshare-common STATIC ${SRC})
+add_library(nitroshare-common STATIC ${HEADERS} ${SRC})
 
 set_target_properties(nitroshare-common PROPERTIES
-    CXX_STANDARD 11
+    CXX_STANDARD  11
 )
 
-target_link_libraries(nitroshare-common Qt5::Core)
+target_include_directories(nitroshare PUBLIC
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+)
+
+target_link_libraries(nitroshare-common nitroshare Qt5::Core)

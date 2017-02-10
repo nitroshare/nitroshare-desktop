@@ -49,15 +49,15 @@ class NITROSHARE_EXPORT ApplicationPrivate;
 class NITROSHARE_EXPORT Application : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(bool uiEnabled READ isUiEnabled WRITE setUiEnabled)
 
 public:
 
     /**
      * @brief Create a new application object
-     * @param ui true to enable UI
      * @param parent QObject
      */
-    explicit Application(bool ui = false, QObject *parent = nullptr);
+    explicit Application(QObject *parent = nullptr);
 
     /**
      * @brief Retrieve the device UUID
@@ -124,6 +124,12 @@ public:
      * @return true if UI is enabled
      */
     bool isUiEnabled() const;
+
+    /**
+     * @brief Set whether UI is enabled
+     * @param uiEnabled true to enable UI
+     */
+    void setUiEnabled(bool uiEnabled);
 
 public Q_SLOTS:
 

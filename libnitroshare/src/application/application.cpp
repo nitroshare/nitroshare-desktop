@@ -38,18 +38,18 @@ const QString DeviceName = "DeviceName";
 QVariant DeviceUuidDefault() { return QUuid::createUuid().toString(); }
 QVariant DeviceNameDefault() { return QHostInfo::localHostName(); }
 
-ApplicationPrivate::ApplicationPrivate(Application *application, bool ui)
+ApplicationPrivate::ApplicationPrivate(Application *application)
     : QObject(application),
       q(application),
       pluginRegistry(application),
       settings(&baseSettings),
-      uiEnabled(ui)
+      uiEnabled(false)
 {
 }
 
-Application::Application(bool ui, QObject *parent)
+Application::Application(QObject *parent)
     : QObject(parent),
-      d(new ApplicationPrivate(this, ui))
+      d(new ApplicationPrivate(this))
 {
 }
 
@@ -106,6 +106,11 @@ TransferModel *Application::transferModel() const
 bool Application::isUiEnabled() const
 {
     return d->uiEnabled;
+}
+
+void Application::setUiEnabled(bool uiEnabled)
+{
+    d->uiEnabled = uiEnabled;
 }
 
 void Application::quit()

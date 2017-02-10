@@ -22,46 +22,15 @@
  * IN THE SOFTWARE.
  */
 
-#include <sys/signal.h>
-#include <sys/socket.h>
-#include <unistd.h>
+#ifndef COMMON_INIT_H
+#define COMMON_INIT_H
 
-#include <QSocketNotifier>
+class Application;
 
-#include "signal.h"
+/**
+ * @brief Initialize application with command line options
+ * @param application application to initialize
+ */
+void init(Application *application);
 
-// Global instance
-Signal GlobalSignal;
-
-// Socket pair used for triggering signal
-int pair[2];
-
-// Signal handler for writing data to the pipe
-void onSignal(int)
-{
-    char c = 0;
-    write(pair[0], &c, sizeof(c));
-}
-
-Signal::Signal()
-{
-    if (socketpair(AF_UNIX, SOCK_STREAM, 0, pair) == 0) {
-        struct sigaction action = {};
-        action.sa_handler = onSignal;
-        sigemptyset(&action.sa_mask);
-        action.sa_flags = SA_RESTART;
-        if (sigaction(SIGINT, &action, 0) == 0 && sigaction(SIGTERM, &action, 0) == 0) {
-            connect(
-                new QSocketNotifier(pair[1], QSocketNotifier::Read, this),
-                &QSocketNotifier::activated,
-                this,
-                &Signal::signal
-            );
-        }
-    }
-}
-
-Signal *Signal::instance()
-{
-    return &GlobalSignal;
-}
+#endif // COMMON_INIT_H
