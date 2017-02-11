@@ -20,6 +20,7 @@ set(SRC
     src/transfer/transfermodel.cpp
     src/util/logger.cpp
     src/util/settings.cpp
+    src/util/signalnotifier.cpp
 )
 
 add_library(nitroshare SHARED ${HEADERS} ${SRC})
