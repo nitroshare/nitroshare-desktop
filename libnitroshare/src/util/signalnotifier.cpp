@@ -22,16 +22,19 @@
  * IN THE SOFTWARE.
  */
 
-#include <sys/signal.h>
-#include <sys/socket.h>
-#include <unistd.h>
-
 #include <QSocketNotifier>
+
+#ifdef Q_OS_UNIX
+#  include <sys/signal.h>
+#  include <sys/socket.h>
+#  include <unistd.h>
+#endif
 
 #include <nitroshare/signalnotifier.h>
 
 #include "signalnotifier_p.h"
 
+#ifdef Q_OS_UNIX
 // Socket pair used to trigger the signal
 int socketPair[2];
 
@@ -41,11 +44,13 @@ void signalHandler(int)
     char c = 0;
     write(socketPair[0], &c, sizeof(c));
 }
+#endif
 
 SignalNotifierPrivate::SignalNotifierPrivate(SignalNotifier *parent)
     : QObject(parent),
       q(parent)
 {
+#ifdef Q_OS_UNIX
     if (socketpair(AF_UNIX, SOCK_STREAM, 0, socketPair) == 0) {
         struct sigaction action = {};
         action.sa_handler = signalHandler;
@@ -60,6 +65,7 @@ SignalNotifierPrivate::SignalNotifierPrivate(SignalNotifier *parent)
             );
         }
     }
+#endif
 }
 
 // TODO: cleanup during destructor
