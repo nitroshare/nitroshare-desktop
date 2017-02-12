@@ -25,8 +25,8 @@
 #include <QCoreApplication>
 
 #include <nitroshare/application.h>
+#include <nitroshare/signalnotifier.h>
 #include <nitroshare-common/init.h>
-#include <nitroshare-common/signal.h>
 
 int main(int argc, char **argv)
 {
@@ -37,7 +37,8 @@ int main(int argc, char **argv)
     init(&application);
 
     // Quit when a Unix signal is received
-    QObject::connect(Signal::instance(), &Signal::signal, &app, &QCoreApplication::quit);
+    SignalNotifier signalNotifier;
+    QObject::connect(&signalNotifier, &SignalNotifier::signal, &app, &QCoreApplication::quit);
 
     return app.exec();
 }

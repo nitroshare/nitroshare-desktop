@@ -1,11 +1,3 @@
-# Determine the relative path from the bin directory to the plugins
-file(RELATIVE_PATH PLUGIN_PATH
-    "/${INSTALL_BIN_PATH}"
-    "/${INSTALL_PLUGIN_PATH}"
-)
-
-configure_file(config.h.in "${CMAKE_CURRENT_BINARY_DIR}/config.h")
-
 set(SRC
     main.cpp
 )

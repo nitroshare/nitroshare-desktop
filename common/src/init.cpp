@@ -30,6 +30,8 @@
 #include <nitroshare/pluginregistry.h>
 #include <nitroshare-common/init.h>
 
+#include "config.h"
+
 void init(Application *application)
 {
     // Retrieve a pointer to the global application instance
@@ -50,7 +52,7 @@ void init(Application *application)
     QCommandLineOption pluginDirOption(
         "plugin-dir",
         "Directory to load plugins from",
-        "directory"
+        PLUGIN_PATH
     );
     parser.addOption(pluginDirOption);
 
