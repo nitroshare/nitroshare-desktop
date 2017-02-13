@@ -38,7 +38,8 @@ const QString Credits =
     "<a href='mailto:david.david@mageialinux-online.org'>David Geiger</a> (French)<br>"
     "<a href='mailto:papoteur@mageialinux-online.org'>Papoteur</a> (French)<br>"
     "<a href='http://askubuntu.com/users/527600/edity'>Edity</a> (Korean)<br>"
-    "<a href='mailto:zachary.wander@gmail.com'>Zachary Wander</a> (Spanish)"
+    "<a href='mailto:zachary.wander@gmail.com'>Zachary Wander</a> (Spanish)<br>"
+    "<a href='#'>Michael Saalfeld</a> (German)"
     "</td></tr></table></body></html>";
 
 const QString License =
