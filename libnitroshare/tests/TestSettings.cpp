@@ -31,9 +31,9 @@
 
 #include <nitroshare/settings.h>
 
-const QString Key1 = "key1";
-const QString Key2 = "key2";
-const QString Value = "value1";
+const QString Key = "key";
+const QString Value1 = "value1";
+const QString Value2 = "value2";
 
 QVariant empty()
 {
@@ -50,13 +50,13 @@ public:
 
 private slots:
 
-    void testSetGet();
-    void testNotification();
-    void testGroup();
+    void testAddChangeRemove();
+    void testBeginEnd();
 
 private:
 
     Settings *newSettings();
+    bool spyContainsKey(QSignalSpy *spy);
 
     QTemporaryDir dir;
     int counter;
@@ -67,56 +67,61 @@ TestSettings::TestSettings()
 {
 }
 
-void TestSettings::testSetGet()
+void TestSettings::testAddChangeRemove()
 {
     QScopedPointer<Settings> settings(newSettings());
 
-    // Set a value
-    settings->set(Key1, Value);
+    // Ensure a signal is emitted when a new setting is added
+    QSignalSpy addSpy(settings.data(), &Settings::settingsAdded);
+    settings->addSetting(Key, QVariantMap{{Settings::DefaultKey, Value1}});
+    QVERIFY(spyContainsKey(&addSpy));
 
-    // Confirm that it can be retrieved
-    QCOMPARE(settings->get(Key1, &empty).toString(), Value);
+    // Ensure the default value was set
+    QCOMPARE(settings->value(Key).toString(), Value1);
+
+    // Ensure *no* signal is emitted when the value does not change
+    QSignalSpy changeSpy(settings.data(), &Settings::settingsChanged);
+    settings->setValue(Key, Value1);
+    QCOMPARE(changeSpy.count(), 0);
+
+    // Ensure a signal is emitted when the value *does* change
+    settings->setValue(Key, Value2);
+    QVERIFY(spyContainsKey(&changeSpy));
+
+    // Ensure the new value is set
+    QCOMPARE(settings->value(Key).toString(), Value2);
+
+    // Ensure a signal is emitted when the setting is removed
+    QSignalSpy removeSpy(settings.data(), &Settings::settingsRemoved);
+    settings->removeSetting(Key);
+    QVERIFY(spyContainsKey(&removeSpy));
 }
 
-void TestSettings::testNotification()
+void TestSettings::testBeginEnd()
 {
     QScopedPointer<Settings> settings(newSettings());
-
-    // Watch for notifications
-    QSignalSpy spy(settings.data(), &Settings::settingsChanged);
-
-    // Get a value that does not exist - no signal
-    settings->get(Key1, &empty);
-    QCOMPARE(spy.count(), 0);
-
-    // Set a value that is identical - no signal
-    settings->set(Key1, empty());
-    QCOMPARE(spy.count(), 0);
-
-    // Set a value that is different - signal
-    settings->set(Key1, Value);
-    QCOMPARE(spy.count(), 1);
-}
-
-void TestSettings::testGroup()
-{
-    QScopedPointer<Settings> settings(newSettings());
-
-    // Watch for notifications
-    QSignalSpy spy(settings.data(), &Settings::settingsChanged);
     settings->begin();
 
-    // Set some values and ensure no signals were emitted
-    settings->set(Key1, Value);
-    settings->set(Key2, Value);
-    QCOMPARE(spy.count(), 0);
+    QSignalSpy addSpy(settings.data(), &Settings::settingsAdded);
+    QSignalSpy changeSpy(settings.data(), &Settings::settingsChanged);
+    QSignalSpy removeSpy(settings.data(), &Settings::settingsRemoved);
 
-    // End the group and ensure a signal is emitted
+    // Perform operations that would normally cause signals to be emitted
+    settings->addSetting(Key);
+    settings->setValue(Key, Value1);
+    settings->removeSetting(Key);
+
+    // Ensure *no* signals were emitted
+    QCOMPARE(addSpy.count(), 0);
+    QCOMPARE(changeSpy.count(), 0);
+    QCOMPARE(removeSpy.count(), 0);
+
     settings->end();
-    QCOMPARE(spy.count(), 1);
-    QStringList keys = spy.at(0).at(0).toStringList();
-    QVERIFY(keys.contains(Key1));
-    QVERIFY(keys.contains(Key2));
+
+    // Ensure signals were emitted for all three
+    QVERIFY(spyContainsKey(&addSpy));
+    QVERIFY(spyContainsKey(&changeSpy));
+    QVERIFY(spyContainsKey(&removeSpy));
 }
 
 Settings *TestSettings::newSettings()
@@ -128,6 +133,13 @@ Settings *TestSettings::newSettings()
     Settings *settings = new Settings(s);
     s->setParent(settings);
     return settings;
+}
+
+bool TestSettings::spyContainsKey(QSignalSpy *spy)
+{
+    return spy->count() == 1 &&
+        spy->value(0).count() == 1 &&
+        spy->value(0).at(0).toStringList().contains(Key);
 }
 
 QTEST_MAIN(TestSettings)

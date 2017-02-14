@@ -33,10 +33,9 @@
 const QString LoggerTag = "application";
 
 const QString DeviceUuid = "DeviceUuid";
+const QString DeviceUuidDefault = QUuid::createUuid().toString();
 const QString DeviceName = "DeviceName";
-
-QVariant DeviceUuidDefault() { return QUuid::createUuid().toString(); }
-QVariant DeviceNameDefault() { return QHostInfo::localHostName(); }
+const QString DeviceNameDefault = QHostInfo::localHostName();
 
 ApplicationPrivate::ApplicationPrivate(Application *application)
     : QObject(application),
@@ -45,6 +44,8 @@ ApplicationPrivate::ApplicationPrivate(Application *application)
       settings(&baseSettings),
       uiEnabled(false)
 {
+    settings.addSetting(DeviceUuid, QVariantMap{{Settings::DefaultKey, DeviceUuidDefault}});
+    settings.addSetting(DeviceName, QVariantMap{{Settings::DefaultKey, DeviceNameDefault}});
 }
 
 Application::Application(QObject *parent)
@@ -55,12 +56,12 @@ Application::Application(QObject *parent)
 
 QString Application::deviceUuid() const
 {
-    return d->settings.get(DeviceUuid, &DeviceUuidDefault).toString();
+    return d->settings.value(DeviceUuid).toString();
 }
 
 QString Application::deviceName() const
 {
-    return d->settings.get(DeviceName, &DeviceNameDefault).toString();
+    return d->settings.value(DeviceName).toString();
 }
 
 QString Application::version() const

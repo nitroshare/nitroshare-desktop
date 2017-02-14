@@ -39,13 +39,17 @@
 
 const QString LoggerTag = "broadcast";
 
+// Time (in MS) between broadcast packets
 const QString BroadcastInterval = "BroadcastInterval";
-const QString BroadcastExpiry = "BroadcastExpiry";
-const QString BroadcastPort = "BroadcastPort";
+const QVariant BroadcastIntervalDefault = 5000;
 
-QVariant BroadcastIntervalDefault() { return 5000; }
-QVariant BroadcastExpiryDefault() { return 30000; }
-QVariant BroadcastPortDefault() { return 40816; }
+// Time (in MS) before a remote peer expires
+const QString BroadcastExpiry = "BroadcastExpiry";
+const QVariant BroadcastExpiryDefault = 30000;
+
+// Port to use for listening for broadcast packets
+const QString BroadcastPort = "BroadcastPort";
+const QVariant BroadcastPortDefault = 40816;
 
 BroadcastEnumerator::BroadcastEnumerator(Application *application)
     : mApplication(application)
@@ -54,6 +58,19 @@ BroadcastEnumerator::BroadcastEnumerator(Application *application)
     connect(&mExpiryTimer, &QTimer::timeout, this, &BroadcastEnumerator::onExpiryTimeout);
     connect(&mSocket, &QUdpSocket::readyRead, this, &BroadcastEnumerator::onReadyRead);
     connect(mApplication->settings(), &Settings::settingsChanged, this, &BroadcastEnumerator::onSettingsChanged);
+
+    mApplication->settings()->addSetting(
+        BroadcastInterval,
+        {{Settings::DefaultKey, BroadcastIntervalDefault}}
+    );
+    mApplication->settings()->addSetting(
+        BroadcastExpiry,
+        {{Settings::DefaultKey, BroadcastExpiryDefault}}
+    );
+    mApplication->settings()->addSetting(
+        BroadcastPort,
+        {{Settings::DefaultKey, BroadcastPortDefault}}
+    );
 
     // Trigger loading the initial settings
     onSettingsChanged({ BroadcastInterval, BroadcastExpiry, BroadcastPort });
@@ -90,7 +107,7 @@ void BroadcastEnumerator::onExpiryTimeout()
 {
     // Grab the current time in MS and the timeout interval
     qint64 ms = QDateTime::currentMSecsSinceEpoch();
-    int expiry = mApplication->settings()->get(BroadcastExpiry, &BroadcastExpiryDefault).toInt();
+    int expiry = mApplication->settings()->value(BroadcastExpiry).toInt();
 
     // Remove any devices that have expired
     auto i = mDevices.begin();
@@ -130,7 +147,7 @@ void BroadcastEnumerator::onSettingsChanged(const QStringList &keys)
     if (keys.contains(BroadcastInterval)) {
         mBroadcastTimer.stop();
         mBroadcastTimer.setInterval(
-            mApplication->settings()->get(BroadcastInterval, &BroadcastIntervalDefault).toInt()
+            mApplication->settings()->value(BroadcastInterval).toInt()
         );
         onBroadcastTimeout();
         mBroadcastTimer.start();
@@ -139,7 +156,7 @@ void BroadcastEnumerator::onSettingsChanged(const QStringList &keys)
     if (keys.contains(BroadcastExpiry)) {
         mExpiryTimer.stop();
         mExpiryTimer.setInterval(
-            mApplication->settings()->get(BroadcastExpiry, &BroadcastExpiryDefault).toInt()
+            mApplication->settings()->value(BroadcastExpiry).toInt()
         );
         onExpiryTimeout();
         mExpiryTimer.start();
@@ -148,7 +165,7 @@ void BroadcastEnumerator::onSettingsChanged(const QStringList &keys)
     if (keys.contains(BroadcastPort)) {
         mSocket.close();
         if (!mSocket.bind(QHostAddress::Any,
-                mApplication->settings()->get(BroadcastPort, &BroadcastPortDefault).toInt())) {
+                mApplication->settings()->value(BroadcastPort).toInt())) {
             emit mApplication->logger()->error(LoggerTag, mSocket.errorString());
         }
     }

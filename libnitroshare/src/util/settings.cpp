@@ -26,10 +26,12 @@
 
 #include "settings_p.h"
 
+const QString Settings::DefaultKey = "default";
+
 SettingsPrivate::SettingsPrivate(QObject *parent, QSettings *settings)
     : QObject(parent),
       settings(settings),
-      addToPending(false)
+      suppress(false)
 {
 }
 
@@ -39,42 +41,76 @@ Settings::Settings(QSettings *settings, QObject *parent)
 {
 }
 
-QVariant Settings::get(const QString &key, QVariant (*defaultValue)())
+void Settings::addSetting(const QString &key, const QVariantMap &metadata)
 {
-    if (d->settings->contains(key)) {
-        return d->settings->value(key);
+    // If the setting doesn't have a value, apply the default
+    if (!d->settings->contains(key)) {
+        d->settings->setValue(key, metadata.value(DefaultKey));
+    }
+
+    d->metadataMap.insert(key, metadata);
+
+    if (d->suppress) {
+        d->suppressedAdditions.append(key);
     } else {
-        QVariant value = defaultValue();
-        d->settings->setValue(key, value);
-        return value;
+        emit settingsAdded(QStringList{key});
     }
 }
 
-void Settings::set(const QString &key, const QVariant &value)
+void Settings::removeSetting(const QString &key)
 {
-    if (!d->settings->contains(key) || d->settings->value(key) != value) {
-        d->settings->setValue(key, value);
+    d->metadataMap.remove(key);
+    if (d->suppress) {
+        d->suppressedRemovals.append(key);
+    } else {
+        emit settingsRemoved(QStringList{key});
+    }
+}
 
-        // Don't emit the signal if a group of values are being set
-        if (d->addToPending) {
-            d->pendingKeys.append(key);
+QVariantMap Settings::settings() const
+{
+    return d->metadataMap;
+}
+
+QVariant Settings::value(const QString &key) const
+{
+    return d->settings->value(key);
+}
+
+void Settings::setValue(const QString &key, const QVariant &value)
+{
+    if (d->settings->value(key) != value) {
+        d->settings->setValue(key, value);
+        if (d->suppress) {
+            d->suppressedChanges.append(key);
         } else {
-            emit settingsChanged({ key });
+            emit settingsChanged(QStringList{key});
         }
     }
 }
 
 void Settings::begin()
 {
-    d->addToPending = true;
+    d->suppress = true;
 }
 
 void Settings::end()
 {
-    if (d->pendingKeys.count()) {
-        emit settingsChanged(d->pendingKeys);
+    if (d->suppressedAdditions.length()) {
+        emit settingsAdded(d->suppressedAdditions);
+        d->suppressedAdditions.clear();
     }
 
-    d->addToPending = false;
-    d->pendingKeys.clear();
+    if (d->suppressedRemovals.length()) {
+        emit settingsRemoved(d->suppressedRemovals);
+        d->suppressedRemovals.clear();
+    }
+
+    if (d->suppressedChanges.length()) {
+        emit settingsChanged(d->suppressedChanges);
+        d->suppressedChanges.clear();
+    }
+
+    d->suppress = false;
 }
+

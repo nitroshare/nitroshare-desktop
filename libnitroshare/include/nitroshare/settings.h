@@ -26,21 +26,37 @@
 #define LIBNITROSHARE_SETTINGS_H
 
 #include <QSettings>
+#include <QStringList>
+#include <QVariantMap>
 
 #include <nitroshare/config.h>
 
 class NITROSHARE_EXPORT SettingsPrivate;
 
 /**
- * @brief Interface for storing and retrieving settings for the application
+ * @brief Interface for registering, storing, and retrieving settings
  *
- * This class is *not* thread-safe.
+ * Plugins use settings to persist values across sessions. Settings also allow
+ * users to modify plugin behavior during runtime. This could be done through
+ * the UI, for example, or through the HTTP API.
+ *
+ * Settings must be registered before use (typically during plugin
+ * initialization). The registration process allows plugins to include
+ * metadata, which can be used by other plugins to facilitate editing the
+ * settings. For example, a plugin could display a dialog box, allowing the
+ * user to modify settings.
+ *
+ * This class is *not* thread-safe and should only be used from the main
+ * thread.
  */
 class NITROSHARE_EXPORT Settings : public QObject
 {
     Q_OBJECT
 
 public:
+
+    /// Default key
+    static const QString DefaultKey;
 
     /**
      * @brief Create a new settings object
@@ -50,35 +66,51 @@ public:
     Settings(QSettings *settings, QObject *parent = nullptr);
 
     /**
-     * @brief Retrieve the value for the specified key
-     * @param key name of value to retrieve
-     * @param defaultValue default value for the key
-     * @return value for key
-     *
-     * If the key exists, its value is returned. If the key does not exist,
-     * the defaultValue function is invoked and the return value is used to
-     * set the new value. The settingChanged() signal is *not* emitted when
-     * this happens.
+     * @brief Add a setting
+     * @param key unique identifier for the setting
+     * @param metadata metadata for the setting
      */
-    QVariant get(const QString &key, QVariant (*defaultValue)());
+    void addSetting(const QString &key, const QVariantMap &metadata = QVariantMap());
+
+    /**
+     * @brief Remove a setting
+     * @param key unique identifier for the setting
+     */
+    void removeSetting(const QString &key);
+
+    /**
+     * @brief Retrieve a map of keys and metadata
+     * @return map of settings
+     */
+    QVariantMap settings() const;
+
+    /**
+     * @brief Retrieve the value for the specified setting
+     * @param key unique identifier for the setting
+     * @return value for key
+     */
+    QVariant value(const QString &key) const;
 
     /**
      * @brief Set the value for the specified key
-     * @param key name of the value to set
+     * @param key unique identifier for the setting
      * @param value new value for key
+     *
+     * The settingsChanged() signal is only emitted if the value has actually
+     * changed.
      */
-    void set(const QString &key, const QVariant &value);
+    void setValue(const QString &key, const QVariant &value);
 
     /**
-     * @brief Begin changing a group of values
+     * @brief Begin an operation on a group of settings
      *
-     * The settingsChanged() signal will be supressed until end() is invoked.
-     * This allows multiple values to easily be changed.
+     * This method will cause all signals to be suppressed until end() is
+     * invoked.
      */
     void begin();
 
     /**
-     * @brief End changing a group of values
+     * @brief End an operation on a group of settings
      *
      * All settings that have changed since begin() will cause the
      * settingsChanged() signal to be emitted with the list of keys that
@@ -89,8 +121,20 @@ public:
 Q_SIGNALS:
 
     /**
+     * @brief Indicate that settings have been added
+     * @param keys name of keys which have been added
+     */
+    void settingsAdded(const QStringList &keys);
+
+    /**
+     * @brief Indicate that settings have been removed
+     * @param keys name of keys which have been removed
+     */
+    void settingsRemoved(const QStringList &keys);
+
+    /**
      * @brief Indicate that settings have changed value
-     * @param keys names of the values that have changed
+     * @param keys name of keys whose value has changed
      */
     void settingsChanged(const QStringList &keys);
 

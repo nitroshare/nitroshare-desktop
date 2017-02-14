@@ -35,9 +35,9 @@
 
 const QString LoggerTag = "api";
 
+// True to enable the HTTP API
 const QString ApiEnabled = "ApiEnabled";
-
-QVariant ApiEnabledDefault() { return true; }
+const QVariant ApiEnabledDefault = true;
 
 ApiServer::ApiServer(Application *application)
     : QHttpServer(&mHandler),
@@ -45,6 +45,8 @@ ApiServer::ApiServer(Application *application)
       mToken(QUuid::createUuid().toString()),
       mHandler(application, mToken)
 {
+    mApplication->settings()->addSetting(ApiEnabled, {{Settings::DefaultKey, ApiEnabledDefault}});
+
     // Trigger loading the initial settings
     onSettingsChanged({ ApiEnabled });
 }
@@ -58,7 +60,7 @@ void ApiServer::onSettingsChanged(const QStringList &keys)
 {
     if (keys.contains(ApiEnabled)) {
         stop();
-        if (mApplication->settings()->get(ApiEnabled, &ApiEnabledDefault).toBool()) {
+        if (mApplication->settings()->value(ApiEnabled).toBool()) {
             start();
         }
     }

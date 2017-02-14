@@ -27,6 +27,7 @@
 
 #include <QObject>
 #include <QSettings>
+#include <QVariantMap>
 
 class SettingsPrivate : public QObject
 {
@@ -37,9 +38,12 @@ public:
     SettingsPrivate(QObject *parent, QSettings *settings);
 
     QSettings *settings;
+    QVariantMap metadataMap;
 
-    bool addToPending;
-    QStringList pendingKeys;
+    bool suppress;
+    QStringList suppressedAdditions;
+    QStringList suppressedRemovals;
+    QStringList suppressedChanges;
 };
 
 #endif // LIBNITROSHARE_SETTINGS_P_H
