@@ -1,0 +1,10 @@
+{
+    "Name": "settingsui",
+    "Title": "Settings UI",
+    "Vendor": "Nathan Osman",
+    "Version": "${VERSION}",
+    "Description": "Dialog for adjusting application settings",
+    "Dependencies": [
+        "ui"
+    ]
+}

@@ -4,6 +4,7 @@ add_subdirectory(lan)
 add_subdirectory(mdns)
 
 if(Qt5Widgets_FOUND)
+    add_subdirectory(settingsui)
     add_subdirectory(tray)
 endif()
 
