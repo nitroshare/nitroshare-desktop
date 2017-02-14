@@ -104,8 +104,11 @@ void PluginRegistry::loadPluginsFromDirectories(const QStringList &directories)
         foreach (Plugin *plugin, uninitializedPlugins) {
             bool dependenciesMet = true;
             foreach (QString dependency, plugin->dependencies()) {
-                if ((dependency == "ui" && !d->application->isUiEnabled()) ||
-                        !pluginByName(dependency)) {
+                if (dependency == "ui") {
+                    if (!d->application->isUiEnabled()) {
+                        dependenciesMet = false;
+                    }
+                } else if (!pluginByName(dependency)) {
                     dependenciesMet = false;
                 }
             }

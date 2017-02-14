@@ -30,6 +30,8 @@
 int main(int argc, char **argv)
 {
     QApplication app(argc, argv);
+    app.setQuitOnLastWindowClosed(false);
+
     QCommandLineParser parser;
 
     // Create the application and initialize the CLI arguments
