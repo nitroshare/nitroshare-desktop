@@ -27,7 +27,7 @@
 
 #include <QSettings>
 
-#include <nitroshare/actionmodel.h>
+#include <nitroshare/actionregistry.h>
 #include <nitroshare/application.h>
 #include <nitroshare/devicemodel.h>
 #include <nitroshare/handlerregistry.h>
@@ -48,7 +48,7 @@ public:
 
     QSettings baseSettings;
 
-    ActionModel actionModel;
+    ActionRegistry actionRegistry;
     DeviceModel deviceModel;
     HandlerRegistry handlerRegistry;
     Logger logger;

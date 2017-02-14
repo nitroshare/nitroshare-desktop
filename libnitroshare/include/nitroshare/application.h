@@ -31,7 +31,7 @@
 
 class QCommandLineParser;
 
-class ActionModel;
+class ActionRegistry;
 class DeviceModel;
 class HandlerRegistry;
 class Logger;
@@ -92,10 +92,10 @@ public:
     QString version() const;
 
     /**
-     * @brief Retrieve the global ActionModel instance
-     * @return pointer to ActionModel
+     * @brief Retrieve the global ActionRegistry instance
+     * @return pointer to ActionRegistry
      */
-    ActionModel *actionModel() const;
+    ActionRegistry *actionRegistry() const;
 
     /**
      * @brief Retrieve the global DeviceModel instance

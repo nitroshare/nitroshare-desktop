@@ -5,7 +5,6 @@ set(HEADERS "${HEADERS}" "${CMAKE_CURRENT_BINARY_DIR}/nitroshare/config.h")
 
 set(SRC
     src/action/action.cpp
-    src/action/actionmodel.cpp
     src/action/actionregistry.cpp
     src/application/application.cpp
     src/bundle/bundle.cpp

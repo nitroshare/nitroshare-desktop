@@ -83,9 +83,9 @@ QString Application::version() const
     return NITROSHARE_VERSION;
 }
 
-ActionModel *Application::actionModel() const
+ActionRegistry *Application::actionRegistry() const
 {
-    return &d->actionModel;
+    return &d->actionRegistry;
 }
 
 DeviceModel *Application::deviceModel() const

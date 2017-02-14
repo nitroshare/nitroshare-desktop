@@ -22,7 +22,7 @@
  * IN THE SOFTWARE.
  */
 
-#include <nitroshare/actionmodel.h>
+#include <nitroshare/actionregistry.h>
 #include <nitroshare/application.h>
 #include <nitroshare/handlerregistry.h>
 
@@ -34,13 +34,13 @@ void FilesystemPlugin::initialize(Application *application)
     mSendAction = new SendAction(application);
 
     application->handlerRegistry()->addHandler("file", &mFileHandler);
-    application->actionModel()->addAction(mSendAction);
+    application->actionRegistry()->add(mSendAction);
 }
 
 void FilesystemPlugin::cleanup(Application *application)
 {
     application->handlerRegistry()->removeHandler("file");
-    application->actionModel()->removeAction(mSendAction);
+    application->actionRegistry()->remove(mSendAction);
 
     delete mSendAction;
 }
