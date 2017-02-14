@@ -22,19 +22,27 @@
  * IN THE SOFTWARE.
  */
 
+#include <QCommandLineParser>
 #include <QCoreApplication>
 
 #include <nitroshare/application.h>
 #include <nitroshare/signalnotifier.h>
-#include <nitroshare-common/init.h>
 
 int main(int argc, char **argv)
 {
     QCoreApplication app(argc, argv);
+    QCommandLineParser parser;
 
-    // Initialize the application
+    // Create the application and initialize the CLI arguments
     Application application;
-    init(&application);
+    application.addCliOptions(&parser);
+
+    // Parse the CLI arguments
+    parser.addHelpOption();
+    parser.addVersionOption();
+    parser.process(app);
+
+    application.processCliOptions(&parser);
 
     // Quit when a Unix signal is received
     SignalNotifier signalNotifier;

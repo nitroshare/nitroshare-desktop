@@ -29,6 +29,8 @@
 
 #include <nitroshare/config.h>
 
+class QCommandLineParser;
+
 class ActionModel;
 class DeviceModel;
 class HandlerRegistry;
@@ -58,6 +60,18 @@ public:
      * @param parent QObject
      */
     explicit Application(QObject *parent = nullptr);
+
+    /**
+     * @brief Add library-specific command line options
+     * @param parser pointer to QCommandLineParser
+     */
+    void addCliOptions(QCommandLineParser *parser);
+
+    /**
+     * @brief Process library-specific command line options
+     * @param parser pointer to QCommandLineParser
+     */
+    void processCliOptions(QCommandLineParser *parser);
 
     /**
      * @brief Retrieve the device UUID

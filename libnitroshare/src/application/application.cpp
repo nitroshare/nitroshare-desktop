@@ -22,6 +22,8 @@
  * IN THE SOFTWARE.
  */
 
+#include <QCommandLineOption>
+#include <QCommandLineParser>
 #include <QCoreApplication>
 #include <QHostInfo>
 #include <QUuid>
@@ -31,6 +33,10 @@
 #include "application_p.h"
 
 const QString LoggerTag = "application";
+
+const QString PluginDir = "plugin-dir";
+const QString PluginDirDefault = NITROSHARE_PLUGIN_PATH;
+const QString PluginBlacklist = "plugin-blacklist";
 
 const QString DeviceUuid = "DeviceUuid";
 const QString DeviceUuidDefault = QUuid::createUuid().toString();
@@ -52,6 +58,17 @@ Application::Application(QObject *parent)
     : QObject(parent),
       d(new ApplicationPrivate(this))
 {
+}
+
+void Application::addCliOptions(QCommandLineParser *parser)
+{
+    parser->addOption(QCommandLineOption(PluginDir, tr("load plugins in directory"), tr("directory"), PluginDirDefault));
+    parser->addOption(QCommandLineOption(PluginBlacklist, tr("do not load plugin"), tr("plugin")));
+}
+
+void Application::processCliOptions(QCommandLineParser *parser)
+{
+    pluginRegistry()->loadPluginsFromDirectories(parser->values(PluginDir));
 }
 
 QString Application::deviceUuid() const
