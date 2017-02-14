@@ -43,6 +43,4 @@ void FilesystemPlugin::cleanup(Application *application)
     application->actionModel()->removeAction(mSendAction);
 
     delete mSendAction;
-
-    emit finishedCleanup();
 }

@@ -35,13 +35,10 @@
 const QString LoggerTag = "application";
 
 const QString PluginDir = "plugin-dir";
-const QString PluginDirDefault = NITROSHARE_PLUGIN_PATH;
 const QString PluginBlacklist = "plugin-blacklist";
 
 const QString DeviceUuid = "DeviceUuid";
-const QString DeviceUuidDefault = QUuid::createUuid().toString();
 const QString DeviceName = "DeviceName";
-const QString DeviceNameDefault = QHostInfo::localHostName();
 
 ApplicationPrivate::ApplicationPrivate(Application *application)
     : QObject(application),
@@ -50,8 +47,8 @@ ApplicationPrivate::ApplicationPrivate(Application *application)
       settings(&baseSettings),
       uiEnabled(false)
 {
-    settings.addSetting(DeviceUuid, {{Settings::DefaultKey, DeviceUuidDefault}});
-    settings.addSetting(DeviceName, {{Settings::DefaultKey, DeviceNameDefault}});
+    settings.addSetting(DeviceUuid, {{Settings::DefaultKey, QUuid::createUuid().toString()}});
+    settings.addSetting(DeviceName, {{Settings::DefaultKey, QHostInfo::localHostName()}});
 }
 
 Application::Application(QObject *parent)
@@ -62,7 +59,7 @@ Application::Application(QObject *parent)
 
 void Application::addCliOptions(QCommandLineParser *parser)
 {
-    parser->addOption(QCommandLineOption(PluginDir, tr("load plugins in directory"), tr("directory"), PluginDirDefault));
+    parser->addOption(QCommandLineOption(PluginDir, tr("load plugins in directory"), tr("directory"), NITROSHARE_PLUGIN_PATH));
     parser->addOption(QCommandLineOption(PluginBlacklist, tr("do not load plugin"), tr("plugin")));
 }
 

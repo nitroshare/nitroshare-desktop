@@ -37,5 +37,4 @@ void BroadcastPlugin::cleanup(Application *application)
 {
     application->deviceModel()->removeEnumerator(mEnumerator);
     delete mEnumerator;
-    emit finishedCleanup();
 }

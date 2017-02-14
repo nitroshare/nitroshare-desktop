@@ -25,7 +25,6 @@
 #ifndef TRAYPLUGIN_H
 #define TRAYPLUGIN_H
 
-#include <QApplication>
 #include <QMenu>
 #include <QSystemTrayIcon>
 
@@ -44,9 +43,12 @@ public:
     virtual void initialize(Application *application);
     virtual void cleanup(Application *application);
 
+public Q_SLOTS:
+
+    void onAboutQt();
+
 private:
 
-    QApplication *mApplication;
     QSystemTrayIcon *mIcon;
     QMenu *mMenu;
 };

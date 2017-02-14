@@ -63,18 +63,6 @@ public:
      * Once cleanup is complete, the finishedCleanup() signal must be emitted.
      */
     virtual void cleanup(Application *application) = 0;
-
-Q_SIGNALS:
-
-    /**
-     * @brief Indicate that initialization is complete
-     */
-    void finishedInitialization();
-
-    /**
-     * @brief Indicate that cleanup is complete
-     */
-    void finishedCleanup();
 };
 
 #endif // LIBNITROSHARE_IPLUGIN_H

@@ -32,5 +32,4 @@ void ApiPlugin::initialize(Application *application)
 void ApiPlugin::cleanup(Application *)
 {
     delete mServer;
-    emit finishedCleanup();
 }

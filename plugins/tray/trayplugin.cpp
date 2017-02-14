@@ -23,6 +23,7 @@
  */
 
 #include <QIcon>
+#include <QMessageBox>
 
 #include <nitroshare/application.h>
 
@@ -31,6 +32,8 @@
 void TrayPlugin::initialize(Application *application)
 {
     mMenu = new QMenu;
+    mMenu->addAction(tr("About Qt"), this, SLOT(onAboutQt()));
+    mMenu->addSeparator();
     mMenu->addAction(tr("Quit"), application, SLOT(quit()));
 
     mIcon = new QSystemTrayIcon;
@@ -43,4 +46,9 @@ void TrayPlugin::cleanup(Application *)
 {
     delete mIcon;
     delete mMenu;
+}
+
+void TrayPlugin::onAboutQt()
+{
+    QMessageBox::aboutQt(nullptr);
 }

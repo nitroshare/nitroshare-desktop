@@ -30,5 +30,4 @@ void IndicatorPlugin::initialize(Application *application)
 
 void IndicatorPlugin::cleanup(Application *application)
 {
-    emit finishedCleanup();
 }

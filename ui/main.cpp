@@ -22,29 +22,27 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef UIPLUGIN_H
-#define UIPLUGIN_H
-
 #include <QApplication>
+#include <QCommandLineParser>
 
-#include <nitroshare/iplugin.h>
+#include <nitroshare/application.h>
 
-/**
- * @brief Provide QApplication for graphical user interface
- */
-class Q_DECL_EXPORT UiPlugin : public IPlugin
+int main(int argc, char **argv)
 {
-    Q_OBJECT
-    Q_PLUGIN_METADATA(IID Plugin_iid FILE "uiplugin.json")
+    QApplication app(argc, argv);
+    QCommandLineParser parser;
 
-public:
+    // Create the application and initialize the CLI arguments
+    Application application;
+    application.setUiEnabled(true);
+    application.addCliOptions(&parser);
 
-    virtual void initialize(Application *application);
-    virtual void cleanup(Application *application);
+    // Parse the CLI arguments
+    parser.addHelpOption();
+    parser.addVersionOption();
+    parser.process(app);
 
-private:
+    application.processCliOptions(&parser);
 
-    QApplication *mApplication;
-};
-
-#endif // UIPLUGIN_H
+    return app.exec();
+}

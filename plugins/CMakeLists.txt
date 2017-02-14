@@ -5,7 +5,6 @@ add_subdirectory(mdns)
 
 if(Qt5Widgets_FOUND)
     add_subdirectory(tray)
-    add_subdirectory(ui)
 endif()
 
 if(BUILD_API)
