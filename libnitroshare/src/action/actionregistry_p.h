@@ -25,6 +25,11 @@
 #ifndef LIBNITROSHARE_ACTIONREGISTRY_P_H
 #define LIBNITROSHARE_ACTIONREGISTRY_P_H
 
+#include <QList>
+#include <QObject>
+
+class Action;
+
 class ActionRegistryPrivate : public QObject
 {
     Q_OBJECT
@@ -32,6 +37,8 @@ class ActionRegistryPrivate : public QObject
 public:
 
     explicit ActionRegistryPrivate(QObject *parent);
+
+    QList<Action*> actions;
 };
 
 #endif // LIBNITROSHARE_ACTIONREGISTRY_P_H

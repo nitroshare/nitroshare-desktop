@@ -22,6 +22,7 @@
  * IN THE SOFTWARE.
  */
 
+#include <nitroshare/action.h>
 #include <nitroshare/actionregistry.h>
 
 #include "actionregistry_p.h"
@@ -35,4 +36,33 @@ ActionRegistry::ActionRegistry(QObject *parent)
     : QObject(parent),
       d(new ActionRegistryPrivate(this))
 {
+}
+
+// TODO: warn if duplicate action is inserted
+
+void ActionRegistry::add(Action *action)
+{
+    d->actions.append(action);
+    emit actionAdded(action);
+}
+
+void ActionRegistry::remove(Action *action)
+{
+    d->actions.removeOne(action);
+    emit actionRemoved(action);
+}
+
+Action *ActionRegistry::find(const QString &name) const
+{
+    foreach (Action *action, d->actions) {
+        if (action->name() == name) {
+            return action;
+        }
+    }
+    return nullptr;
+}
+
+QList<Action*> ActionRegistry::actions() const
+{
+    return d->actions;
 }

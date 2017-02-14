@@ -25,9 +25,12 @@
 #ifndef LIBNITROSHARE_ACTIONREGISTRY_H
 #define LIBNITROSHARE_ACTIONREGISTRY_H
 
+#include <QList>
 #include <QObject>
 
 #include <nitroshare/config.h>
+
+class Action;
 
 class NITROSHARE_EXPORT ActionRegistryPrivate;
 
@@ -45,6 +48,48 @@ public:
      * @param parent QObject
      */
     explicit ActionRegistry(QObject *parent = nullptr);
+
+    /**
+     * @brief Add the specified action to the registry
+     * @param action pointer to Action
+     *
+     * It is up to the caller to ensure that action is properly freed when no
+     * longer needed.
+     */
+    void add(Action *action);
+
+    /**
+     * @brief Remove the specified action from the registry
+     * @param action
+     */
+    void remove(Action *action);
+
+    /**
+     * @brief Find an action by name
+     * @param name unique identifier for the action
+     * @return pointer to Action or nullptr
+     */
+    Action *find(const QString &name) const;
+
+    /**
+     * @brief Retrieve a list of all registered actions
+     * @return list of actions
+     */
+    QList<Action*> actions() const;
+
+Q_SIGNALS:
+
+    /**
+     * @brief Indicate that an action was added
+     * @param action pointer to Action
+     */
+    void actionAdded(Action *action);
+
+    /**
+     * @brief Indicate that an action was removed
+     * @param action pointer to Action
+     */
+    void actionRemoved(Action *action);
 
 private:
 
