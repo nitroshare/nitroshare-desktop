@@ -91,7 +91,7 @@ void TestDeviceModel::testUpdateDevice()
 
     // Make a change - remove one of the addresses
     emit enumerator.deviceUpdated(TestUuid, {
-        { "addresses", QStringList({ TestAddress1 }) }
+        {"addresses", QStringList{TestAddress1 }}
     });
 
     // Ensure the dataChanged signal was emitted

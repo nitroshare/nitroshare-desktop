@@ -44,8 +44,8 @@ ApplicationPrivate::ApplicationPrivate(Application *application)
       settings(&baseSettings),
       uiEnabled(false)
 {
-    settings.addSetting(DeviceUuid, QVariantMap{{Settings::DefaultKey, DeviceUuidDefault}});
-    settings.addSetting(DeviceName, QVariantMap{{Settings::DefaultKey, DeviceNameDefault}});
+    settings.addSetting(DeviceUuid, {{Settings::DefaultKey, DeviceUuidDefault}});
+    settings.addSetting(DeviceName, {{Settings::DefaultKey, DeviceNameDefault}});
 }
 
 Application::Application(QObject *parent)
