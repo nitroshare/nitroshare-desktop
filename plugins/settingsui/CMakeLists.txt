@@ -10,6 +10,7 @@ set(SRC
 add_library(settingsui MODULE ${SRC})
 
 set_target_properties(settingsui PROPERTIES
+    CXX_STANDARD             11
     VERSION                  ${VERSION}
     SOVERSION                ${VERSION_MAJOR}
     RUNTIME_OUTPUT_DIRECTORY "${PLUGIN_OUTPUT_DIRECTORY}"
@@ -17,7 +18,7 @@ set_target_properties(settingsui PROPERTIES
 )
 
 target_include_directories(settingsui PUBLIC "${CMAKE_CURRENT_BINARY_DIR}")
-target_link_libraries(settingsui nitroshare)
+target_link_libraries(settingsui nitroshare Qt5::Widgets)
 
 install(TARGETS settingsui
     DESTINATION "${INSTALL_PLUGIN_PATH}"

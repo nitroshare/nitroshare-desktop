@@ -25,10 +25,14 @@
 #ifndef TRAYPLUGIN_H
 #define TRAYPLUGIN_H
 
-#include <QMenu>
-#include <QSystemTrayIcon>
-
 #include <nitroshare/iplugin.h>
+
+class QAction;
+class QMenu;
+class QSystemTrayIcon;
+
+class Action;
+class Application;
 
 /**
  * @brief Provide a system tray icon
@@ -43,14 +47,19 @@ public:
     virtual void initialize(Application *application);
     virtual void cleanup(Application *application);
 
-public Q_SLOTS:
+private Q_SLOTS:
 
+    void onActionAdded(Action *action);
+    void onActionRemoved(Action *action);
+    void onAbout();
     void onAboutQt();
 
 private:
 
+    Application *mApplication;
     QSystemTrayIcon *mIcon;
     QMenu *mMenu;
+    QAction *mSeparator;
 };
 
 #endif // TRAYPLUGIN_H

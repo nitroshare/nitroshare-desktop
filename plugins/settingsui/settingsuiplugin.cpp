@@ -22,14 +22,17 @@
  * IN THE SOFTWARE.
  */
 
+#include <nitroshare/actionregistry.h>
+#include <nitroshare/application.h>
+
 #include "settingsuiplugin.h"
 
 void SettingsUiPlugin::initialize(Application *application)
 {
-    //...
+    application->actionRegistry()->add(&mAction);
 }
 
 void SettingsUiPlugin::cleanup(Application *application)
 {
-    //...
+    application->actionRegistry()->remove(&mAction);
 }

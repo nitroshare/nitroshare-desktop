@@ -22,4 +22,28 @@
  * IN THE SOFTWARE.
  */
 
+#include <QMessageBox>
+
 #include "settingsaction.h"
+
+QString SettingsAction::name() const
+{
+    return "settingsui";
+}
+
+bool SettingsAction::ui() const
+{
+    return true;
+}
+
+QString SettingsAction::title() const
+{
+    return tr("Settings");
+}
+
+bool SettingsAction::invoke(const QVariantMap &params)
+{
+    QMessageBox::information(nullptr, tr("Test"), tr("This is a test!"));
+
+    return true;
+}

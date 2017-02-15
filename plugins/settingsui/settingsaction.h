@@ -25,6 +25,24 @@
 #ifndef SETTINGSACTION_H
 #define SETTINGSACTION_H
 
-//...
+#include <nitroshare/action.h>
+
+class SettingsAction : public Action
+{
+    Q_OBJECT
+    Q_PROPERTY(bool ui READ ui)
+    Q_PROPERTY(QString title READ title)
+
+public:
+
+    virtual QString name() const;
+
+    bool ui() const;
+    QString title() const;
+
+public Q_SLOTS:
+
+    virtual bool invoke(const QVariantMap &params);
+};
 
 #endif // SETTINGSACTION_H

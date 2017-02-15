@@ -22,30 +22,98 @@
  * IN THE SOFTWARE.
  */
 
+#include <QAction>
 #include <QIcon>
+#include <QMenu>
 #include <QMessageBox>
+#include <QSystemTrayIcon>
 
+#include <nitroshare/action.h>
+#include <nitroshare/actionregistry.h>
 #include <nitroshare/application.h>
 
 #include "trayplugin.h"
 
 void TrayPlugin::initialize(Application *application)
 {
+    mApplication = application;
+
+    // Create the menu for the tray icon
     mMenu = new QMenu;
+
+    // Create the separator
+    mSeparator = new QAction(mMenu);
+    mSeparator->setSeparator(true);
+    mSeparator->setVisible(false);
+
+    // Populate the menu
+    mMenu->addAction(mSeparator);
+    mMenu->addAction(tr("About"), this, SLOT(onAbout()));
     mMenu->addAction(tr("About Qt"), this, SLOT(onAboutQt()));
     mMenu->addSeparator();
-    mMenu->addAction(tr("Quit"), application, SLOT(quit()));
+    mMenu->addAction(tr("Quit"), mApplication, SLOT(quit()));
 
+    // Create the tray icon and initialize it
     mIcon = new QSystemTrayIcon;
     mIcon->setContextMenu(mMenu);
     mIcon->setIcon(QIcon(":/icon/icon.png"));
     mIcon->show();
+
+    // Add all existing actions to the menu
+    foreach (Action *action, mApplication->actionRegistry()->actions()) {
+        onActionAdded(action);
+    }
+
+    // Watch for new actions being added and removed
+    connect(application->actionRegistry(), &ActionRegistry::actionAdded, this, &TrayPlugin::onActionAdded);
+    connect(application->actionRegistry(), &ActionRegistry::actionRemoved, this, &TrayPlugin::onActionRemoved);
 }
 
 void TrayPlugin::cleanup(Application *)
 {
     delete mIcon;
     delete mMenu;
+}
+
+void TrayPlugin::onActionAdded(Action *action)
+{
+    // Only actions with the "ui" property set are added
+    if (!action->property("ui").toBool()) {
+        return;
+    }
+
+    // Use the title property (if present) or fallback to the name
+    QString title = action->property("title").toString();
+    if (title.isEmpty()) {
+        title = action->name();
+    }
+
+    // Create a menu item for the action and connect to its triggered() signal
+    QAction *menuAction = new QAction(title, mMenu);
+    menuAction->setData(QVariant::fromValue(action));
+    connect(menuAction, &QAction::triggered, [action]() {
+        action->invoke();
+    });
+
+    // If this is the first action, show the separator
+    mSeparator->setVisible(true);
+
+    // Insert the action
+    mMenu->insertAction(mSeparator, menuAction);
+}
+
+void TrayPlugin::onActionRemoved(Action *action)
+{
+    //...
+}
+
+void TrayPlugin::onAbout()
+{
+    QMessageBox::information(
+        nullptr,
+        tr("About NitroShare"),
+        tr("NitroShare - version %1\nCopyright 2017 Nathan Osman").arg(mApplication->version())
+    );
 }
 
 void TrayPlugin::onAboutQt()
