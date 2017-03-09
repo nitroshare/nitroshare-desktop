@@ -26,6 +26,7 @@
 #define DNSRECORD_H
 
 #include <QByteArray>
+#include <QMap>
 
 /**
  * @brief DNS record
@@ -34,7 +35,7 @@ class DnsRecord
 {
 public:
 
-    DnsRecord(const QByteArray &name, quint16 type, bool flushCache, quint32 ttl, const QByteArray &data);
+    DnsRecord(const QByteArray &name, quint16 type, bool flushCache, quint32 ttl, const QByteArray &data = QByteArray());
 
     QByteArray name() const;
     quint16 type() const;
@@ -42,7 +43,8 @@ public:
     quint32 ttl() const;
     QByteArray data() const;
 
-    // TODO: parse data based on type
+    QMap<QByteArray, QByteArray> txt() const;
+    void setTxt(const QMap<QByteArray, QByteArray> txt);
 
 private:
 

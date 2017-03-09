@@ -167,7 +167,7 @@ bool DnsMessage::parseRecord(const QByteArray &message, quint16 &offset)
     }
     QByteArray data(message.constData() + offset, nBytes);
     offset += nBytes;
-    mRecords.append(DnsRecord{name, type, class_ & 0x8000, ttl, data});
+    mRecords.append(DnsRecord(name, type, class_ & 0x8000, ttl, data));
     return true;
 }
 
