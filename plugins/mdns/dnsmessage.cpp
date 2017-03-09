@@ -24,6 +24,11 @@
 
 #include "dnsmessage.h"
 
+DnsMessage::DnsMessage()
+    : mOkay(false)
+{
+}
+
 DnsMessage::DnsMessage(const QByteArray &message)
 {
     mOkay = parse(message);
@@ -34,42 +39,96 @@ bool DnsMessage::isOkay() const
     return mOkay;
 }
 
-QList<DnsMessage::Question> DnsMessage::questions() const
+QList<DnsMessage::Query> DnsMessage::queries() const
 {
-    return mQuestions;
+    return mQueries;
 }
 
-QList<DnsMessage::Answer> DnsMessage::answers() const
+QList<DnsMessage::Record> DnsMessage::records() const
 {
-    return mAnswers;
+    return mRecords;
+}
+
+void DnsMessage::addQuery(const Query &query)
+{
+    mQueries.append(query);
+}
+
+void DnsMessage::addRecord(const Record &record)
+{
+    mRecords.append(record);
+}
+
+QByteArray DnsMessage::toMessage() const
+{
+    QByteArray message;
+    writeInteger<quint16>(message, 0);
+    writeInteger<quint16>(message, 0);
+    writeInteger<quint16>(message, mQueries.count());
+    writeInteger<quint16>(message, mRecords.count());
+    writeInteger<quint16>(message, 0);
+    writeInteger<quint16>(message, 0);
+    foreach (Query query, mQueries) {
+        writeQuery(message, query);
+    }
+    foreach (Record record, mRecords) {
+        writeRecord(message, record);
+    }
+    return message;
+}
+
+void DnsMessage::writeQuery(QByteArray &message, const Query &query) const
+{
+    writeName(message, query.name);
+    writeInteger<quint16>(message, query.type);
+    writeInteger<quint16>(message, query.unicast ? 0x8001 : 1);
+}
+
+void DnsMessage::writeRecord(QByteArray &message, const Record &record) const
+{
+    writeName(message, record.name);
+    writeInteger<quint16>(message, record.type);
+    writeInteger<quint16>(message, record.flush ? 0x8001 : 1);
+    writeInteger<quint32>(message, record.ttl);
+    writeInteger<quint16>(message, record.data.length());
+    message.append(record.data);
+}
+
+void DnsMessage::writeName(QByteArray &message, const QByteArray &name) const
+{
+    foreach (QString label, name.split('.')) {
+        writeInteger<quint8>(message, label.length());
+        message.append(label.toUtf8());
+    }
 }
 
 bool DnsMessage::parse(const QByteArray &message)
 {
     quint16 offset = 0;
-    quint16 transactionId, flags, nQuestions, nAnswers, nAuthRecs, nAddRecs;
+    quint16 transactionId, flags, nQueries, nAnswers, nAuthRecs, nAddRecs;
     if (!parseInteger<quint16>(message, offset, transactionId) ||
             !parseInteger<quint16>(message, offset, flags) ||
-            !parseInteger<quint16>(message, offset, nQuestions) ||
+            !parseInteger<quint16>(message, offset, nQueries) ||
             !parseInteger<quint16>(message, offset, nAnswers) ||
             !parseInteger<quint16>(message, offset, nAuthRecs) ||
             !parseInteger<quint16>(message, offset, nAddRecs)) {
         return false;
     }
-    for (int i = 0; i < nQuestions; ++i) {
-        if (!parseQuestion(message, offset)) {
+    quint16 nRecords = nAnswers + nAuthRecs + nAddRecs;
+    for (int i = 0; i < nQueries; ++i) {
+        if (!parseQuery(message, offset)) {
             return false;
         }
     }
-    for (int i = 0; i < nAnswers; ++i) {
-        if (!parseAnswer(message, offset)) {
+    for (int i = 0; i < nRecords; ++i) {
+        if (!parseRecord(message, offset)) {
             return false;
         }
     }
     return true;
 }
 
-bool DnsMessage::parseQuestion(const QByteArray &message, quint16 &offset)
+bool DnsMessage::parseQuery(const QByteArray &message, quint16 &offset)
 {
     QByteArray name;
     if (!parseName(message, offset, name)) {
@@ -80,11 +139,11 @@ bool DnsMessage::parseQuestion(const QByteArray &message, quint16 &offset)
             !parseInteger<quint16>(message, offset, class_)) {
         return false;
     }
-    mQuestions.append(Question{name, type});
+    mQueries.append(Query{name, type, class_ & 0x8000});
     return true;
 }
 
-bool DnsMessage::parseAnswer(const QByteArray &message, quint16 &offset)
+bool DnsMessage::parseRecord(const QByteArray &message, quint16 &offset)
 {
     QByteArray name;
     if (!parseName(message, offset, name)) {
@@ -99,8 +158,9 @@ bool DnsMessage::parseAnswer(const QByteArray &message, quint16 &offset)
             offset + nBytes > message.length()) {
         return false;
     }
+    QByteArray data(message.constData() + offset, nBytes);
     offset += nBytes;
-    mAnswers.append(Answer{name, type, ttl});
+    mRecords.append(Record{name, type, class_ & 0x8000, ttl, data});
     return true;
 }
 
@@ -153,3 +213,4 @@ bool DnsMessage::parseName(const QByteArray &message, quint16 &offset, QByteArra
     }
     return true;
 }
+

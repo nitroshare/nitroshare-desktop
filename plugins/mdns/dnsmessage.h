@@ -36,32 +36,60 @@ class DnsMessage
 {
 public:
 
-    struct Question
-    {
-        QByteArray name;
-        quint16 type;
+    enum {
+        A = 1,
+        AAAA = 28,
+        PTR = 12,
+        SRV = 33,
+        TXT = 16
     };
 
-    struct Answer
+    struct Query
     {
         QByteArray name;
         quint16 type;
+        bool unicast;
+    };
+
+    struct Record
+    {
+        QByteArray name;
+        quint16 type;
+        bool flush;
         quint32 ttl;
+        QByteArray data;
     };
 
+    DnsMessage();
     explicit DnsMessage(const QByteArray &message);
 
     bool isOkay() const;
 
-    QList<Question> questions() const;
-    QList<Answer> answers() const;
+    QList<Query> queries() const;
+    QList<Record> records() const;
+
+    void addQuery(const Query &query);
+    void addRecord(const Record &record);
+
+    QByteArray toMessage() const;
 
 private:
 
+    void writeQuery(QByteArray &message, const Query &query) const;
+    void writeRecord(QByteArray &message, const Record &answer) const;
+    void writeName(QByteArray &message, const QByteArray &name) const;
+
     bool parse(const QByteArray &message);
-    bool parseQuestion(const QByteArray &message, quint16 &offset);
-    bool parseAnswer(const QByteArray &message, quint16 &offset);
+    bool parseQuery(const QByteArray &message, quint16 &offset);
+    bool parseRecord(const QByteArray &message, quint16 &offset);
     bool parseName(const QByteArray &message, quint16 &offset, QByteArray &name);
+
+    template<class T>
+    void writeInteger(QByteArray &message, T value) const
+    {
+        value = qToBigEndian<T>(value);
+        message.append(reinterpret_cast<const char*>(&value), sizeof(T));
+    }
 
     template<class T>
     bool parseInteger(const QByteArray &message, quint16 &offset, T &value)
@@ -76,8 +104,9 @@ private:
 
     bool mOkay;
 
-    QList<Question> mQuestions;
-    QList<Answer> mAnswers;
+    QList<Query> mQueries;
+    QList<Record> mRecords;
 };
 
 #endif // DNSMESSAGE_H
+
