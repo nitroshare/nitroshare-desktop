@@ -29,6 +29,9 @@
 #include <QList>
 #include <QtEndian>
 
+#include "dnsquery.h"
+#include "dnsrecord.h"
+
 /**
  * @brief Incredibly simple DNS message parser and generator
  */
@@ -44,39 +47,24 @@ public:
         TXT = 16
     };
 
-    struct Query
-    {
-        QByteArray name;
-        quint16 type;
-        bool unicast;
-    };
-
-    struct Record
-    {
-        QByteArray name;
-        quint16 type;
-        bool flush;
-        quint32 ttl;
-        QByteArray data;
-    };
-
-    DnsMessage();
+    explicit DnsMessage(bool response);
     explicit DnsMessage(const QByteArray &message);
 
     bool isOkay() const;
+    bool isResponse() const;
 
-    QList<Query> queries() const;
-    QList<Record> records() const;
+    QList<DnsQuery> queries() const;
+    QList<DnsRecord> records() const;
 
-    void addQuery(const Query &query);
-    void addRecord(const Record &record);
+    void addQuery(const DnsQuery &query);
+    void addRecord(const DnsRecord &record);
 
     QByteArray toMessage() const;
 
 private:
 
-    void writeQuery(QByteArray &message, const Query &query) const;
-    void writeRecord(QByteArray &message, const Record &answer) const;
+    void writeQuery(QByteArray &message, const DnsQuery &query) const;
+    void writeRecord(QByteArray &message, const DnsRecord &answer) const;
     void writeName(QByteArray &message, const QByteArray &name) const;
 
     bool parse(const QByteArray &message);
@@ -103,10 +91,10 @@ private:
     }
 
     bool mOkay;
+    bool mResponse;
 
-    QList<Query> mQueries;
-    QList<Record> mRecords;
+    QList<DnsQuery> mQueries;
+    QList<DnsRecord> mRecords;
 };
 
 #endif // DNSMESSAGE_H
-

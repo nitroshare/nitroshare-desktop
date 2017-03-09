@@ -24,8 +24,9 @@
 
 #include "dnsmessage.h"
 
-DnsMessage::DnsMessage()
-    : mOkay(false)
+DnsMessage::DnsMessage(bool response)
+    : mOkay(false),
+      mResponse(response)
 {
 }
 
@@ -39,22 +40,27 @@ bool DnsMessage::isOkay() const
     return mOkay;
 }
 
-QList<DnsMessage::Query> DnsMessage::queries() const
+bool DnsMessage::isResponse() const
+{
+    return mResponse;
+}
+
+QList<DnsQuery> DnsMessage::queries() const
 {
     return mQueries;
 }
 
-QList<DnsMessage::Record> DnsMessage::records() const
+QList<DnsRecord> DnsMessage::records() const
 {
     return mRecords;
 }
 
-void DnsMessage::addQuery(const Query &query)
+void DnsMessage::addQuery(const DnsQuery &query)
 {
     mQueries.append(query);
 }
 
-void DnsMessage::addRecord(const Record &record)
+void DnsMessage::addRecord(const DnsRecord &record)
 {
     mRecords.append(record);
 }
@@ -63,35 +69,35 @@ QByteArray DnsMessage::toMessage() const
 {
     QByteArray message;
     writeInteger<quint16>(message, 0);
-    writeInteger<quint16>(message, 0);
+    writeInteger<quint16>(message, mResponse ? 0x8400 : 0);
     writeInteger<quint16>(message, mQueries.count());
     writeInteger<quint16>(message, mRecords.count());
     writeInteger<quint16>(message, 0);
     writeInteger<quint16>(message, 0);
-    foreach (Query query, mQueries) {
+    foreach (DnsQuery query, mQueries) {
         writeQuery(message, query);
     }
-    foreach (Record record, mRecords) {
+    foreach (DnsRecord record, mRecords) {
         writeRecord(message, record);
     }
     return message;
 }
 
-void DnsMessage::writeQuery(QByteArray &message, const Query &query) const
+void DnsMessage::writeQuery(QByteArray &message, const DnsQuery &query) const
 {
-    writeName(message, query.name);
-    writeInteger<quint16>(message, query.type);
-    writeInteger<quint16>(message, query.unicast ? 0x8001 : 1);
+    writeName(message, query.name());
+    writeInteger<quint16>(message, query.type());
+    writeInteger<quint16>(message, query.unicastResponse() ? 0x8001 : 1);
 }
 
-void DnsMessage::writeRecord(QByteArray &message, const Record &record) const
+void DnsMessage::writeRecord(QByteArray &message, const DnsRecord &record) const
 {
-    writeName(message, record.name);
-    writeInteger<quint16>(message, record.type);
-    writeInteger<quint16>(message, record.flush ? 0x8001 : 1);
-    writeInteger<quint32>(message, record.ttl);
-    writeInteger<quint16>(message, record.data.length());
-    message.append(record.data);
+    writeName(message, record.name());
+    writeInteger<quint16>(message, record.type());
+    writeInteger<quint16>(message, record.flushCache() ? 0x8001 : 1);
+    writeInteger<quint32>(message, record.ttl());
+    writeInteger<quint16>(message, record.data().length());
+    message.append(record.data());
 }
 
 void DnsMessage::writeName(QByteArray &message, const QByteArray &name) const
@@ -114,6 +120,7 @@ bool DnsMessage::parse(const QByteArray &message)
             !parseInteger<quint16>(message, offset, nAddRecs)) {
         return false;
     }
+    mResponse = flags & 0x8400;  // assume authority
     quint16 nRecords = nAnswers + nAuthRecs + nAddRecs;
     for (int i = 0; i < nQueries; ++i) {
         if (!parseQuery(message, offset)) {
@@ -139,7 +146,7 @@ bool DnsMessage::parseQuery(const QByteArray &message, quint16 &offset)
             !parseInteger<quint16>(message, offset, class_)) {
         return false;
     }
-    mQueries.append(Query{name, type, class_ & 0x8000});
+    mQueries.append(DnsQuery(name, type, class_ & 0x8000));
     return true;
 }
 
@@ -160,7 +167,7 @@ bool DnsMessage::parseRecord(const QByteArray &message, quint16 &offset)
     }
     QByteArray data(message.constData() + offset, nBytes);
     offset += nBytes;
-    mRecords.append(Record{name, type, class_ & 0x8000, ttl, data});
+    mRecords.append(DnsRecord{name, type, class_ & 0x8000, ttl, data});
     return true;
 }
 
@@ -213,4 +220,3 @@ bool DnsMessage::parseName(const QByteArray &message, quint16 &offset, QByteArra
     }
     return true;
 }
-
