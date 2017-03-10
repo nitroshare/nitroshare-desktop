@@ -22,59 +22,39 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef DNSMESSAGE_H
-#define DNSMESSAGE_H
+#ifndef DNSUTIL_H
+#define DNSUTIL_H
 
 #include <QByteArray>
-#include <QList>
 #include <QtEndian>
 
-#include "dnsquery.h"
-#include "dnsrecord.h"
-
 /**
- * @brief Incredibly simple DNS message parser and generator
+ * @brief Utility methods for working with DNS records
  */
-class DnsMessage
+class DnsUtil
 {
 public:
 
-    enum {
-        A = 1,
-        AAAA = 28,
-        PTR = 12,
-        SRV = 33,
-        TXT = 16
-    };
+    template<class T>
+    static void writeInteger(QByteArray &message, T value)
+    {
+        value = qToBigEndian<T>(value);
+        message.append(reinterpret_cast<const char*>(&value), sizeof(T));
+    }
 
-    explicit DnsMessage(bool response);
-    explicit DnsMessage(const QByteArray &message);
+    template<class T>
+    static bool parseInteger(const QByteArray &message, quint16 &offset, T &value)
+    {
+        if (offset + sizeof(T) > message.length()) {
+            return false;  // out-of-bounds
+        }
+        value = qFromBigEndian<T>(reinterpret_cast<const uchar*>(message.constData() + offset));
+        offset += sizeof(T);
+        return true;
+    }
 
-    bool isOkay() const;
-    bool isResponse() const;
-
-    QList<DnsQuery> queries() const;
-    QList<DnsRecord> records() const;
-
-    void addQuery(const DnsQuery &query);
-    void addRecord(const DnsRecord &record);
-
-    QByteArray toMessage() const;
-
-private:
-
-    void writeQuery(QByteArray &message, const DnsQuery &query) const;
-    void writeRecord(QByteArray &message, const DnsRecord &answer) const;
-
-    bool parse(const QByteArray &message);
-    bool parseQuery(const QByteArray &message, quint16 &offset);
-    bool parseRecord(const QByteArray &message, quint16 &offset);
-
-    bool mOkay;
-    bool mResponse;
-
-    QList<DnsQuery> mQueries;
-    QList<DnsRecord> mRecords;
+    static void writeName(QByteArray &data, const QByteArray &name);
+    static bool parseName(const QByteArray &data, quint16 &offset, QByteArray &name);
 };
 
-#endif // DNSMESSAGE_H
+#endif // DNSUTIL_H

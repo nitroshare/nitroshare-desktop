@@ -23,6 +23,7 @@
  */
 
 #include "dnsmessage.h"
+#include "dnsutil.h"
 
 DnsMessage::DnsMessage(bool response)
     : mOkay(false),
@@ -68,12 +69,12 @@ void DnsMessage::addRecord(const DnsRecord &record)
 QByteArray DnsMessage::toMessage() const
 {
     QByteArray message;
-    writeInteger<quint16>(message, 0);
-    writeInteger<quint16>(message, mResponse ? 0x8400 : 0);
-    writeInteger<quint16>(message, mQueries.count());
-    writeInteger<quint16>(message, mRecords.count());
-    writeInteger<quint16>(message, 0);
-    writeInteger<quint16>(message, 0);
+    DnsUtil::writeInteger<quint16>(message, 0);
+    DnsUtil::writeInteger<quint16>(message, mResponse ? 0x8400 : 0);
+    DnsUtil::writeInteger<quint16>(message, mQueries.count());
+    DnsUtil::writeInteger<quint16>(message, mRecords.count());
+    DnsUtil::writeInteger<quint16>(message, 0);
+    DnsUtil::writeInteger<quint16>(message, 0);
     foreach (DnsQuery query, mQueries) {
         writeQuery(message, query);
     }
@@ -85,39 +86,31 @@ QByteArray DnsMessage::toMessage() const
 
 void DnsMessage::writeQuery(QByteArray &message, const DnsQuery &query) const
 {
-    writeName(message, query.name());
-    writeInteger<quint16>(message, query.type());
-    writeInteger<quint16>(message, query.unicastResponse() ? 0x8001 : 1);
+    DnsUtil::writeName(message, query.name());
+    DnsUtil::writeInteger<quint16>(message, query.type());
+    DnsUtil::writeInteger<quint16>(message, query.unicastResponse() ? 0x8001 : 1);
 }
 
 void DnsMessage::writeRecord(QByteArray &message, const DnsRecord &record) const
 {
-    writeName(message, record.name());
-    writeInteger<quint16>(message, record.type());
-    writeInteger<quint16>(message, record.flushCache() ? 0x8001 : 1);
-    writeInteger<quint32>(message, record.ttl());
-    writeInteger<quint16>(message, record.data().length());
+    DnsUtil::writeName(message, record.name());
+    DnsUtil::writeInteger<quint16>(message, record.type());
+    DnsUtil::writeInteger<quint16>(message, record.flushCache() ? 0x8001 : 1);
+    DnsUtil::writeInteger<quint32>(message, record.ttl());
+    DnsUtil::writeInteger<quint16>(message, record.data().length());
     message.append(record.data());
-}
-
-void DnsMessage::writeName(QByteArray &message, const QByteArray &name) const
-{
-    foreach (QString label, name.split('.')) {
-        writeInteger<quint8>(message, label.length());
-        message.append(label.toUtf8());
-    }
 }
 
 bool DnsMessage::parse(const QByteArray &message)
 {
     quint16 offset = 0;
     quint16 transactionId, flags, nQueries, nAnswers, nAuthRecs, nAddRecs;
-    if (!parseInteger<quint16>(message, offset, transactionId) ||
-            !parseInteger<quint16>(message, offset, flags) ||
-            !parseInteger<quint16>(message, offset, nQueries) ||
-            !parseInteger<quint16>(message, offset, nAnswers) ||
-            !parseInteger<quint16>(message, offset, nAuthRecs) ||
-            !parseInteger<quint16>(message, offset, nAddRecs)) {
+    if (!DnsUtil::parseInteger<quint16>(message, offset, transactionId) ||
+            !DnsUtil::parseInteger<quint16>(message, offset, flags) ||
+            !DnsUtil::parseInteger<quint16>(message, offset, nQueries) ||
+            !DnsUtil::parseInteger<quint16>(message, offset, nAnswers) ||
+            !DnsUtil::parseInteger<quint16>(message, offset, nAuthRecs) ||
+            !DnsUtil::parseInteger<quint16>(message, offset, nAddRecs)) {
         return false;
     }
     mResponse = flags & 0x8400;  // assume authority
@@ -138,12 +131,12 @@ bool DnsMessage::parse(const QByteArray &message)
 bool DnsMessage::parseQuery(const QByteArray &message, quint16 &offset)
 {
     QByteArray name;
-    if (!parseName(message, offset, name)) {
+    if (!DnsUtil::parseName(message, offset, name)) {
         return false;
     }
     quint16 type, class_;
-    if (!parseInteger<quint16>(message, offset, type) ||
-            !parseInteger<quint16>(message, offset, class_)) {
+    if (!DnsUtil::parseInteger<quint16>(message, offset, type) ||
+            !DnsUtil::parseInteger<quint16>(message, offset, class_)) {
         return false;
     }
     mQueries.append(DnsQuery(name, type, class_ & 0x8000));
@@ -153,70 +146,19 @@ bool DnsMessage::parseQuery(const QByteArray &message, quint16 &offset)
 bool DnsMessage::parseRecord(const QByteArray &message, quint16 &offset)
 {
     QByteArray name;
-    if (!parseName(message, offset, name)) {
+    if (!DnsUtil::parseName(message, offset, name)) {
         return false;
     }
     quint16 type, class_, nBytes;
     quint32 ttl;
-    if (!parseInteger<quint16>(message, offset, type) ||
-            !parseInteger<quint16>(message, offset, class_) ||
-            !parseInteger<quint32>(message, offset, ttl) ||
-            !parseInteger<quint16>(message, offset, nBytes) ||
+    if (!DnsUtil::parseInteger<quint16>(message, offset, type) ||
+            !DnsUtil::parseInteger<quint16>(message, offset, class_) ||
+            !DnsUtil::parseInteger<quint32>(message, offset, ttl) ||
+            !DnsUtil::parseInteger<quint16>(message, offset, nBytes) ||
             offset + nBytes > message.length()) {
         return false;
     }
-    QByteArray data(message.constData() + offset, nBytes);
+    mRecords.append(DnsRecord(name, type, class_ & 0x8000, ttl, message, offset, nBytes));
     offset += nBytes;
-    mRecords.append(DnsRecord(name, type, class_ & 0x8000, ttl, data));
-    return true;
-}
-
-bool DnsMessage::parseName(const QByteArray &message, quint16 &offset, QByteArray &name)
-{
-    quint16 offsetEnd = 0;
-    quint16 offsetPtr = offset;
-    forever {
-        if (offset >= message.length()) {
-            return false;  // out-of-bounds
-        }
-        quint8 nBytes;
-        if (!parseInteger<quint8>(message, offset, nBytes)) {
-            return false;
-        }
-        if (!nBytes) {
-            break;
-        }
-        quint8 nBytes2;
-        quint16 newOffset;
-        switch (nBytes & 0xc0) {
-        case 0x00:
-            if (offset + nBytes > message.length()) {
-                return false;  // length exceeds message
-            }
-            name.append(message.mid(offset, nBytes));
-            name.append('.');
-            offset += nBytes;
-            break;
-        case 0xc0:
-            if (!parseInteger<quint8>(message, offset, nBytes2)) {
-                return false;
-            }
-            newOffset = ((nBytes & ~0xc0) << 8) | nBytes2;
-            if (newOffset >= offsetPtr) {
-                return false;  // prevent infinite loop
-            }
-            offsetPtr = newOffset;
-            if (!offsetEnd) {
-                offsetEnd = offset;
-            }
-            offset = newOffset;
-            break;
-        default:
-            return false;  // no other types supported
-        }
-    }
-    if (offsetEnd) {
-        offset = offsetEnd;
-    }
     return true;
 }
