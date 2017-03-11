@@ -24,10 +24,8 @@
 
 #include "dnsquery.h"
 
-DnsQuery::DnsQuery(const QByteArray &name, quint16 type, bool unicastResponse)
-    : mName(name),
-      mType(type),
-      mUnicastResponse(unicastResponse)
+DnsQuery::DnsQuery()
+    : mUnicastResponse(false)
 {
 }
 
@@ -36,12 +34,27 @@ QByteArray DnsQuery::name() const
     return mName;
 }
 
+void DnsQuery::setName(const QByteArray &name)
+{
+    mName = name;
+}
+
 quint16 DnsQuery::type() const
 {
     return mType;
 }
 
+void DnsQuery::setType(quint16 type)
+{
+    mType = type;
+}
+
 bool DnsQuery::unicastResponse() const
 {
     return mUnicastResponse;
+}
+
+void DnsQuery::setUnicastResponse(bool unicastResponse)
+{
+    mUnicastResponse = unicastResponse;
 }

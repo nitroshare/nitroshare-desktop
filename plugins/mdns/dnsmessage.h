@@ -25,15 +25,15 @@
 #ifndef DNSMESSAGE_H
 #define DNSMESSAGE_H
 
-#include <QByteArray>
 #include <QList>
-#include <QtEndian>
 
 #include "dnsquery.h"
 #include "dnsrecord.h"
 
 /**
- * @brief Incredibly simple DNS message parser and generator
+ * @brief DNS message
+ *
+ * Messages consist of queries and records.
  */
 class DnsMessage
 {
@@ -47,32 +47,55 @@ public:
         TXT = 16
     };
 
-    explicit DnsMessage(bool response);
-    explicit DnsMessage(const QByteArray &message);
+    /**
+     * @brief Create an empty DNS message
+     */
+    DnsMessage();
 
-    bool isOkay() const;
+    /**
+     * @brief Retrieve the transaction ID for the message
+     */
+    quint16 transactionId() const;
+
+    /**
+     * @brief Set the transaction ID for the message
+     */
+    void setTransactionId(quint16 transactionId);
+
+    /**
+     * @brief Determine if the message is a response
+     */
     bool isResponse() const;
 
+    /**
+     * @brief Set whether the message is a response
+     */
+    void setResponse(bool response);
+
+    /**
+     * @brief Retrieve the queries in the message
+     */
     QList<DnsQuery> queries() const;
+
+    /**
+     * @brief Add a query to the message
+     */
+    void addQuery(const DnsQuery &query);
+
+    /**
+     * @brief Retrieve the records in the message
+     */
     QList<DnsRecord> records() const;
 
-    void addQuery(const DnsQuery &query);
+    /**
+     * @brief Add a record to the message
+     */
     void addRecord(const DnsRecord &record);
-
-    QByteArray toMessage() const;
 
 private:
 
-    void writeQuery(QByteArray &message, const DnsQuery &query) const;
-    void writeRecord(QByteArray &message, const DnsRecord &answer) const;
-
-    bool parse(const QByteArray &message);
-    bool parseQuery(const QByteArray &message, quint16 &offset);
-    bool parseRecord(const QByteArray &message, quint16 &offset);
-
-    bool mOkay;
+    quint16 mTransactionId;
     bool mResponse;
-
     QList<DnsQuery> mQueries;
     QList<DnsRecord> mRecords;
 };

@@ -34,11 +34,14 @@ class DnsQuery
 {
 public:
 
-    DnsQuery(const QByteArray &name, quint16 type, bool unicastResponse);
+    DnsQuery();
 
     QByteArray name() const;
+    void setName(const QByteArray &name);
     quint16 type() const;
+    void setType(quint16 type);
     bool unicastResponse() const;
+    void setUnicastResponse(bool unicastResponse);
 
 private:
 

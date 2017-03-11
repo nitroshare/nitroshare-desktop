@@ -22,19 +22,15 @@
  * IN THE SOFTWARE.
  */
 
-#include <QMapIterator>
-
 #include "dnsrecord.h"
-#include "dnsutil.h"
 
-DnsRecord::DnsRecord(const QByteArray &name, quint16 type, bool flushCache, quint32 ttl, const QByteArray &message, quint16 offset, quint16 length)
-    : mName(name),
-      mType(type),
-      mFlushCache(flushCache),
-      mTtl(ttl),
-      mMessage(message),
-      mOffset(offset),
-      mLength(length)
+DnsRecord::DnsRecord()
+    : mType(0),
+      mFlushCache(false),
+      mTtl(0),
+      mPriority(0),
+      mWeight(0),
+      mPort(0)
 {
 }
 
@@ -43,9 +39,19 @@ QByteArray DnsRecord::name() const
     return mName;
 }
 
+void DnsRecord::setName(const QByteArray &name)
+{
+    mName = name;
+}
+
 quint16 DnsRecord::type() const
 {
     return mType;
+}
+
+void DnsRecord::setType(quint16 type)
+{
+    mType = type;
 }
 
 bool DnsRecord::flushCache() const
@@ -53,110 +59,78 @@ bool DnsRecord::flushCache() const
     return mFlushCache;
 }
 
+void DnsRecord::setFlushCache(bool flushCache)
+{
+    mFlushCache = flushCache;
+}
+
 quint32 DnsRecord::ttl() const
 {
     return mTtl;
 }
 
-QByteArray DnsRecord::data() const
+void DnsRecord::setTtl(quint32 ttl)
 {
-    return mMessage.mid(mOffset, mLength);
+    mTtl = ttl;
 }
 
-QHostAddress DnsRecord::a() const
+QHostAddress DnsRecord::address() const
 {
-    quint32 ip4Addr;
-    quint16 offset = mOffset;
-    if (DnsUtil::parseInteger<quint32>(mMessage, offset, ip4Addr)) {
-        return QHostAddress(ip4Addr);
-    } else {
-        return QHostAddress();
-    }
+    return mAddress;
 }
 
-void DnsRecord::setA(const QHostAddress &address)
+void DnsRecord::setAddress(const QHostAddress &address)
 {
-    quint32 ip4Addr = qToBigEndian<quint32>(address.toIPv4Address());
-    DnsUtil::writeInteger<quint32>(mMessage, ip4Addr);
+    mAddress = address;
 }
 
-QHostAddress DnsRecord::aaaa() const
+QByteArray DnsRecord::target() const
 {
-    if (mLength == 16) {
-        return QHostAddress(reinterpret_cast<const quint8*>(mMessage.constData() + mOffset));
-    } else {
-        return QHostAddress();
-    }
+    return mTarget;
 }
 
-void DnsRecord::setAaaa(const QHostAddress &address)
+void DnsRecord::setTarget(const QByteArray &target)
 {
-    Q_IPV6ADDR ip6Addr = address.toIPv6Address();
-    mMessage.append(reinterpret_cast<const char*>(&ip6Addr), sizeof(Q_IPV6ADDR));
+    mTarget = target;
 }
 
-QByteArray DnsRecord::ptr() const
+quint16 DnsRecord::priority() const
 {
-    QByteArray name;
-    quint16 offset = mOffset;
-    DnsUtil::parseName(mMessage, offset, name);
-    return name;
+    return mPriority;
 }
 
-void DnsRecord::setPtr(const QByteArray &name)
+void DnsRecord::setPriority(quint16 priority)
 {
-    DnsUtil::writeName(mMessage, name);
+    mPriority = priority;
 }
 
-DnsRecord::SrvData DnsRecord::srv() const
+quint16 DnsRecord::weight() const
 {
-    DnsRecord::SrvData srvData{0, 0, 0};
-    quint16 offset = mOffset;
-    DnsUtil::parseInteger<quint16>(mMessage, offset, srvData.priority) &&
-        DnsUtil::parseInteger<quint16>(mMessage, offset, srvData.weight) &&
-        DnsUtil::parseInteger<quint16>(mMessage, offset, srvData.port) &&
-        DnsUtil::parseName(mMessage, offset, srvData.target);
-    return srvData;
+    return mWeight;
 }
 
-void DnsRecord::setSrv(const SrvData &srvData)
+void DnsRecord::setWeight(quint16 weight)
 {
-    DnsUtil::writeInteger<quint16>(mMessage, srvData.priority);
-    DnsUtil::writeInteger<quint16>(mMessage, srvData.weight);
-    DnsUtil::writeInteger<quint16>(mMessage, srvData.port);
-    DnsUtil::writeName(mMessage, srvData.target);
+    mWeight = weight;
 }
 
-QMap<QByteArray, QByteArray> DnsRecord::txt() const
+quint16 DnsRecord::port() const
 {
-    QMap<QByteArray, QByteArray> map;
-    quint16 offset = mOffset;
-    forever {
-        if (offset >= mMessage.length()) {
-            break;
-        }
-        quint8 nBytes;
-        if (!DnsUtil::parseInteger<quint8>(mMessage, offset, nBytes) ||
-                offset + nBytes > mMessage.length()) {
-            break;
-        }
-        QByteArray entry(mMessage.constData() + offset, nBytes);
-        offset += nBytes;
-        int splitIndex = entry.indexOf('=');
-        if (splitIndex == -1) {
-            break;
-        }
-        map.insert(entry.left(splitIndex), entry.mid(splitIndex + 1));
-    }
-    return map;
+    return mPort;
 }
 
-void DnsRecord::setTxt(const QMap<QByteArray, QByteArray> txt)
+void DnsRecord::setPort(quint16 port)
 {
-    QMapIterator<QByteArray, QByteArray> i(txt);
-    while (i.hasNext()) {
-        QByteArray entry = i.key() + "=" + i.value();
-        DnsUtil::writeInteger<quint8>(mMessage, entry.length());
-        mMessage.append(entry);
-    }
+    mPort = port;
 }
+
+QMap<QByteArray, QByteArray> DnsRecord::txt()
+{
+    return mTxt;
+}
+
+void DnsRecord::addTxt(const QByteArray &key, const QByteArray &value)
+{
+    mTxt.insert(key, value);
+}
+

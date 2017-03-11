@@ -37,38 +37,30 @@ class DnsRecord
 public:
 
     /**
-     * @brief Data for a SRV record
+     * @brief Create an empty DNS record
      */
-    struct SrvData
-    {
-        quint16 priority;
-        quint16 weight;
-        quint16 port;
-        QByteArray target;
-    };
-
-    DnsRecord(const QByteArray &name, quint16 type, bool flushCache, quint32 ttl, const QByteArray &message = QByteArray(), quint16 offset = 0, quint16 length = -1);
+    DnsRecord();
 
     QByteArray name() const;
+    void setName(const QByteArray &name);
     quint16 type() const;
+    void setType(quint16 type);
     bool flushCache() const;
+    void setFlushCache(bool flushCache);
     quint32 ttl() const;
-    QByteArray data() const;
-
-    QHostAddress a() const;
-    void setA(const QHostAddress &address);
-
-    QHostAddress aaaa() const;
-    void setAaaa(const QHostAddress &address);
-
-    QByteArray ptr() const;
-    void setPtr(const QByteArray &name);
-
-    SrvData srv() const;
-    void setSrv(const SrvData &srvData);
-
-    QMap<QByteArray, QByteArray> txt() const;
-    void setTxt(const QMap<QByteArray, QByteArray> txt);
+    void setTtl(quint32 ttl);
+    QHostAddress address() const;
+    void setAddress(const QHostAddress &address);
+    QByteArray target() const;
+    void setTarget(const QByteArray &target);
+    quint16 priority() const;
+    void setPriority(quint16 priority);
+    quint16 weight() const;
+    void setWeight(quint16 weight);
+    quint16 port() const;
+    void setPort(quint16 port);
+    QMap<QByteArray, QByteArray> txt();
+    void addTxt(const QByteArray &key, const QByteArray &value);
 
 private:
 
@@ -76,9 +68,12 @@ private:
     quint16 mType;
     bool mFlushCache;
     quint32 mTtl;
-    QByteArray mMessage;
-    quint16 mOffset;
-    quint16 mLength;
+    QHostAddress mAddress;
+    QByteArray mTarget;
+    quint16 mPriority;
+    quint16 mWeight;
+    quint16 mPort;
+    QMap<QByteArray, QByteArray> mTxt;
 };
 
 #endif // DNSRECORD_H
