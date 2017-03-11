@@ -26,35 +26,82 @@
 #define DNSUTIL_H
 
 #include <QByteArray>
+#include <QMap>
 #include <QtEndian>
 
+#include "dnsmessage.h"
+
 /**
- * @brief Utility methods for working with DNS records
+ * @brief Utility methods for working with DNS data
  */
 class DnsUtil
 {
 public:
 
-    template<class T>
-    static void writeInteger(QByteArray &message, T value)
-    {
-        value = qToBigEndian<T>(value);
-        message.append(reinterpret_cast<const char*>(&value), sizeof(T));
-    }
+    /**
+     * @brief Parse a raw DNS packet into a DnsMessage
+     * @param packet raw DNS packet
+     * @param message DnsMessage
+     * @return true if no errors occurred
+     */
+    static bool fromPacket(const QByteArray &packet, DnsMessage &message);
 
+    /**
+     * @brief Create a raw DNS packet from a DnsMessage
+     * @param message DnsMessage
+     * @param packet raw DNS packet
+     */
+    static void toPacket(const DnsMessage &message, QByteArray &packet);
+
+    /**
+     * @brief Read a DNS name
+     * @param packet raw DNS packet
+     * @param offset offset into packet
+     * @param name value read from packet
+     * @return true if no errors occurred
+     */
+    static bool parseName(const QByteArray &packet, quint16 &offset, QByteArray &name);
+
+    /**
+     * @brief Write a DNS name
+     * @param packet raw DNS packet
+     * @param offset offset into packet
+     * @param name value to write to packet
+     * @param nameMap map of DNS names already written to their offsets
+     */
+    static void writeName(const QByteArray &packet, quint16 &offset, const QByteArray &name, QMap<QByteArray, quint16> nameMap);
+
+    /**
+     * @brief Read an integer in network byte-order from a byte array
+     * @param packet raw DNS packet
+     * @param offset offset into packet
+     * @param value integer to read
+     * @return true if the integer was read
+     */
     template<class T>
-    static bool parseInteger(const QByteArray &message, quint16 &offset, T &value)
+    static bool parseInteger(const QByteArray &packet, quint16 &offset, T &value)
     {
-        if (offset + sizeof(T) > message.length()) {
+        if (offset + sizeof(T) > packet.length()) {
             return false;  // out-of-bounds
         }
-        value = qFromBigEndian<T>(reinterpret_cast<const uchar*>(message.constData() + offset));
+        value = qFromBigEndian<T>(reinterpret_cast<const uchar*>(packet.constData() + offset));
         offset += sizeof(T);
         return true;
     }
 
-    static void writeName(QByteArray &data, const QByteArray &name);
-    static bool parseName(const QByteArray &data, quint16 &offset, QByteArray &name);
+    /**
+     * @brief Write an integer in network byte-order to a byte array
+     * @param packet raw DNS packet
+     * @param offset offset into packet
+     * @param value integer to write
+     */
+    template<class T>
+    static void writeInteger(QByteArray &packet, quint16 &offset, T value)
+    {
+        value = qToBigEndian<T>(value);
+        packet.append(reinterpret_cast<const char*>(&value), sizeof(T));
+        offset += sizeof(T);
+    }
 };
 
 #endif // DNSUTIL_H
