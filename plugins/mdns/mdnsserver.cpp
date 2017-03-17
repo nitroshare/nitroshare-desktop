@@ -78,7 +78,7 @@ void MdnsServer::sendMessage(const DnsMessage &message)
     }
 }
 
-QList<QHostAddress> MdnsServer::addresses(const QHostAddress &hostAddress) const
+QList<QHostAddress> MdnsServer::addressesForHost(const QHostAddress &hostAddress) const
 {
     QList<QHostAddress> addresses;
     foreach (QNetworkInterface interface, QNetworkInterface::allInterfaces()) {
