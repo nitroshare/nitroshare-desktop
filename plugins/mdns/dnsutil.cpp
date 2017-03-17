@@ -55,7 +55,7 @@ bool DnsUtil::fromPacket(const QByteArray &packet, DnsMessage &message)
         DnsQuery query;
         query.setName(name);
         query.setType(type);
-        query.setClass(class_);
+        query.setUnicastResponse(class_ & 0x8000);
         message.addQuery(query);
     }
     quint16 nRecord = nAnswer + nAuthority + nAdditional;
@@ -73,7 +73,7 @@ bool DnsUtil::fromPacket(const QByteArray &packet, DnsMessage &message)
         DnsRecord record;
         record.setName(name);
         record.setType(type);
-        record.setClass(class_);
+        record.setFlushCache(class_ & 0x8000);
         record.setTtl(ttl);
         switch (type) {
         case DnsMessage::A:
@@ -124,7 +124,6 @@ bool DnsUtil::fromPacket(const QByteArray &packet, DnsMessage &message)
         case DnsMessage::TXT:
         {
             quint16 start = offset;
-            QMap<QByteArray, QByteArray> txt;
             while (offset < start + dataLen) {
                 quint8 nBytes;
                 if (!parseInteger<quint8>(packet, offset, nBytes) ||
@@ -137,9 +136,8 @@ bool DnsUtil::fromPacket(const QByteArray &packet, DnsMessage &message)
                 if (splitIndex == -1) {
                     return false;
                 }
-                txt.insert(entry.left(splitIndex), entry.mid(splitIndex + 1));
+                record.addTxt(entry.left(splitIndex), entry.mid(splitIndex + 1));
             }
-            record.setTxt(txt);
             break;
         }
         default:
@@ -164,12 +162,12 @@ void DnsUtil::toPacket(const DnsMessage &message, QByteArray &packet)
     foreach (DnsQuery query, message.queries()) {
         writeName(packet, offset, query.name(), nameMap);
         writeInteger<quint16>(packet, offset, query.type());
-        writeInteger<quint16>(packet, offset, query.class_());
+        writeInteger<quint16>(packet, offset, query.unicastResponse() ? 0x8001 : 1);
     }
     foreach (DnsRecord record, message.records()) {
         writeName(packet, offset, record.name(), nameMap);
         writeInteger<quint16>(packet, offset, record.type());
-        writeInteger<quint16>(packet, offset, record.flushCache() ? 0x8001 : 0);
+        writeInteger<quint16>(packet, offset, record.flushCache() ? 0x8001 : 1);
         writeInteger<quint32>(packet, offset, record.ttl());
         QByteArray data;
         switch (record.type()) {
@@ -257,15 +255,26 @@ bool DnsUtil::parseName(const QByteArray &packet, quint16 &offset, QByteArray &n
     return true;
 }
 
-void DnsUtil::writeName(const QByteArray &packet, quint16 &offset, const QByteArray &name, QMap<QByteArray, quint16> nameMap)
+void DnsUtil::writeName(QByteArray &packet, quint16 &offset, const QByteArray &name, QMap<QByteArray, quint16> &nameMap)
 {
-    /*
-    foreach (QByteArray label, name.split('.')) {
-        writeInteger<quint8>(data, label.length());
-        data.append(label);
+    QByteArray fragment = name;
+    if (fragment.endsWith('.')) {
+        fragment.left(fragment.length() - 1);
     }
-    if (!name.endsWith('.')) {
-        data.append('\0');
+    while (fragment.length()) {
+        if (nameMap.contains(fragment)) {
+            writeInteger<quint16>(packet, offset, nameMap.value(fragment) | 0xc000);
+            return;
+        }
+        nameMap.insert(fragment, offset);
+        int index = fragment.indexOf('.');
+        if (index == -1) {
+            index = fragment.length();
+        }
+        writeInteger<quint8>(packet, offset, index);
+        packet.append(fragment.left(index));
+        offset += index;
+        fragment.remove(0, index + 1);
     }
-    */
+    writeInteger<quint8>(packet, offset, 0);
 }

@@ -69,7 +69,7 @@ public:
      * @param name value to write to packet
      * @param nameMap map of DNS names already written to their offsets
      */
-    static void writeName(const QByteArray &packet, quint16 &offset, const QByteArray &name, QMap<QByteArray, quint16> nameMap);
+    static void writeName(QByteArray &packet, quint16 &offset, const QByteArray &name, QMap<QByteArray, quint16> &nameMap);
 
     /**
      * @brief Read an integer in network byte-order from a byte array
