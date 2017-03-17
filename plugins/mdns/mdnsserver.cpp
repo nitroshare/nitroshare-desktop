@@ -28,8 +28,10 @@
 #  include <sys/socket.h>
 #endif
 
+#include <QNetworkAddressEntry>
 #include <QNetworkInterface>
 
+#include "dnsutil.h"
 #include "mdnsserver.h"
 
 const QHostAddress MdnsIpv4Address("224.0.0.251");
@@ -48,7 +50,8 @@ MdnsServer::MdnsServer()
 
 bool MdnsServer::start()
 {
-    if (bindSocket(mIpv4Socket, QHostAddress::AnyIPv4) && bindSocket(mIpv6Socket, QHostAddress::AnyIPv6)) {
+    if (bindSocket(mIpv4Socket, QHostAddress::AnyIPv4) &&
+            bindSocket(mIpv6Socket, QHostAddress::AnyIPv6)) {
         onTimeout();
         mTimer.start();
         return true;
@@ -63,9 +66,29 @@ void MdnsServer::stop()
     mIpv6Socket.close();
 }
 
-void MdnsServer::sendMessage(const DnsMessage &message, const QHostAddress &address)
+void MdnsServer::sendMessage(const DnsMessage &message)
 {
-    //...
+    QByteArray packet;
+    DnsUtil::toPacket(message, packet);
+    if (message.address().protocol() == QAbstractSocket::IPv4Protocol) {
+        mIpv4Socket.writeDatagram(packet, message.address(), message.port());
+    }
+    if (message.address().protocol() == QAbstractSocket::IPv6Protocol) {
+        mIpv6Socket.writeDatagram(packet, message.address(), message.port());
+    }
+}
+
+QList<QHostAddress> MdnsServer::addresses(const QHostAddress &hostAddress) const
+{
+    QList<QHostAddress> addresses;
+    foreach (QNetworkInterface interface, QNetworkInterface::allInterfaces()) {
+        foreach (QNetworkAddressEntry entry, interface.addressEntries()) {
+            if (hostAddress.isInSubnet(entry.ip(), entry.prefixLength())) {
+                addresses.append(entry.ip());
+            }
+        }
+    }
+    return addresses;
 }
 
 void MdnsServer::onTimeout()
@@ -91,12 +114,15 @@ void MdnsServer::onTimeout()
 void MdnsServer::onReadyRead()
 {
     QUdpSocket *socket = dynamic_cast<QUdpSocket*>(sender());
-    QByteArray buffer;
-    buffer.resize(socket->pendingDatagramSize());
-    socket->readDatagram(buffer.data(), buffer.size());
-
-    DnsMessage message(buffer);
-    if (message.isOkay()) {
+    QByteArray packet;
+    packet.resize(socket->pendingDatagramSize());
+    QHostAddress address;
+    quint16 port;
+    socket->readDatagram(packet.data(), packet.size(), &address, &port);
+    DnsMessage message;
+    if (DnsUtil::fromPacket(packet, message)) {
+        message.setAddress(address);
+        message.setPort(port);
         emit messageReceived(message);
     }
 }
@@ -118,5 +144,6 @@ bool MdnsServer::bindSocket(QUdpSocket &socket, const QHostAddress &address)
         return socket.bind(address, MdnsPort, QAbstractSocket::ReuseAddressHint);
 #ifdef Q_OS_UNIX
     }
+    return true;
 #endif
 }

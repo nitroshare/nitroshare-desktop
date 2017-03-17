@@ -26,9 +26,10 @@
 #define MDNSSERVER_H
 
 #include <QHostAddress>
+#include <QList>
 #include <QObject>
-#include <QUdpSocket>
 #include <QTimer>
+#include <QUdpSocket>
 
 #include "dnsmessage.h"
 
@@ -41,15 +42,37 @@ class MdnsServer : public QObject
 
 public:
 
+    /**
+     * @brief Create an mDNS server
+     */
     MdnsServer();
 
+    /**
+     * @brief Start the server
+     * @return true if the server was started
+     */
     bool start();
+
+    /**
+     * @brief Stop the server
+     */
     void stop();
 
-    void sendMessage(const DnsMessage &message, const QHostAddress &address = QHostAddress());
+    /**
+     * @brief Send a DNS message
+     */
+    void sendMessage(const DnsMessage &message);
+
+    /**
+     * @brief Retrieve addresses that a host could use to connect
+     */
+    QList<QHostAddress> addressesForHost(const QHostAddress &hostAddress) const;
 
 Q_SIGNALS:
 
+    /**
+     * @brief Indicate a new DNS message has been recieved
+     */
     void messageReceived(const DnsMessage &message);
 
 private Q_SLOTS:
@@ -62,7 +85,6 @@ private:
     bool bindSocket(QUdpSocket &socket, const QHostAddress &address);
 
     QTimer mTimer;
-
     QUdpSocket mIpv4Socket;
     QUdpSocket mIpv6Socket;
 };
