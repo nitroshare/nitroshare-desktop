@@ -25,6 +25,7 @@
 #ifndef DNSMESSAGE_H
 #define DNSMESSAGE_H
 
+#include <QHostAddress>
 #include <QList>
 
 #include "dnsquery.h"
@@ -51,6 +52,26 @@ public:
      * @brief Create an empty DNS message
      */
     DnsMessage();
+
+    /**
+     * @brief Retrieve message address
+     */
+    QHostAddress address() const;
+
+    /**
+     * @brief Set message address
+     */
+    void setAddress(const QHostAddress &address);
+
+    /**
+     * @brief Retrieve message port
+     */
+    quint16 port() const;
+
+    /**
+     * @brief Set message port
+     */
+    void setPort(quint16 port);
 
     /**
      * @brief Retrieve the transaction ID for the message
@@ -93,6 +114,9 @@ public:
     void addRecord(const DnsRecord &record);
 
 private:
+
+    QHostAddress mAddress;
+    quint16 mPort;
 
     quint16 mTransactionId;
     bool mResponse;

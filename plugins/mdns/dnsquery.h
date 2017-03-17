@@ -34,13 +34,39 @@ class DnsQuery
 {
 public:
 
+    /**
+     * @brief Create an empty DNS query
+     */
     DnsQuery();
 
+    /**
+     * @brief Retrieve the query name
+     */
     QByteArray name() const;
+
+    /**
+     * @brief Set the query name
+     */
     void setName(const QByteArray &name);
+
+    /**
+     * @brief Retrieve the query type
+     */
     quint16 type() const;
+
+    /**
+     * @brief Set the query type
+     */
     void setType(quint16 type);
+
+    /**
+     * @brief Determine if the response should be unicast
+     */
     bool unicastResponse() const;
+
+    /**
+     * @brief Set whether the response should be unicast
+     */
     void setUnicastResponse(bool unicastResponse);
 
 private:

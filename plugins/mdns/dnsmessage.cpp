@@ -30,6 +30,26 @@ DnsMessage::DnsMessage()
 {
 }
 
+QHostAddress DnsMessage::address() const
+{
+    return mAddress;
+}
+
+void DnsMessage::setAddress(const QHostAddress &address)
+{
+    mAddress = address;
+}
+
+quint16 DnsMessage::port() const
+{
+    return mPort;
+}
+
+void DnsMessage::setPort(quint16 port)
+{
+    mPort = port;
+}
+
 quint16 DnsMessage::transactionId() const
 {
     return mTransactionId;

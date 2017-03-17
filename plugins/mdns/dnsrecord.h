@@ -41,25 +41,104 @@ public:
      */
     DnsRecord();
 
+    /**
+     * @brief Retrieve the record name
+     */
     QByteArray name() const;
+
+    /**
+     * @brief Set the record name
+     */
     void setName(const QByteArray &name);
+
+    /**
+     * @brief Retrieve the record type
+     */
     quint16 type() const;
+
+    /**
+     * @brief Set the record type
+     */
     void setType(quint16 type);
+
+    /**
+     * @brief Retrieve the cache flush state
+     */
     bool flushCache() const;
+
+    /**
+     * @brief Set the cache flush state
+     */
     void setFlushCache(bool flushCache);
+
+    /**
+     * @brief Retrieve the record TTL
+     */
     quint32 ttl() const;
+
+    /**
+     * @brief Set the record TTL
+     */
     void setTtl(quint32 ttl);
+
+    /**
+     * @brief Retrieve the record address
+     */
     QHostAddress address() const;
+
+    /**
+     * @brief Set the record address
+     */
     void setAddress(const QHostAddress &address);
+
+    /**
+     * @brief Retrieve the record target
+     */
     QByteArray target() const;
+
+    /**
+     * @brief Set the record target
+     */
     void setTarget(const QByteArray &target);
+
+    /**
+     * @brief Retrieve the record priority
+     */
     quint16 priority() const;
+
+    /**
+     * @brief Set the record priority
+     */
     void setPriority(quint16 priority);
+
+    /**
+     * @brief Retrieve the record weight
+     */
     quint16 weight() const;
+
+    /**
+     * @brief Set the record weight
+     */
     void setWeight(quint16 weight);
+
+    /**
+     * @brief Retrieve the record port
+     */
     quint16 port() const;
+
+    /**
+     * @brief Set the record port
+     */
     void setPort(quint16 port);
+
+    /**
+     * @brief Retrieve record TXT values
+     */
     QMap<QByteArray, QByteArray> txt();
+
+    /**
+     * @brief Add record TXT value
+     */
     void addTxt(const QByteArray &key, const QByteArray &value);
 
 private:
