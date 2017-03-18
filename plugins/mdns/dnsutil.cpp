@@ -22,11 +22,13 @@
  * IN THE SOFTWARE.
  */
 
-#include <QHostAddress>
-
 #include "dnsquery.h"
 #include "dnsrecord.h"
 #include "dnsutil.h"
+
+const quint16 DnsUtil::MdnsPort = 5353;
+const QHostAddress DnsUtil::MdnsIpv4Address("224.0.0.251");
+const QHostAddress DnsUtil::MdnsIpv6Address("ff02::fb");
 
 // TODO: check into proper escaping for TXT records
 
@@ -169,6 +171,7 @@ void DnsUtil::toPacket(const DnsMessage &message, QByteArray &packet)
         writeInteger<quint16>(packet, offset, record.type());
         writeInteger<quint16>(packet, offset, record.flushCache() ? 0x8001 : 1);
         writeInteger<quint32>(packet, offset, record.ttl());
+        offset += 2;
         QByteArray data;
         switch (record.type()) {
         case DnsMessage::A:
@@ -178,6 +181,7 @@ void DnsUtil::toPacket(const DnsMessage &message, QByteArray &packet)
         {
             Q_IPV6ADDR ipv6Addr = record.address().toIPv6Address();
             data.append(reinterpret_cast<const char*>(&ipv6Addr), sizeof(Q_IPV6ADDR));
+            offset += data.length();
             break;
         }
         case DnsMessage::PTR:
@@ -195,14 +199,15 @@ void DnsUtil::toPacket(const DnsMessage &message, QByteArray &packet)
                 QByteArray entry = i.key() + "=" + i.value();
                 writeInteger<quint8>(data, offset, entry.length());
                 data.append(entry);
+                offset += entry.length();
             }
             break;
         default:
             break;
         }
+        offset -= 2;
         writeInteger<quint16>(packet, offset, data.length());
         packet.append(data);
-        offset += data.length();
     }
 }
 
@@ -259,7 +264,7 @@ void DnsUtil::writeName(QByteArray &packet, quint16 &offset, const QByteArray &n
 {
     QByteArray fragment = name;
     if (fragment.endsWith('.')) {
-        fragment.left(fragment.length() - 1);
+        fragment.chop(1);
     }
     while (fragment.length()) {
         if (nameMap.contains(fragment)) {

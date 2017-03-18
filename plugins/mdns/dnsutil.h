@@ -26,6 +26,7 @@
 #define DNSUTIL_H
 
 #include <QByteArray>
+#include <QHostAddress>
 #include <QMap>
 #include <QtEndian>
 
@@ -37,6 +38,21 @@
 class DnsUtil
 {
 public:
+
+    /**
+     * @brief Multicast DNS port
+     */
+    static const quint16 MdnsPort;
+
+    /**
+     * @brief IPv4 multicast DNS address
+     */
+    static const QHostAddress MdnsIpv4Address;
+
+    /**
+     * @brief IPv6 multicast DNS address
+     */
+    static const QHostAddress MdnsIpv6Address;
 
     /**
      * @brief Parse a raw DNS packet into a DnsMessage
