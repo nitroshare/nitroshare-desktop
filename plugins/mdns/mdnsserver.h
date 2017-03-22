@@ -26,7 +26,6 @@
 #define MDNSSERVER_H
 
 #include <QHostAddress>
-#include <QList>
 #include <QObject>
 #include <QTimer>
 #include <QUdpSocket>
@@ -62,11 +61,6 @@ public:
      * @brief Send a DNS message
      */
     void sendMessage(const DnsMessage &message);
-
-    /**
-     * @brief Retrieve addresses that a host could use to connect
-     */
-    QList<QHostAddress> addressesForHost(const QHostAddress &hostAddress) const;
 
 Q_SIGNALS:
 

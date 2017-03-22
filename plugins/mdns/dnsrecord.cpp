@@ -134,3 +134,7 @@ void DnsRecord::addTxt(const QByteArray &key, const QByteArray &value)
     mTxt.insert(key, value);
 }
 
+void DnsRecord::setTxt(const QMap<QByteArray, QByteArray> &txt)
+{
+    mTxt = txt;
+}

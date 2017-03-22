@@ -141,6 +141,11 @@ public:
      */
     void addTxt(const QByteArray &key, const QByteArray &value);
 
+    /**
+     * @brief Set record TXT values
+     */
+    void setTxt(const QMap<QByteArray, QByteArray> &txt);
+
 private:
 
     QByteArray mName;

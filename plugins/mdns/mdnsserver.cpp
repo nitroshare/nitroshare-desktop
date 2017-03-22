@@ -28,16 +28,10 @@
 #  include <sys/socket.h>
 #endif
 
-#include <QNetworkAddressEntry>
 #include <QNetworkInterface>
 
 #include "dnsutil.h"
 #include "mdnsserver.h"
-
-const QHostAddress MdnsIpv4Address("224.0.0.251");
-const QHostAddress MdnsIpv6Address("ff02::fb");
-
-const quint16 MdnsPort = 5353;
 
 MdnsServer::MdnsServer()
 {
@@ -78,19 +72,6 @@ void MdnsServer::sendMessage(const DnsMessage &message)
     }
 }
 
-QList<QHostAddress> MdnsServer::addressesForHost(const QHostAddress &hostAddress) const
-{
-    QList<QHostAddress> addresses;
-    foreach (QNetworkInterface interface, QNetworkInterface::allInterfaces()) {
-        foreach (QNetworkAddressEntry entry, interface.addressEntries()) {
-            if (hostAddress.isInSubnet(entry.ip(), entry.prefixLength())) {
-                addresses.append(entry.ip());
-            }
-        }
-    }
-    return addresses;
-}
-
 void MdnsServer::onTimeout()
 {
     foreach (QNetworkInterface interface, QNetworkInterface::allInterfaces()) {
@@ -102,10 +83,10 @@ void MdnsServer::onTimeout()
                 ipv6Address = ipv6Address || address.protocol() == QAbstractSocket::IPv6Protocol;
             }
             if (ipv4Address) {
-                mIpv4Socket.joinMulticastGroup(MdnsIpv4Address, interface);
+                mIpv4Socket.joinMulticastGroup(DnsUtil::MdnsIpv4Address, interface);
             }
             if (ipv6Address) {
-                mIpv6Socket.joinMulticastGroup(MdnsIpv6Address, interface);
+                mIpv6Socket.joinMulticastGroup(DnsUtil::MdnsIpv6Address, interface);
             }
         }
     }
@@ -134,14 +115,14 @@ bool MdnsServer::bindSocket(QUdpSocket &socket, const QHostAddress &address)
     // the socket and initialize the QUdpSocket with it
 
 #ifdef Q_OS_UNIX
-    if (!socket.bind(address, MdnsPort, QAbstractSocket::ShareAddress)) {
+    if (!socket.bind(address, DnsUtil::MdnsPort, QAbstractSocket::ShareAddress)) {
         int arg = 1;
         if (setsockopt(socket.socketDescriptor(), SOL_SOCKET, SO_REUSEADDR,
                 reinterpret_cast<char*>(&arg), sizeof(int))) {
             return false;
         }
 #endif
-        return socket.bind(address, MdnsPort, QAbstractSocket::ReuseAddressHint);
+        return socket.bind(address, DnsUtil::MdnsPort, QAbstractSocket::ReuseAddressHint);
 #ifdef Q_OS_UNIX
     }
     return true;
