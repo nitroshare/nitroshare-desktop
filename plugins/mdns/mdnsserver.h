@@ -34,6 +34,17 @@
 
 /**
  * @brief Bare-bones mDNS server
+ *
+ * A timer is used to monitor available network interfaces and join the
+ * appropriate multicast group on new ones that appear. This is a workaround
+ * for the fact that Qt doesn't provide signals for this.
+ *
+ * Upon creation, the server checks to see if the current hostname is being
+ * used on the network. If the hostname is found to be in use, the server will
+ * amend the name and try again. Once a name is found that doesn't conflict,
+ * the server begins listening for mDNS queries.
+ *
+ * At this point, only the ".local" domain is supported.
  */
 class MdnsServer : public QObject
 {
@@ -47,17 +58,6 @@ public:
     MdnsServer();
 
     /**
-     * @brief Start the server
-     * @return true if the server was started
-     */
-    bool start();
-
-    /**
-     * @brief Stop the server
-     */
-    void stop();
-
-    /**
      * @brief Send a DNS message
      */
     void sendMessage(const DnsMessage &message);
@@ -65,22 +65,47 @@ public:
 Q_SIGNALS:
 
     /**
+     * @brief Indicate that an unused hostname has been found
+     */
+    void hostnameConfirmed(const QString &hostname);
+
+    /**
      * @brief Indicate a new DNS message has been recieved
      */
     void messageReceived(const DnsMessage &message);
 
+    /**
+     * @brief Indicate that an error has occurred
+     */
+    void error(const QString &message);
+
 private Q_SLOTS:
 
-    void onTimeout();
+    void onSocketTimeout();
+    void onHostnameTimeout();
+
     void onReadyRead();
+    void onMessageReceived(const DnsMessage &message);
 
 private:
 
-    bool bindSocket(QUdpSocket &socket, const QHostAddress &address);
+    void bindSocket(QUdpSocket &socket, const QHostAddress &address);
+    void checkHostname(DnsMessage::Protocol protocol);
 
-    QTimer mTimer;
+    // Periodically check for new interfaces
+    QTimer mSocketTimer;
+
+    // Timeout for asserting a hostname
+    QTimer mHostnameTimer;
+
+    // Sockets used for sending and receiving messages
     QUdpSocket mIpv4Socket;
     QUdpSocket mIpv6Socket;
+
+    // Members used for hostname checks
+    QString mHostname;
+    int mHostnameSuffix;
+    bool mHostnameConfirmed;
 };
 
 #endif // MDNSSERVER_H
