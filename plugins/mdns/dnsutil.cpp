@@ -22,6 +22,7 @@
  * IN THE SOFTWARE.
  */
 
+#include "dnsbitmap.h"
 #include "dnsquery.h"
 #include "dnsrecord.h"
 #include "dnsutil.h"
@@ -96,6 +97,24 @@ bool DnsUtil::fromPacket(const QByteArray &packet, DnsMessage &message)
                 reinterpret_cast<const quint8*>(packet.constData() + offset)
             ));
             offset += 16;
+            break;
+        }
+        case DnsMessage::NSEC:
+        {
+            QByteArray nextDomainName;
+            quint8 number;
+            quint8 length;
+            if (!parseName(packet, offset, nextDomainName) ||
+                    !parseInteger<quint8>(packet, offset, number) ||
+                    !parseInteger<quint8>(packet, offset, length) ||
+                    number != 0 ||
+                    offset + length > packet.length()) {
+                return false;
+            }
+            DnsBitmap bitmap;
+            bitmap.setData(length, reinterpret_cast<const quint8*>(packet.constData() + offset));
+            record.setNextDomainName(nextDomainName);
+            record.setBitmap(bitmap);
             break;
         }
         case DnsMessage::PTR:
@@ -182,6 +201,16 @@ void DnsUtil::toPacket(const DnsMessage &message, QByteArray &packet)
             Q_IPV6ADDR ipv6Addr = record.address().toIPv6Address();
             data.append(reinterpret_cast<const char*>(&ipv6Addr), sizeof(Q_IPV6ADDR));
             offset += data.length();
+            break;
+        }
+        case DnsMessage::NSEC:
+        {
+            quint8 length = record.bitmap().length();
+            writeName(data, offset, record.nextDomainName(), nameMap);
+            writeInteger<quint8>(data, offset, 0);
+            writeInteger<quint8>(data, offset, length);
+            data.append(reinterpret_cast<const char*>(record.bitmap().data()), length);
+            offset += length;
             break;
         }
         case DnsMessage::PTR:

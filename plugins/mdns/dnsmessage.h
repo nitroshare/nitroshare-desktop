@@ -43,6 +43,7 @@ public:
     enum {
         A = 1,
         AAAA = 28,
+        NSEC = 47,
         PTR = 12,
         SRV = 33,
         TXT = 16
