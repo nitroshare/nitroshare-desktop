@@ -48,6 +48,11 @@ public:
         TXT = 16
     };
 
+    enum Protocol {
+        IPv4,
+        IPv6
+    };
+
     /**
      * @brief Create an empty DNS message
      */
@@ -62,6 +67,16 @@ public:
      * @brief Set message address
      */
     void setAddress(const QHostAddress &address);
+
+    /**
+     * @brief Retrieve message protocol
+     */
+    Protocol protocol() const;
+
+    /**
+     * @brief Set message protocol
+     */
+    void setProtocol(Protocol protocol);
 
     /**
      * @brief Retrieve message port
@@ -116,6 +131,7 @@ public:
 private:
 
     QHostAddress mAddress;
+    Protocol mProtocol;
     quint16 mPort;
 
     quint16 mTransactionId;

@@ -25,7 +25,9 @@
 #include "dnsmessage.h"
 
 DnsMessage::DnsMessage()
-    : mTransactionId(0),
+    : mProtocol(IPv4),
+      mPort(0),
+      mTransactionId(0),
       mResponse(false)
 {
 }
@@ -38,6 +40,16 @@ QHostAddress DnsMessage::address() const
 void DnsMessage::setAddress(const QHostAddress &address)
 {
     mAddress = address;
+}
+
+DnsMessage::Protocol DnsMessage::protocol() const
+{
+    return mProtocol;
+}
+
+void DnsMessage::setProtocol(Protocol protocol)
+{
+    mProtocol = protocol;
 }
 
 quint16 DnsMessage::port() const
