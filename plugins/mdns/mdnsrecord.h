@@ -22,24 +22,26 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef DNSRECORD_H
-#define DNSRECORD_H
+#ifndef MDNSRECORD_H
+#define MDNSRECORD_H
 
 #include <QByteArray>
 #include <QHostAddress>
 #include <QMap>
 
+#include "mdnsbitmap.h"
+
 /**
  * @brief DNS record
  */
-class DnsRecord
+class MdnsRecord
 {
 public:
 
     /**
      * @brief Create an empty DNS record
      */
-    DnsRecord();
+    MdnsRecord();
 
     /**
      * @brief Retrieve the record name
@@ -102,6 +104,16 @@ public:
     void setTarget(const QByteArray &target);
 
     /**
+     * @brief Retrieve the next domain name
+     */
+    QByteArray nextDomainName() const;
+
+    /**
+     * @brief Set the next domain name
+     */
+    void setNextDomainName(const QByteArray &nextDomainName);
+
+    /**
      * @brief Retrieve the record priority
      */
     quint16 priority() const;
@@ -146,6 +158,16 @@ public:
      */
     void setTxt(const QMap<QByteArray, QByteArray> &txt);
 
+    /**
+     * @brief Retrieve the record bitmap
+     */
+    MdnsBitmap bitmap() const;
+
+    /**
+     * @brief Set the record bitmap
+     */
+    void setBitmap(const MdnsBitmap &bitmap);
+
 private:
 
     QByteArray mName;
@@ -153,11 +175,12 @@ private:
     bool mFlushCache;
     quint32 mTtl;
     QHostAddress mAddress;
-    QByteArray mTarget;
+    QByteArray mName2;
     quint16 mPriority;
     quint16 mWeight;
     quint16 mPort;
     QMap<QByteArray, QByteArray> mTxt;
+    MdnsBitmap mBitmap;
 };
 
-#endif // DNSRECORD_H
+#endif // MDNSRECORD_H

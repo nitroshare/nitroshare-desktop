@@ -22,22 +22,22 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef DNSBITMAP_H
-#define DNSBITMAP_H
+#ifndef MDNSBITMAP_H
+#define MDNSBITMAP_H
 
 #include <QtGlobal>
 
 /**
  * @brief 256-bit bitmap
  */
-class DnsBitmap
+class MdnsBitmap
 {
 public:
 
     /**
      * @brief Create an uninitialized (empty) bitmap
      */
-    DnsBitmap();
+    MdnsBitmap();
 
     /**
      * @brief Retrieve the length of the bitmap
@@ -60,4 +60,4 @@ private:
     quint8 mData[32];
 };
 
-#endif // DNSBITMAP_H
+#endif // MDNSBITMAP_H

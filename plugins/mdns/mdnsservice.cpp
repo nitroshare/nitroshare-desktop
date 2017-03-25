@@ -26,8 +26,8 @@
 #include <QNetworkAddressEntry>
 #include <QNetworkInterface>
 
-#include "dnsquery.h"
-#include "dnsutil.h"
+#include "mdns.h"
+#include "mdnsquery.h"
 #include "mdnsservice.h"
 
 const QByteArray BrowsePTR = "_services._dns-sd._udp.local.";
@@ -89,7 +89,7 @@ void MdnsService::addAttribute(const QByteArray &key, const QByteArray &value)
     mAttributes.insert(key, value);
 }
 
-void MdnsService::onMessageReceived(const DnsMessage &message)
+void MdnsService::onMessageReceived(const MdnsMessage &message)
 {
     if (message.isResponse()) {
         return;
@@ -100,13 +100,13 @@ void MdnsService::onMessageReceived(const DnsMessage &message)
     bool sendPtrService = false;
     bool sendSrv = false;
     bool sendTxt = false;
-    foreach (DnsQuery query, message.queries()) {
+    foreach (MdnsQuery query, message.queries()) {
         switch (query.type()) {
-        case DnsMessage::A:
-        case DnsMessage::AAAA:
+        case Mdns::A:
+        case Mdns::AAAA:
             sendAddresses = true;
             break;
-        case DnsMessage::PTR:
+        case Mdns::PTR:
             if (query.name() == mType) {
                 sendAddresses = true;
                 sendPtr = true;
@@ -116,13 +116,13 @@ void MdnsService::onMessageReceived(const DnsMessage &message)
                 sendPtrService = true;
             }
             break;
-        case DnsMessage::SRV:
+        case Mdns::SRV:
             if (query.name() == fqdn) {
                 sendAddresses = true;
                 sendSrv = true;
             }
             break;
-        case DnsMessage::TXT:
+        case Mdns::TXT:
             if (query.name() == fqdn) {
                 sendTxt = true;
             }
@@ -138,14 +138,14 @@ void MdnsService::onMessageReceived(const DnsMessage &message)
     if (address.isNull()) {
         return;
     }
-    DnsMessage reply;
+    MdnsMessage reply;
     reply.setTransactionId(message.transactionId());
     reply.setResponse(true);
     reply.setPort(message.port());
     reply.setAddress(message.port() == 5353 ?
         (address.protocol() == QAbstractSocket::IPv4Protocol ?
-             DnsUtil::MdnsIpv4Address :
-             DnsUtil::MdnsIpv6Address) :
+             Mdns::Ipv4Address :
+             Mdns::Ipv6Address) :
         message.address());
     if (sendAddresses) {
         reply.addRecord(generateAddress(address));
@@ -177,52 +177,52 @@ QHostAddress MdnsService::findInterfaceAddress(const QHostAddress &hostAddress)
     return QHostAddress();
 }
 
-DnsRecord MdnsService::generateAddress(const QHostAddress &address)
+MdnsRecord MdnsService::generateAddress(const QHostAddress &address)
 {
-    DnsRecord record;
+    MdnsRecord record;
     record.setName(QString(QHostInfo::localHostName() + ".local.").toUtf8());
-    record.setType(address.protocol() == QAbstractSocket::IPv4Protocol ? DnsMessage::A : DnsMessage::AAAA);
+    record.setType(address.protocol() == QAbstractSocket::IPv4Protocol ? Mdns::A : Mdns::AAAA);
     record.setTtl(3600);
     record.setAddress(address);
     return record;
 }
 
-DnsRecord MdnsService::generatePtrService()
+MdnsRecord MdnsService::generatePtrService()
 {
-    DnsRecord record;
+    MdnsRecord record;
     record.setName(BrowsePTR);
-    record.setType(DnsMessage::PTR);
+    record.setType(Mdns::PTR);
     record.setTtl(3600);
     record.setTarget(mType);
     return record;
 }
 
-DnsRecord MdnsService::generatePtr()
+MdnsRecord MdnsService::generatePtr()
 {
-    DnsRecord record;
+    MdnsRecord record;
     record.setName(mType);
-    record.setType(DnsMessage::PTR);
+    record.setType(Mdns::PTR);
     record.setTtl(3600);
     record.setTarget(mName + "." + mType);
     return record;
 }
 
-DnsRecord MdnsService::generateSrv()
+MdnsRecord MdnsService::generateSrv()
 {
-    DnsRecord record;
+    MdnsRecord record;
     record.setName(mName + "." + mType);
-    record.setType(DnsMessage::SRV);
+    record.setType(Mdns::SRV);
     record.setPort(mPort);
     record.setTtl(3600);
     record.setTarget(QString(QHostInfo::localHostName() + ".local.").toUtf8());
     return record;
 }
 
-DnsRecord MdnsService::generateTxt()
+MdnsRecord MdnsService::generateTxt()
 {
-    DnsRecord record;
+    MdnsRecord record;
     record.setName(mName + "." + mType);
-    record.setType(DnsMessage::TXT);
+    record.setType(Mdns::TXT);
     record.setTtl(3600);
     record.setTxt(mAttributes);
     return record;

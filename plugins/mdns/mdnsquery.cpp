@@ -22,82 +22,39 @@
  * IN THE SOFTWARE.
  */
 
-#include "dnsmessage.h"
+#include "mdnsquery.h"
 
-DnsMessage::DnsMessage()
-    : mProtocol(IPv4),
-      mPort(0),
-      mTransactionId(0),
-      mResponse(false)
+MdnsQuery::MdnsQuery()
+    : mUnicastResponse(false)
 {
 }
 
-QHostAddress DnsMessage::address() const
+QByteArray MdnsQuery::name() const
 {
-    return mAddress;
+    return mName;
 }
 
-void DnsMessage::setAddress(const QHostAddress &address)
+void MdnsQuery::setName(const QByteArray &name)
 {
-    mAddress = address;
+    mName = name;
 }
 
-DnsMessage::Protocol DnsMessage::protocol() const
+quint16 MdnsQuery::type() const
 {
-    return mProtocol;
+    return mType;
 }
 
-void DnsMessage::setProtocol(Protocol protocol)
+void MdnsQuery::setType(quint16 type)
 {
-    mProtocol = protocol;
+    mType = type;
 }
 
-quint16 DnsMessage::port() const
+bool MdnsQuery::unicastResponse() const
 {
-    return mPort;
+    return mUnicastResponse;
 }
 
-void DnsMessage::setPort(quint16 port)
+void MdnsQuery::setUnicastResponse(bool unicastResponse)
 {
-    mPort = port;
-}
-
-quint16 DnsMessage::transactionId() const
-{
-    return mTransactionId;
-}
-
-void DnsMessage::setTransactionId(quint16 transactionId)
-{
-    mTransactionId = transactionId;
-}
-
-bool DnsMessage::isResponse() const
-{
-    return mResponse;
-}
-
-void DnsMessage::setResponse(bool response)
-{
-    mResponse = response;
-}
-
-QList<DnsQuery> DnsMessage::queries() const
-{
-    return mQueries;
-}
-
-void DnsMessage::addQuery(const DnsQuery &query)
-{
-    mQueries.append(query);
-}
-
-QList<DnsRecord> DnsMessage::records() const
-{
-    return mRecords;
-}
-
-void DnsMessage::addRecord(const DnsRecord &record)
-{
-    mRecords.append(record);
+    mUnicastResponse = unicastResponse;
 }

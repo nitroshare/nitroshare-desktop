@@ -31,7 +31,7 @@
 #include <QMap>
 #include <QObject>
 
-#include "dnsmessage.h"
+#include "mdnsmessage.h"
 #include "mdnsserver.h"
 
 class MdnsService : public QObject
@@ -97,16 +97,16 @@ public:
 
 private Q_SLOTS:
 
-    void onMessageReceived(const DnsMessage &message);
+    void onMessageReceived(const MdnsMessage &message);
 
 private:
 
     QHostAddress findInterfaceAddress(const QHostAddress &hostAddress);
-    DnsRecord generateAddress(const QHostAddress &address);
-    DnsRecord generatePtr();
-    DnsRecord generatePtrService();
-    DnsRecord generateSrv();
-    DnsRecord generateTxt();
+    MdnsRecord generateAddress(const QHostAddress &address);
+    MdnsRecord generatePtr();
+    MdnsRecord generatePtrService();
+    MdnsRecord generateSrv();
+    MdnsRecord generateTxt();
 
     MdnsServer *mMdnsServer;
 

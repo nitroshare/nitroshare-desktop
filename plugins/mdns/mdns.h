@@ -25,35 +25,116 @@
 #ifndef MDNS_H
 #define MDNS_H
 
-#include <QUdpSocket>
+#include <QByteArray>
+#include <QHostAddress>
+#include <QMap>
+#include <QtEndian>
 
-class QHostAddress;
-
-class Logger;
+class MdnsMessage;
 
 /**
- * @brief Watch for and respond to mDNS messages
+ * @brief Utility methods for working with mDNS
  */
-class Mdns : public QObject
+class Mdns
 {
-    Q_OBJECT
-
 public:
 
-    explicit Mdns(Logger *logger);
+    /**
+     * @brief Record types
+     */
+    enum {
+        A = 1,
+        AAAA = 28,
+        NSEC = 47,
+        PTR = 12,
+        SRV = 33,
+        TXT = 16
+    };
 
-private Q_SLOTS:
+    enum Protocol {
+        IPv4,
+        IPv6
+    };
 
-    void onReadyRead();
+    /**
+     * @brief Multicast DNS port
+     */
+    static const quint16 Port;
 
-private:
+    /**
+     * @brief IPv4 multicast DNS address
+     */
+    static const QHostAddress Ipv4Address;
 
-    void bind(QUdpSocket &socket, const QHostAddress &address);
+    /**
+     * @brief IPv6 multicast DNS address
+     */
+    static const QHostAddress Ipv6Address;
 
-    Logger *mLogger;
+    /**
+     * @brief Parse a raw DNS packet into a DnsMessage
+     * @param packet raw DNS packet
+     * @param message DnsMessage
+     * @return true if no errors occurred
+     */
+    static bool fromPacket(const QByteArray &packet, MdnsMessage &message);
 
-    QUdpSocket mIpv4Socket;
-    QUdpSocket mIpv6Socket;
+    /**
+     * @brief Create a raw DNS packet from a DnsMessage
+     * @param message DnsMessage
+     * @param packet raw DNS packet
+     */
+    static void toPacket(const MdnsMessage &message, QByteArray &packet);
+
+    /**
+     * @brief Read a DNS name
+     * @param packet raw DNS packet
+     * @param offset offset into packet
+     * @param name value read from packet
+     * @return true if no errors occurred
+     */
+    static bool parseName(const QByteArray &packet, quint16 &offset, QByteArray &name);
+
+    /**
+     * @brief Write a DNS name
+     * @param packet raw DNS packet
+     * @param offset offset into packet
+     * @param name value to write to packet
+     * @param nameMap map of DNS names already written to their offsets
+     */
+    static void writeName(QByteArray &packet, quint16 &offset, const QByteArray &name, QMap<QByteArray, quint16> &nameMap);
+
+    /**
+     * @brief Read an integer in network byte-order from a byte array
+     * @param packet raw DNS packet
+     * @param offset offset into packet
+     * @param value integer to read
+     * @return true if the integer was read
+     */
+    template<class T>
+    static bool parseInteger(const QByteArray &packet, quint16 &offset, T &value)
+    {
+        if (offset + sizeof(T) > packet.length()) {
+            return false;  // out-of-bounds
+        }
+        value = qFromBigEndian<T>(reinterpret_cast<const uchar*>(packet.constData() + offset));
+        offset += sizeof(T);
+        return true;
+    }
+
+    /**
+     * @brief Write an integer in network byte-order to a byte array
+     * @param packet raw DNS packet
+     * @param offset offset into packet
+     * @param value integer to write
+     */
+    template<class T>
+    static void writeInteger(QByteArray &packet, quint16 &offset, T value)
+    {
+        value = qToBigEndian<T>(value);
+        packet.append(reinterpret_cast<const char*>(&value), sizeof(T));
+        offset += sizeof(T);
+    }
 };
 
 #endif // MDNS_H

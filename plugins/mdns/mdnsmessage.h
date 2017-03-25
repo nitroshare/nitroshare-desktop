@@ -22,42 +22,29 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef DNSMESSAGE_H
-#define DNSMESSAGE_H
+#ifndef MDNSMESSAGE_H
+#define MDNSMESSAGE_H
 
 #include <QHostAddress>
 #include <QList>
 
-#include "dnsquery.h"
-#include "dnsrecord.h"
+#include "mdns.h"
+#include "mdnsquery.h"
+#include "mdnsrecord.h"
 
 /**
  * @brief DNS message
  *
  * Messages consist of queries and records.
  */
-class DnsMessage
+class MdnsMessage
 {
 public:
-
-    enum {
-        A = 1,
-        AAAA = 28,
-        NSEC = 47,
-        PTR = 12,
-        SRV = 33,
-        TXT = 16
-    };
-
-    enum Protocol {
-        IPv4,
-        IPv6
-    };
 
     /**
      * @brief Create an empty DNS message
      */
-    DnsMessage();
+    MdnsMessage();
 
     /**
      * @brief Retrieve message address
@@ -72,12 +59,12 @@ public:
     /**
      * @brief Retrieve message protocol
      */
-    Protocol protocol() const;
+    Mdns::Protocol protocol() const;
 
     /**
      * @brief Set message protocol
      */
-    void setProtocol(Protocol protocol);
+    void setProtocol(Mdns::Protocol protocol);
 
     /**
      * @brief Retrieve message port
@@ -112,33 +99,38 @@ public:
     /**
      * @brief Retrieve the queries in the message
      */
-    QList<DnsQuery> queries() const;
+    QList<MdnsQuery> queries() const;
 
     /**
      * @brief Add a query to the message
      */
-    void addQuery(const DnsQuery &query);
+    void addQuery(const MdnsQuery &query);
 
     /**
      * @brief Retrieve the records in the message
      */
-    QList<DnsRecord> records() const;
+    QList<MdnsRecord> records() const;
 
     /**
      * @brief Add a record to the message
      */
-    void addRecord(const DnsRecord &record);
+    void addRecord(const MdnsRecord &record);
+
+    /**
+     * @brief Create a message pre-initialized to reply to this one
+     */
+    MdnsMessage reply() const;
 
 private:
 
     QHostAddress mAddress;
-    Protocol mProtocol;
+    Mdns::Protocol mProtocol;
     quint16 mPort;
 
     quint16 mTransactionId;
     bool mResponse;
-    QList<DnsQuery> mQueries;
-    QList<DnsRecord> mRecords;
+    QList<MdnsQuery> mQueries;
+    QList<MdnsRecord> mRecords;
 };
 
-#endif // DNSMESSAGE_H
+#endif // MDNSMESSAGE_H

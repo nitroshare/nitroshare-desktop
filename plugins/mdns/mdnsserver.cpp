@@ -31,11 +31,12 @@
 #endif
 
 #include <QHostInfo>
+#include <QNetworkAddressEntry>
 #include <QNetworkInterface>
 
-#include "dnsquery.h"
-#include "dnsrecord.h"
-#include "dnsutil.h"
+#include "mdns.h"
+#include "mdnsquery.h"
+#include "mdnsrecord.h"
 #include "mdnsserver.h"
 
 // TODO: watch for the sockets disconnecting and retry hostname registration
@@ -57,16 +58,28 @@ MdnsServer::MdnsServer()
     onSocketTimeout();
 }
 
-void MdnsServer::sendMessage(const DnsMessage &message)
+void MdnsServer::sendMessage(const MdnsMessage &message)
 {
     QByteArray packet;
-    DnsUtil::toPacket(message, packet);
-    if (message.protocol() == DnsMessage::Protocol::IPv4) {
+    Mdns::toPacket(message, packet);
+    if (message.protocol() == Mdns::Protocol::IPv4) {
         mIpv4Socket.writeDatagram(packet, message.address(), message.port());
     }
-    if (message.protocol() == DnsMessage::Protocol::IPv6) {
+    if (message.protocol() == Mdns::Protocol::IPv6) {
         mIpv6Socket.writeDatagram(packet, message.address(), message.port());
     }
+}
+
+QHostAddress MdnsServer::address(const QHostAddress &address) const
+{
+    foreach (QNetworkInterface interface, QNetworkInterface::allInterfaces()) {
+        foreach (QNetworkAddressEntry entry, interface.addressEntries()) {
+            if (address.isInSubnet(entry.ip(), entry.prefixLength())) {
+                return entry.ip();
+            }
+        }
+    }
+    return QHostAddress();
 }
 
 void MdnsServer::onSocketTimeout()
@@ -92,10 +105,10 @@ void MdnsServer::onSocketTimeout()
                     ipv6Address = ipv6Address || address.protocol() == QAbstractSocket::IPv6Protocol;
                 }
                 if (ipv4Bound && ipv6Address) {
-                    mIpv4Socket.joinMulticastGroup(DnsUtil::MdnsIpv4Address, interface);
+                    mIpv4Socket.joinMulticastGroup(Mdns::Ipv4Address, interface);
                 }
                 if (ipv6Bound && ipv6Address) {
-                    mIpv6Socket.joinMulticastGroup(DnsUtil::MdnsIpv6Address, interface);
+                    mIpv6Socket.joinMulticastGroup(Mdns::Ipv6Address, interface);
                 }
             }
         }
@@ -104,8 +117,8 @@ void MdnsServer::onSocketTimeout()
         if (!mHostnameConfirmed) {
             mHostname = QHostInfo::localHostName() + ".local.";
             mHostnameSuffix = 1;
-            checkHostname(DnsMessage::Protocol::IPv4);
-            checkHostname(DnsMessage::Protocol::IPv6);
+            checkHostname(Mdns::Protocol::IPv4);
+            checkHostname(Mdns::Protocol::IPv6);
         }
     }
 
@@ -128,27 +141,44 @@ void MdnsServer::onReadyRead()
     QHostAddress address;
     quint16 port;
     socket->readDatagram(packet.data(), packet.size(), &address, &port);
-    DnsMessage message;
-    if (DnsUtil::fromPacket(packet, message)) {
+    MdnsMessage message;
+    if (Mdns::fromPacket(packet, message)) {
         message.setAddress(address);
         message.setProtocol(address.protocol() == QAbstractSocket::IPv4Protocol ?
-            DnsMessage::Protocol::IPv4 : DnsMessage::Protocol::IPv6);
+            Mdns::Protocol::IPv4 : Mdns::Protocol::IPv6);
         message.setPort(port);
         emit messageReceived(message);
     }
 }
 
-void MdnsServer::onMessageReceived(const DnsMessage &message)
+void MdnsServer::onMessageReceived(const MdnsMessage &message)
 {
-    if (message.isResponse()) {
-        foreach (DnsRecord record, message.records()) {
-            if ((record.type() == DnsMessage::A || record.type() == DnsMessage::AAAA) &&
-                    record.name() == mHostname && record.ttl()) {
-                if (!mHostnameConfirmed) {
+    if (mHostnameConfirmed) {
+        if (!message.isResponse()) {
+            bool queryA = false;
+            bool queryAAAA = false;
+            foreach (MdnsQuery query, message.queries()) {
+                if (query.name() == mHostname) {
+                    queryA = queryA || query.type() == Mdns::A;
+                    queryAAAA = queryAAAA || query.type() == Mdns::AAAA;
+                }
+            }
+            if (queryA || queryAAAA) {
+                MdnsMessage reply = message.reply();
+                //queryA && reply.addRecord(generateRecord(Mdns::A));
+                //queryAAAA && reply.addRecord(generateRecord(Mdns::AAAA));
+                sendMessage(reply);
+            }
+        }
+    } else {
+        if (message.isResponse()) {
+            foreach (MdnsRecord record, message.records()) {
+                if ((record.type() == Mdns::A || record.type() == Mdns::AAAA) &&
+                        record.name() == mHostname && record.ttl()) {
                     QString suffix = QString("-%1").arg(mHostnameSuffix++);
                     mHostname = QString("%1%2.local.").arg(QHostInfo::localHostName()).arg(suffix);
-                    checkHostname(DnsMessage::Protocol::IPv4);
-                    checkHostname(DnsMessage::Protocol::IPv6);
+                    checkHostname(Mdns::Protocol::IPv4);
+                    checkHostname(Mdns::Protocol::IPv6);
                     break;
                 }
             }
@@ -163,14 +193,14 @@ void MdnsServer::bindSocket(QUdpSocket &socket, const QHostAddress &address)
     // the socket and initialize the QUdpSocket with it
 
 #ifdef Q_OS_UNIX
-    if (!socket.bind(address, DnsUtil::MdnsPort, QAbstractSocket::ShareAddress)) {
+    if (!socket.bind(address, Mdns::Port, QAbstractSocket::ShareAddress)) {
         int arg = 1;
         if (setsockopt(socket.socketDescriptor(), SOL_SOCKET, SO_REUSEADDR,
                 reinterpret_cast<char*>(&arg), sizeof(int))) {
             emit error(strerror(errno));
         }
 #endif
-        if (!socket.bind(address, DnsUtil::MdnsPort, QAbstractSocket::ReuseAddressHint)) {
+        if (!socket.bind(address, Mdns::Port, QAbstractSocket::ReuseAddressHint)) {
             emit error(socket.errorString());
         }
 #ifdef Q_OS_UNIX
@@ -178,17 +208,17 @@ void MdnsServer::bindSocket(QUdpSocket &socket, const QHostAddress &address)
 #endif
 }
 
-void MdnsServer::checkHostname(DnsMessage::Protocol protocol)
+void MdnsServer::checkHostname(Mdns::Protocol protocol)
 {
-    DnsQuery query;
+    MdnsQuery query;
     query.setName(mHostname.toUtf8());
-    query.setType(DnsMessage::A);
+    query.setType(Mdns::A);
 
-    DnsMessage message;
-    message.setAddress(protocol == DnsMessage::Protocol::IPv4 ?
-        DnsUtil::MdnsIpv4Address : DnsUtil::MdnsIpv6Address);
+    MdnsMessage message;
+    message.setAddress(protocol == Mdns::Protocol::IPv4 ?
+        Mdns::Ipv4Address : Mdns::Ipv6Address);
     message.setProtocol(protocol);
-    message.setPort(DnsUtil::MdnsPort);
+    message.setPort(Mdns::Port);
     message.addQuery(query);
 
     sendMessage(message);

@@ -22,25 +22,25 @@
  * IN THE SOFTWARE.
  */
 
-#include "dnsbitmap.h"
+#include "mdnsbitmap.h"
 
-DnsBitmap::DnsBitmap()
+MdnsBitmap::MdnsBitmap()
     : mLength(0),
       mData()
 {
 }
 
-quint8 DnsBitmap::length() const
+quint8 MdnsBitmap::length() const
 {
     return mLength;
 }
 
-const quint8 *DnsBitmap::data() const
+const quint8 *MdnsBitmap::data() const
 {
     return mData;
 }
 
-void DnsBitmap::setData(quint8 length, const quint8 *data)
+void MdnsBitmap::setData(quint8 length, const quint8 *data)
 {
     mLength = length;
     for (int i = 0; i < length; ++i) {

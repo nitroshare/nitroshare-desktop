@@ -30,7 +30,8 @@
 #include <QTimer>
 #include <QUdpSocket>
 
-#include "dnsmessage.h"
+#include "mdns.h"
+#include "mdnsmessage.h"
 
 /**
  * @brief Bare-bones mDNS server
@@ -60,7 +61,12 @@ public:
     /**
      * @brief Send a DNS message
      */
-    void sendMessage(const DnsMessage &message);
+    void sendMessage(const MdnsMessage &message);
+
+    /**
+     * @brief Retrieve the address of this device relative to another
+     */
+    QHostAddress address(const QHostAddress &address) const;
 
 Q_SIGNALS:
 
@@ -72,7 +78,7 @@ Q_SIGNALS:
     /**
      * @brief Indicate a new DNS message has been recieved
      */
-    void messageReceived(const DnsMessage &message);
+    void messageReceived(const MdnsMessage &message);
 
     /**
      * @brief Indicate that an error has occurred
@@ -85,12 +91,12 @@ private Q_SLOTS:
     void onHostnameTimeout();
 
     void onReadyRead();
-    void onMessageReceived(const DnsMessage &message);
+    void onMessageReceived(const MdnsMessage &message);
 
 private:
 
     void bindSocket(QUdpSocket &socket, const QHostAddress &address);
-    void checkHostname(DnsMessage::Protocol protocol);
+    void checkHostname(Mdns::Protocol protocol);
 
     // Periodically check for new interfaces
     QTimer mSocketTimer;

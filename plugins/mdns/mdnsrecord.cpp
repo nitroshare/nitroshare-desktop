@@ -22,119 +22,140 @@
  * IN THE SOFTWARE.
  */
 
-#include "dnsrecord.h"
+#include "mdnsrecord.h"
 
-DnsRecord::DnsRecord()
+MdnsRecord::MdnsRecord()
     : mType(0),
       mFlushCache(false),
       mTtl(0),
       mPriority(0),
       mWeight(0),
-      mPort(0)
+      mPort(0),
+      mBitmap()
 {
 }
 
-QByteArray DnsRecord::name() const
+QByteArray MdnsRecord::name() const
 {
     return mName;
 }
 
-void DnsRecord::setName(const QByteArray &name)
+void MdnsRecord::setName(const QByteArray &name)
 {
     mName = name;
 }
 
-quint16 DnsRecord::type() const
+quint16 MdnsRecord::type() const
 {
     return mType;
 }
 
-void DnsRecord::setType(quint16 type)
+void MdnsRecord::setType(quint16 type)
 {
     mType = type;
 }
 
-bool DnsRecord::flushCache() const
+bool MdnsRecord::flushCache() const
 {
     return mFlushCache;
 }
 
-void DnsRecord::setFlushCache(bool flushCache)
+void MdnsRecord::setFlushCache(bool flushCache)
 {
     mFlushCache = flushCache;
 }
 
-quint32 DnsRecord::ttl() const
+quint32 MdnsRecord::ttl() const
 {
     return mTtl;
 }
 
-void DnsRecord::setTtl(quint32 ttl)
+void MdnsRecord::setTtl(quint32 ttl)
 {
     mTtl = ttl;
 }
 
-QHostAddress DnsRecord::address() const
+QHostAddress MdnsRecord::address() const
 {
     return mAddress;
 }
 
-void DnsRecord::setAddress(const QHostAddress &address)
+void MdnsRecord::setAddress(const QHostAddress &address)
 {
     mAddress = address;
 }
 
-QByteArray DnsRecord::target() const
+QByteArray MdnsRecord::target() const
 {
-    return mTarget;
+    return mName2;
 }
 
-void DnsRecord::setTarget(const QByteArray &target)
+void MdnsRecord::setTarget(const QByteArray &target)
 {
-    mTarget = target;
+    mName2 = target;
 }
 
-quint16 DnsRecord::priority() const
+QByteArray MdnsRecord::nextDomainName() const
+{
+    return mName2;
+}
+
+void MdnsRecord::setNextDomainName(const QByteArray &nextDomainName)
+{
+    mName2 = nextDomainName;
+}
+
+quint16 MdnsRecord::priority() const
 {
     return mPriority;
 }
 
-void DnsRecord::setPriority(quint16 priority)
+void MdnsRecord::setPriority(quint16 priority)
 {
     mPriority = priority;
 }
 
-quint16 DnsRecord::weight() const
+quint16 MdnsRecord::weight() const
 {
     return mWeight;
 }
 
-void DnsRecord::setWeight(quint16 weight)
+void MdnsRecord::setWeight(quint16 weight)
 {
     mWeight = weight;
 }
 
-quint16 DnsRecord::port() const
+quint16 MdnsRecord::port() const
 {
     return mPort;
 }
 
-void DnsRecord::setPort(quint16 port)
+void MdnsRecord::setPort(quint16 port)
 {
     mPort = port;
 }
 
-QMap<QByteArray, QByteArray> DnsRecord::txt()
+QMap<QByteArray, QByteArray> MdnsRecord::txt()
 {
     return mTxt;
 }
 
-void DnsRecord::addTxt(const QByteArray &key, const QByteArray &value)
+void MdnsRecord::addTxt(const QByteArray &key, const QByteArray &value)
 {
     mTxt.insert(key, value);
 }
 
-void DnsRecord::setTxt(const QMap<QByteArray, QByteArray> &txt)
+void MdnsRecord::setTxt(const QMap<QByteArray, QByteArray> &txt)
 {
     mTxt = txt;
+}
+
+MdnsBitmap MdnsRecord::bitmap() const
+{
+    return mBitmap;
+}
+
+void MdnsRecord::setBitmap(const MdnsBitmap &bitmap)
+{
+    mBitmap = bitmap;
 }

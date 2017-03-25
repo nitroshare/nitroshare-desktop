@@ -22,22 +22,22 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef DNSQUERY_H
-#define DNSQUERY_H
+#ifndef MDNSQUERY_H
+#define MDNSQUERY_H
 
 #include <QByteArray>
 
 /**
  * @brief DNS query
  */
-class DnsQuery
+class MdnsQuery
 {
 public:
 
     /**
-     * @brief Create an empty DNS query
+     * @brief Create an empty mDNS query
      */
-    DnsQuery();
+    MdnsQuery();
 
     /**
      * @brief Retrieve the query name
@@ -76,4 +76,4 @@ private:
     bool mUnicastResponse;
 };
 
-#endif // DNSQUERY_H
+#endif // MDNSQUERY_H
