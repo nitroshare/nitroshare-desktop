@@ -32,6 +32,7 @@
 
 #include "mdns.h"
 #include "mdnsmessage.h"
+#include "mdnsrecord.h"
 
 /**
  * @brief Bare-bones mDNS server
@@ -59,14 +60,25 @@ public:
     MdnsServer();
 
     /**
+     * @brief Retrieve the current hostname
+     *
+     * An empty string is returned if no valid hostname is in use.
+     */
+    QString hostname() const;
+
+    /**
      * @brief Send a DNS message
      */
     void sendMessage(const MdnsMessage &message);
 
     /**
-     * @brief Retrieve the address of this device relative to another
+     * @brief Generate an A or AAAA record
+     * @param address generate record relative to this address
+     * @param type generate a record of this type
+     * @param record reference to record to generate
+     * @return true if a valid record was generated
      */
-    QHostAddress address(const QHostAddress &address) const;
+    bool generateRecord(const QHostAddress &address, quint16 type, MdnsRecord &record);
 
 Q_SIGNALS:
 

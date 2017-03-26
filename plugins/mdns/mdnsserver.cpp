@@ -36,8 +36,9 @@
 
 #include "mdns.h"
 #include "mdnsquery.h"
-#include "mdnsrecord.h"
 #include "mdnsserver.h"
+
+const quint32 DefaultTtl = 60 * 60;
 
 // TODO: watch for the sockets disconnecting and retry hostname registration
 
@@ -58,6 +59,11 @@ MdnsServer::MdnsServer()
     onSocketTimeout();
 }
 
+QString MdnsServer::hostname() const
+{
+    return mHostname;
+}
+
 void MdnsServer::sendMessage(const MdnsMessage &message)
 {
     QByteArray packet;
@@ -70,16 +76,30 @@ void MdnsServer::sendMessage(const MdnsMessage &message)
     }
 }
 
-QHostAddress MdnsServer::address(const QHostAddress &address) const
+bool MdnsServer::generateRecord(const QHostAddress &address, quint16 type, MdnsRecord &record)
 {
+    // Find the interface that the address belongs to
     foreach (QNetworkInterface interface, QNetworkInterface::allInterfaces()) {
         foreach (QNetworkAddressEntry entry, interface.addressEntries()) {
             if (address.isInSubnet(entry.ip(), entry.prefixLength())) {
-                return entry.ip();
+
+                // Loop through all of the interface addresses and find one
+                // that matches the requested type
+                foreach (QHostAddress address, interface.allAddresses()) {
+                    if ((address.protocol() == QAbstractSocket::IPv4Protocol && type == Mdns::A) ||
+                            (address.protocol() == QAbstractSocket::IPv6Protocol && type == Mdns::AAAA)) {
+                        record.setName(mHostname.toUtf8());
+                        record.setType(type);
+                        record.setTtl(DefaultTtl);
+                        record.setAddress(entry.ip());
+                        return true;
+                    }
+                }
+                break;
             }
         }
     }
-    return QHostAddress();
+    return false;
 }
 
 void MdnsServer::onSocketTimeout()
@@ -116,9 +136,10 @@ void MdnsServer::onSocketTimeout()
         // If the hostname has not been set, begin checking hostnames
         if (!mHostnameConfirmed) {
             mHostname = QHostInfo::localHostName() + ".local.";
-            mHostnameSuffix = 1;
+            mHostnameSuffix = 2;
             checkHostname(Mdns::Protocol::IPv4);
             checkHostname(Mdns::Protocol::IPv6);
+            mHostnameTimer.start(2 * 1000);
         }
     }
 
@@ -155,6 +176,8 @@ void MdnsServer::onMessageReceived(const MdnsMessage &message)
 {
     if (mHostnameConfirmed) {
         if (!message.isResponse()) {
+
+            // Check to see if any of the queries were for this device
             bool queryA = false;
             bool queryAAAA = false;
             foreach (MdnsQuery query, message.queries()) {
@@ -163,15 +186,30 @@ void MdnsServer::onMessageReceived(const MdnsMessage &message)
                     queryAAAA = queryAAAA || query.type() == Mdns::AAAA;
                 }
             }
+
+            // If there was a query for either the A or AAAA record, then
+            // attempt to respond with the desired records, using the source
+            // message address to determine which address to use
             if (queryA || queryAAAA) {
                 MdnsMessage reply = message.reply();
-                //queryA && reply.addRecord(generateRecord(Mdns::A));
-                //queryAAAA && reply.addRecord(generateRecord(Mdns::AAAA));
-                sendMessage(reply);
+                MdnsRecord ipv4Record;
+                MdnsRecord ipv6Record;
+                if (queryA && generateRecord(message.address(), Mdns::A, ipv4Record)) {
+                    reply.addRecord(ipv4Record);
+                }
+                if (queryAAAA && generateRecord(message.address(), Mdns::AAAA, ipv6Record)) {
+                    reply.addRecord(ipv6Record);
+                }
+                if (reply.records().length()) {
+                    sendMessage(reply);
+                }
             }
         }
     } else {
         if (message.isResponse()) {
+
+            // Check to see if any of the records match the one we were
+            // checking for; if so, we can't use it, so try another one
             foreach (MdnsRecord record, message.records()) {
                 if ((record.type() == Mdns::A || record.type() == Mdns::AAAA) &&
                         record.name() == mHostname && record.ttl()) {
@@ -212,7 +250,7 @@ void MdnsServer::checkHostname(Mdns::Protocol protocol)
 {
     MdnsQuery query;
     query.setName(mHostname.toUtf8());
-    query.setType(Mdns::A);
+    query.setType(protocol == Mdns::Protocol::IPv4 ? Mdns::A : Mdns::AAAA);
 
     MdnsMessage message;
     message.setAddress(protocol == Mdns::Protocol::IPv4 ?
