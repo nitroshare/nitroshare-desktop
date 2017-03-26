@@ -22,10 +22,6 @@
  * IN THE SOFTWARE.
  */
 
-#include <QHostInfo>
-#include <QNetworkAddressEntry>
-#include <QNetworkInterface>
-
 #include "mdns.h"
 #include "mdnsquery.h"
 #include "mdnsservice.h"
@@ -36,7 +32,7 @@ MdnsService::MdnsService(MdnsServer *mdnsServer)
     : mMdnsServer(mdnsServer),
       mPort(0)
 {
-    connect(mdnsServer, &MdnsServer::messageReceived, this, &MdnsService::onMessageReceived);
+    connect(mMdnsServer, &MdnsServer::hostnameConfirmed, this, &MdnsService::onHostnameConfirmed);
 }
 
 QByteArray MdnsService::type() const
@@ -59,16 +55,6 @@ void MdnsService::setName(const QByteArray &name)
     mName = name;
 }
 
-QList<QHostAddress> MdnsService::addresses() const
-{
-    return mAddresses;
-}
-
-void MdnsService::setAddresses(const QList<QHostAddress> &addresses)
-{
-    mAddresses = addresses;
-}
-
 quint16 MdnsService::port() const
 {
     return mPort;
@@ -89,6 +75,11 @@ void MdnsService::addAttribute(const QByteArray &key, const QByteArray &value)
     mAttributes.insert(key, value);
 }
 
+void MdnsService::onHostnameConfirmed()
+{
+    connect(mMdnsServer, &MdnsServer::messageReceived, this, &MdnsService::onMessageReceived);
+}
+
 void MdnsService::onMessageReceived(const MdnsMessage &message)
 {
     if (message.isResponse()) {
@@ -102,10 +93,6 @@ void MdnsService::onMessageReceived(const MdnsMessage &message)
     bool sendTxt = false;
     foreach (MdnsQuery query, message.queries()) {
         switch (query.type()) {
-        case Mdns::A:
-        case Mdns::AAAA:
-            sendAddresses = true;
-            break;
         case Mdns::PTR:
             if (query.name() == mType) {
                 sendAddresses = true;
@@ -134,21 +121,20 @@ void MdnsService::onMessageReceived(const MdnsMessage &message)
     if (!sendAddresses && !sendPtr && !sendPtrService && !sendSrv && !sendTxt) {
         return;
     }
-    QHostAddress address = findInterfaceAddress(message.address());
-    if (address.isNull()) {
-        return;
-    }
-    MdnsMessage reply;
-    reply.setTransactionId(message.transactionId());
-    reply.setResponse(true);
-    reply.setPort(message.port());
-    reply.setAddress(message.port() == 5353 ?
-        (address.protocol() == QAbstractSocket::IPv4Protocol ?
-             Mdns::Ipv4Address :
-             Mdns::Ipv6Address) :
-        message.address());
+    MdnsMessage reply = message.reply();
     if (sendAddresses) {
-        reply.addRecord(generateAddress(address));
+        MdnsRecord record;
+        if (message.protocol() == Mdns::IPv4) {
+            if (!mMdnsServer->generateRecord(message.address(), Mdns::A, record)) {
+                return;
+            }
+        }
+        if (message.protocol() == Mdns::IPv6) {
+            if (!mMdnsServer->generateRecord(message.address(), Mdns::AAAA, record)) {
+                return;
+            }
+        }
+        reply.addRecord(record);
     }
     if (sendPtr) {
         reply.addRecord(generatePtr());
@@ -163,28 +149,6 @@ void MdnsService::onMessageReceived(const MdnsMessage &message)
         reply.addRecord(generateTxt());
     }
     mMdnsServer->sendMessage(reply);
-}
-
-QHostAddress MdnsService::findInterfaceAddress(const QHostAddress &hostAddress)
-{
-    foreach (QNetworkInterface interface, QNetworkInterface::allInterfaces()) {
-        foreach (QNetworkAddressEntry entry, interface.addressEntries()) {
-            if (hostAddress.isInSubnet(entry.ip(), entry.prefixLength())) {
-                return entry.ip();
-            }
-        }
-    }
-    return QHostAddress();
-}
-
-MdnsRecord MdnsService::generateAddress(const QHostAddress &address)
-{
-    MdnsRecord record;
-    record.setName(QString(QHostInfo::localHostName() + ".local.").toUtf8());
-    record.setType(address.protocol() == QAbstractSocket::IPv4Protocol ? Mdns::A : Mdns::AAAA);
-    record.setTtl(3600);
-    record.setAddress(address);
-    return record;
 }
 
 MdnsRecord MdnsService::generatePtrService()
@@ -214,7 +178,7 @@ MdnsRecord MdnsService::generateSrv()
     record.setType(Mdns::SRV);
     record.setPort(mPort);
     record.setTtl(3600);
-    record.setTarget(QString(QHostInfo::localHostName() + ".local.").toUtf8());
+    record.setTarget(mMdnsServer->hostname().toUtf8());
     return record;
 }
 

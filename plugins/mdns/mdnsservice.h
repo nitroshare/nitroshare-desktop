@@ -26,8 +26,6 @@
 #define MDNSSERVICE_H
 
 #include <QByteArray>
-#include <QHostAddress>
-#include <QList>
 #include <QMap>
 #include <QObject>
 
@@ -66,16 +64,6 @@ public:
     void setName(const QByteArray &name);
 
     /**
-     * @brief Retrieve service addresses
-     */
-    QList<QHostAddress> addresses() const;
-
-    /**
-     * @brief Set service addresses
-     */
-    void setAddresses(const QList<QHostAddress> &addresses);
-
-    /**
      * @brief Retrieve service port
      */
     quint16 port() const;
@@ -97,12 +85,11 @@ public:
 
 private Q_SLOTS:
 
+    void onHostnameConfirmed();
     void onMessageReceived(const MdnsMessage &message);
 
 private:
 
-    QHostAddress findInterfaceAddress(const QHostAddress &hostAddress);
-    MdnsRecord generateAddress(const QHostAddress &address);
     MdnsRecord generatePtr();
     MdnsRecord generatePtrService();
     MdnsRecord generateSrv();
@@ -112,7 +99,6 @@ private:
 
     QByteArray mType;
     QByteArray mName;
-    QList<QHostAddress> mAddresses;
     quint16 mPort;
     QMap<QByteArray, QByteArray> mAttributes;
 };
