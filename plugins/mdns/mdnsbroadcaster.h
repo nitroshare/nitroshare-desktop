@@ -22,67 +22,44 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef MDNSSERVICE_H
-#define MDNSSERVICE_H
+#ifndef MDNSBROADCASTER_H
+#define MDNSBROADCASTER_H
 
-#include <QByteArray>
-#include <QMap>
+#include <QObject>
 
-class MdnsService
+#include "mdnsrecord.h"
+
+class MdnsMessage;
+class MdnsServer;
+class MdnsService;
+
+/**
+ * @brief Broadcast an mDNS service
+ */
+class MdnsBroadcaster : public QObject
 {
+    Q_OBJECT
+
 public:
 
     /**
-     * @brief Create an uninitialized service
+     * @brief Create a broadcaster for the specified service
      */
-    MdnsService();
+    MdnsBroadcaster(MdnsServer *server, MdnsService *service);
 
-    /**
-     * @brief Retrieve service type
-     */
-    QByteArray type() const;
+private Q_SLOTS:
 
-    /**
-     * @brief Set service type
-     */
-    void setType(const QByteArray &type);
-
-    /**
-     * @brief Retrieve service name
-     */
-    QByteArray name() const;
-
-    /**
-     * @brief Set service name
-     */
-    void setName(const QByteArray &name);
-
-    /**
-     * @brief Retrieve service port
-     */
-    quint16 port() const;
-
-    /**
-     * @brief Set service port
-     */
-    void setPort(quint16 port);
-
-    /**
-     * @brief Retrieve service attributes
-     */
-    QMap<QByteArray, QByteArray> attributes() const;
-
-    /**
-     * @brief Add service attribute
-     */
-    void addAttribute(const QByteArray &key, const QByteArray &value);
+    void onMessageReceived(const MdnsMessage &message);
 
 private:
 
-    QByteArray mType;
-    QByteArray mName;
-    quint16 mPort;
-    QMap<QByteArray, QByteArray> mAttributes;
+    MdnsRecord generatePtr();
+    MdnsRecord generatePtrService();
+    MdnsRecord generateSrv();
+    MdnsRecord generateTxt();
+
+    MdnsServer *mMdnsServer;
+    MdnsService *mMdnsService;
 };
 
-#endif // MDNSSERVICE_H
+#endif // MDNSBROADCASTER_H
