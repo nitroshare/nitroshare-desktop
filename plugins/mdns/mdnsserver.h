@@ -83,11 +83,6 @@ public:
 Q_SIGNALS:
 
     /**
-     * @brief Indicate that an unused hostname has been found
-     */
-    void hostnameConfirmed(const QString &hostname);
-
-    /**
      * @brief Indicate a new DNS message has been recieved
      */
     void messageReceived(const MdnsMessage &message);

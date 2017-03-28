@@ -151,74 +151,77 @@ void MdnsServer::onHostnameTimeout()
 {
     // There was no response for the hostname query, so it can be used
     mHostnameConfirmed = true;
-    emit hostnameConfirmed(mHostname);
 }
 
 void MdnsServer::onReadyRead()
 {
+    // Read the packet from the socket
     QUdpSocket *socket = dynamic_cast<QUdpSocket*>(sender());
     QByteArray packet;
     packet.resize(socket->pendingDatagramSize());
     QHostAddress address;
     quint16 port;
     socket->readDatagram(packet.data(), packet.size(), &address, &port);
+
+    // Attempt to decode the packet
     MdnsMessage message;
     if (Mdns::fromPacket(packet, message)) {
         message.setAddress(address);
         message.setProtocol(address.protocol() == QAbstractSocket::IPv4Protocol ?
             Mdns::Protocol::IPv4 : Mdns::Protocol::IPv6);
         message.setPort(port);
-        emit messageReceived(message);
+
+        if (mHostnameConfirmed) {
+            emit messageReceived(message);
+        } else {
+
+            // The only message we are interested in is one that indicates our
+            // chosen hostname is already in use
+            if (message.isResponse()) {
+                foreach (MdnsRecord record, message.records()) {
+                    if ((record.type() == Mdns::A || record.type() == Mdns::AAAA) &&
+                            record.name() == mHostname && record.ttl()) {
+                        QString suffix = QString("-%1").arg(mHostnameSuffix++);
+                        mHostname = QString("%1%2.local.").arg(QHostInfo::localHostName()).arg(suffix);
+                        checkHostname(Mdns::Protocol::IPv4);
+                        checkHostname(Mdns::Protocol::IPv6);
+                        break;
+                    }
+                }
+            }
+        }
     }
 }
 
 void MdnsServer::onMessageReceived(const MdnsMessage &message)
 {
-    if (mHostnameConfirmed) {
-        if (!message.isResponse()) {
+    if (!message.isResponse()) {
 
-            // Check to see if any of the queries were for this device
-            bool queryA = false;
-            bool queryAAAA = false;
-            foreach (MdnsQuery query, message.queries()) {
-                if (query.name() == mHostname) {
-                    queryA = queryA || query.type() == Mdns::A;
-                    queryAAAA = queryAAAA || query.type() == Mdns::AAAA;
-                }
-            }
-
-            // If there was a query for either the A or AAAA record, then
-            // attempt to respond with the desired records, using the source
-            // message address to determine which address to use
-            if (queryA || queryAAAA) {
-                MdnsMessage reply = message.reply();
-                MdnsRecord ipv4Record;
-                MdnsRecord ipv6Record;
-                if (queryA && generateRecord(message.address(), Mdns::A, ipv4Record)) {
-                    reply.addRecord(ipv4Record);
-                }
-                if (queryAAAA && generateRecord(message.address(), Mdns::AAAA, ipv6Record)) {
-                    reply.addRecord(ipv6Record);
-                }
-                if (reply.records().length()) {
-                    sendMessage(reply);
-                }
+        // Check to see if any of the queries were for this device
+        bool queryA = false;
+        bool queryAAAA = false;
+        foreach (MdnsQuery query, message.queries()) {
+            if (query.name() == mHostname) {
+                queryA = queryA || query.type() == Mdns::A;
+                queryAAAA = queryAAAA || query.type() == Mdns::AAAA;
             }
         }
-    } else {
-        if (message.isResponse()) {
 
-            // Check to see if any of the records match the one we were
-            // checking for; if so, we can't use it, so try another one
-            foreach (MdnsRecord record, message.records()) {
-                if ((record.type() == Mdns::A || record.type() == Mdns::AAAA) &&
-                        record.name() == mHostname && record.ttl()) {
-                    QString suffix = QString("-%1").arg(mHostnameSuffix++);
-                    mHostname = QString("%1%2.local.").arg(QHostInfo::localHostName()).arg(suffix);
-                    checkHostname(Mdns::Protocol::IPv4);
-                    checkHostname(Mdns::Protocol::IPv6);
-                    break;
-                }
+        // If there was a query for either the A or AAAA record, then
+        // attempt to respond with the desired records, using the source
+        // message address to determine which address to use
+        if (queryA || queryAAAA) {
+            MdnsMessage reply = message.reply();
+            MdnsRecord ipv4Record;
+            MdnsRecord ipv6Record;
+            if (queryA && generateRecord(message.address(), Mdns::A, ipv4Record)) {
+                reply.addRecord(ipv4Record);
+            }
+            if (queryAAAA && generateRecord(message.address(), Mdns::AAAA, ipv6Record)) {
+                reply.addRecord(ipv6Record);
+            }
+            if (reply.records().length()) {
+                sendMessage(reply);
             }
         }
     }
