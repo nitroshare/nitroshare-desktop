@@ -105,6 +105,8 @@ void MdnsMessage::addRecord(const MdnsRecord &record)
 MdnsMessage MdnsMessage::reply() const
 {
     MdnsMessage message;
+    message.setTransactionId(transactionId());
+    message.setResponse(true);
     if (port() == Mdns::Port) {
         if (protocol() == Mdns::Protocol::IPv4) {
             message.setAddress(Mdns::Ipv4Address);
@@ -114,6 +116,7 @@ MdnsMessage MdnsMessage::reply() const
     } else {
         message.setAddress(address());
     }
+    message.setProtocol(protocol());
     message.setPort(port());
     return message;
 }
