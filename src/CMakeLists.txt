@@ -137,6 +137,10 @@ if(QHttpEngine_FOUND)
     target_link_libraries(nitroshare QHttpEngine)
 endif()
 
+if(qmdnsengine_FOUND)
+    target_link_libraries(nitroshare qmdnsengine)
+endif()
+
 if(APPINDICATOR_FOUND)
     target_include_directories(nitroshare PRIVATE ${APPINDICATOR_INCLUDE_DIRS})
     target_link_libraries(nitroshare ${APPINDICATOR_LIBRARIES})
@@ -149,6 +153,9 @@ install(TARGETS nitroshare
     BUNDLE DESTINATION .
 )
 
+# Shared libraries present some interesting challenges...
+include(SharedLibrary)
+
 if(WIN32)
     # If windeployqt is available, use it immediately after the build completes to
     # ensure that the dependencies are available.
@@ -157,13 +164,12 @@ if(WIN32)
         windeployqt(nitroshare)
     endif()
 
-    # If QHttpEngine was used, include it in the installer
+    # Ensure QHttpEngine and QMdnsEngine are included in the installer (if needed)
     if(QHttpEngine_FOUND)
-        add_custom_command(TARGET nitroshare POST_BUILD
-            COMMAND "${CMAKE_COMMAND}" -E
-                copy_if_different "$<TARGET_FILE:QHttpEngine>" "$<TARGET_FILE_DIR:nitroshare>"
-            COMMENT "Copying QHttpEngine..."
-        )
+        copy_lib_win(QHttpEngine nitroshare)
+    endif()
+    if(qmdnsengine_FOUND)
+        copy_lib_win(qmdnsengine nitroshare)
     endif()
 
     # If Inno Setup is available, provide a target for building an EXE installer.
@@ -182,22 +188,12 @@ if(WIN32)
 endif()
 
 if(APPLE)
-    # If QHttpEngine was used, copy the dynlib over and correct its RPATH
+    # If QHttpEngine or QMdnsEngine was used, copy the dynlib and correct their RPATHs
     if(QHttpEngine_FOUND)
-        add_custom_command(TARGET nitroshare POST_BUILD
-            COMMAND "${CMAKE_COMMAND}" -E
-                make_directory "$<TARGET_FILE_DIR:nitroshare>/../Frameworks"
-            COMMAND "${CMAKE_COMMAND}" -E
-                copy_if_different
-                    "$<TARGET_FILE:QHttpEngine>"
-                    "$<TARGET_FILE_DIR:nitroshare>/../Frameworks/$<TARGET_SONAME_FILE_NAME:QHttpEngine>"
-            COMMAND install_name_tool
-                -change
-                "$<TARGET_SONAME_FILE_NAME:QHttpEngine>"
-                "@rpath/$<TARGET_SONAME_FILE_NAME:QHttpEngine>"
-                "$<TARGET_FILE:nitroshare>"
-            COMMENT "Copying QHttpEngine and correcting RPATH..."
-        )
+        copy_lib_mac(QHttpEngine nitroshare)
+    endif()
+    if(qmdnsengine_FOUND)
+        copy_lib_mac(qmdnsengine nitroshare)
     endif()
 
     # If macdeployqt is available, use it immediately after the build completes to
