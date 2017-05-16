@@ -186,7 +186,7 @@ if(WIN32)
             COMMAND "${INNOSETUP_EXECUTABLE}"
                 /Q
                 /DTARGET_FILE_NAME="$<TARGET_FILE_NAME:nitroshare>"
-                "${CMAKE_CURRENT_BINARY_DIR}/setup.iss"
+                \"${CMAKE_CURRENT_BINARY_DIR}/setup.iss\"
             DEPENDS nitroshare
             COMMENT "Building installer..."
         )

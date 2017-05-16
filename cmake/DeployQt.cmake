@@ -37,7 +37,7 @@ function(windeployqt target)
             env PATH="${_qt_bin_dir}" "${WINDEPLOYQT_EXECUTABLE}"
                 --verbose 0
                 --no-compiler-runtime
-                "$<TARGET_FILE:${target}>"
+                \"$<TARGET_FILE:${target}>\"
         COMMENT "Deploying Qt..."
     )
 
@@ -56,7 +56,7 @@ function(windeployqt target)
         get_filename_component(filename "${lib}" NAME)
         add_custom_command(TARGET ${target} POST_BUILD
             COMMAND "${CMAKE_COMMAND}" -E
-                copy_if_different "${lib}" "$<TARGET_FILE_DIR:${target}>"
+                copy_if_different "${lib}" \"$<TARGET_FILE_DIR:${target}>\"
             COMMENT "Copying ${filename}..."
         )
     endforeach()
