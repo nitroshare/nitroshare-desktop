@@ -28,7 +28,11 @@
 #include "config.h"
 
 #ifdef QHttpEngine_FOUND
-#include "../api/apiserver.h"
+#  include "../api/apiserver.h"
+#endif
+
+#ifdef qmdnsengine_FOUND
+#  include "../mdns/mdns.h"
 #endif
 
 #include "../bundle/bundle.h"
@@ -78,6 +82,10 @@ private:
 
 #ifdef QHttpEngine_FOUND
     ApiServer mApiServer;
+#endif
+
+#ifdef qmdnsengine_FOUND
+    Mdns mMdns;
 #endif
 
     DeviceModel mDeviceModel;

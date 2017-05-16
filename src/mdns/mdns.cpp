@@ -39,6 +39,11 @@ Mdns::Mdns()
     onSettingsChanged(QList<Settings::Key>());
 }
 
+void Mdns::onHostnameChanged(const QByteArray &hostname)
+{
+    qDebug("Hostname changed: %s", hostname.constData());
+}
+
 void Mdns::onSettingsChanged(const QList<Settings::Key> &keys)
 {
     Settings *settings = Settings::instance();
@@ -51,6 +56,7 @@ void Mdns::onSettingsChanged(const QList<Settings::Key> &keys)
                 mServer = new QMdnsEngine::Server(this);
                 mHostname = new QMdnsEngine::Hostname(mServer, this);
                 mProvider = new QMdnsEngine::Provider(mServer, mHostname, this);
+                connect(mHostname, &QMdnsEngine::Hostname::hostnameChanged, this, &Mdns::onHostnameChanged);
             }
             QMdnsEngine::Service service;
             service.setName(settings->get(Settings::Key::DeviceName).toString().toUtf8());

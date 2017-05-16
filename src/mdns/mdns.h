@@ -46,6 +46,7 @@ public:
 
 private Q_SLOTS:
 
+    void onHostnameChanged(const QByteArray &hostname);
     void onSettingsChanged(const QList<Settings::Key> &keys);
 
 private:
