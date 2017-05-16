@@ -93,7 +93,7 @@ foreach(_ts_path ${TS})
             -compress
             -removeidentical
             -silent
-            "${_ts_path}"
+            \"${_ts_path}\"
             -qm "${_qm_path}"
         COMMENT "Generating ${_ts_name}"
     )
