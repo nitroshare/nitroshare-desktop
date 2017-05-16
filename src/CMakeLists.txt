@@ -45,6 +45,12 @@ if(QHttpEngine_FOUND)
     )
 endif()
 
+if(qmdnsengine_FOUND)
+    set(SRC ${SRC}
+        mdns/mdns.cpp
+    )
+endif()
+
 if(APPINDICATOR_FOUND)
     set(SRC ${SRC}
         icon/indicatoricon.cpp
