@@ -94,7 +94,7 @@ foreach(_ts_path ${TS})
             -removeidentical
             -silent
             \"${_ts_path}\"
-            -qm "${_qm_path}"
+            -qm \"${_qm_path}\"
         COMMENT "Generating ${_ts_name}"
     )
 endforeach()
