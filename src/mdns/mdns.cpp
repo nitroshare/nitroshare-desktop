@@ -50,6 +50,7 @@ void Mdns::onSettingsChanged(const QList<Settings::Key> &keys)
 
     if (keys.empty() || keys.contains(Settings::Key::BehaviorReceive) ||
             keys.contains(Settings::Key::TransferPort) ||
+            keys.contains(Settings::Key::DeviceUUID) ||
             keys.contains(Settings::Key::DeviceName)) {
         if (settings->get(Settings::Key::BehaviorReceive).toBool()) {
             if (!mProvider) {
@@ -62,6 +63,7 @@ void Mdns::onSettingsChanged(const QList<Settings::Key> &keys)
             service.setName(settings->get(Settings::Key::DeviceName).toString().toUtf8());
             service.setType("_nitroshare._tcp.local.");
             service.setPort(Settings::instance()->get(Settings::Key::TransferPort).toInt());
+            service.setAttributes({{"uuid", settings->get(Settings::Key::DeviceUUID).toString().toUtf8()}});
             mProvider->update(service);
         } else {
             if (mProvider) {

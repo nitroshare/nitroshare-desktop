@@ -29,6 +29,13 @@
 #include <QList>
 #include <QTimer>
 
+#include "config.h"
+
+#ifdef qmdnsengine_FOUND
+#  include <qmdnsengine/browser.h>
+#  include <qmdnsengine/server.h>
+#endif
+
 #include "../settings/settings.h"
 #include "device.h"
 #include "devicelistener.h"
@@ -43,10 +50,18 @@ public:
     explicit DeviceModelPrivate(DeviceModel *deviceModel);
     virtual ~DeviceModelPrivate();
 
+    void update(const QString &uuid, const QString &name, Platform::OperatingSystem operatingSystem,
+                const QHostAddress &address, quint16 port, bool usesTls, bool expires);
+
     DeviceModel * const q;
 
     QTimer timer;
     DeviceListener listener;
+
+#ifdef qmdnsengine_FOUND
+    QMdnsEngine::Server server;
+    QMdnsEngine::Browser browser;
+#endif
 
     QList<Device*> devices;
 
@@ -54,9 +69,14 @@ private Q_SLOTS:
 
     void processPing(const QString &uuid, const QString &name, Platform::OperatingSystem operatingSystem,
                      const QHostAddress &address, quint16 port, bool usesTls);
-    void update();
+    void cleanup();
 
     void onSettingsChanged(const QList<Settings::Key> &keys = {});
+
+#ifdef qmdnsengine_FOUND
+    void onServiceAddedOrUpdated(const QMdnsEngine::Service &service);
+    void onServiceRemoved(const QMdnsEngine::Service &service);
+#endif
 };
 
 #endif // NS_DEVICEMODELPRIVATE_H

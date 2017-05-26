@@ -24,6 +24,12 @@
 
 #include <QIcon>
 
+#include "config.h"
+
+#ifdef qmdnsengine_FOUND
+#  include <qmdnsengine/service.h>
+#endif
+
 #include "../util/platform.h"
 #include "devicemodel.h"
 #include "devicemodel_p.h"
@@ -35,10 +41,19 @@ Q_DECLARE_METATYPE(Platform::OperatingSystem)
 DeviceModelPrivate::DeviceModelPrivate(DeviceModel *deviceModel)
     : QObject(deviceModel),
       q(deviceModel)
+#ifdef qmdnsengine_FOUND
+      , browser(&server, "_nitroshare._tcp.local.")
+#endif
 {
-    connect(&timer, &QTimer::timeout, this, &DeviceModelPrivate::update);
+    connect(&timer, &QTimer::timeout, this, &DeviceModelPrivate::cleanup);
     connect(&listener, &DeviceListener::pingReceived, this, &DeviceModelPrivate::processPing);
     connect(Settings::instance(), &Settings::settingsChanged, this, &DeviceModelPrivate::onSettingsChanged);
+
+#ifdef qmdnsengine_FOUND
+    connect(&browser, &QMdnsEngine::Browser::serviceAdded, this, &DeviceModelPrivate::onServiceAddedOrUpdated);
+    connect(&browser, &QMdnsEngine::Browser::serviceUpdated, this, &DeviceModelPrivate::onServiceAddedOrUpdated);
+    connect(&browser, &QMdnsEngine::Browser::serviceRemoved, this, &DeviceModelPrivate::onServiceRemoved);
+#endif
 
     onSettingsChanged();
 
@@ -50,8 +65,8 @@ DeviceModelPrivate::~DeviceModelPrivate()
     qDeleteAll(devices);
 }
 
-void DeviceModelPrivate::processPing(const QString &uuid, const QString &name, Platform::OperatingSystem operatingSystem,
-                                     const QHostAddress &address, quint16 port, bool usesTls)
+void DeviceModelPrivate::update(const QString &uuid, const QString &name, Platform::OperatingSystem operatingSystem,
+                                const QHostAddress &address, quint16 port, bool usesTls, bool expires)
 {
     // Ensure that the UUID does not match this device
     // since we will receive our own broadcast packets
@@ -72,7 +87,7 @@ void DeviceModelPrivate::processPing(const QString &uuid, const QString &name, P
     // Create a new device if one does not yet exist with the UUID
     bool created = static_cast<bool>(!device);
     if (created) {
-        device = new Device(uuid);
+        device = new Device(uuid, expires);
     }
 
     // Update the device and check to see if anything important has changed
@@ -89,7 +104,13 @@ void DeviceModelPrivate::processPing(const QString &uuid, const QString &name, P
     }
 }
 
-void DeviceModelPrivate::update()
+void DeviceModelPrivate::processPing(const QString &uuid, const QString &name, Platform::OperatingSystem operatingSystem,
+                                     const QHostAddress &address, quint16 port, bool usesTls)
+{
+    update(uuid, name, operatingSystem, address, port, usesTls, true);
+}
+
+void DeviceModelPrivate::cleanup()
 {
     // Iterate over the list in reverse to preserve indices when items are removed
     for (int row = devices.count() - 1; row >= 0; --row) {
@@ -112,6 +133,53 @@ void DeviceModelPrivate::onSettingsChanged(const QList<Settings::Key> &keys)
         timer.setInterval(Settings::instance()->get(Settings::Key::BroadcastTimeout).toInt());
     }
 }
+
+#ifdef qmdnsengine_FOUND
+
+void DeviceModelPrivate::onServiceAddedOrUpdated(const QMdnsEngine::Service &service)
+{
+    // Extract the information from the TXT records if provided
+    QString uuid = QString(service.attributes().value("uuid"));
+    if (uuid.isEmpty()) {
+        uuid = service.name();
+    }
+    QString os = QString(service.attributes().value("os"));
+    Platform::OperatingSystem operatingSystem = Platform::operatingSystemForName(os);
+
+    // Process the service
+    update(
+        uuid,
+        service.name(),
+        operatingSystem,
+        QHostAddress("127.0.0.1"),
+        service.port(),
+        false,
+        false
+    );
+}
+
+void DeviceModelPrivate::onServiceRemoved(const QMdnsEngine::Service &service)
+{
+    QString uuid = QString(service.attributes().value("uuid"));
+    if (uuid.isEmpty()) {
+        uuid = service.name();
+    }
+
+    // Remove the device if found
+    Device *device = nullptr;
+    for (int row = devices.count() - 1; row >= 0; --row) {
+        if (devices.at(row)->uuid() == uuid) {
+            q->beginRemoveRows(QModelIndex(), row, row);
+            devices.removeAt(row);
+            q->endRemoveRows();
+
+            delete device;
+            break;
+        }
+    }
+}
+
+#endif // qmdnsengine_FOUND
 
 DeviceModel::DeviceModel()
     : d(new DeviceModelPrivate(this))
