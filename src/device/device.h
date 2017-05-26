@@ -40,7 +40,7 @@ class Device
 {
 public:
 
-    explicit Device(const QString &uuid);
+    explicit Device(const QString &uuid, bool expires = true);
 
     QString uuid() const { return mUuid; }
     QString name() const { return mName; }
@@ -63,6 +63,7 @@ private:
     quint16 mPort;
     bool mUsesTls;
 
+    bool mExpires;
     qint64 mLastPing = 0;
 };
 

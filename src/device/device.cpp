@@ -27,15 +27,20 @@
 #include "../settings/settings.h"
 #include "device.h"
 
-Device::Device(const QString &uuid)
+Device::Device(const QString &uuid, bool expires)
     : mUuid(uuid),
-      mUsesTls(false)
+      mUsesTls(false),
+      mExpires(expires)
 {
 }
 
 bool Device::hasTimedOut() const
 {
-    return QDateTime::currentMSecsSinceEpoch() - mLastPing > Settings::instance()->get(Settings::Key::BroadcastTimeout).toLongLong();
+    if (mExpires) {
+        return QDateTime::currentMSecsSinceEpoch() - mLastPing > Settings::instance()->get(Settings::Key::BroadcastTimeout).toLongLong();
+    } else {
+        return false;
+    }
 }
 
 bool Device::update(const QString &name, Platform::OperatingSystem operatingSystem,
@@ -52,7 +57,9 @@ bool Device::update(const QString &name, Platform::OperatingSystem operatingSyst
     mUsesTls = usesTls;
 
     // Update the last ping
-    mLastPing = QDateTime::currentMSecsSinceEpoch();
+    if (mExpires) {
+        mLastPing = QDateTime::currentMSecsSinceEpoch();
+    }
 
     return changed;
 }
