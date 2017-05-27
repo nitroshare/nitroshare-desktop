@@ -33,6 +33,7 @@
 
 #ifdef qmdnsengine_FOUND
 #  include <qmdnsengine/browser.h>
+#  include <qmdnsengine/cache.h>
 #  include <qmdnsengine/server.h>
 #endif
 
@@ -60,6 +61,7 @@ public:
 
 #ifdef qmdnsengine_FOUND
     QMdnsEngine::Server server;
+    QMdnsEngine::Cache cache;
     QMdnsEngine::Browser browser;
 #endif
 

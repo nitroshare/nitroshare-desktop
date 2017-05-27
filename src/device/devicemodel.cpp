@@ -27,6 +27,7 @@
 #include "config.h"
 
 #ifdef qmdnsengine_FOUND
+#  include <qmdnsengine/resolver.h>
 #  include <qmdnsengine/service.h>
 #endif
 
@@ -42,7 +43,7 @@ DeviceModelPrivate::DeviceModelPrivate(DeviceModel *deviceModel)
     : QObject(deviceModel),
       q(deviceModel)
 #ifdef qmdnsengine_FOUND
-      , browser(&server, "_nitroshare._tcp.local.")
+    , browser(&server, "_nitroshare._tcp.local.", &cache)
 #endif
 {
     connect(&timer, &QTimer::timeout, this, &DeviceModelPrivate::cleanup);
@@ -146,16 +147,22 @@ void DeviceModelPrivate::onServiceAddedOrUpdated(const QMdnsEngine::Service &ser
     QString os = QString(service.attributes().value("os"));
     Platform::OperatingSystem operatingSystem = Platform::operatingSystemForName(os);
 
-    // Process the service
-    update(
-        uuid,
-        service.name(),
-        operatingSystem,
-        QHostAddress("127.0.0.1"),
-        service.port(),
-        false,
-        false
-    );
+    // Use a resolver to find an address for connecting
+    QMdnsEngine::Resolver *resolver = new QMdnsEngine::Resolver(&server, service.hostname(), &cache, this);
+
+    // Process the service once resolved
+    connect(resolver, &QMdnsEngine::Resolver::resolved, [myNum, this, uuid, operatingSystem, service, resolver](const QHostAddress &address) {
+        update(
+            uuid,
+            service.name(),
+            operatingSystem,
+            address,
+            service.port(),
+            false,
+            false
+        );
+        resolver->deleteLater();
+    });
 }
 
 void DeviceModelPrivate::onServiceRemoved(const QMdnsEngine::Service &service)
