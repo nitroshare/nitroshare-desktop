@@ -151,7 +151,7 @@ void DeviceModelPrivate::onServiceAddedOrUpdated(const QMdnsEngine::Service &ser
     QMdnsEngine::Resolver *resolver = new QMdnsEngine::Resolver(&server, service.hostname(), &cache, this);
 
     // Process the service once resolved
-    connect(resolver, &QMdnsEngine::Resolver::resolved, [myNum, this, uuid, operatingSystem, service, resolver](const QHostAddress &address) {
+    connect(resolver, &QMdnsEngine::Resolver::resolved, [this, uuid, operatingSystem, service, resolver](const QHostAddress &address) {
         update(
             uuid,
             service.name(),
