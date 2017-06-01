@@ -38,9 +38,15 @@ endif()
 
 # QHttpEngine is required in order to build the local HTTP API
 find_package(QHttpEngine)
+if(QHttpEngine_FOUND)
+    message(STATUS "Found QHttpEngine ${QHttpEngine_VERSION}")
+endif()
 
 # QMdnsEngine is required in order to interface with the Android app
 find_package(qmdnsengine)
+if(qmdnsengine_FOUND)
+    message(STATUS "Found QMdnsEngine ${qmdnsengine_VERSION}")
+endif()
 
 # libappindicator is an optional dependency that enables the application to
 # determine at runtime if the current desktop environment supports using an
