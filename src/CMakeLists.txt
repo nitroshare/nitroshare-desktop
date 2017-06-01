@@ -221,7 +221,7 @@ if(APPLE)
             -volname "${PROJECT_NAME}"
             -fs HFS+
             -size 30m
-            "${dmg}"
+            \"${dmg}\"
         DEPENDS nitroshare
         COMMENT "Building disk image..."
     )
