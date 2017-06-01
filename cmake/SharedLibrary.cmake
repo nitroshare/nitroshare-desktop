@@ -34,16 +34,16 @@ endfunction()
 function(copy_lib_mac src dest)
     add_custom_command(TARGET ${dest} POST_BUILD
         COMMAND "${CMAKE_COMMAND}" -E
-            make_directory "$<TARGET_FILE_DIR:${dest}>/../Frameworks"
+            make_directory \"$<TARGET_FILE_DIR:${dest}>/../Frameworks\"
         COMMAND "${CMAKE_COMMAND}" -E
             copy_if_different
-                "$<TARGET_FILE:${src}>"
-                "$<TARGET_FILE_DIR:${dest}>/../Frameworks/$<TARGET_SONAME_FILE_NAME:${src}>"
+                \"$<TARGET_FILE:${src}>\"
+                \"$<TARGET_FILE_DIR:${dest}>/../Frameworks/$<TARGET_SONAME_FILE_NAME:${src}>\"
         COMMAND install_name_tool
             -change
-            "$<TARGET_SONAME_FILE_NAME:${src}>"
-            "@rpath/$<TARGET_SONAME_FILE_NAME:${src}>"
-            "$<TARGET_FILE:${dest}>"
+            \"$<TARGET_SONAME_FILE_NAME:${src}>\"
+            \"@rpath/$<TARGET_SONAME_FILE_NAME:${src}>\"
+            \"$<TARGET_FILE:${dest}>\"
         COMMENT "Copying ${src} to ${dest} and correcting RPATH..."
     )
 endfunction()
