@@ -214,10 +214,10 @@ if(APPLE)
     set(sym "${CMAKE_BINARY_DIR}/out/Applications")
     set(dmg "${CMAKE_BINARY_DIR}/nitroshare-${PROJECT_VERSION}-osx.dmg")
     add_custom_target(dmg
-        COMMAND rm -f "${sym}" "${dmg}"
-        COMMAND ln -s /Applications "${sym}"
+        COMMAND rm -f \"${sym}\" \"${dmg}\"
+        COMMAND ln -s /Applications \"${sym}\"
         COMMAND hdiutil create
-            -srcfolder "${CMAKE_BINARY_DIR}/out"
+            -srcfolder \"${CMAKE_BINARY_DIR}/out\"
             -volname "${PROJECT_NAME}"
             -fs HFS+
             -size 30m
