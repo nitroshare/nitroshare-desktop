@@ -43,6 +43,7 @@ class Mdns : public QObject
 public:
 
     Mdns();
+    virtual ~Mdns();
 
 private Q_SLOTS:
 
