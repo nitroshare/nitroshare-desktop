@@ -55,8 +55,8 @@ void Mdns::onSettingsChanged(const QList<Settings::Key> &keys)
         if (settings->get(Settings::Key::BehaviorReceive).toBool()) {
             if (!mProvider) {
                 mServer = new QMdnsEngine::Server(this);
-                mHostname = new QMdnsEngine::Hostname(mServer, this);
-                mProvider = new QMdnsEngine::Provider(mServer, mHostname, this);
+                mHostname = new QMdnsEngine::Hostname(mServer, mServer);
+                mProvider = new QMdnsEngine::Provider(mServer, mHostname, mServer);
                 connect(mHostname, &QMdnsEngine::Hostname::hostnameChanged, this, &Mdns::onHostnameChanged);
             }
             QMdnsEngine::Service service;
