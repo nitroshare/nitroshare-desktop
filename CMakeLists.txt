@@ -48,6 +48,14 @@ if(qmdnsengine_FOUND)
     message(STATUS "Found QMdnsEngine ${qmdnsengine_VERSION}")
 endif()
 
+# Windows requires the OpenSSL libraries to be included
+if(WIN32)
+    get_target_property(_qmake_executable Qt5::qmake IMPORTED_LOCATION)
+    get_filename_component(_qt_bin_dir "${_qmake_executable}" DIRECTORY)
+    find_program(LIBEAY32 NAME libeay32.dll HINTS "${_qt_bin_dir}")
+    find_program(SSLEAY32 NAME ssleay32.dll HINTS "${_qt_bin_dir}")
+endif()
+
 # libappindicator is an optional dependency that enables the application to
 # determine at runtime if the current desktop environment supports using an
 # application indicator instead of a QTrayIcon and use one instead

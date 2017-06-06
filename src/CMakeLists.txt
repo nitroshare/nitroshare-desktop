@@ -159,9 +159,6 @@ install(TARGETS nitroshare
     BUNDLE DESTINATION .
 )
 
-# Shared libraries present some interesting challenges...
-include(SharedLibrary)
-
 if(WIN32)
     # If windeployqt is available, use it immediately after the build completes to
     # ensure that the dependencies are available.
@@ -171,11 +168,23 @@ if(WIN32)
     endif()
 
     # Ensure QHttpEngine and QMdnsEngine are included in the installer (if needed)
+    include(SharedLibrary)
     if(QHttpEngine_FOUND)
         copy_lib_win(QHttpEngine nitroshare)
     endif()
     if(qmdnsengine_FOUND)
         copy_lib_win(qmdnsengine nitroshare)
+    endif()
+
+    # Include the OpenSSL DLLs
+    if(LIBEAY32 AND SSLEAY32)
+        add_custom_command(TARGET nitroshare POST_BUILD
+            COMMAND "${CMAKE_COMMAND}" -E
+                copy_if_different "${LIBEAY32}" \"$<TARGET_FILE_DIR:nitroshare>\"
+            COMMAND "${CMAKE_COMMAND}" -E
+                copy_if_different "${SSLEAY32}" \"$<TARGET_FILE_DIR:nitroshare>\"
+            COMMENT "Copying OpenSSL libraries..."
+        )
     endif()
 
     # If Inno Setup is available, provide a target for building an EXE installer.
@@ -195,6 +204,7 @@ endif()
 
 if(APPLE)
     # If QHttpEngine or QMdnsEngine was used, copy the dynlib and correct their RPATHs
+    include(SharedLibrary)
     if(QHttpEngine_FOUND)
         copy_lib_mac(QHttpEngine nitroshare)
     endif()
