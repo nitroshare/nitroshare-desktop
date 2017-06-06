@@ -180,8 +180,9 @@ void TransferReceiver::processItemHeader(const QJsonObject &object)
             }
 
             // Ensure the parent directory exists
-            if (!QDir(filename).mkpath("..")) {
-                writeErrorPacket(tr("Unable to create %1").arg(filename));
+            QDir parent(filename);
+            if (!parent.cdUp() || !parent.mkpath(".")) {
+                writeErrorPacket(tr("Unable to create directory for %1").arg(filename));
                 return;
             }
 
