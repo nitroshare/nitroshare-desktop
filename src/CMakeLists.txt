@@ -19,6 +19,7 @@ set(SRC
     transfer/transfersender.cpp
     transfer/transferserver.cpp
     transfer/transferwindow.cpp
+    util/dir.cpp
     util/json.cpp
     util/platform.cpp
     main.cpp
