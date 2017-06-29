@@ -13,6 +13,7 @@ set(SRC
     icon/trayicon.cpp
     settings/settings.cpp
     settings/settingsdialog.cpp
+    transfer/acceptdialog.cpp
     transfer/transfer.cpp
     transfer/transfermodel.cpp
     transfer/transferreceiver.cpp
@@ -63,6 +64,7 @@ qt5_wrap_ui(UI
     application/splashdialog.ui
     device/devicedialog.ui
     settings/settingsdialog.ui
+    transfer/acceptdialog.ui
     transfer/transferwindow.ui
 )
 
