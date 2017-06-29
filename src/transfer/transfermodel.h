@@ -77,7 +77,9 @@ public:
         /// State of transfer
         StateRole,
         /// Error encountered during transfer
-        ErrorRole
+        ErrorRole,
+        /// Quarantine state
+        QuarantineRole
     };
 
     /**
@@ -102,6 +104,18 @@ public:
         Failed,
         /// Transfer succeeded
         Succeeded
+    };
+
+    /**
+     * @brief Quarantine state
+     */
+    enum Quarantine {
+        /// No quarantine in effect
+        None,
+        /// Waiting for acceptance
+        Waiting,
+        /// Accepted
+        Accepted
     };
 
     /**

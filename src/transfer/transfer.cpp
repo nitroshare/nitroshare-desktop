@@ -33,7 +33,8 @@
 #include "transfer.h"
 
 Transfer::Transfer(QSslConfiguration *configuration, TransferModel::Direction direction)
-    : mDirection(direction)
+    : mDirection(direction),
+      mQuarantine(TransferModel::Quarantine::None)
 {
     // Create a socket of the appropriate type
     if (configuration) {

@@ -62,6 +62,7 @@ public:
     TransferModel::Direction direction() const { return mDirection; }
     TransferModel::State state() const { return mState; }
     QString error() const { return mError; }
+    TransferModel::Quarantine quarantine() const { return mQuarantine; }
 
     virtual void startConnect() = 0;
 
@@ -115,6 +116,8 @@ protected:
 
     QFile mFile;
     qint64 mFileBytesRemaining;
+
+    TransferModel::Quarantine mQuarantine;
 
 private:
 

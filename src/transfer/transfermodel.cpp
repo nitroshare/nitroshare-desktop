@@ -248,6 +248,8 @@ QVariant TransferModel::data(const QModelIndex &index, int role) const
         return transfer->state();
     case ErrorRole:
         return transfer->error();
+    case QuarantineRole:
+        return transfer->quarantine();
     }
 
     return QVariant();
