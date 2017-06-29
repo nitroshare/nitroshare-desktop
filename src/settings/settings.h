@@ -74,6 +74,8 @@ public:
         ApplicationSplash,
         /// Whether to overwrite incoming files
         BehaviorOverwrite,
+        /// Quarantine files before storing them on disk
+        BehaviorQuarantine,
         /// Whether to accept file transfers
         BehaviorReceive,
         /// Port for sending broadcast packets

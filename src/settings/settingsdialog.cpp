@@ -54,6 +54,7 @@ void SettingsDialog::accept()
     settings->set(Settings::Key::TransferDirectory, transferDirectoryEdit->text());
     settings->set(Settings::Key::LocalAPI, localApiCheckBox->isChecked());
     settings->set(Settings::Key::BehaviorReceive, receiveFilesCheckBox->isChecked());
+    settings->set(Settings::Key::BehaviorQuarantine, quarantineCheckBox->isChecked());
     settings->set(Settings::Key::BehaviorOverwrite, overwriteCheckBox->isChecked());
 
     // Settings in the security tab
@@ -136,6 +137,7 @@ void SettingsDialog::reload()
     localApiCheckBox->setChecked(settings->get(Settings::Key::LocalAPI).toBool());
     autoStartCheckBox->setChecked(mAutoStart);
     receiveFilesCheckBox->setChecked(settings->get(Settings::Key::BehaviorReceive).toBool());
+    quarantineCheckBox->setChecked(settings->get(Settings::Key::BehaviorQuarantine).toBool());
     overwriteCheckBox->setChecked(settings->get(Settings::Key::BehaviorOverwrite).toBool());
 
     // Security tab
