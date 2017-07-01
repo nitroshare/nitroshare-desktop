@@ -22,18 +22,33 @@
  * IN THE SOFTWARE.
  **/
 
+#include <QFile>
+#include <QFileInfo>
+#include <QMessageBox>
 #include <QRegularExpression>
 #include <QRegularExpressionMatch>
 
 #include "../settings/settings.h"
+#include "../util/filesystem.h"
 #include "../util/json.h"
+#include "acceptdialog.h"
 #include "transferreceiver.h"
 
 TransferReceiver::TransferReceiver(QSslConfiguration *configuration, qintptr socketDescriptor)
     : Transfer(configuration, TransferModel::Receive),
-      mRoot(Settings::instance()->get(Settings::Key::TransferDirectory).toString()),
+      mTransferDirectory(Settings::instance()->get(Settings::Key::TransferDirectory).toString()),
+      mTempDir(nullptr),
+      mShouldQuarantine(Settings::instance()->get(Settings::Key::BehaviorQuarantine).toBool()),
       mOverwrite(Settings::instance()->get(Settings::Key::BehaviorOverwrite).toBool())
 {
+    // If quarantining is enabled, use a temporary directory for storage
+    if (mShouldQuarantine) {
+        mTempDir = new QTemporaryDir;
+        mRoot = QDir(mTempDir->path());
+    } else {
+        mRoot = mTransferDirectory;
+    }
+
     mSocket->setSocketDescriptor(socketDescriptor);
     mDeviceName = tr("[Unknown]");
 
@@ -41,9 +56,44 @@ TransferReceiver::TransferReceiver(QSslConfiguration *configuration, qintptr soc
     onConnected();
 }
 
+TransferReceiver::~TransferReceiver()
+{
+    if (mTempDir) {
+        delete mTempDir;
+    }
+}
+
 void TransferReceiver::startConnect()
 {
     // The socket is already connected at this point
+}
+
+void TransferReceiver::accept()
+{
+    bool error = false;
+
+    // For each item in mTempDir, rename it (move it)
+    foreach (QFileInfo info, QDir(mTempDir->path()).entryInfoList(QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot)) {
+        QString oldName = mRoot.absoluteFilePath(info.fileName());
+        QString newName = mTransferDirectory.absoluteFilePath(info.fileName());
+
+        // First attempt to move the file into place; if that fails, copy
+        if (info.isDir() && !QDir().rename(oldName, newName) ||
+                info.isFile() && !QFile::rename(oldName, newName)) {
+            if (info.isDir() && !Filesystem::copyDirectory(oldName, newName, mOverwrite) ||
+                    info.isFile() && !QFile::copy(oldName, newName)) {
+                error = true;
+                continue;
+            }
+        }
+    }
+
+    if (error) {
+        QMessageBox::critical(nullptr, tr("Error"), tr("An error occurred accepting the files."));
+    }
+
+    mQuarantine = TransferModel::Quarantine::Accepted;
+    emit dataChanged({TransferModel::Role::QuarantineRole});
 }
 
 void TransferReceiver::startTransfer()
@@ -214,6 +264,15 @@ void TransferReceiver::nextItem()
     // If no more items remain, then write the success packet
     if (!mTransferItemsRemaining) {
         writeSuccessPacket();
+
+        // If the files were quarantined, then indicate the status has changed
+        if (mShouldQuarantine) {
+            mQuarantine = TransferModel::Quarantine::Waiting;
+            emit dataChanged({TransferModel::Role::QuarantineRole});
+
+            AcceptDialog *dialog = new AcceptDialog(this);
+            dialog->show();
+        }
     }
 }
 
@@ -225,27 +284,13 @@ bool TransferReceiver::openFile()
     // hard to work around and unlikely to be a problem in most normal
     // circumstances.
 
-    // If overwrite is enabled OR the file doesn't exist, try
-    // to open the file with the original filename
+    // If overwrite is enabled try to open the file with the original filename
     if (mOverwrite || !mFile.exists()) {
         return mFile.open(QIODevice::WriteOnly);
     }
 
     // Break the filename into its components
-    QRegularExpression re("^(.*?)((?:\\.tar)?\\.[^\\/\\\\]*)?$");
-    QRegularExpressionMatch match = re.match(mFile.fileName());
-    if (!match.hasMatch()) {
-        return false;
-    }
-
-    // Try consecutive numbers
-    int num = 2;
-    while (mFile.exists()) {
-        mFile.setFileName(QString("%1-%2%3")
-                .arg(match.captured(1))
-                .arg(num++)
-                .arg(match.captured(2)));
-    }
+    mFile.setFileName(Filesystem::uniqueFilename(mFile.fileName()));
 
     // One was found that doesn't exist - try opening it
     return mFile.open(QIODevice::WriteOnly);

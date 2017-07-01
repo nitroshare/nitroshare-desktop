@@ -26,6 +26,7 @@
 #define NS_TRANSFERRECEIVER_H
 
 #include <QDir>
+#include <QTemporaryDir>
 
 #include "transfer.h"
 
@@ -36,8 +37,18 @@ class TransferReceiver : public Transfer
 public:
 
     TransferReceiver(QSslConfiguration *configuration, qintptr socketDescriptor);
+    virtual ~TransferReceiver();
 
     virtual void startConnect();
+
+    /**
+     * @brief Accept quarantined files
+     *
+     * If quarantining files is enabled, they are stored in a temporary
+     * directory until this method is invoked. The files are then copied into
+     * the storage directory.
+     */
+    void accept();
 
 private:
 
@@ -55,7 +66,10 @@ private:
     bool openFile();
 
     // Information for writing files that are received
-    const QDir mRoot;
+    QDir mRoot;
+    const QDir mTransferDirectory;
+    QTemporaryDir *mTempDir;
+    const bool mShouldQuarantine;
     const bool mOverwrite;
 
     // Number of items remaining to be transferred
