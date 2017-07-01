@@ -27,17 +27,25 @@
 
 #include <QString>
 
-class Dir
+class Filesystem
 {
 public:
 
     /**
      * @brief Copy a directory and its contents
-     * @param path absolute path to item
-     * @param destPath absolute path to destination directory
+     * @param src absolute path to source
+     * @param dest absolute path to destination
+     * @param overwrite true to replace the destination if it exists
      * @return true if the copy operation succeeded
      */
-    static bool copy(const QString &path, const QString &destPath);
+    static bool copyDirectory(const QString &src, const QString &dest, bool overwrite);
+
+    /**
+     * @brief Ensure that a filename is unique
+     * @param originalFilename base for generating a unique filename
+     * @return unique filename
+     */
+    static QString uniqueFilename(const QString &originalFilename);
 };
 
 #endif // NS_DIR_H
