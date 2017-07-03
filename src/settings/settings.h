@@ -76,6 +76,8 @@ public:
         BehaviorOverwrite,
         /// Quarantine files before storing them on disk
         BehaviorQuarantine,
+        /// Suppress the quarantine prompt
+        BehaviorQuarantineSuppressPrompt,
         /// Whether to accept file transfers
         BehaviorReceive,
         /// Port for sending broadcast packets

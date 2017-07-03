@@ -32,13 +32,27 @@
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="QTabWidget" name="tabs">
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
      <widget class="QWidget" name="generalTab">
       <attribute name="title">
        <string>General</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_4">
-       <item row="0" column="1">
-        <widget class="QLineEdit" name="deviceNameEdit"/>
+       <item row="2" column="0" colspan="2">
+        <widget class="Line" name="line_2">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0" colspan="2">
+        <widget class="QCheckBox" name="autoStartCheckBox">
+         <property name="text">
+          <string>Auto start after login</string>
+         </property>
+        </widget>
        </item>
        <item row="3" column="0" colspan="2">
         <widget class="QLabel" name="behaviorLabel">
@@ -53,19 +67,8 @@
          </property>
         </widget>
        </item>
-       <item row="4" column="0" colspan="2">
-        <widget class="QCheckBox" name="localApiCheckBox">
-         <property name="text">
-          <string>Allow local applications to interact with NitroShare</string>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="0" colspan="2">
-        <widget class="QCheckBox" name="autoStartCheckBox">
-         <property name="text">
-          <string>Auto start after login</string>
-         </property>
-        </widget>
+       <item row="0" column="1">
+        <widget class="QLineEdit" name="deviceNameEdit"/>
        </item>
        <item row="6" column="0" colspan="2">
         <widget class="QCheckBox" name="receiveFilesCheckBox">
@@ -74,17 +77,17 @@
          </property>
         </widget>
        </item>
+       <item row="4" column="0" colspan="2">
+        <widget class="QCheckBox" name="localApiCheckBox">
+         <property name="text">
+          <string>Allow local applications to interact with NitroShare</string>
+         </property>
+        </widget>
+       </item>
        <item row="0" column="0">
         <widget class="QLabel" name="deviceNameLabel">
          <property name="text">
           <string>Device name:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="0" colspan="2">
-        <widget class="Line" name="line_2">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
          </property>
         </widget>
        </item>
@@ -102,6 +105,20 @@
          </item>
         </layout>
        </item>
+       <item row="9" column="0">
+        <widget class="QCheckBox" name="quarantineCheckBox">
+         <property name="text">
+          <string>Quarantine received files (prompt to accept)</string>
+         </property>
+        </widget>
+       </item>
+       <item row="11" column="0">
+        <widget class="QCheckBox" name="overwriteCheckBox">
+         <property name="text">
+          <string>Overwrite files with identical names</string>
+         </property>
+        </widget>
+       </item>
        <item row="1" column="0">
         <widget class="QLabel" name="transferDirectoryLabel">
          <property name="text">
@@ -109,7 +126,7 @@
          </property>
         </widget>
        </item>
-       <item row="11" column="0">
+       <item row="12" column="0">
         <spacer name="verticalSpacer1">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -122,17 +139,13 @@
          </property>
         </spacer>
        </item>
-       <item row="9" column="0">
-        <widget class="QCheckBox" name="quarantineCheckBox">
-         <property name="text">
-          <string>Quarantine received files (prompt to accept)</string>
-         </property>
-        </widget>
-       </item>
        <item row="10" column="0">
-        <widget class="QCheckBox" name="overwriteCheckBox">
+        <widget class="QCheckBox" name="quarantineSuppressCheckBox">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="text">
-          <string>Overwrite files with identical names</string>
+          <string>Supress prompt for quarantined files</string>
          </property>
         </widget>
        </item>
@@ -496,7 +509,9 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="../data/resource.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>buttonBox</sender>

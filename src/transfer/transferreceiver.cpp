@@ -270,8 +270,10 @@ void TransferReceiver::nextItem()
             mQuarantine = TransferModel::Quarantine::Waiting;
             emit dataChanged({TransferModel::Role::QuarantineRole});
 
-            AcceptDialog *dialog = new AcceptDialog(this);
-            dialog->show();
+            if (!Settings::instance()->get(Settings::Key::BehaviorQuarantineSuppressPrompt).toBool()) {
+                AcceptDialog *dialog = new AcceptDialog(this);
+                dialog->show();
+            }
         }
     }
 }

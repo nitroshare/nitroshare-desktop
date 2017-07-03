@@ -40,6 +40,11 @@ SettingsDialog::SettingsDialog()
     localApiCheckBox->setEnabled(false);
 #endif
 
+    // Toggle suppress setting with the value of quarantine
+    connect(quarantineCheckBox, &QCheckBox::toggled, [this](bool checked) {
+        quarantineSuppressCheckBox->setEnabled(checked);
+    });
+
     // Load the current values into the controls
     reload();
 }
@@ -52,9 +57,12 @@ void SettingsDialog::accept()
     // Settings in the general tab
     settings->set(Settings::Key::DeviceName, deviceNameEdit->text());
     settings->set(Settings::Key::TransferDirectory, transferDirectoryEdit->text());
+#ifdef QHttpEngine_FOUND
     settings->set(Settings::Key::LocalAPI, localApiCheckBox->isChecked());
+#endif
     settings->set(Settings::Key::BehaviorReceive, receiveFilesCheckBox->isChecked());
     settings->set(Settings::Key::BehaviorQuarantine, quarantineCheckBox->isChecked());
+    settings->set(Settings::Key::BehaviorQuarantineSuppressPrompt, quarantineSuppressCheckBox->isChecked());
     settings->set(Settings::Key::BehaviorOverwrite, overwriteCheckBox->isChecked());
 
     // Settings in the security tab
@@ -134,10 +142,13 @@ void SettingsDialog::reload()
     // General tab
     deviceNameEdit->setText(settings->get(Settings::Key::DeviceName).toString());
     transferDirectoryEdit->setText(settings->get(Settings::Key::TransferDirectory).toString());
+#ifdef QHttpEngine_FOUND
     localApiCheckBox->setChecked(settings->get(Settings::Key::LocalAPI).toBool());
+#endif
     autoStartCheckBox->setChecked(mAutoStart);
     receiveFilesCheckBox->setChecked(settings->get(Settings::Key::BehaviorReceive).toBool());
     quarantineCheckBox->setChecked(settings->get(Settings::Key::BehaviorQuarantine).toBool());
+    quarantineSuppressCheckBox->setChecked(settings->get(Settings::Key::BehaviorQuarantineSuppressPrompt).toBool());
     overwriteCheckBox->setChecked(settings->get(Settings::Key::BehaviorOverwrite).toBool());
 
     // Security tab
