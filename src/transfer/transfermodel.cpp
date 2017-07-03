@@ -322,6 +322,22 @@ void TransferModel::addSender(const QString &deviceName, const QHostAddress &add
     d->add(new TransferSender(d->configuration, deviceName, address, port, bundle));
 }
 
+void TransferModel::accept(int index)
+{
+    if (index < 0 || index >= d->transfers.count()) {
+        qWarning("Invalid index supplied.");
+        return;
+    }
+
+    TransferReceiver *receiver = dynamic_cast<TransferReceiver*>(d->transfers.at(index));
+    if (!receiver) {
+        qWarning("Transfer must receive items.");
+        return;
+    }
+
+    receiver->accept();
+}
+
 void TransferModel::cancel(int index)
 {
     if (index < 0 || index >= d->transfers.count()) {

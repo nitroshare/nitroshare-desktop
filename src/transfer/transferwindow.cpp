@@ -113,7 +113,9 @@ void TransferWindow::onDataChanged(const QModelIndex &topLeft, const QModelIndex
         }
 
         // Update the button if the state has changed
-        if (roles.contains(TransferModel::StateRole) || roles.isEmpty()) {
+        if (roles.contains(TransferModel::StateRole) ||
+                roles.contains(TransferModel::QuarantineRole) ||
+                roles.isEmpty()) {
             updateButton(row);
         }
     }
@@ -209,9 +211,11 @@ void TransferWindow::updateButton(int row)
     // The title and action for the button depend on the direction and state
     int direction = index.data(TransferModel::DirectionRole).toInt();
     int state = index.data(TransferModel::StateRole).toInt();
+    int quarantine = index.data(TransferModel::QuarantineRole).toInt();
 
     // Display:
     // - a cancel button for transfers in progress
+    // - an accept button for transfers that are pending acceptance
     // - a restart button for failed and canceled transfers being sent
     // - a dismiss button for everything else
     if (state == TransferModel::Connecting || state == TransferModel::InProgress) {
@@ -219,6 +223,13 @@ void TransferWindow::updateButton(int row)
         button->setText(tr("Cancel"));
         connect(button, &QPushButton::clicked, [this, index]() {
             mModel->cancel(index.row());
+        });
+
+    } else if (quarantine == TransferModel::Waiting) {
+
+        button->setText(tr("Accept"));
+        connect(button, &QPushButton::clicked, [this, index]() {
+            mModel->accept(index.row());
         });
 
     } else if (direction == TransferModel::Send && state == TransferModel::Failed) {

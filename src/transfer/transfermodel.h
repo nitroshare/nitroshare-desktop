@@ -202,6 +202,12 @@ public Q_SLOTS:
     void addSender(const QString &deviceName, const QHostAddress &address, quint16 port, const Bundle *bundle);
 
     /**
+     * @brief Accept the transfer
+     * @param index item index
+     */
+    void accept(int index);
+
+    /**
      * @brief Cancel the specified transfer
      * @param index item index
      */
