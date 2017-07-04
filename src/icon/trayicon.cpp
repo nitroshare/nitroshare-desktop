@@ -67,8 +67,12 @@ TrayIcon::TrayIcon()
     QPainter painter(&pixmap);
     renderer.render(&painter);
 
-    // *Now* we can set the icon
-    mTrayIcon.setIcon(QIcon(pixmap));
+    // *Now* we can set the icon (and set it as a mask)
+    QIcon icon(pixmap);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 6, 0))
+    icon.setIsMask(true);
+#endif
+    mTrayIcon.setIcon(icon);
 }
 
 void TrayIcon::addAction(const QString &text, QObject *receiver, const char *member)
