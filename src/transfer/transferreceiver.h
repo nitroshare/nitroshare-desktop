@@ -26,6 +26,7 @@
 #define NS_TRANSFERRECEIVER_H
 
 #include <QDir>
+#include <QStringList>
 #include <QTemporaryDir>
 
 #include "transfer.h"
@@ -49,6 +50,11 @@ public:
      * the storage directory.
      */
     void accept();
+
+    /**
+     * @brief Retrieve a list of items to be accepted
+     */
+    QStringList items() const;
 
 private:
 
@@ -81,6 +87,9 @@ private:
 
     // Error message pending
     QString mError;
+
+    // List of items to accept
+    QStringList mItems;
 };
 
 #endif // NS_TRANSFERRECEIVER_H

@@ -96,6 +96,11 @@ void TransferReceiver::accept()
     emit dataChanged({TransferModel::Role::QuarantineRole});
 }
 
+QStringList TransferReceiver::items() const
+{
+    return mItems;
+}
+
 void TransferReceiver::startTransfer()
 {
     // The client starts the transfer
@@ -250,6 +255,9 @@ void TransferReceiver::processItemHeader(const QJsonObject &object)
                 nextItem();
             }
         }
+
+        // Add the item to the list
+        mItems.append(name);
 
     } else {
         writeErrorPacket(tr("Unable to read file header"));

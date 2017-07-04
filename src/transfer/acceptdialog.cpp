@@ -29,9 +29,13 @@ AcceptDialog::AcceptDialog(TransferReceiver *receiver)
     setupUi(this);
 
     acceptLabel->setText(
-        tr("Files received from %1 are in quarantine. Do you wish to accept them?")
+        tr("The following items were received from %1 and are in quarantine. Do you wish to accept them?")
             .arg(receiver->deviceName())
     );
+
+    foreach (QString item, receiver->items()) {
+        items->addItem(item);
+    }
 
     connect(buttonBox, &QDialogButtonBox::accepted, [this, receiver] () {
         receiver->accept();
