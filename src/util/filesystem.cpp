@@ -31,55 +31,70 @@
 
 #include "filesystem.h"
 
-bool Filesystem::copyDirectory(const QString &src, const QString &dest, bool overwrite)
+bool Filesystem::copy(const QString &src, const QString &dest, bool overwrite)
 {
-    QString destUnique;
+    QString destUnique = dest;
 
-    // If overwrite is set, remove the destination; otherwise, ensure that it
-    // is assigned a unique name
+    QFileInfo srcInfo(src);
+    QFileInfo destInfo(dest);
+
+    // If overwrite is set, remove the destination, otherwise the copy
+    // operation will fail; if overwrite is not set, come up with a unique
+    // name for the item (if necessary)
     if (overwrite) {
-        QDir dir(destUnique = dest);
-        if (dir.exists() && !dir.removeRecursively()) {
+        if (destInfo.exists() &&
+                ((destInfo.isDir() && !QDir(dest).removeRecursively()) ||
+                 (destInfo.isFile() && !QFile::remove(dest)))) {
             return false;
         }
     } else {
         destUnique = uniqueFilename(dest);
-        if (!QDir(dest).mkpath(".")) {
-            return false;
-        }
     }
 
-    QDir srcDir(src);
-    QDir destDir(destUnique);
-    QStack<QString> stack;
+    // For a directory, recreate the entire directory structure; for a file,
+    // simply use the QFile::copy() method
+    if (srcInfo.isDir()) {
 
-    // Push the source path on the stack
-    stack.push(srcDir.absolutePath());
+        // Begin by creating the destination directory
+        if (!QDir(destUnique).mkpath(".")) {
+            return false;
+        }
 
-    while (stack.count()) {
-        QString tos = stack.pop();
+        QDir srcDir(src);
+        QDir destDir(destUnique);
+        QStack<QString> stack;
 
-        foreach (QFileInfo info, QDir(tos).entryInfoList(QDir::Dirs | QDir::Files | QDir::Hidden | QDir::NoDotAndDotDot)) {
-            QString destName = destDir.absoluteFilePath(srcDir.relativeFilePath(info.absoluteFilePath()));
-            if (info.isSymLink()) {
-                QString relativeTarget = destDir.relativeFilePath(info.symLinkTarget());
-                if (!QFile::link(relativeTarget, destName)) {
-                    return false;
-                }
-            } else if (info.isDir()) {
-                if (!QDir(destName).mkpath(".")) {
-                    return false;
-                }
-                stack.push(info.absoluteFilePath());
-            } else {
-                if (!QFile::copy(info.absoluteFilePath(), destName)) {
-                    return false;
+        // Push the source path on the stack
+        stack.push(srcDir.absolutePath());
+
+        // While items remain on the stack, pop an item off and traverse it
+        while (stack.count()) {
+            QString tos = stack.pop();
+            foreach (QFileInfo info, QDir(tos).entryInfoList(QDir::Dirs | QDir::Files | QDir::Hidden | QDir::NoDotAndDotDot)) {
+                QString destName = destDir.absoluteFilePath(srcDir.relativeFilePath(info.absoluteFilePath()));
+                if (info.isSymLink()) {
+                    QString relativeTarget = destDir.relativeFilePath(info.symLinkTarget());
+                    if (!QFile::link(relativeTarget, destName)) {
+                        return false;
+                    }
+                } else if (info.isDir()) {
+                    if (!QDir(destName).mkpath(".")) {
+                        return false;
+                    }
+                    stack.push(info.absoluteFilePath());
+                } else {
+                    if (!QFile::copy(info.absoluteFilePath(), destName)) {
+                        return false;
+                    }
                 }
             }
         }
-    }
 
-    return true;
+        return true;
+    } else {
+        return QDir(QFileInfo(destUnique).absolutePath()).mkpath(".") &&
+                QFile::copy(src, destUnique);
+    }
 }
 
 QString Filesystem::uniqueFilename(const QString &originalFilename)
@@ -96,10 +111,10 @@ QString Filesystem::uniqueFilename(const QString &originalFilename)
     // Fill in the base for the filename and its extension
     QString base, ext;
     if (match.hasMatch()) {
-        base = originalFilename;
-    } else {
         base = match.captured(1);
         ext = match.captured(2);
+    } else {
+        base = originalFilename;
     }
 
     // Begin enumerating filenames until one does not exist

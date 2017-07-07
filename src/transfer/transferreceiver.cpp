@@ -80,8 +80,7 @@ void TransferReceiver::accept()
         // First attempt to move the file into place; if that fails, copy
         if ((info.isDir() && !QDir().rename(oldName, newName)) ||
                 (info.isFile() && !QFile::rename(oldName, newName))) {
-            if ((info.isDir() && !Filesystem::copyDirectory(oldName, newName, mOverwrite)) ||
-                    (info.isFile() && !QFile::copy(oldName, newName))) {
+            if (!Filesystem::copy(oldName, newName, mOverwrite)) {
                 error = true;
                 continue;
             }
@@ -235,9 +234,9 @@ void TransferReceiver::processItemHeader(const QJsonObject &object)
             }
 
             // Ensure the parent directory exists
-            QDir parent(filename);
-            if (!parent.cdUp() || !parent.mkpath(".")) {
-                writeErrorPacket(tr("Unable to create directory for %1").arg(filename));
+            QString path = QFileInfo(filename).absolutePath();
+            if (!QDir(path).mkpath(".")) {
+                writeErrorPacket(tr("Unable to create directory %1").arg(path));
                 return;
             }
 

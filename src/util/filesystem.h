@@ -32,13 +32,13 @@ class Filesystem
 public:
 
     /**
-     * @brief Copy a directory and its contents
+     * @brief Copy a file or directory to a new location
      * @param src absolute path to source
      * @param dest absolute path to destination
      * @param overwrite true to replace the destination if it exists
-     * @return true if the copy operation succeeded
+     * @return true if the copy operation succeeds
      */
-    static bool copyDirectory(const QString &src, const QString &dest, bool overwrite);
+    static bool copy(const QString &src, const QString &dest, bool overwrite);
 
     /**
      * @brief Ensure that a filename is unique
