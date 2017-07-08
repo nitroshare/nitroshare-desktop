@@ -23,12 +23,16 @@
  **/
 
 #include <QHostAddress>
-#include <QJsonDocument>
-#include <QJsonObject>
 #include <QUuid>
+#include <QVariantMap>
 
 #include "apiserver.h"
 #include "apiserver_p.h"
+
+#if QHTTPENGINE_VERSION_MAJOR < 1
+#  include <QJsonDocument>
+#  include <QJsonObject>
+#endif
 
 ApiServerPrivate::ApiServerPrivate(ApiServer *apiServer)
     : QObject(apiServer),
@@ -39,6 +43,10 @@ ApiServerPrivate::ApiServerPrivate(ApiServer *apiServer)
 {
     connect(&handler, &ApiHandler::itemsQueued, q, &ApiServer::itemsQueued, Qt::QueuedConnection);
     connect(Settings::instance(), &Settings::settingsChanged, this, &ApiServerPrivate::onSettingsChanged);
+
+#if QHTTPENGINE_VERSION_MAJOR >= 1
+    handler.addMiddleware(&middleware);
+#endif
 }
 
 ApiServerPrivate::~ApiServerPrivate()
@@ -60,7 +68,9 @@ void ApiServerPrivate::onSettingsChanged(const QList<Settings::Key> &keys)
 
 void ApiServerPrivate::stop()
 {
+#if QHTTPENGINE_VERSION_MAJOR < 1
     localFile.remove();
+#endif
     server.close();
 }
 
@@ -71,6 +81,12 @@ void ApiServerPrivate::start()
         return;
     }
 
+    QVariantMap map({
+        { "port", server.serverPort() },
+        { "token", token }
+    });
+
+#if QHTTPENGINE_VERSION_MAJOR < 1
     if (!localFile.open()) {
         emit q->error(tr("Unable to open %1\n\nDescription: \"%2\"")
                 .arg(localFile.fileName())
@@ -78,13 +94,11 @@ void ApiServerPrivate::start()
         return;
     }
 
-    QJsonObject object(QJsonObject::fromVariantMap({
-        { "port", server.serverPort() },
-        { "token", token }
-    }));
-
-    localFile.write(QJsonDocument(object).toJson());
+    localFile.write(QJsonDocument(QJsonObject::fromVariantMap(map)).toJson());
     localFile.close();
+#else
+    middleware.setData(map);
+#endif
 }
 
 ApiServer::ApiServer(QObject *parent)

@@ -40,7 +40,7 @@ if(APPLE)
     )
 endif()
 
-if(QHttpEngine_FOUND)
+if(qhttpengine_FOUND)
     set(SRC ${SRC}
         api/apihandler.cpp
         api/apiserver.cpp
@@ -142,8 +142,8 @@ if(Qt5MacExtras_FOUND)
     target_link_libraries(nitroshare Qt5::MacExtras)
 endif()
 
-if(QHttpEngine_FOUND)
-    target_link_libraries(nitroshare QHttpEngine)
+if(qhttpengine_FOUND)
+    target_link_libraries(nitroshare qhttpengine)
 endif()
 
 if(qmdnsengine_FOUND)

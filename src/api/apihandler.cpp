@@ -26,12 +26,18 @@
 #include <QStringList>
 
 #include "apihandler.h"
-#include "config.h"
+
+#if QHTTPENGINE_VERSION_MAJOR >= 1
+#  include <QJsonDocument>
+#  include <QJsonObject>
+#endif
 
 ApiHandler::ApiHandler(const QString &token)
     : mToken(token)
 {
 }
+
+#if QHTTPENGINE_VERSION_MAJOR < 1
 
 QVariantMap ApiHandler::version(const QVariantMap &params)
 {
@@ -48,6 +54,32 @@ QVariantMap ApiHandler::sendItems(const QVariantMap &params)
     return QVariantMap();
 }
 
+#else
+
+void ApiHandler::version(QHttpEngine::Socket *socket)
+{
+    QJsonObject object;
+    object.insert("version", PROJECT_VERSION);
+    socket->writeJson(QJsonDocument(object));
+}
+
+void ApiHandler::sendItems(QHttpEngine::Socket *socket)
+{
+    QJsonDocument document;
+    if (socket->readJson(document)) {
+        emit itemsQueued(
+            document.object().toVariantMap().value("items").toStringList()
+        );
+        socket->writeJson(QJsonDocument());
+    } else {
+        socket->writeError(QHttpEngine::Socket::BadRequest);
+    }
+}
+
+#endif
+
+#if QHTTPENGINE_VERSION_MAJOR < 1
+
 void ApiHandler::process(QHttpSocket *socket, const QString &path)
 {
     // Ensure that the correct authentication token was provided
@@ -59,3 +91,5 @@ void ApiHandler::process(QHttpSocket *socket, const QString &path)
     // If authenticated, have QObjectHandler process the request
     QObjectHandler::process(socket, path);
 }
+
+#endif

@@ -47,4 +47,7 @@
 #cmakedefine qmdnsengine_FOUND
 #cmakedefine APPINDICATOR_FOUND
 
+// Version 1.0 introduced breaking changes
+#define QHTTPENGINE_VERSION_MAJOR ${qhttpengine_VERSION_MAJOR}
+
 #endif // NS_CONFIG_H

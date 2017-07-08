@@ -25,12 +25,17 @@
 #ifndef NS_APISERVERPRIVATE_H
 #define NS_APISERVERPRIVATE_H
 
-#include <QHttpEngine/QLocalFile>
-#include <QHttpEngine/QHttpServer>
-
 #include "../settings/settings.h"
 #include "apihandler.h"
 #include "apiserver.h"
+
+#if QHTTPENGINE_VERSION_MAJOR < 1
+#  include <QHttpEngine/QLocalFile>
+#  include <QHttpEngine/QHttpServer>
+#else
+#  include <qhttpengine/localauthmiddleware.h>
+#  include <qhttpengine/server.h>
+#endif
 
 class ApiServerPrivate : public QObject
 {
@@ -43,9 +48,14 @@ public:
 
     const QString token;
     ApiHandler handler;
-    QHttpServer server;
 
+#if QHTTPENGINE_VERSION_MAJOR < 1
+    QHttpServer server;
     QLocalFile localFile;
+#else
+    QHttpEngine::Server server;
+    QHttpEngine::LocalAuthMiddleware middleware;
+#endif
 
 public Q_SLOTS:
 

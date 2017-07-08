@@ -27,10 +27,21 @@
 
 #include <QVariantMap>
 
-#include <QHttpEngine/QObjectHandler>
-#include <QHttpEngine/QHttpSocket>
+#include "config.h"
 
+#if QHTTPENGINE_VERSION_MAJOR < 1
+#  include <QHttpEngine/QObjectHandler>
+#  include <QHttpEngine/QHttpSocket>
+#else
+#  include <qhttpengine/qobjecthandler.h>
+#  include <qhttpengine/socket.h>
+#endif
+
+#if QHTTPENGINE_VERSION_MAJOR < 1
 class ApiHandler : public QObjectHandler
+#else
+class ApiHandler : public QHttpEngine::QObjectHandler
+#endif
 {
     Q_OBJECT
 
@@ -44,14 +55,21 @@ Q_SIGNALS:
 
 public Q_SLOTS:
 
+#if QHTTPENGINE_VERSION_MAJOR < 1
     QVariantMap version(const QVariantMap &params);
     QVariantMap sendItems(const QVariantMap &params);
+#else
+    void version(QHttpEngine::Socket *socket);
+    void sendItems(QHttpEngine::Socket *socket);
+#endif
 
 private:
 
+#if QHTTPENGINE_VERSION_MAJOR < 1
     void process(QHttpSocket *socket, const QString &path);
+#endif
 
-    const QString &mToken;
+    const QString mToken;
 };
 
 #endif // NS_APIHANDLER_H

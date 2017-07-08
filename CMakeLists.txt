@@ -37,9 +37,9 @@ if(APPLE)
 endif()
 
 # QHttpEngine is required in order to build the local HTTP API
-find_package(QHttpEngine)
-if(QHttpEngine_FOUND)
-    message(STATUS "Found QHttpEngine ${QHttpEngine_VERSION}")
+find_package(qhttpengine NAMES qhttpengine QHttpEngine)
+if(qhttpengine_FOUND)
+    message(STATUS "Found QHttpEngine ${qhttpengine_VERSION}")
 endif()
 
 # QMdnsEngine is required in order to interface with the Android app
