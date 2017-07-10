@@ -143,7 +143,11 @@ if(Qt5MacExtras_FOUND)
 endif()
 
 if(qhttpengine_FOUND)
-    target_link_libraries(nitroshare qhttpengine)
+    if(qhttpengine_VERSION_MAJOR GREATER_EQUAL 1)
+        target_link_libraries(nitroshare qhttpengine)
+    else()
+        target_link_libraries(nitroshare QHttpEngine)
+    endif()
 endif()
 
 if(qmdnsengine_FOUND)
