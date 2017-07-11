@@ -81,10 +81,10 @@ void ApiServerPrivate::start()
         return;
     }
 
-    QVariantMap map({
+    QVariantMap map{
         { "port", server.serverPort() },
         { "token", token }
-    });
+    };
 
 #if QHTTPENGINE_VERSION_MAJOR < 1
     if (!localFile.open()) {

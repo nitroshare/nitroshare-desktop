@@ -35,6 +35,10 @@
 ApiHandler::ApiHandler(const QString &token)
     : mToken(token)
 {
+#if QHTTPENGINE_VERSION_MAJOR >= 1
+    registerMethod("version", this, &ApiHandler::version);
+    registerMethod("sendItems", this, &ApiHandler::sendItems);
+#endif
 }
 
 #if QHTTPENGINE_VERSION_MAJOR < 1
