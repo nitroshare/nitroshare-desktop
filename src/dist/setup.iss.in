@@ -15,6 +15,7 @@ AppPublisher         = "${PROJECT_AUTHOR}"
 DefaultDirName       = "{pf}\${PROJECT_NAME}"
 DefaultGroupName     = "${PROJECT_NAME}"
 LicenseFile          = "${CMAKE_CURRENT_SOURCE_DIR}\..\LICENSE.txt"
+MinVersion           = 6.0
 OutputDir            = "${CMAKE_BINARY_DIR}"
 OutputBaseFilename   = "nitroshare-${PROJECT_VERSION}-windows-{#ARCH}"
 Compression          = lzma
