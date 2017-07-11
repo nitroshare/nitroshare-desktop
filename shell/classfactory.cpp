@@ -39,11 +39,14 @@ STDMETHODIMP ClassFactory::QueryInterface(REFIID riid, LPVOID *ppvObject)
 
     *ppvObject = NULL;
 
-    if (!IsEqualIID(riid, IID_IUnknown) && !IsEqualIID(riid, IID_IClassFactory)) {
+    if (IsEqualIID(riid, IID_IUnknown)) {
+        *ppvObject = this;
+    } else if (IsEqualIID(riid, IID_IClassFactory)) {
+        *ppvObject = (IClassFactory*) this;
+    } else {
         return E_NOINTERFACE;
     }
 
-    *ppvObject = this;
     AddRef();
     return NOERROR;
 }
