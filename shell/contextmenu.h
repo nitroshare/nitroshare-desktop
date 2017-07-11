@@ -25,6 +25,9 @@
 #ifndef NS_CONTEXTMENU_H
 #define NS_CONTEXTMENU_H
 
+#include <string>
+#include <vector>
+
 #include <ShObjIdl.h>
 
 class ContextMenu : public IShellExtInit, IContextMenu
@@ -49,6 +52,7 @@ public:
 private:
 
     ULONG mRefCount;
+    std::vector<std::wstring> mFilenames;
 };
 
 #endif // NS_CONTEXTMENU_H

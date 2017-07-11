@@ -25,6 +25,7 @@
 #include <string>
 
 #include <windows.h>
+#include <shellapi.h>
 
 #include "contextmenu.h"
 #include "nitroshare.h"
@@ -76,9 +77,35 @@ STDMETHODIMP_(ULONG) ContextMenu::Release()
 
 STDMETHODIMP ContextMenu::Initialize(PCIDLIST_ABSOLUTE pidlFolder, IDataObject *pdtobj, HKEY hkeyProgID)
 {
-    MessageBox(NULL, TEXT("ContextMenu::Initialize"), TEXT("Note:"), 0);
+    FORMATETC formatetc = {CF_HDROP, NULL, DVASPECT_CONTENT, -1, TYMED_HGLOBAL};
+    STGMEDIUM medium;
 
-    return E_FAIL;
+    HRESULT hResult = pdtobj->GetData(&formatetc, &medium);
+    if (hResult != S_OK) {
+        return hResult;
+    }
+
+    // Lock the memory for reading the list of files
+    HDROP hDrop = (HDROP) GlobalLock(medium.hGlobal);
+    if (hDrop == NULL) {
+        return E_FAIL;
+    }
+
+    // Read the filenames into the list
+    mFilenames.clear();
+    UINT nFiles = DragQueryFile(hDrop, 0xFFFFFFFF, NULL, 0);
+    for (UINT i = 0; i < nFiles; ++i) {
+        WCHAR filename[MAX_PATH];
+        if (!DragQueryFileW(hDrop, i, filename, MAX_PATH)) {
+            hResult = E_FAIL;
+        }
+        mFilenames.push_back(std::wstring(filename));
+    }
+
+    // Free the memory
+    GlobalUnlock(medium.hGlobal);
+
+    return hResult;
 }
 
 STDMETHODIMP ContextMenu::GetCommandString(UINT_PTR idCmd, UINT uType, UINT *pReserved, LPSTR pszName, UINT cchMax)
@@ -97,7 +124,14 @@ STDMETHODIMP ContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO pici)
 
 STDMETHODIMP ContextMenu::QueryContextMenu(HMENU hmenu, UINT indexMenu, UINT idCmdFirst, UINT idCmdLast, UINT uFlags)
 {
-    //...
+    if (uFlags & CMF_DEFAULTONLY) {
+        return MAKE_HRESULT(SEVERITY_SUCCESS, FACILITY_NULL, 0);
+    }
 
-    return E_FAIL;
+    // Insert the new menu item
+    if(!InsertMenu(hmenu, indexMenu, MF_BYPOSITION, idCmdFirst, TEXT("Send with NitroShare"))) {
+        return E_FAIL;
+    }
+
+    return MAKE_HRESULT(SEVERITY_SUCCESS, FACILITY_NULL, 1);
 }
