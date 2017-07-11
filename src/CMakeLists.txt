@@ -207,7 +207,7 @@ if(WIN32)
                 /Q
                 /DTARGET_FILE_NAME="$<TARGET_FILE_NAME:nitroshare>"
                 \"${CMAKE_CURRENT_BINARY_DIR}/setup.iss\"
-            DEPENDS nitroshare
+            DEPENDS nitroshare nitroshell
             COMMENT "Building installer..."
         )
     endif()
