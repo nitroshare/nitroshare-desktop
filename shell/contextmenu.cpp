@@ -24,6 +24,8 @@
 
 #include <string>
 
+#include <windows.h>
+
 #include "contextmenu.h"
 #include "nitroshare.h"
 
@@ -41,17 +43,20 @@ STDMETHODIMP ContextMenu::QueryInterface(REFIID riid, LPVOID *ppvObject)
     *ppvObject = NULL;
 
     if (IsEqualIID(riid, IID_IUnknown)) {
+        OutputDebugString(TEXT("ContextMenu queried for IUnknown"));
         *ppvObject = this;
     } else if (IsEqualIID(riid, IID_IShellExtInit)) {
+        OutputDebugString(TEXT("ContextMenu queried for IShellExtInit"));
         *ppvObject = (IShellExtInit*) this;
     } else if (IsEqualIID(riid, IID_IContextMenu)) {
+        OutputDebugString(TEXT("ContextMenu queried for IContextMenu"));
         *ppvObject = (IContextMenu*) this;
     } else {
         return E_NOINTERFACE;
     }
 
     AddRef();
-    return NOERROR;
+    return S_OK;
 }
 
 STDMETHODIMP_(ULONG) ContextMenu::AddRef()

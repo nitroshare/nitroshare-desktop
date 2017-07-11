@@ -22,6 +22,8 @@
  * IN THE SOFTWARE.
  **/
 
+#include <windows.h>
+
 #include "classfactory.h"
 #include "contextmenu.h"
 #include "nitroshell.h"
@@ -40,15 +42,17 @@ STDMETHODIMP ClassFactory::QueryInterface(REFIID riid, LPVOID *ppvObject)
     *ppvObject = NULL;
 
     if (IsEqualIID(riid, IID_IUnknown)) {
+        OutputDebugString(TEXT("ClassFactory queried for IUnknown"));
         *ppvObject = this;
     } else if (IsEqualIID(riid, IID_IClassFactory)) {
+        OutputDebugString(TEXT("ClassFactory queried for IClassFactory"));
         *ppvObject = (IClassFactory*) this;
     } else {
         return E_NOINTERFACE;
     }
 
     AddRef();
-    return NOERROR;
+    return S_OK;
 }
 
 STDMETHODIMP_(ULONG) ClassFactory::AddRef()
@@ -68,15 +72,15 @@ STDMETHODIMP_(ULONG) ClassFactory::Release()
 
 STDMETHODIMP ClassFactory::CreateInstance(IUnknown *pUnkOuter, REFIID riid, LPVOID *ppvObject)
 {
+    if (pUnkOuter) {
+        return CLASS_E_NOAGGREGATION;
+    }
+
     if (!ppvObject) {
         return E_INVALIDARG;
     }
 
     *ppvObject = NULL;
-
-    if (pUnkOuter) {
-        return CLASS_E_NOAGGREGATION;
-    }
 
     ContextMenu *contextMenu = new ContextMenu;
     HRESULT hResult = contextMenu->QueryInterface(riid, ppvObject);
