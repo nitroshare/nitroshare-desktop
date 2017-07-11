@@ -77,32 +77,32 @@ STDAPI DllRegisterServer()
     }
 
     if (setValue(
-            HKEY_CLASSES_ROOT,
-            TEXT("CLSID\\{52A10783-C811-4C45-9A3D-221A962C8640}"),
+            HKEY_LOCAL_MACHINE,
+            TEXT("Software\\Classes\\CLSID\\{52A10783-C811-4C45-9A3D-221A962C8640}"),
             NULL,
             TEXT("NitroShellExt")) != ERROR_SUCCESS) {
         return SELFREG_E_CLASS;
     }
 
     if (setValue(
-            HKEY_CLASSES_ROOT,
-            TEXT("CLSID\\{52A10783-C811-4C45-9A3D-221A962C8640}\\InprocServer32"),
+            HKEY_LOCAL_MACHINE,
+            TEXT("Software\\Classes\\CLSID\\{52A10783-C811-4C45-9A3D-221A962C8640}\\InprocServer32"),
             NULL,
             filename) != ERROR_SUCCESS) {
         return SELFREG_E_CLASS;
     }
 
     if (setValue(
-            HKEY_CLASSES_ROOT,
-            TEXT("CLSID\\{52A10783-C811-4C45-9A3D-221A962C8640}\\InprocServer32"),
+            HKEY_LOCAL_MACHINE,
+            TEXT("Software\\Classes\\CLSID\\{52A10783-C811-4C45-9A3D-221A962C8640}\\InprocServer32"),
             TEXT("ThreadingModel"),
             TEXT("Apartment")) != ERROR_SUCCESS) {
         return SELFREG_E_CLASS;
     }
 
     if (setValue(
-            HKEY_CLASSES_ROOT,
-            TEXT("*\\ShellEx\\ContextMenuHandlers\\NitroShellExt"),
+            HKEY_LOCAL_MACHINE,
+            TEXT("Software\\Classes\\*\\ShellEx\\ContextMenuHandlers\\NitroShellExt"),
             NULL,
             TEXT("{52A10783-C811-4C45-9A3D-221A962C8640}")) != ERROR_SUCCESS) {
         return SELFREG_E_CLASS;
@@ -123,11 +123,11 @@ STDAPI DllRegisterServer()
 
 STDAPI DllUnregisterServer()
 {
-    if (deleteKey(HKEY_CLASSES_ROOT, TEXT("CLSID\\{52A10783-C811-4C45-9A3D-221A962C8640}")) != ERROR_SUCCESS) {
+    if (deleteKey(HKEY_LOCAL_MACHINE, TEXT("Software\\Classes\\CLSID\\{52A10783-C811-4C45-9A3D-221A962C8640}")) != ERROR_SUCCESS) {
         return SELFREG_E_CLASS;
     }
 
-    if (deleteKey(HKEY_CLASSES_ROOT, TEXT("*\\ShellEx\\ContextMenuHandlers\\NitroShellExt")) != ERROR_SUCCESS) {
+    if (deleteKey(HKEY_LOCAL_MACHINE, TEXT("Software\\Classes\\*\\ShellEx\\ContextMenuHandlers\\NitroShellExt")) != ERROR_SUCCESS) {
         return SELFREG_E_CLASS;
     }
 
