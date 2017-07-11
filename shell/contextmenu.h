@@ -27,9 +27,6 @@
 
 #include <ShObjIdl.h>
 
-// {3014C22B-ABDE-4B61-93BD-48911C274DA3}
-DEFINE_GUID(IID_ContextMenu, 0x3014c22b, 0xabde, 0x4b61, 0x93, 0xbd, 0x48, 0x91, 0x1c, 0x27, 0x4d, 0xa3);
-
 class ContextMenu : public IShellExtInit, IContextMenu
 {
 public:

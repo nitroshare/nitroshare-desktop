@@ -22,10 +22,10 @@
  * IN THE SOFTWARE.
  **/
 
-#include "contextmenu.h"
+#include <string>
 
-// {3014C22B-ABDE-4B61-93BD-48911C274DA3}
-static const GUID IID_ContextMenu = { 0x3014c22b, 0xabde, 0x4b61, { 0x93, 0xbd, 0x48, 0x91, 0x1c, 0x27, 0x4d, 0xa3 } };
+#include "contextmenu.h"
+#include "nitroshare.h"
 
 ContextMenu::ContextMenu()
     : mRefCount(1)
@@ -42,7 +42,7 @@ STDMETHODIMP ContextMenu::QueryInterface(REFIID riid, LPVOID *ppvObject)
 
     if (!IsEqualIID(riid, IID_IUnknown) &&
             !IsEqualIID(riid, IID_IShellExtInit) &&
-            !IsEqualIID(riid, IID_ContextMenu)) {
+            !IsEqualIID(riid, IID_IContextMenu)) {
         return E_NOINTERFACE;
     }
 
