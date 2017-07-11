@@ -33,8 +33,13 @@
 LONG setValue(HKEY hKey, LPCTSTR lpSubKey, LPCTSTR lpValueName, LPCTSTR lpData);
 
 /**
- * @brief Delete a key after confirming it exists
+ * @brief Delete a key if it exists
  */
 LONG deleteKey(HKEY hKey, LPCTSTR lpSubKey);
+
+/**
+ * @brief Delete a value if it exists
+ */
+LONG deleteValue(HKEY hKey, LPCTSTR lpSubKey, LPCTSTR lpValue);
 
 #endif // NS_REGISTRY_H

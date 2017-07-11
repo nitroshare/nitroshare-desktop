@@ -66,10 +66,18 @@ LONG setValue(HKEY hKey, LPCTSTR lpSubKey, LPCTSTR lpValueName, LPCTSTR lpData)
 LONG deleteKey(HKEY hKey, LPCTSTR lpSubKey)
 {
     HKEY hSubKey;
-    LONG lRet = RegOpenKeyEx(hKey, lpSubKey, 0, KEY_READ, &hSubKey);
-    if (lRet == ERROR_SUCCESS) {
+    if (RegOpenKeyEx(hKey, lpSubKey, 0, KEY_READ, &hSubKey) == ERROR_SUCCESS) {
         RegCloseKey(hSubKey);
         return RegDeleteTree(hKey, lpSubKey);
+    } else {
+        return ERROR_SUCCESS;
+    }
+}
+
+LONG deleteValue(HKEY hKey, LPCTSTR lpSubKey, LPCTSTR lpValue)
+{
+    if (RegGetValue(hKey, lpSubKey, lpValue, 0, NULL, NULL, NULL) == ERROR_SUCCESS) {
+        return RegDeleteKeyValue(hKey, lpSubKey, lpValue);
     } else {
         return ERROR_SUCCESS;
     }

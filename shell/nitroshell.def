@@ -1,4 +1,3 @@
-LIBRARY NITROSHELL
 EXPORTS
     DllCanUnloadNow     PRIVATE
     DllGetClassObject   PRIVATE

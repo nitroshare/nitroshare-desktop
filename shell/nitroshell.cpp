@@ -24,6 +24,7 @@
 
 #include <objbase.h>
 #include <OleCtl.h>
+#include <Shlobj.h>
 #include <windows.h>
 
 #include "classfactory.h"
@@ -58,7 +59,7 @@ STDAPI DllGetClassObject(REFIID rclsid, REFIID riid, LPVOID *ppv)
 
     *ppv = NULL;
 
-    if (!IsEqualIID(rclsid, CLSID_NitroShellExt)) {
+    if (!IsEqualCLSID(rclsid, CLSID_NitroShellExt)) {
         return CLASS_E_CLASSNOTAVAILABLE;
     }
 
@@ -115,6 +116,8 @@ STDAPI DllRegisterServer()
         return SELFREG_E_CLASS;
     }
 
+    SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, 0, 0);
+
     return S_OK;
 }
 
@@ -128,12 +131,13 @@ STDAPI DllUnregisterServer()
         return SELFREG_E_CLASS;
     }
 
-    if (RegDeleteKeyValue(
-            HKEY_LOCAL_MACHINE,
-            TEXT("Software\\Microsoft\\Windows\\CurrentVersion\\Shell Extensions\\Approved"),
-            TEXT("{52A10783-C811-4C45-9A3D-221A962C8640}")) != ERROR_SUCCESS) {
+    if (deleteValue(HKEY_LOCAL_MACHINE,
+                    TEXT("Software\\Microsoft\\Windows\\CurrentVersion\\Shell Extensions\\Approved"),
+                    TEXT("{52A10783-C811-4C45-9A3D-221A962C8640}")) != ERROR_SUCCESS) {
         return SELFREG_E_CLASS;
     }
+
+    SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, 0, 0);
 
     return S_OK;
 }
