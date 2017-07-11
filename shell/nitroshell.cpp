@@ -23,14 +23,27 @@
  **/
 
 #include <objbase.h>
+#include <OleCtl.h>
+#include <windows.h>
 
 #include "classfactory.h"
 #include "nitroshell.h"
+#include "registry.h"
 
 // {52A10783-C811-4C45-9A3D-221A962C8640}
 static const GUID CLSID_NitroShellExt = { 0x52a10783, 0xc811, 0x4c45, { 0x9a, 0x3d, 0x22, 0x1a, 0x96, 0x2c, 0x86, 0x40 } };
 
+HINSTANCE gInstance;
 UINT gLockCount = 0;
+
+BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
+{
+    if (fdwReason == DLL_PROCESS_ATTACH) {
+        gInstance = hinstDLL;
+    }
+
+    return TRUE;
+}
 
 STDAPI DllCanUnloadNow()
 {
@@ -53,4 +66,39 @@ STDAPI DllGetClassObject(REFIID rclsid, REFIID riid, LPVOID *ppv)
     HRESULT hResult = classFactory->QueryInterface(riid, ppv);
     classFactory->Release();
     return hResult;
+}
+
+STDAPI DllRegisterServer()
+{
+    TCHAR filename[MAX_PATH];
+    if (!GetModuleFileName(gInstance, filename, MAX_PATH)) {
+        return SELFREG_E_CLASS;
+    }
+
+    if (setValue(
+            HKEY_CLASSES_ROOT,
+            TEXT("CLSID\\{52A10783-C811-4C45-9A3D-221A962C8640}"),
+            NULL,
+            TEXT("NitroShellExt")) != ERROR_SUCCESS) {
+        return SELFREG_E_CLASS;
+    }
+
+    if (setValue(
+            HKEY_CLASSES_ROOT,
+            TEXT("CLSID\\{52A10783-C811-4C45-9A3D-221A962C8640}\\InprocServer32"),
+            NULL,
+            filename) != ERROR_SUCCESS) {
+        return SELFREG_E_CLASS;
+    }
+
+    return S_OK;
+}
+
+STDAPI DllUnregisterServer()
+{
+    if (RegDeleteTree (HKEY_CLASSES_ROOT, TEXT("CLSID\\{52A10783-C811-4C45-9A3D-221A962C8640}")) != ERROR_SUCCESS) {
+        return SELFREG_E_CLASS;
+    }
+
+    return S_OK;
 }
