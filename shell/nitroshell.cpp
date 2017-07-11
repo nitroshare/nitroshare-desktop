@@ -93,7 +93,15 @@ STDAPI DllRegisterServer()
 
     if (setValue(
             HKEY_CLASSES_ROOT,
-            TEXT("Folder\\ShellEx\\ContextMenuHandlers\\NitroShellExt"),
+            TEXT("CLSID\\{52A10783-C811-4C45-9A3D-221A962C8640}\\InprocServer32"),
+            TEXT("ThreadingModel"),
+            TEXT("Apartment")) != ERROR_SUCCESS) {
+        return SELFREG_E_CLASS;
+    }
+
+    if (setValue(
+            HKEY_CLASSES_ROOT,
+            TEXT("*\\ShellEx\\ContextMenuHandlers\\NitroShellExt"),
             NULL,
             TEXT("{52A10783-C811-4C45-9A3D-221A962C8640}")) != ERROR_SUCCESS) {
         return SELFREG_E_CLASS;
@@ -116,7 +124,7 @@ STDAPI DllUnregisterServer()
         return SELFREG_E_CLASS;
     }
 
-    if (deleteKey(HKEY_CLASSES_ROOT, TEXT("Folder\\ShellEx\\ContextMenuHandlers\\NitroShellExt")) != ERROR_SUCCESS) {
+    if (deleteKey(HKEY_CLASSES_ROOT, TEXT("*\\ShellEx\\ContextMenuHandlers\\NitroShellExt")) != ERROR_SUCCESS) {
         return SELFREG_E_CLASS;
     }
 

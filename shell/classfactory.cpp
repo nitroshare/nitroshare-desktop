@@ -27,7 +27,7 @@
 #include "nitroshell.h"
 
 ClassFactory::ClassFactory()
-    : mRefCount(0)
+    : mRefCount(1)
 {
 }
 
@@ -75,9 +75,9 @@ STDMETHODIMP ClassFactory::CreateInstance(IUnknown *pUnkOuter, REFIID riid, LPVO
         return CLASS_E_NOAGGREGATION;
     }
 
-    ContextMenu *nitroShell = new ContextMenu;
-    HRESULT hResult = nitroShell->QueryInterface(riid, ppvObject);
-    nitroShell->Release();
+    ContextMenu *contextMenu = new ContextMenu;
+    HRESULT hResult = contextMenu->QueryInterface(riid, ppvObject);
+    contextMenu->Release();
     return hResult;
 }
 
