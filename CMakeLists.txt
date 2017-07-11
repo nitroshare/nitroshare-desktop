@@ -81,3 +81,8 @@ add_definitions(-DQT_NO_SIGNALS_SLOTS_KEYWORDS)
 
 # Add the subdirectory containing the source code.
 add_subdirectory(src)
+
+# On Windows, add the shell extension
+if(WIN32)
+    add_subdirectory(shell)
+endif()
