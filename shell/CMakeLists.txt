@@ -9,6 +9,8 @@ set(SRC
 
 add_library(nitroshell SHARED ${SRC})
 
+target_link_libraries(nitroshell wininet)
+
 install(TARGETS nitroshell
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )

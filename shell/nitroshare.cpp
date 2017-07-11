@@ -28,6 +28,7 @@
 #include <Shlobj.h>
 #include <strsafe.h>
 #include <windows.h>
+#include <WinInet.h>
 
 #include "nitroshare.h"
 
@@ -198,6 +199,7 @@ std::wstring escape(const std::wstring &src)
     for (std::wstring::const_iterator i = src.begin(); i != src.end(); ++i) {
         switch (*i) {
         case '"':
+        case '\\':
             d += '\\';
             break;
         }
@@ -206,11 +208,58 @@ std::wstring escape(const std::wstring &src)
     return d;
 }
 
+bool post(int port, LPCSTR token, LPCSTR data)
+{
+    bool bRet = false;
+    HINTERNET hInternet = NULL;
+    HINTERNET hSession = NULL;
+    HINTERNET hRequest = NULL;
+
+    do {
+        // Open an internet connection
+        hInternet = InternetOpenA("NitroShell", INTERNET_OPEN_TYPE_DIRECT, NULL, NULL, 0);
+        if (hInternet == NULL) {
+            break;
+        }
+
+        // Establish the connection
+        hSession = InternetConnectA(hInternet, "localhost", port, NULL, NULL, INTERNET_SERVICE_HTTP, 0, NULL);
+        if (hSession == NULL) {
+            break;
+        }
+
+        // Open an HTTP request
+        hRequest = HttpOpenRequestA(hSession, "POST", "/sendItems", NULL, NULL, NULL, 0, NULL);
+        if (hRequest != NULL) {
+            break;
+        }
+
+        char szToken[MAX_PATH];
+        StringCchPrintfA(szToken, MAX_PATH, "X-Auth-Token: %s", token);
+        if (!HttpSendRequestA(hRequest, szToken, -1, (LPVOID) data, lstrlenA(data))) {
+            break;
+        }
+
+        bRet = true;
+    } while(false);
+
+    if (hRequest != NULL) {
+        InternetCloseHandle(hRequest);
+    }
+
+    if (hSession != NULL) {
+        InternetCloseHandle(hSession);
+    }
+
+    if (hInternet != NULL) {
+        InternetCloseHandle(hInternet);
+    }
+
+    return bRet;
+}
+
 bool sendItems(int port, const std::string &token, const std::vector<std::wstring> &items)
 {
-    TCHAR url[MAX_PATH];
-    StringCbPrintf(url, MAX_PATH, TEXT("http://localhost:%d/sendItems"), port);
-
     // Combine the filenames
     std::wstringstream stream;
     stream << "{\"items\":[";
@@ -228,10 +277,11 @@ bool sendItems(int port, const std::string &token, const std::vector<std::wstrin
     char *json = new char[len];
     WideCharToMultiByte(CP_UTF8, 0, data.c_str(), -1, json, len, NULL, NULL);
 
-    // TODO: send the JSON with the token
+    // Send the data
+    bool succ = post(port, token.c_str(), json);
 
     // Free the UTF-8 data
     delete[] json;
 
-    return true;
+    return succ;
 }
