@@ -23,8 +23,10 @@
  **/
 
 #include <cctype>
+#include <sstream>
 
 #include <Shlobj.h>
+#include <strsafe.h>
 #include <windows.h>
 
 #include "nitroshare.h"
@@ -68,9 +70,10 @@ bool parseConfigFile(const std::string &content, int &port, std::string &token)
     // Using a regex for this would not only be difficult but error prone
     // So instead we create a really, really basic JSON parser
     enum {
-        SF_BRACE,  SF_PROP,  SF_PROP_NAME,
-        SF_COLON,  SF_VAL,   SF_NUMBER,
-        SF_STRING, SF_COMMA, SF_DONE
+        SF_BRACE,  SF_PROP,       SF_PROP_NAME,
+        SF_COLON,  SF_VAL,        SF_NUMBER,
+        SF_STRING, SF_STRING_ESC, SF_COMMA,
+        SF_DONE
     } state = SF_BRACE;
 
     std::string a;    // accumulator
@@ -143,8 +146,15 @@ bool parseConfigFile(const std::string &content, int &port, std::string &token)
                 }
                 state = SF_COMMA;
                 continue;
+            } else if (*p == '\\') {
+                state = SF_STRING_ESC;
+                continue;
             }
             a += *p;
+            break;
+        case SF_STRING_ESC:
+            a += *p;
+            state = SF_STRING;
             break;
         case SF_COMMA:
             if (*p == ',') {
@@ -180,4 +190,48 @@ bool findNitroShare(int &port, std::string &token)
     }
 
     return parseConfigFile(content, port, token);
+}
+
+std::wstring escape(const std::wstring &src)
+{
+    std::wstring d;
+    for (std::wstring::const_iterator i = src.begin(); i != src.end(); ++i) {
+        switch (*i) {
+        case '"':
+            d += '\\';
+            break;
+        }
+        d += *i;
+    }
+    return d;
+}
+
+bool sendItems(int port, const std::string &token, const std::vector<std::wstring> &items)
+{
+    TCHAR url[MAX_PATH];
+    StringCbPrintf(url, MAX_PATH, TEXT("http://localhost:%d/sendItems"), port);
+
+    // Combine the filenames
+    std::wstringstream stream;
+    stream << "{\"items\":[";
+    for (std::vector<std::wstring>::const_iterator i = items.begin(); i != items.end(); ++i) {
+        stream << (i != items.begin() ? ", " : "")
+               << "\""
+               << escape(*i)
+               << "\"";
+    }
+    stream << "]}";
+
+    // Convert the UTF-16 string into a UTF-8 one
+    std::wstring data = stream.str();
+    int len = WideCharToMultiByte(CP_UTF8, 0, data.c_str(), -1, NULL, 0, NULL, NULL);
+    char *json = new char[len];
+    WideCharToMultiByte(CP_UTF8, 0, data.c_str(), -1, json, len, NULL, NULL);
+
+    // TODO: send the JSON with the token
+
+    // Free the UTF-8 data
+    delete[] json;
+
+    return true;
 }

@@ -122,10 +122,10 @@ STDMETHODIMP ContextMenu::GetCommandString(UINT_PTR idCmd, UINT uFlags, UINT *pw
     case GCS_VALIDATEW:
         break;
     case GCS_VERBA:
-        StringCchCopyA(pszName, cchMax, "send");
+        StringCchCopyA(pszName, cchMax, "Send");
         break;
     case GCS_VERBW:
-        StringCchCopyW((LPWSTR) pszName, cchMax, L"send");
+        StringCchCopyW((LPWSTR) pszName, cchMax, L"Send");
         break;
     }
 
@@ -134,9 +134,22 @@ STDMETHODIMP ContextMenu::GetCommandString(UINT_PTR idCmd, UINT uFlags, UINT *pw
 
 STDMETHODIMP ContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO pici)
 {
-    //...
+    if (!IS_INTRESOURCE(pici->lpVerb)) {
+        return E_INVALIDARG;
+    }
 
-    return E_FAIL;
+    // Only index 0 is valid
+    if (LOWORD(pici->lpVerb)) {
+        return E_INVALIDARG;
+    }
+
+    // Attempt to send the items
+    if (!sendItems(mPort, mToken, mFilenames)) {
+        MessageBox(NULL, TEXT("Unable to send the selected items."), TEXT("Error"), 0);
+        return E_FAIL;
+    }
+
+    return S_OK;
 }
 
 STDMETHODIMP ContextMenu::QueryContextMenu(HMENU hmenu, UINT indexMenu, UINT idCmdFirst, UINT idCmdLast, UINT uFlags)
@@ -149,10 +162,8 @@ STDMETHODIMP ContextMenu::QueryContextMenu(HMENU hmenu, UINT indexMenu, UINT idC
     TCHAR caption[2048];
 
     // Set the flags and caption according to the current status
-    int port = 0;
-    std::string token;
-    if (!findNitroShare(port, token)) {
-        uMenuFlags |= MF_DISABLED;
+    if (!findNitroShare(mPort, mToken)) {
+        uMenuFlags |= MF_GRAYED;
         StringCchCopy(caption, sizeof(caption), TEXT("NitroShare is not running"));
     } else if (mFilenames.size() == 1) {
         StringCchCopy(caption, sizeof(caption), TEXT("Send item with NitroShare"));

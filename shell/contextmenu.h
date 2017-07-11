@@ -52,6 +52,9 @@ public:
 private:
 
     ULONG mRefCount;
+
+    int mPort;
+    std::string mToken;
     std::vector<std::wstring> mFilenames;
 };
 

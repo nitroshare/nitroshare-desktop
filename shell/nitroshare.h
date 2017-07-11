@@ -26,10 +26,16 @@
 #define NS_NITROSHARE_H
 
 #include <string>
+#include <vector>
 
 /**
- * @brief Determine if NitroShare is running and obtain its port and token
+ * @brief Obtain the port and token for NitroShare
  */
 bool findNitroShare(int &port, std::string &token);
+
+/**
+ * @brief Send a list of items to NitroShare
+ */
+bool sendItems(int port, const std::string &token, const std::vector<std::wstring> &items);
 
 #endif // NS_NITROSHARE_H
