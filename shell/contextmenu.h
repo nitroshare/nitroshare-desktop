@@ -30,7 +30,7 @@
 // {3014C22B-ABDE-4B61-93BD-48911C274DA3}
 DEFINE_GUID(IID_ContextMenu, 0x3014c22b, 0xabde, 0x4b61, 0x93, 0xbd, 0x48, 0x91, 0x1c, 0x27, 0x4d, 0xa3);
 
-class ContextMenu : public IContextMenu
+class ContextMenu : public IShellExtInit, IContextMenu
 {
 public:
 
@@ -40,6 +40,9 @@ public:
     STDMETHODIMP QueryInterface(REFIID riid, LPVOID *ppvObject);
     STDMETHODIMP_(ULONG) AddRef();
     STDMETHODIMP_(ULONG) Release();
+
+    // IShellExtInit methods
+    STDMETHODIMP Initialize(PCIDLIST_ABSOLUTE pidlFolder, IDataObject *pdtobj, HKEY hkeyProgID);
 
     // IContextMenu methods
     STDMETHODIMP GetCommandString(UINT_PTR idCmd, UINT uType, UINT *pReserved, LPSTR pszName, UINT cchMax);

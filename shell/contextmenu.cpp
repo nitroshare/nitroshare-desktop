@@ -40,7 +40,9 @@ STDMETHODIMP ContextMenu::QueryInterface(REFIID riid, LPVOID *ppvObject)
 
     *ppvObject = NULL;
 
-    if (!IsEqualIID(riid, IID_IUnknown) && !IsEqualIID(riid, IID_ContextMenu)) {
+    if (!IsEqualIID(riid, IID_IUnknown) &&
+            !IsEqualIID(riid, IID_IShellExtInit) &&
+            !IsEqualIID(riid, IID_ContextMenu)) {
         return E_NOINTERFACE;
     }
 
@@ -62,6 +64,13 @@ STDMETHODIMP_(ULONG) ContextMenu::Release()
         delete this;
     }
     return refCount;
+}
+
+STDMETHODIMP ContextMenu::Initialize(PCIDLIST_ABSOLUTE pidlFolder, IDataObject *pdtobj, HKEY hkeyProgID)
+{
+    MessageBox(NULL, TEXT("ContextMenu::Initialize"), TEXT("Note:"), 0);
+
+    return E_FAIL;
 }
 
 STDMETHODIMP ContextMenu::GetCommandString(UINT_PTR idCmd, UINT uType, UINT *pReserved, LPSTR pszName, UINT cchMax)
