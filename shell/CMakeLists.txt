@@ -1,6 +1,7 @@
 set(SRC
     classfactory.cpp
     contextmenu.cpp
+    nitroshare.cpp
     nitroshell.cpp
     nitroshell.def
     registry.cpp
