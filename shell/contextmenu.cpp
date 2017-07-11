@@ -24,6 +24,7 @@
 
 #include <string>
 
+#include <strsafe.h>
 #include <windows.h>
 #include <shellapi.h>
 
@@ -108,11 +109,27 @@ STDMETHODIMP ContextMenu::Initialize(PCIDLIST_ABSOLUTE pidlFolder, IDataObject *
     return hResult;
 }
 
-STDMETHODIMP ContextMenu::GetCommandString(UINT_PTR idCmd, UINT uType, UINT *pReserved, LPSTR pszName, UINT cchMax)
+STDMETHODIMP ContextMenu::GetCommandString(UINT_PTR idCmd, UINT uFlags, UINT *pwReserved, LPSTR pszName, UINT cchMax)
 {
-    //...
+    switch (uFlags) {
+    case GCS_HELPTEXTA:
+        StringCchCopyA(pszName, cchMax, "Send the selected items with NitroShare");
+        break;
+    case GCS_HELPTEXTW:
+        StringCchCopyW((LPWSTR) pszName, cchMax, L"Send the selected items with NitroShare");
+        break;
+    case GCS_VALIDATEA:
+    case GCS_VALIDATEW:
+        break;
+    case GCS_VERBA:
+        StringCchCopyA(pszName, cchMax, "send");
+        break;
+    case GCS_VERBW:
+        StringCchCopyW((LPWSTR) pszName, cchMax, L"send");
+        break;
+    }
 
-    return E_FAIL;
+    return S_OK;
 }
 
 STDMETHODIMP ContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO pici)
@@ -128,8 +145,23 @@ STDMETHODIMP ContextMenu::QueryContextMenu(HMENU hmenu, UINT indexMenu, UINT idC
         return MAKE_HRESULT(SEVERITY_SUCCESS, FACILITY_NULL, 0);
     }
 
+    UINT uMenuFlags = MF_BYPOSITION;
+    TCHAR caption[2048];
+
+    // Set the flags and caption according to the current status
+    int port = 0;
+    std::string token;
+    if (!findNitroShare(port, token)) {
+        uMenuFlags |= MF_DISABLED;
+        StringCchCopy(caption, sizeof(caption), TEXT("NitroShare is not running"));
+    } else if (mFilenames.size() == 1) {
+        StringCchCopy(caption, sizeof(caption), TEXT("Send item with NitroShare"));
+    } else {
+        StringCbPrintf(caption, sizeof(caption), TEXT("Send %d items with NitroShare"), mFilenames.size());
+    }
+
     // Insert the new menu item
-    if(!InsertMenu(hmenu, indexMenu, MF_BYPOSITION, idCmdFirst, TEXT("Send with NitroShare"))) {
+    if(!InsertMenu(hmenu, indexMenu, uMenuFlags, idCmdFirst, caption)) {
         return E_FAIL;
     }
 
