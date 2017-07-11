@@ -35,7 +35,12 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "${CMAKE_BINARY_DIR}\out\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "${CMAKE_BINARY_DIR}\out\*"; DestDir: "{app}"; Excludes: "${CMAKE_BINARY_DIR}\out\nitroshell.dll"; Flags: ignoreversion recursesubdirs createallsubdirs
+#if ARCH == "x86_64"
+Source: "${CMAKE_BINARY_DIR}\out\nitroshell.dll"; DestDir: "{app}"; Flags: ignoreversion regserver
+#else
+Source: "${CMAKE_BINARY_DIR}\out\nitroshell.dll"; DestDir: "{app}"; Flags: ignoreversion regserver 32bit
+#endif
 
 [Icons]
 Name: "{group}\${PROJECT_NAME}"; Filename: "{app}\{#TARGET_FILE_NAME}"
