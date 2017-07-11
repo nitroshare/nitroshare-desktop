@@ -34,12 +34,16 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
+[Components]
+Name: main; Description: "Application files"; Types: full compact
+Name: shell; Description: "Windows Explorer extension"; Types: full
+
 [Files]
-Source: "${CMAKE_BINARY_DIR}\out\*"; DestDir: "{app}"; Excludes: "${CMAKE_BINARY_DIR}\out\nitroshell.dll"; Flags: ignoreversion recursesubdirs createallsubdirs
-#if ARCH == "x86_64"
-Source: "${CMAKE_BINARY_DIR}\out\nitroshell.dll"; DestDir: "{app}"; Flags: ignoreversion regserver
+Source: "${CMAKE_BINARY_DIR}\out\*"; DestDir: "{app}"; Excludes: "${CMAKE_BINARY_DIR}\out\nitroshell.dll"; Flags: ignoreversion recursesubdirs createallsubdirs; Components: main
+#if ARCH == "x86"
+Source: "${CMAKE_BINARY_DIR}\out\nitroshell.dll"; DestDir: "{app}"; Flags: ignoreversion regserver 32bit; Components: shell
 #else
-Source: "${CMAKE_BINARY_DIR}\out\nitroshell.dll"; DestDir: "{app}"; Flags: ignoreversion regserver 32bit
+Source: "${CMAKE_BINARY_DIR}\out\nitroshell.dll"; DestDir: "{app}"; Flags: ignoreversion regserver; Components: shell
 #endif
 
 [Icons]
