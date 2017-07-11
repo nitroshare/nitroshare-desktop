@@ -212,7 +212,7 @@ bool post(int port, LPCSTR token, LPCSTR data)
 {
     bool bRet = false;
     HINTERNET hInternet = NULL;
-    HINTERNET hSession = NULL;
+    HINTERNET hConnect = NULL;
     HINTERNET hRequest = NULL;
 
     do {
@@ -223,14 +223,14 @@ bool post(int port, LPCSTR token, LPCSTR data)
         }
 
         // Establish the connection
-        hSession = InternetConnectA(hInternet, "localhost", port, NULL, NULL, INTERNET_SERVICE_HTTP, 0, NULL);
-        if (hSession == NULL) {
+        hConnect = InternetConnectA(hInternet, "localhost", port, NULL, NULL, INTERNET_SERVICE_HTTP, 0, NULL);
+        if (hConnect == NULL) {
             break;
         }
 
         // Open an HTTP request
-        hRequest = HttpOpenRequestA(hSession, "POST", "/sendItems", NULL, NULL, NULL, 0, NULL);
-        if (hRequest != NULL) {
+        hRequest = HttpOpenRequestA(hConnect, "POST", "/sendItems", NULL, NULL, NULL, 0, NULL);
+        if (hRequest == NULL) {
             break;
         }
 
@@ -247,8 +247,8 @@ bool post(int port, LPCSTR token, LPCSTR data)
         InternetCloseHandle(hRequest);
     }
 
-    if (hSession != NULL) {
-        InternetCloseHandle(hSession);
+    if (hConnect != NULL) {
+        InternetCloseHandle(hConnect);
     }
 
     if (hInternet != NULL) {

@@ -145,7 +145,7 @@ STDMETHODIMP ContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO pici)
 
     // Attempt to send the items
     if (!sendItems(mPort, mToken, mFilenames)) {
-        MessageBox(NULL, TEXT("Unable to send the selected items."), TEXT("Error"), 0);
+        MessageBox(NULL, TEXT("Unable to send the selected items."), TEXT("Error"), MB_ICONERROR);
         return E_FAIL;
     }
 
