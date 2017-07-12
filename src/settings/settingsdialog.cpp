@@ -35,7 +35,7 @@ SettingsDialog::SettingsDialog()
 {
     setupUi(this);
 
-#ifndef QHttpEngine_FOUND
+#ifndef qhttpengine_FOUND
     // Disable the local API option if built without QHttpEngine
     localApiCheckBox->setEnabled(false);
 #endif
@@ -57,7 +57,7 @@ void SettingsDialog::accept()
     // Settings in the general tab
     settings->set(Settings::Key::DeviceName, deviceNameEdit->text());
     settings->set(Settings::Key::TransferDirectory, transferDirectoryEdit->text());
-#ifdef QHttpEngine_FOUND
+#ifdef qhttpengine_FOUND
     settings->set(Settings::Key::LocalAPI, localApiCheckBox->isChecked());
 #endif
     settings->set(Settings::Key::BehaviorReceive, receiveFilesCheckBox->isChecked());
@@ -142,7 +142,7 @@ void SettingsDialog::reload()
     // General tab
     deviceNameEdit->setText(settings->get(Settings::Key::DeviceName).toString());
     transferDirectoryEdit->setText(settings->get(Settings::Key::TransferDirectory).toString());
-#ifdef QHttpEngine_FOUND
+#ifdef qhttpengine_FOUND
     localApiCheckBox->setChecked(settings->get(Settings::Key::LocalAPI).toBool());
 #endif
     autoStartCheckBox->setChecked(mAutoStart);

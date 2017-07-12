@@ -55,7 +55,7 @@ Application::Application()
 #endif
       mStartTime(QDateTime::currentMSecsSinceEpoch())
 {
-#ifdef QHttpEngine_FOUND
+#ifdef qhttpengine_FOUND
     connect(&mApiServer, &ApiServer::error, this, &Application::notifyError);
     connect(&mApiServer, &ApiServer::itemsQueued, this, &Application::onItemsQueued);
 #endif
@@ -84,7 +84,7 @@ Application::Application()
 
     // Start the API server (if enabled) and the transfer server
 
-#ifdef QHttpEngine_FOUND
+#ifdef qhttpengine_FOUND
     mApiServer.start();
 #endif
 

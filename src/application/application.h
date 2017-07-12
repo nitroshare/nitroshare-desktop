@@ -27,7 +27,7 @@
 
 #include "config.h"
 
-#ifdef QHttpEngine_FOUND
+#ifdef qhttpengine_FOUND
 #  include "../api/apiserver.h"
 #endif
 
@@ -80,7 +80,7 @@ private:
 
     void sendBundle(const Bundle *bundle);
 
-#ifdef QHttpEngine_FOUND
+#ifdef qhttpengine_FOUND
     ApiServer mApiServer;
 #endif
 

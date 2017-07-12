@@ -216,7 +216,7 @@ endif()
 if(APPLE)
     # If QHttpEngine or QMdnsEngine was used, copy the dynlib and correct their RPATHs
     include(SharedLibrary)
-    if(QHttpEngine_FOUND)
+    if(qhttpengine_FOUND)
         copy_lib_mac(QHttpEngine nitroshare)
     endif()
     if(qmdnsengine_FOUND)

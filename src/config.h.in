@@ -43,11 +43,13 @@
 // Build options
 #cmakedefine Qt5WinExtras_FOUND
 #cmakedefine Qt5MacExtras_FOUND
-#cmakedefine QHttpEngine_FOUND
+#cmakedefine qhttpengine_FOUND
 #cmakedefine qmdnsengine_FOUND
 #cmakedefine APPINDICATOR_FOUND
 
 // Version 1.0 introduced breaking changes
+#ifdef qhttpengine_FOUND
 #define QHTTPENGINE_VERSION_MAJOR ${qhttpengine_VERSION_MAJOR}
+#endif
 
 #endif // NS_CONFIG_H
