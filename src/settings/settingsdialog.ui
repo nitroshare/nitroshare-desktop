@@ -39,22 +39,50 @@
       <attribute name="title">
        <string>General</string>
       </attribute>
-      <layout class="QGridLayout" name="gridLayout_4">
-       <item row="2" column="0" colspan="2">
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <layout class="QGridLayout" name="gridLayout_3">
+         <item row="0" column="0">
+          <widget class="QLabel" name="deviceNameLabel">
+           <property name="text">
+            <string>Device name:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLineEdit" name="deviceNameEdit"/>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="transferDirectoryLabel">
+           <property name="text">
+            <string>Directory:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <layout class="QHBoxLayout" name="transferDirectoryLayout">
+           <item>
+            <widget class="QLineEdit" name="transferDirectoryEdit"/>
+           </item>
+           <item>
+            <widget class="QPushButton" name="transferDirectoryButton">
+             <property name="text">
+              <string>...</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </item>
+       <item>
         <widget class="Line" name="line_2">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
         </widget>
        </item>
-       <item row="5" column="0" colspan="2">
-        <widget class="QCheckBox" name="autoStartCheckBox">
-         <property name="text">
-          <string>Auto start after login</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="0" colspan="2">
+       <item>
         <widget class="QLabel" name="behaviorLabel">
          <property name="font">
           <font>
@@ -67,66 +95,52 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="1">
-        <widget class="QLineEdit" name="deviceNameEdit"/>
-       </item>
-       <item row="6" column="0" colspan="2">
-        <widget class="QCheckBox" name="receiveFilesCheckBox">
-         <property name="text">
-          <string>Receive files</string>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="0" colspan="2">
+       <item>
         <widget class="QCheckBox" name="localApiCheckBox">
          <property name="text">
           <string>Allow local applications to interact with NitroShare</string>
          </property>
         </widget>
        </item>
-       <item row="0" column="0">
-        <widget class="QLabel" name="deviceNameLabel">
+       <item>
+        <widget class="QCheckBox" name="autoStartCheckBox">
          <property name="text">
-          <string>Device name:</string>
+          <string>Auto start after login</string>
          </property>
         </widget>
        </item>
-       <item row="1" column="1">
-        <layout class="QHBoxLayout" name="transferDirectoryLayout">
-         <item>
-          <widget class="QLineEdit" name="transferDirectoryEdit"/>
-         </item>
-         <item>
-          <widget class="QPushButton" name="transferDirectoryButton">
-           <property name="text">
-            <string>...</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
+       <item>
+        <widget class="QCheckBox" name="receiveFilesCheckBox">
+         <property name="text">
+          <string>Receive files</string>
+         </property>
+        </widget>
        </item>
-       <item row="9" column="0">
+       <item>
         <widget class="QCheckBox" name="quarantineCheckBox">
          <property name="text">
           <string>Quarantine received files (prompt to accept)</string>
          </property>
         </widget>
        </item>
-       <item row="11" column="0">
+       <item>
+        <widget class="QCheckBox" name="quarantineSuppressCheckBox">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="text">
+          <string>Supress prompt for quarantined files</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QCheckBox" name="overwriteCheckBox">
          <property name="text">
           <string>Overwrite files with identical names</string>
          </property>
         </widget>
        </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="transferDirectoryLabel">
-         <property name="text">
-          <string>Directory:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="12" column="0">
+       <item>
         <spacer name="verticalSpacer1">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -138,16 +152,6 @@
           </size>
          </property>
         </spacer>
-       </item>
-       <item row="10" column="0">
-        <widget class="QCheckBox" name="quarantineSuppressCheckBox">
-         <property name="enabled">
-          <bool>false</bool>
-         </property>
-         <property name="text">
-          <string>Supress prompt for quarantined files</string>
-         </property>
-        </widget>
        </item>
       </layout>
      </widget>
