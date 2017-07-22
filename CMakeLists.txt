@@ -37,15 +37,19 @@ if(APPLE)
 endif()
 
 # QHttpEngine is required in order to build the local HTTP API
-find_package(qhttpengine NAMES qhttpengine QHttpEngine)
+find_package(qhttpengine NAMES qhttpengine QHttpEngine QUIET)
 if(qhttpengine_FOUND)
     message(STATUS "Found QHttpEngine ${qhttpengine_VERSION}")
+else()
+    message(WARNING "QHttpEngine not found - local API disabled")
 endif()
 
 # QMdnsEngine is required in order to interface with the Android app
-find_package(qmdnsengine)
+find_package(qmdnsengine QUIET)
 if(qmdnsengine_FOUND)
     message(STATUS "Found QMdnsEngine ${qmdnsengine_VERSION}")
+else()
+    message(WARNING "QMdnsEngine not found - local API disabled")
 endif()
 
 # Windows requires the OpenSSL libraries to be included
