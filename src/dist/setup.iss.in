@@ -57,6 +57,22 @@ Filename: "{app}\{#TARGET_FILE_NAME}"; Description: "{cm:LaunchProgram,${PROJECT
 
 [Code]
 
+// The code below is adapted from https://stackoverflow.com/a/36359229/193619
+
+function InitializeSetup(): Boolean;
+var
+  WbemLocator: Variant;
+  WbemServices: Variant;
+  WQLQuery: string;
+  WbemObjectSet: Variant;
+begin
+  WbemLocator := CreateOleObject('WbemScripting.SWbemLocator');
+  WbemServices := WbemLocator.ConnectServer('', 'root\CIMV2');
+  WQLQuery := 'select * from Win32_QuickFixEngineering where HotFixID = ''KB2999226''';
+  WbemObjectSet := WbemServices.ExecQuery(WQLQuery);
+  Result := (not VarIsNull(WbemObjectSet)) and (WbemObjectSet.Count > 0);
+end;
+
 // The code below is adapted from
 // http://www.vincenzo.net/isxkb/index.php?title=Adding_a_rule_to_the_Windows_firewall
 
