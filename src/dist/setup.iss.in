@@ -61,16 +61,24 @@ Filename: "{app}\{#TARGET_FILE_NAME}"; Description: "{cm:LaunchProgram,${PROJECT
 
 function InitializeSetup(): Boolean;
 var
+  Version: TWindowsVersion;
   WbemLocator: Variant;
   WbemServices: Variant;
   WQLQuery: string;
   WbemObjectSet: Variant;
 begin
-  WbemLocator := CreateOleObject('WbemScripting.SWbemLocator');
-  WbemServices := WbemLocator.ConnectServer('', 'root\CIMV2');
-  WQLQuery := 'select * from Win32_QuickFixEngineering where HotFixID = ''KB2999226''';
-  WbemObjectSet := WbemServices.ExecQuery(WQLQuery);
-  Result := (not VarIsNull(WbemObjectSet)) and (WbemObjectSet.Count > 0);
+  // On Windows 7, the KB2999226 update is required
+  GetWindowsVersionEx(Version);
+  if (Version.Major = 6) and (Version.Minor = 1) then
+  begin
+    WbemLocator := CreateOleObject('WbemScripting.SWbemLocator');
+    WbemServices := WbemLocator.ConnectServer('', 'root\CIMV2');
+    WQLQuery := 'select * from Win32_QuickFixEngineering where HotFixID = ''KB2999226''';
+    WbemObjectSet := WbemServices.ExecQuery(WQLQuery);
+    Result := (not VarIsNull(WbemObjectSet)) and (WbemObjectSet.Count > 0);
+  end
+  else
+    Result := true;
 end;
 
 // The code below is adapted from
