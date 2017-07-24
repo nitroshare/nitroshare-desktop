@@ -40,12 +40,7 @@ Name: main; Description: "Application files"; Types: full compact
 Name: shell; Description: "Windows Explorer extension"; Types: full
 
 [Files]
-Source: "${CMAKE_BINARY_DIR}\out\*"; DestDir: "{app}"; Excludes: "${CMAKE_BINARY_DIR}\out\nitroshell.dll"; Flags: ignoreversion recursesubdirs createallsubdirs; Components: main
-#if ARCH == "x86"
-Source: "${CMAKE_BINARY_DIR}\out\nitroshell.dll"; DestDir: "{app}"; Flags: ignoreversion regserver 32bit; Components: shell
-#else
-Source: "${CMAKE_BINARY_DIR}\out\nitroshell.dll"; DestDir: "{app}"; Flags: ignoreversion regserver; Components: shell
-#endif
+Source: "${CMAKE_BINARY_DIR}\out\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs; Components: main
 
 [Icons]
 Name: "{group}\${PROJECT_NAME}"; Filename: "{app}\{#TARGET_FILE_NAME}"
@@ -57,40 +52,19 @@ Filename: "{app}\{#TARGET_FILE_NAME}"; Description: "{cm:LaunchProgram,${PROJECT
 
 [Code]
 
-// The code below is adapted from https://stackoverflow.com/a/36359229/193619
-
-function InitializeSetup(): Boolean;
-var
-  Version: TWindowsVersion;
-  WbemLocator: Variant;
-  WbemServices: Variant;
-  WQLQuery: string;
-  WbemObjectSet: Variant;
-begin
-  // On Windows 7, the KB2999226 update is required
-  GetWindowsVersionEx(Version);
-  if (Version.Major = 6) and (Version.Minor = 1) then
-  begin
-    WbemLocator := CreateOleObject('WbemScripting.SWbemLocator');
-    WbemServices := WbemLocator.ConnectServer('', 'root\CIMV2');
-    WQLQuery := 'select * from Win32_QuickFixEngineering where HotFixID = ''KB2999226''';
-    WbemObjectSet := WbemServices.ExecQuery(WQLQuery);
-    Result := (not VarIsNull(WbemObjectSet)) and (WbemObjectSet.Count > 0);
-  end
-  else
-    Result := true;
-end;
-
 // The code below is adapted from
 // http://www.vincenzo.net/isxkb/index.php?title=Adding_a_rule_to_the_Windows_firewall
 
 procedure CurStepChanged(CurStep: TSetupStep);
 var
+  ResultCode: Integer;
   FirewallManager: Variant;
   FirewallProfile: Variant;
   FirewallObject: Variant;
 begin
   if CurStep = ssPostInstall then
+    if not Exec('regsvr32', ExpandConstant('/s "{app}\nitroshell.dll"'), '', 0, ewWaitUntilTerminated, ResultCode) then
+      SuppressibleMsgBox('Unable to register shell extension.', mbError, MB_OK, MB_OK);
     try
       FirewallManager := CreateOleObject('HNetCfg.FwMgr');
       FirewallProfile := FirewallManager.LocalPolicy.CurrentProfile;
@@ -104,11 +78,14 @@ end;
 
 procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
 var
+  ResultCode: Integer;
   FirewallManager: Variant;
   FirewallProfile: Variant;
 begin
-  if CurUninstallStep = usPostUninstall then
+  if CurUninstallStep = usUninstall then
     try
+      if not Exec('regsvr32', ExpandConstant('/u /s "{app}\nitroshell.dll"'), '', 0, ewWaitUntilTerminated, ResultCode) then
+        SuppressibleMsgBox('Unable to unregister shell extension.', mbError, MB_OK, MB_OK);
       FirewallManager := CreateOleObject('HNetCfg.FwMgr');
       FirewallProfile := FirewallManager.LocalPolicy.CurrentProfile;
       FireWallProfile.AuthorizedApplications.Remove(ExpandConstant('{app}\{#TARGET_FILE_NAME}'));
