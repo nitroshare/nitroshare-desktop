@@ -22,12 +22,14 @@
  * IN THE SOFTWARE.
  **/
 
+#include <QDesktopServices>
 #include <QMimeData>
 #include <QPersistentModelIndex>
 #include <QProgressBar>
 #include <QPushButton>
 #include <QUrl>
 
+#include "../settings/settings.h"
 #include "transferwindow.h"
 
 #ifdef Qt5WinExtras_FOUND
@@ -72,6 +74,7 @@ TransferWindow::TransferWindow(TransferModel *model)
 
     connect(sendDirectoryBtn, &QPushButton::clicked, this, &TransferWindow::sendDirectory);
     connect(sendFilesBtn, &QPushButton::clicked, this, &TransferWindow::sendFiles);
+    connect(receivedItems, &QPushButton::clicked, this, &TransferWindow::onReceivedItemsClicked);
     connect(clear, &QPushButton::clicked, mModel, &TransferModel::clear);
 
     connect(mModel, &TransferModel::rowsInserted, this, &TransferWindow::onRowsInserted);
@@ -144,6 +147,12 @@ void TransferWindow::onDataChanged(const QModelIndex &topLeft, const QModelIndex
         gSetProgressVisible(mLauncherEntry, progress > 0 && progress < 100);
     }
 #endif
+}
+
+void TransferWindow::onReceivedItemsClicked()
+{
+    QString directory = Settings::instance()->get(Settings::Key::TransferDirectory).toString();
+    QDesktopServices::openUrl(QUrl::fromLocalFile(directory));
 }
 
 void TransferWindow::showEvent(QShowEvent *)

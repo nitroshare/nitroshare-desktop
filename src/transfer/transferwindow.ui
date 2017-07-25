@@ -68,6 +68,20 @@
        </widget>
       </item>
       <item>
+       <widget class="QPushButton" name="receivedItems">
+        <property name="text">
+         <string>Received Items</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="Line" name="line_2">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QPushButton" name="clear">
         <property name="text">
          <string>Clear</string>

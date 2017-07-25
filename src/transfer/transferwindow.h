@@ -67,6 +67,10 @@ public Q_SLOTS:
     void onRowsInserted(const QModelIndex &parent, int first, int last);
     void onDataChanged(const QModelIndex & topLeft, const QModelIndex & bottomRight, const QVector<int> &roles);
 
+private Q_SLOTS:
+
+    void onReceivedItemsClicked();
+
 private:
 
     virtual void showEvent(QShowEvent *);
