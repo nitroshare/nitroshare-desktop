@@ -172,7 +172,7 @@ STDMETHODIMP ContextMenu::QueryContextMenu(HMENU hmenu, UINT indexMenu, UINT idC
     }
 
     // Insert the new menu item
-    if(!InsertMenu(hmenu, indexMenu, uMenuFlags, idCmdFirst, caption)) {
+    if (!InsertMenu(hmenu, indexMenu, uMenuFlags, idCmdFirst, caption)) {
         return E_FAIL;
     }
 
