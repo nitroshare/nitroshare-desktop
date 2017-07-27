@@ -6,5 +6,6 @@
         <file>img/splash.svg</file>
         <file>img/tls.svg</file>
         <file>img/tray.svg</file>
+        <file>img/tray-hollow.svg</file>
     </qresource>
 </RCC>

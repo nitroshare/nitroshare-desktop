@@ -63,7 +63,13 @@ TrayIcon::TrayIcon()
     pixmap.fill(Qt::transparent);
 
     // Render the SVG (finally!)
-    QSvgRenderer renderer(QString(":/img/tray.svg"));
+    QSvgRenderer renderer(QString(
+#ifdef Q_OS_MACX
+        ":/img/tray-hollow.svg"
+#else
+        ":/img/tray.svg"
+#endif
+    ));
     QPainter painter(&pixmap);
     renderer.render(&painter);
 
