@@ -110,6 +110,14 @@ STDAPI DllRegisterServer()
 
     if (setValue(
             HKEY_LOCAL_MACHINE,
+            TEXT("Software\\Classes\\Folder\\ShellEx\\ContextMenuHandlers\\NitroShellExt"),
+            NULL,
+            TEXT("{52A10783-C811-4C45-9A3D-221A962C8640}")) != ERROR_SUCCESS) {
+        return SELFREG_E_CLASS;
+    }
+
+    if (setValue(
+            HKEY_LOCAL_MACHINE,
             TEXT("Software\\Microsoft\\Windows\\CurrentVersion\\Shell Extensions\\Approved"),
             TEXT("{52A10783-C811-4C45-9A3D-221A962C8640}"),
             TEXT("NitroShare Context Menu")) != ERROR_SUCCESS) {
@@ -128,6 +136,10 @@ STDAPI DllUnregisterServer()
     }
 
     if (deleteKey(HKEY_LOCAL_MACHINE, TEXT("Software\\Classes\\*\\ShellEx\\ContextMenuHandlers\\NitroShellExt")) != ERROR_SUCCESS) {
+        return SELFREG_E_CLASS;
+    }
+
+    if (deleteKey(HKEY_LOCAL_MACHINE, TEXT("Software\\Classes\\Folder\\ShellEx\\ContextMenuHandlers\\NitroShellExt")) != ERROR_SUCCESS) {
         return SELFREG_E_CLASS;
     }
 
