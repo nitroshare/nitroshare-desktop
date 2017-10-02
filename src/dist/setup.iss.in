@@ -35,10 +35,6 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
-[Components]
-Name: main; Description: "Application files"; Types: full compact
-Name: shell; Description: "Windows Explorer extension"; Types: full
-
 [Files]
 Source: "${CMAKE_BINARY_DIR}\out\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs; Components: main
 
