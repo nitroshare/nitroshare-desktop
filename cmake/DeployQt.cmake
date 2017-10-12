@@ -45,6 +45,7 @@ function(windeployqt target)
             env PATH="${_qt_bin_dir}" "${WINDEPLOYQT_EXECUTABLE}"
                 --verbose 0
                 --no-compiler-runtime
+                --no-angle
                 \"$<TARGET_FILE:${target}>\"
         COMMENT "Deploying Qt..."
     )
