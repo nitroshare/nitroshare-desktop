@@ -40,7 +40,8 @@ const QString Credits =
     "<a href='http://askubuntu.com/users/527600/edity'>Edity</a> (Korean)<br>"
     "<a href='mailto:zachary.wander@gmail.com'>Zachary Wander</a> (Spanish)<br>"
     "<a href='#'>Michael Saalfeld</a> (German)<br>"
-    "<a href='#'>Massimo Bertoli</a> (Italian)"
+    "<a href='#'>Massimo Bertoli</a> (Italian)<br>"
+    "<a href='#'>Khalid Bj</a> (Arabic)"
     "</td></tr></table></body></html>";
 
 const QString License =
