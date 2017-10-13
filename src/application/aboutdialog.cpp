@@ -41,7 +41,8 @@ const QString Credits =
     "<a href='mailto:zachary.wander@gmail.com'>Zachary Wander</a> (Spanish)<br>"
     "<a href='#'>Michael Saalfeld</a> (German)<br>"
     "<a href='#'>Massimo Bertoli</a> (Italian)<br>"
-    "<a href='#'>Khalid Bj</a> (Arabic)"
+    "<a href='#'>Khalid Bj</a> (Arabic)<br>"
+    "<a href='mailto:napcok@gmail.com'>Daniel Napora</a> (Polish)"
     "</td></tr></table></body></html>";
 
 const QString License =
