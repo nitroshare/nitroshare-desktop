@@ -1,3 +1,5 @@
+> **Warning:** the master branch is very unstable at the moment. If you want stable builds, please visit the releases page or checkout the 0.3.4 branch.
+
 ## NitroShare
 
 [![Current tagged release](https://img.shields.io/github/tag/nitroshare/nitroshare.svg)](https://github.com/nitroshare/nitroshare-desktop/releases/latest)
