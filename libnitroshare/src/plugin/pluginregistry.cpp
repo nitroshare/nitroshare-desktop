@@ -24,12 +24,16 @@
 
 #include <QDir>
 #include <QLibrary>
+#include <QStringList>
 
 #include <nitroshare/application.h>
+#include <nitroshare/logger.h>
 #include <nitroshare/plugin.h>
 #include <nitroshare/pluginregistry.h>
 
 #include "pluginregistry_p.h"
+
+const QString LoggerTag = "pluginregistry";
 
 PluginRegistryPrivate::PluginRegistryPrivate(PluginRegistry *parent, Application *application)
     : QObject(parent),
@@ -48,6 +52,9 @@ void PluginRegistryPrivate::unloadPlugin(int index)
     // Remove the plugin from the list and grab its name
     Plugin *plugin = plugins.takeAt(index);
     QString pluginName = plugin->name();
+
+    // Log that a plugin is being unloaded
+    application->logger()->log(Logger::Info, LoggerTag, QString("unloading %1").arg(pluginName));
 
     // Destroy the plugin and indicate that it has been unloaded
     delete plugin;
@@ -102,17 +109,30 @@ void PluginRegistry::loadPluginsFromDirectories(const QStringList &directories)
     while (true) {
         int numPluginsInitializedPrev = numPluginsInitialized;
         foreach (Plugin *plugin, uninitializedPlugins) {
-            bool dependenciesMet = true;
+            QStringList missingDependencies;
             foreach (QString dependency, plugin->dependencies()) {
                 if (dependency == "ui") {
                     if (!d->application->isUiEnabled()) {
-                        dependenciesMet = false;
+                        missingDependencies.append("ui");
                     }
                 } else if (!pluginByName(dependency)) {
-                    dependenciesMet = false;
+                    missingDependencies.append(dependency);
                 }
             }
-            if (dependenciesMet) {
+            if (missingDependencies.count()) {
+                d->application->logger()->log(
+                    Logger::Error,
+                    LoggerTag,
+                    QString("cannot load %1 - missing dependencies: %2")
+                        .arg(plugin->name())
+                        .arg(missingDependencies.join(", "))
+                );
+            } else {
+                d->application->logger()->log(
+                    Logger::Info,
+                    LoggerTag,
+                    QString("initializing %1").arg(plugin->name())
+                );
                 plugin->initialize();
                 uninitializedPlugins.removeOne(plugin);
                 d->plugins.append(plugin);
