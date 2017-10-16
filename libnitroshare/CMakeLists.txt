@@ -29,8 +29,8 @@ set_target_properties(nitroshare PROPERTIES
     DEFINE_SYMBOL QT_NO_SIGNALS_SLOTS_KEYWORDS
     DEFINE_SYMBOL NITROSHARE_LIBRARY
     PUBLIC_HEADER "${HEADERS}"
-    VERSION       ${VERSION}
-    SOVERSION     ${VERSION_MAJOR}
+    VERSION       ${PROJECT_VERSION}
+    SOVERSION     ${PROJECT_VERSION_MAJOR}
 )
 
 target_include_directories(nitroshare PUBLIC
@@ -42,14 +42,27 @@ target_include_directories(nitroshare PUBLIC
 target_link_libraries(nitroshare Qt5::Network)
 
 install(TARGETS nitroshare
-    EXPORT nitroshare-export
+    EXPORT        nitroshare-export
     RUNTIME       DESTINATION "${INSTALL_BIN_PATH}"
     LIBRARY       DESTINATION "${INSTALL_LIB_PATH}"
+    ARCHIVE       DESTINATION "${INSTALL_LIB_PATH}"
     PUBLIC_HEADER DESTINATION include/nitroshare
 )
 
 install(EXPORT nitroshare-export
-    DESTINATION lib/cmake/nitroshare
+    FILE        nitroshareConfig.cmake
+    DESTINATION "${INSTALL_LIB_PATH}/cmake/nitroshare"
+)
+
+include(CMakePackageConfigHelpers)
+
+write_basic_package_version_file("${CMAKE_CURRENT_BINARY_DIR}/nitroshareConfigVersion.cmake"
+    VERSION       ${PROJECT_VERSION}
+    COMPATIBILITY SameMajorVersion
+)
+
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/nitroshareConfigVersion.cmake"
+    DESTINATION "${INSTALL_LIB_PATH}/cmake/nitroshare"
 )
 
 if(BUILD_TESTS)
