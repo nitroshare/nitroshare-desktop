@@ -22,38 +22,37 @@
  * IN THE SOFTWARE.
  */
 
-#include <QCommandLineParser>
-#include <QCoreApplication>
+#include <iostream>
 
-#include <nitroshare/application.h>
-#include <nitroshare/logger.h>
-#include <nitroshare/signalnotifier.h>
+#include <QMap>
+
 #include <nitroshare/stderrwriter.h>
 
-int main(int argc, char **argv)
+#include "stderrwriter_p.h"
+
+QMap<Logger::MessageType, QString> MessageTypeMap = {
+    { Logger::Debug, "D" },
+    { Logger::Info, "I" },
+    { Logger::Warning, "W" },
+    { Logger::Error, "E" }
+};
+
+StderrWriterPrivate::StderrWriterPrivate(QObject *parent)
+    : QObject(parent)
 {
-    QCoreApplication app(argc, argv);
-    QCommandLineParser parser;
+}
 
-    // Create the application
-    Application application;
+StderrWriter::StderrWriter(QObject *parent)
+    : QObject(parent),
+      d(new StderrWriterPrivate(this))
+{
+}
 
-    // Quit when a Unix signal is received
-    SignalNotifier signalNotifier;
-    QObject::connect(&signalNotifier, &SignalNotifier::signal, &app, &QCoreApplication::quit);
-
-    // Log all messages to stderr by default
-    StderrWriter stderrWriter;
-    QObject::connect(application.logger(), &Logger::messageLogged, &stderrWriter, &StderrWriter::writeMessage);
-
-    // Add the CLI arguments
-    application.addCliOptions(&parser);
-    parser.addHelpOption();
-    parser.addVersionOption();
-
-    // Process the CLI arguments
-    parser.process(app);
-    application.processCliOptions(&parser);
-
-    return app.exec();
+void StderrWriter::writeMessage(Logger::MessageType messageType, const QString &tag, const QString &message)
+{
+    QString body = QString("[%1:%2] %3")
+        .arg(MessageTypeMap.value(messageType))
+        .arg(tag)
+        .arg(message);
+    std::cerr << body.toUtf8().constData() << std::endl;
 }

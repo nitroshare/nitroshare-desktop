@@ -22,38 +22,18 @@
  * IN THE SOFTWARE.
  */
 
-#include <QCommandLineParser>
-#include <QCoreApplication>
+#ifndef LIBNITROSHARE_STDERRWRITER_P_H
+#define LIBNITROSHARE_STDERRWRITER_P_H
 
-#include <nitroshare/application.h>
-#include <nitroshare/logger.h>
-#include <nitroshare/signalnotifier.h>
-#include <nitroshare/stderrwriter.h>
+#include <QObject>
 
-int main(int argc, char **argv)
+class StderrWriterPrivate : public QObject
 {
-    QCoreApplication app(argc, argv);
-    QCommandLineParser parser;
+    Q_OBJECT
 
-    // Create the application
-    Application application;
+public:
 
-    // Quit when a Unix signal is received
-    SignalNotifier signalNotifier;
-    QObject::connect(&signalNotifier, &SignalNotifier::signal, &app, &QCoreApplication::quit);
+    explicit StderrWriterPrivate(QObject *parent);
+};
 
-    // Log all messages to stderr by default
-    StderrWriter stderrWriter;
-    QObject::connect(application.logger(), &Logger::messageLogged, &stderrWriter, &StderrWriter::writeMessage);
-
-    // Add the CLI arguments
-    application.addCliOptions(&parser);
-    parser.addHelpOption();
-    parser.addVersionOption();
-
-    // Process the CLI arguments
-    parser.process(app);
-    application.processCliOptions(&parser);
-
-    return app.exec();
-}
+#endif // LIBNITROSHARE_STDERRWRITER_P_H

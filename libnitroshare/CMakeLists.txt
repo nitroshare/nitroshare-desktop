@@ -20,6 +20,7 @@ set(SRC
     src/util/logger.cpp
     src/util/settings.cpp
     src/util/signalnotifier.cpp
+    src/util/stderrwriter.cpp
 )
 
 add_library(nitroshare SHARED ${HEADERS} ${SRC})

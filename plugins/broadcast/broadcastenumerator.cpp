@@ -166,7 +166,7 @@ void BroadcastEnumerator::onSettingsChanged(const QStringList &keys)
         mSocket.close();
         if (!mSocket.bind(QHostAddress::Any,
                 mApplication->settings()->value(BroadcastPort).toInt())) {
-            emit mApplication->logger()->error(LoggerTag, mSocket.errorString());
+            mApplication->logger()->log(Logger::Error, LoggerTag, mSocket.errorString());
         }
     }
 }

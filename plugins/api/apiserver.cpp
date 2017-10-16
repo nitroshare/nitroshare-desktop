@@ -69,14 +69,14 @@ void ApiServer::onSettingsChanged(const QStringList &keys)
 void ApiServer::start()
 {
     if (!listen(QHostAddress::LocalHost)) {
-        emit mApplication->logger()->error(LoggerTag, tr("Unable to find a port for the local API"));
+        mApplication->logger()->log(Logger::Error, LoggerTag, tr("Unable to find a port for the local API"));
         return;
     }
 
-    emit mApplication->logger()->info(LoggerTag, tr("Listening on port %1").arg(serverPort()));
+    mApplication->logger()->log(Logger::Info, LoggerTag, tr("Listening on port %1").arg(serverPort()));
 
     if (!mLocalFile.open()) {
-        emit mApplication->logger()->error(LoggerTag, tr("Unable to open \"%1\"").arg(mLocalFile.fileName()));
+        mApplication->logger()->log(Logger::Error, LoggerTag, tr("Unable to open \"%1\"").arg(mLocalFile.fileName()));
         return;
     }
 

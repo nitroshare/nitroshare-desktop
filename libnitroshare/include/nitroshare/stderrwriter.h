@@ -22,62 +22,44 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef LIBNITROSHARE_LOGGER_H
-#define LIBNITROSHARE_LOGGER_H
+#ifndef LIBNITROSHARE_STDERRWRITER_H
+#define LIBNITROSHARE_STDERRWRITER_H
 
 #include <QObject>
 
 #include <nitroshare/config.h>
+#include <nitroshare/logger.h>
+
+class NITROSHARE_EXPORT StderrWriterPrivate;
 
 /**
- * @brief Manage status and error message from the application and its plugins
- *
- * This class models the fan-out messaging pattern. All info, warning, and
- * error messages are sent to this class for dispatch, allowing plugins to
- * react to the messages as they are generated.
+ * @brief Writer for printing log messages to stderr
  */
-class NITROSHARE_EXPORT Logger : public QObject
+class NITROSHARE_EXPORT StderrWriter : public QObject
 {
     Q_OBJECT
-    Q_ENUMS(MessageType)
 
 public:
 
     /**
-     * @brief Type of message
-     */
-    enum MessageType {
-        Debug,
-        Info,
-        Warning,
-        Error
-    };
-
-    /**
-     * @brief Create a new logger
+     * @brief Create a new writer
      * @param parent QObject
      */
-    explicit Logger(QObject *parent = nullptr);
+    explicit StderrWriter(QObject *parent = nullptr);
 
 public Q_SLOTS:
 
     /**
-     * @brief Log the specified message
+     * @brief Write an informational message
      * @param messageType type of message
      * @param tag classifier for the message
      * @param message body of the message
      */
-    void log(MessageType messageType, const QString &tag, const QString &message);
+    void writeMessage(Logger::MessageType messageType, const QString &tag, const QString &message);
 
-Q_SIGNALS:
+private:
 
-    /**
-     * @brief Indicate that a status or informational message was logged
-     * @param messageType type of message
-     * @param tag classifier for the message
-     * @param message body of the message
-     */
-    void messageLogged(MessageType messageType, const QString &tag, const QString &message);
+    StderrWriterPrivate *const d;
 };
 
-#endif // LIBNITROSHARE_LOGGER_H
+#endif // LIBNITROSHARE_STDERRWRITER_H

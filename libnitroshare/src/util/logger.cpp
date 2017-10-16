@@ -28,3 +28,8 @@ Logger::Logger(QObject *parent)
     : QObject(parent)
 {
 }
+
+void Logger::log(MessageType messageType, const QString &tag, const QString &message)
+{
+    emit messageLogged(messageType, tag, message);
+}
