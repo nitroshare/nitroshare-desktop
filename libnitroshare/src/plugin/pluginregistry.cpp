@@ -24,7 +24,6 @@
 
 #include <QDir>
 #include <QLibrary>
-#include <QStringList>
 
 #include <nitroshare/application.h>
 #include <nitroshare/logger.h>
@@ -54,7 +53,7 @@ void PluginRegistryPrivate::unloadPlugin(int index)
     QString pluginName = plugin->name();
 
     // Log that a plugin is being unloaded
-    application->logger()->log(Logger::Info, LoggerTag, QString("unloading %1").arg(pluginName));
+    application->logger()->log(Logger::Debug, LoggerTag, QString("unloading %1").arg(pluginName));
 
     // Destroy the plugin and indicate that it has been unloaded
     delete plugin;
@@ -85,6 +84,12 @@ Plugin *PluginRegistry::pluginByName(const QString &name) const
 
 void PluginRegistry::loadPluginsFromDirectories(const QStringList &directories)
 {
+    d->application->logger()->log(
+        Logger::Info,
+        LoggerTag,
+        QString("loading plugins from %1").arg(directories.join(", "))
+    );
+
     // Step 1: build a list of plugins that could be loaded
     QList<Plugin*> uninitializedPlugins;
     foreach (QString directory, directories) {
@@ -129,7 +134,7 @@ void PluginRegistry::loadPluginsFromDirectories(const QStringList &directories)
                 );
             } else {
                 d->application->logger()->log(
-                    Logger::Info,
+                    Logger::Debug,
                     LoggerTag,
                     QString("initializing %1").arg(plugin->name())
                 );
@@ -147,6 +152,12 @@ void PluginRegistry::loadPluginsFromDirectories(const QStringList &directories)
 
     // Step 3: unload any plugins with unmet dependencies
     qDeleteAll(uninitializedPlugins);
+
+    d->application->logger()->log(
+        Logger::Info,
+        LoggerTag,
+        QString("loaded %1 plugin(s)").arg(numPluginsInitialized)
+    );
 }
 
 void PluginRegistry::unloadPlugin(const QString &name)

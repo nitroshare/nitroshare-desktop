@@ -31,10 +31,10 @@
 #include "stderrwriter_p.h"
 
 QMap<Logger::MessageType, QString> MessageTypeMap = {
-    { Logger::Debug, "D" },
-    { Logger::Info, "I" },
-    { Logger::Warning, "W" },
-    { Logger::Error, "E" }
+    { Logger::Debug, "d" },
+    { Logger::Info, "i" },
+    { Logger::Warning, "w" },
+    { Logger::Error, "e" }
 };
 
 StderrWriterPrivate::StderrWriterPrivate(QObject *parent)

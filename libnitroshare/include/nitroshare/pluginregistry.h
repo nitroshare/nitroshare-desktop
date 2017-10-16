@@ -27,6 +27,7 @@
 
 #include <QList>
 #include <QObject>
+#include <QStringList>
 
 #include <nitroshare/config.h>
 
