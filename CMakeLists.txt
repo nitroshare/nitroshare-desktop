@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.2.0)
 project(nitroshare)
 
+# Point CMake to the custom modules
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
 # It would be nice if CMake offered a constant for Linux
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     set(LINUX 1)
