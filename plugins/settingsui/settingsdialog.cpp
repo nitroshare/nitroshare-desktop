@@ -22,25 +22,24 @@
  * IN THE SOFTWARE.
  */
 
-#include "settingsaction.h"
 #include "settingsdialog.h"
 
-QString SettingsAction::name() const
+SettingsDialog::SettingsDialog()
 {
-    return "settingsui";
+    setWindowTitle(tr("Settings"));
 }
 
-bool SettingsAction::ui() const
+void SettingsDialog::onSettingsAdded(const QStringList &keys)
 {
-    return true;
+    //...
 }
 
-QString SettingsAction::title() const
+void SettingsDialog::onSettingsRemoved(const QStringList &keys)
 {
-    return tr("Settings");
+    //...
 }
 
-bool SettingsAction::invoke(const QVariantMap &)
+void SettingsDialog::onSettingsChanged(const QStringList &keys)
 {
-    return static_cast<bool>(SettingsDialog().exec());
+    //...
 }
