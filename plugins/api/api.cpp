@@ -22,40 +22,27 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef APIHANDLER_H
-#define APIHANDLER_H
+#include <QJsonDocument>
+#include <QJsonObject>
 
-#include <QVariantMap>
+#include <nitroshare/config.h>
 
-#include <QHttpEngine/QHttpSocket>
-#include <QHttpEngine/QObjectHandler>
+#include "api.h"
 
-class Application;
-
-/**
- * @brief HTTP handler for API requests
- *
- * The handler must override process() since it needs to confirm the presence
- * of the authentication token.
- */
-class ApiHandler : public QObjectHandler
+Api::Api(Application *application)
+    : mApplication(application)
 {
-    Q_OBJECT
+}
 
-public:
+void Api::version(QHttpEngine::Socket *socket)
+{
+    QJsonObject object;
+    object.insert("version", NITROSHARE_VERSION);
+    socket->writeJson(QJsonDocument(object));
+}
 
-    ApiHandler(Application *application, const QString &token);
-
-public slots:
-
-    QVariantMap version(const QVariantMap &params);
-
-private:
-
-    virtual void process(QHttpSocket *socket, const QString &path);
-
-    Application *const mApplication;
-    const QString mToken;
-};
-
-#endif // APIHANDLER_H
+void Api::sendItems(QHttpEngine::Socket *socket)
+{
+    // TODO: implement this method
+    socket->writeError(QHttpEngine::Socket::NotFound);
+}

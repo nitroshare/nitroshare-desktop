@@ -22,10 +22,7 @@
  * IN THE SOFTWARE.
  */
 
-#include <QHostAddress>
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QUuid>
+#include <QVariant>
 
 #include <nitroshare/application.h>
 #include <nitroshare/logger.h>
@@ -40,20 +37,41 @@ const QString ApiEnabled = "ApiEnabled";
 const QVariant ApiEnabledDefault = true;
 
 ApiServer::ApiServer(Application *application)
-    : QHttpServer(&mHandler),
-      mApplication(application),
-      mToken(QUuid::createUuid().toString()),
-      mHandler(application, mToken)
+    : mApplication(application),
+      mApi(application),
+      mServer(&mHandler)
 {
-    mApplication->settings()->addSetting(ApiEnabled, {{Settings::DefaultKey, ApiEnabledDefault}});
+    // Set up the handler
+    mHandler.addMiddleware(&mAuth);
+    mHandler.registerMethod("version", &mApi, &Api::version);
+    mHandler.registerMethod("sendItems", &mApi, &Api::sendItems);
 
-    // Trigger loading the initial settings
+    // Add the setting for enabling the API and watch for it changing
+    mApplication->settings()->addSetting(ApiEnabled, {{Settings::DefaultKey, ApiEnabledDefault}});
+    connect(mApplication->settings(), &Settings::settingsChanged, this, &ApiServer::onSettingsChanged);
+
+    // Trigger the initial settings
     onSettingsChanged({ ApiEnabled });
 }
 
-ApiServer::~ApiServer()
+void ApiServer::start()
 {
-    stop();
+    // Bind to a local port
+    if (!mServer.listen(QHostAddress::LocalHost)) {
+        mApplication->logger()->log(Logger::Error, LoggerTag, "unable to find a port for the local API");
+        return;
+    }
+
+    // Log the port that we have bound to
+    mApplication->logger()->log(Logger::Info, LoggerTag, QString("listening on port %1").arg(mServer.serverPort()));
+
+    // Set the port in the local file
+    mAuth.setData({{ "port", mServer.serverPort() }});
+}
+
+void ApiServer::stop()
+{
+    mServer.close();
 }
 
 void ApiServer::onSettingsChanged(const QStringList &keys)
@@ -64,33 +82,4 @@ void ApiServer::onSettingsChanged(const QStringList &keys)
             start();
         }
     }
-}
-
-void ApiServer::start()
-{
-    if (!listen(QHostAddress::LocalHost)) {
-        mApplication->logger()->log(Logger::Error, LoggerTag, tr("Unable to find a port for the local API"));
-        return;
-    }
-
-    mApplication->logger()->log(Logger::Info, LoggerTag, tr("Listening on port %1").arg(serverPort()));
-
-    if (!mLocalFile.open()) {
-        mApplication->logger()->log(Logger::Error, LoggerTag, tr("Unable to open \"%1\"").arg(mLocalFile.fileName()));
-        return;
-    }
-
-    QJsonObject object({
-        { "port", serverPort() },
-        { "token", mToken }
-    });
-
-    mLocalFile.write(QJsonDocument(object).toJson());
-    mLocalFile.close();
-}
-
-void ApiServer::stop()
-{
-    mLocalFile.remove();
-    close();
 }

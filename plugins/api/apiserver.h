@@ -25,27 +25,27 @@
 #ifndef APISERVER_H
 #define APISERVER_H
 
-#include <QHttpEngine/QHttpServer>
-#include <QHttpEngine/QLocalFile>
+#include <QObject>
+#include <QStringList>
 
-#include "apihandler.h"
+#include <qhttpengine/localauthmiddleware.h>
+#include <qhttpengine/qobjecthandler.h>
+#include <qhttpengine/server.h>
+
+#include "api.h"
 
 class Application;
 
-/**
- * @brief Expose application functionality through HTTP
- *
- * This plugin exposes an HTTP server available to local processes that can be
- * used to control the application while it is running.
- */
-class ApiServer : public QHttpServer
+class ApiServer : public QObject
 {
     Q_OBJECT
 
 public:
 
     explicit ApiServer(Application *application);
-    virtual ~ApiServer();
+
+    void start();
+    void stop();
 
 private slots:
 
@@ -53,14 +53,13 @@ private slots:
 
 private:
 
-    void start();
-    void stop();
+    Application *mApplication;
 
-    Application *const mApplication;
+    Api mApi;
 
-    const QString mToken;
-    QLocalFile mLocalFile;
-    ApiHandler mHandler;
+    QHttpEngine::LocalAuthMiddleware mAuth;
+    QHttpEngine::QObjectHandler mHandler;
+    QHttpEngine::Server mServer;
 };
 
 #endif // APISERVER_H

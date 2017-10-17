@@ -22,31 +22,34 @@
  * IN THE SOFTWARE.
  */
 
+#ifndef API_H
+#define API_H
+
+#include <QObject>
+
 #include <nitroshare/application.h>
 
-#include "apihandler.h"
+#include <qhttpengine/socket.h>
 
-ApiHandler::ApiHandler(Application *application, const QString &token)
-    : mApplication(application),
-      mToken(token)
+/**
+ * @brief API methods exposed over HTTP
+ */
+class Api : public QObject
 {
-}
+    Q_OBJECT
 
-QVariantMap ApiHandler::version(const QVariantMap &)
-{
-    return {
-        { "version", mApplication->version() }
-    };
-}
+public:
 
-void ApiHandler::process(QHttpSocket *socket, const QString &path)
-{
-    // Ensure that the correct authentication token was provided
-    if (socket->headers().value("X-Auth-Token") != mToken) {
-        socket->writeError(QHttpSocket::Forbidden);
-        return;
-    }
+    explicit Api(Application *application);
 
-    // If authenticated, have QObjectHandler process the request
-    QObjectHandler::process(socket, path);
-}
+public slots:
+
+    void version(QHttpEngine::Socket *socket);
+    void sendItems(QHttpEngine::Socket *socket);
+
+private:
+
+    Application *mApplication;
+};
+
+#endif // API_H
