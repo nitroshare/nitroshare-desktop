@@ -27,7 +27,7 @@ set(INSTALL_BIN_PATH bin CACHE STRING "Application installation directory")
 set(INSTALL_LIB_PATH lib CACHE STRING "Shared library installation directory")
 if(WIN32)
     set(INSTALL_PLUGIN_PATH "${INSTALL_BIN_PATH}/plugins" CACHE STRING "Plugin installation directory")
-elseif(LINUX)
+elseif(APPLE OR LINUX)
     set(INSTALL_PLUGIN_PATH "${INSTALL_LIB_PATH}/nitroshare/plugins" CACHE STRING "Plugin installation directory")
 endif()
 
