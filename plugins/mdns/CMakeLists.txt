@@ -18,7 +18,7 @@ set_target_properties(mdns PROPERTIES
 )
 
 target_include_directories(mdns PUBLIC "${CMAKE_CURRENT_BINARY_DIR}")
-target_link_libraries(mdns nitroshare Qt5::Network)
+target_link_libraries(mdns nitroshare Qt5::Network qmdnsengine)
 
 install(TARGETS mdns
     DESTINATION "${INSTALL_PLUGIN_PATH}"
