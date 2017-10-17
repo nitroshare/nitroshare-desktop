@@ -22,5 +22,5 @@ set_target_properties(api PROPERTIES
 target_link_libraries(api nitroshare QHttpEngine)
 
 install(TARGETS api
-    DESTINATION "${INSTALL_PLUGIN_PATH}"
+    LIBRARY DESTINATION "${INSTALL_PLUGIN_PATH}"
 )
