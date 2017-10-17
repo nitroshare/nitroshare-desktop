@@ -4,5 +4,7 @@
     "Vendor": "Nathan Osman",
     "Version": "${VERSION}",
     "Description": "Discover peers using multicast DNS (mDNS)",
-    "Dependencies": []
+    "Dependencies": [
+        "lan"
+    ]
 }

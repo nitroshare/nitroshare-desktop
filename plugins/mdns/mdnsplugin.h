@@ -27,6 +27,8 @@
 
 #include <nitroshare/iplugin.h>
 
+class Mdns;
+
 class Q_DECL_EXPORT MdnsPlugin : public IPlugin
 {
     Q_OBJECT
@@ -36,6 +38,10 @@ public:
 
     virtual void initialize(Application *application);
     virtual void cleanup(Application *application);
+
+private:
+
+    Mdns *mMdns;
 };
 
 #endif // MDNSPLUGIN_H

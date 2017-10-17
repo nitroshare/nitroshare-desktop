@@ -22,15 +22,25 @@
  * IN THE SOFTWARE.
  */
 
-#include "mdns.h"
-#include "mdnsplugin.h"
+#ifndef MDNS_H
+#define MDNS_H
 
-void MdnsPlugin::initialize(Application *application)
-{
-    mMdns = new Mdns(application);
-}
+#include <QObject>
+#include <QStringList>
 
-void MdnsPlugin::cleanup(Application *application)
+class Application;
+
+class Mdns : public QObject
 {
-    delete mMdns;
-}
+    Q_OBJECT
+
+public:
+
+    explicit Mdns(Application *application);
+
+private slots:
+
+    void onSettingsChanged(const QStringList &keys);
+};
+
+#endif // MDNS_H

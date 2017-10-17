@@ -1,6 +1,8 @@
 configure_file(mdns.json.in "${CMAKE_CURRENT_BINARY_DIR}/mdns.json")
 
 set(SRC
+    mdns.h
+    mdns.cpp
     mdnsplugin.h
     mdnsplugin.cpp
 )

@@ -22,15 +22,17 @@
  * IN THE SOFTWARE.
  */
 
-#include "mdns.h"
-#include "mdnsplugin.h"
+#include <nitroshare/application.h>
+#include <nitroshare/settings.h>
 
-void MdnsPlugin::initialize(Application *application)
+#include "mdns.h"
+
+Mdns::Mdns(Application *application)
 {
-    mMdns = new Mdns(application);
+    connect(application->settings(), &Settings::settingsChanged, this, &Mdns::onSettingsChanged);
 }
 
-void MdnsPlugin::cleanup(Application *application)
+void Mdns::onSettingsChanged(const QStringList &keys)
 {
-    delete mMdns;
+    //...
 }
