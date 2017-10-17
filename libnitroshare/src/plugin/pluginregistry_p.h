@@ -41,6 +41,7 @@ public:
     PluginRegistryPrivate(PluginRegistry *parent, Application *application);
     virtual ~PluginRegistryPrivate();
 
+    bool isPluginInitialized(const QString &name) const;
     void unloadPlugin(int index);
 
     PluginRegistry *const q;

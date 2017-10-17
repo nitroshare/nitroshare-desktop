@@ -46,6 +46,15 @@ PluginRegistryPrivate::~PluginRegistryPrivate()
     q->unloadAll();
 }
 
+bool PluginRegistryPrivate::isPluginInitialized(const QString &name) const
+{
+    if (name == "ui") {
+        return application->isUiEnabled();
+    } else {
+        return static_cast<bool>(q->pluginByName(name));
+    }
+}
+
 void PluginRegistryPrivate::unloadPlugin(int index)
 {
     // Remove the plugin from the list and grab its name
@@ -114,25 +123,14 @@ void PluginRegistry::loadPluginsFromDirectories(const QStringList &directories)
     while (true) {
         int numPluginsInitializedPrev = numPluginsInitialized;
         foreach (Plugin *plugin, uninitializedPlugins) {
-            QStringList missingDependencies;
+            bool missingDependencies = false;
             foreach (QString dependency, plugin->dependencies()) {
-                if (dependency == "ui") {
-                    if (!d->application->isUiEnabled()) {
-                        missingDependencies.append("ui");
-                    }
-                } else if (!pluginByName(dependency)) {
-                    missingDependencies.append(dependency);
+                if (!d->isPluginInitialized(dependency)) {
+                    missingDependencies = true;
+                    break;
                 }
             }
-            if (missingDependencies.count()) {
-                d->application->logger()->log(
-                    Logger::Error,
-                    LoggerTag,
-                    QString("cannot load %1 - missing dependencies: %2")
-                        .arg(plugin->name())
-                        .arg(missingDependencies.join(", "))
-                );
-            } else {
+            if (!missingDependencies) {
                 d->application->logger()->log(
                     Logger::Debug,
                     LoggerTag,
@@ -150,7 +148,24 @@ void PluginRegistry::loadPluginsFromDirectories(const QStringList &directories)
         }
     }
 
-    // Step 3: unload any plugins with unmet dependencies
+    // Step 3: show all of the plugins that could not be initialized
+    foreach (Plugin *plugin, uninitializedPlugins) {
+        QStringList missingDependencies;
+        foreach (QString dependency, plugin->dependencies()) {
+            if (!d->isPluginInitialized(dependency)) {
+                missingDependencies.append(dependency);
+            }
+        }
+        d->application->logger()->log(
+            Logger::Error,
+            LoggerTag,
+            QString("cannot load %1 - missing dependencies: %2")
+                .arg(plugin->name())
+                .arg(missingDependencies.join(", "))
+        );
+    }
+
+    // Step 4: unload any plugins with unmet dependencies
     qDeleteAll(uninitializedPlugins);
 
     d->application->logger()->log(
