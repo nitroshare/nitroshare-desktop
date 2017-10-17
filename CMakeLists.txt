@@ -47,14 +47,14 @@ if(BUILD_TESTS)
 endif()
 
 # Enable local API if QHttpEngine is available
-find_package(QHttpEngine)
-if(QHttpEngine_FOUND)
+find_package(qhttpengine 1.0.0)
+if(qhttpengine_FOUND)
     option(BUILD_API "Build local API plugin" ON)
 endif()
 
 # Enable mDNS discovery if QMdnsEngine is available
-find_package(QMdnsEngine)
-if(QMdnsEngine_FOUND)
+find_package(qmdnsengine)
+if(qmdnsengine_FOUND)
     option(BUILD_MDNS "Build mDNS discovery plugin" ON)
 endif()
 
