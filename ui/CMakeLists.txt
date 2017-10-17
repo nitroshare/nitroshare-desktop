@@ -23,3 +23,9 @@ if(WIN32)
     include(DeployQt)
     windeployqt(nitroshare-ui)
 endif()
+
+if(APPLE)
+    # Ensure the Qt runtime libraries are installed
+    include(DeployQt)
+    macdeployqt(nitroshare-ui)
+endif()

@@ -19,6 +19,13 @@ install(TARGETS nitroshare-cli
 )
 
 if(WIN32)
+    # Ensure the Qt runtime libraries are installed
     include(DeployQt)
     windeployqt(nitroshare-cli)
+endif()
+
+if(APPLE)
+    # Ensure the Qt runtime libraries are installed
+    include(DeployQt)
+    macdeployqt(nitroshare-cli)
 endif()
