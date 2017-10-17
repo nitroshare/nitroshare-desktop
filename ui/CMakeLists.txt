@@ -17,3 +17,9 @@ target_link_libraries(nitroshare-ui nitroshare Qt5::Core Qt5::Widgets)
 install(TARGETS nitroshare-ui
     DESTINATION "${INSTALL_BIN_PATH}"
 )
+
+if(WIN32)
+    # Ensure the Qt runtime libraries are installed
+    include(DeployQt)
+    windeployqt(nitroshare-ui)
+endif()

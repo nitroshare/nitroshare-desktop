@@ -17,3 +17,8 @@ target_link_libraries(nitroshare-cli nitroshare Qt5::Core)
 install(TARGETS nitroshare-cli
     DESTINATION "${INSTALL_BIN_PATH}"
 )
+
+if(WIN32)
+    include(DeployQt)
+    windeployqt(nitroshare-cli)
+endif()
