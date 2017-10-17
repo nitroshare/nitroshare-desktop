@@ -1,0 +1,8 @@
+{
+    "Name": "filesystem",
+    "Title": "Local Filesystem",
+    "Vendor": "Nathan Osman",
+    "Version": "${VERSION}",
+    "Description": "Provide access to the local filesystem",
+    "Dependencies": []
+}

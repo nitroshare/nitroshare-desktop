@@ -40,7 +40,7 @@ class Application;
 class Q_DECL_EXPORT TrayPlugin : public IPlugin
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID Plugin_iid FILE "trayplugin.json")
+    Q_PLUGIN_METADATA(IID Plugin_iid FILE "tray.json")
 
 public:
 

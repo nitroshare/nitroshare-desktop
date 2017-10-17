@@ -1,3 +1,5 @@
+configure_file(broadcast.json.in "${CMAKE_CURRENT_BINARY_DIR}/broadcast.json")
+
 set(SRC
     broadcastenumerator.h
     broadcastenumerator.cpp

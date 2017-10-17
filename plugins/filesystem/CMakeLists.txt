@@ -1,3 +1,5 @@
+configure_file(filesystem.json.in "${CMAKE_CURRENT_BINARY_DIR}/filesystem.json")
+
 set(SRC
     file.h
     file.cpp

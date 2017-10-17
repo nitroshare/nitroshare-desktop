@@ -1,3 +1,5 @@
+configure_file(lan.json.in "${CMAKE_CURRENT_BINARY_DIR}/lan.json")
+
 set(SRC
     lanplugin.h
     lanplugin.cpp

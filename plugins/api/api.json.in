@@ -1,0 +1,8 @@
+{
+    "Name": "api",
+    "Title": "Local HTTP API",
+    "Vendor": "Nathan Osman",
+    "Version": "${VERSION}",
+    "Description": "Provide local clients with an API",
+    "Dependencies": []
+}

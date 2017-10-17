@@ -32,7 +32,7 @@
 class Q_DECL_EXPORT ApiPlugin : public IPlugin
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID Plugin_iid)
+    Q_PLUGIN_METADATA(IID Plugin_iid FILE "api.json")
 
 public:
 

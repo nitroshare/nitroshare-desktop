@@ -1,0 +1,8 @@
+{
+    "Name": "broadcast",
+    "Title": "Broadcast Discovery",
+    "Vendor": "Nathan Osman",
+    "Version": "${VERSION}",
+    "Description": "Use IPv4 broadcast for discovering peers",
+    "Dependencies": []
+}

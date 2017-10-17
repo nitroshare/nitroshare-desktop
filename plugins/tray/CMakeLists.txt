@@ -1,4 +1,4 @@
-configure_file(trayplugin.json.in "${CMAKE_CURRENT_BINARY_DIR}/trayplugin.json")
+configure_file(tray.json.in "${CMAKE_CURRENT_BINARY_DIR}/tray.json")
 
 set(SRC
     resource.qrc
