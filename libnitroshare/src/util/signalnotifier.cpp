@@ -27,6 +27,7 @@
 #ifdef Q_OS_UNIX
 #  include <sys/signal.h>
 #  include <sys/socket.h>
+#  include <signal.h>
 #  include <unistd.h>
 #endif
 
