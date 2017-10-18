@@ -51,7 +51,7 @@ function(windeployqt target directory)
 
     # install(CODE ...) doesn't support generator expressions, but
     # file(GENERATE ...) does - store the path in a file
-    file(GENERATE OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${target}"
+    file(GENERATE OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${target}_path"
         CONTENT "$<TARGET_FILE:${target}>"
     )
 
@@ -59,7 +59,7 @@ function(windeployqt target directory)
     # runtime files to the appropriate directory for installation
     install(CODE
         "
-        file(READ \"${CMAKE_CURRENT_BINARY_DIR}/${target}\" _file)
+        file(READ \"${CMAKE_CURRENT_BINARY_DIR}/${target}_path\" _file)
         execute_process(
             COMMAND \"${CMAKE_COMMAND}\" -E
                 env PATH=\"${_qt_bin_dir}\" \"${WINDEPLOYQT_EXECUTABLE}\"
