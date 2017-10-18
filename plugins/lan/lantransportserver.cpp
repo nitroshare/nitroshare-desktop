@@ -22,23 +22,32 @@
  * IN THE SOFTWARE.
  */
 
+#include <nitroshare/application.h>
+#include <nitroshare/settings.h>
+
+#include "lantransport.h"
 #include "lantransportserver.h"
 
+LanTransportServer::LanTransportServer(Application *application)
+{
+    connect(&mServer, &Server::newSocketDescriptor, this, &LanTransportServer::onNewSocketDescriptor);
 
-////////////
-#include <QString>
-#include <QVariant>
-////////////
+    // Watch for settings changing and trigger the initial values
+    connect(application->settings(), &Settings::settingsChanged, this, &LanTransportServer::onSettingsChanged);
+    onSettingsChanged({});
+}
 
+Transport *LanTransportServer::createTransport(const QVariantMap &properties)
+{
+    //...
+}
 
-const QString LoggerTag = "lan";
+void LanTransportServer::onNewSocketDescriptor(qintptr socketDescriptor)
+{
+    emit transportReceived(new LanTransport(socketDescriptor));
+}
 
-const QString TlsEnabled = "TlsEnabled";
-const QString TlsCA = "TlsCA";
-const QString TlsCertificate = "TlsCertificate";
-const QString TlsPrivateKey = "TlsPrivateKey";
-
-QVariant TlsEnabledDefault() { return false; }
-QVariant TlsCADefault() { return ""; }
-QVariant TlsCertificateDefault() { return ""; }
-QVariant TlsPrivateKeyDefault() { return ""; }
+void LanTransportServer::onSettingsChanged(const QStringList &keys)
+{
+    //...
+}

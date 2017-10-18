@@ -25,6 +25,32 @@
 #ifndef LANTRANSPORTSERVER_H
 #define LANTRANSPORTSERVER_H
 
-//...
+#include <QStringList>
+
+#include <nitroshare/transportserver.h>
+
+#include "server.h"
+
+class Application;
+
+class LanTransportServer : public TransportServer
+{
+    Q_OBJECT
+
+public:
+
+    explicit LanTransportServer(Application *application);
+
+    virtual Transport *createTransport(const QVariantMap &properties);
+
+private slots:
+
+    void onNewSocketDescriptor(qintptr socketDescriptor);
+    void onSettingsChanged(const QStringList &keys);
+
+private:
+
+    Server mServer;
+};
 
 #endif // LANTRANSPORTSERVER_H

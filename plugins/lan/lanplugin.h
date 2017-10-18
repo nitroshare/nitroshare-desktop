@@ -27,7 +27,7 @@
 
 #include <nitroshare/iplugin.h>
 
-#include "lantransportserver.h"
+class LanTransportServer;
 
 /**
  * @brief Provide a transport for transfers over a local network
@@ -44,7 +44,7 @@ public:
 
 private:
 
-    //...
+    LanTransportServer *mServer;
 };
 
 #endif // LANPLUGIN_H

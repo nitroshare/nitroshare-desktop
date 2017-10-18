@@ -22,20 +22,9 @@
  * IN THE SOFTWARE.
  */
 
-#include <nitroshare/application.h>
-#include <nitroshare/transfermodel.h>
+#include "server.h"
 
-#include "lanplugin.h"
-#include "lantransportserver.h"
-
-void LanPlugin::initialize(Application *application)
+void Server::incomingConnection(qintptr socketDescriptor)
 {
-    mServer = new LanTransportServer(application);
-    application->transferModel()->addTransportServer(mServer);
-}
-
-void LanPlugin::cleanup(Application *application)
-{
-    application->transferModel()->removeTransportServer(mServer);
-    delete mServer;
+    emit newSocketDescriptor(socketDescriptor);
 }

@@ -22,20 +22,22 @@
  * IN THE SOFTWARE.
  */
 
-#include <nitroshare/application.h>
-#include <nitroshare/transfermodel.h>
+#ifndef SERVER_H
+#define SERVER_H
 
-#include "lanplugin.h"
-#include "lantransportserver.h"
+#include <QTcpServer>
 
-void LanPlugin::initialize(Application *application)
+class Server : public QTcpServer
 {
-    mServer = new LanTransportServer(application);
-    application->transferModel()->addTransportServer(mServer);
-}
+    Q_OBJECT
 
-void LanPlugin::cleanup(Application *application)
-{
-    application->transferModel()->removeTransportServer(mServer);
-    delete mServer;
-}
+signals:
+
+    void newSocketDescriptor(qintptr socketDescriptor);
+
+protected:
+
+    void incomingConnection(qintptr socketDescriptor);
+};
+
+#endif // SERVER_H
