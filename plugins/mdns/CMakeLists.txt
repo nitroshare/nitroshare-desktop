@@ -26,5 +26,5 @@ install(TARGETS mdns
 # Copy the QMdnsEngine library to the runtime and install directories
 if(WIN32)
     include(SharedLibrary)
-    copy_lib_win(qdmsnengine nitroshare ${INSTALL_BIN_PATH})
+    copy_lib_win(qdmsnengine mdns)
 endif()
