@@ -39,7 +39,7 @@ LanTransportServer::LanTransportServer(Application *application)
 
 Transport *LanTransportServer::createTransport(const QVariantMap &properties)
 {
-    //...
+    return nullptr;
 }
 
 void LanTransportServer::onNewSocketDescriptor(qintptr socketDescriptor)
