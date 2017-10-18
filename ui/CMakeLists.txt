@@ -1,6 +1,13 @@
+configure_file(config.h.in "${CMAKE_CURRENT_BINARY_DIR}/config.h")
+
 set(SRC
     main.cpp
 )
+
+# Include the resource file
+if(WIN32)
+    set(SRC ${SRC} resource.rc)
+endif()
 
 add_executable(nitroshare-ui ${SRC})
 
@@ -18,14 +25,14 @@ install(TARGETS nitroshare-ui
     DESTINATION "${INSTALL_BIN_PATH}"
 )
 
+# Ensure the Qt runtime libraries are installed
 if(WIN32)
-    # Ensure the Qt runtime libraries are installed
     include(Windeployqt)
     windeployqt(nitroshare-ui ${INSTALL_BIN_PATH})
 endif()
 
+# Ensure the Qt runtime libraries are installed
 if(APPLE)
-    # Ensure the Qt runtime libraries are installed
     include(Macdeployqt)
     macdeployqt(nitroshare-ui)
 endif()
