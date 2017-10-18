@@ -24,3 +24,9 @@ target_link_libraries(api nitroshare qhttpengine)
 install(TARGETS api
     LIBRARY DESTINATION "${INSTALL_PLUGIN_PATH}"
 )
+
+# Copy the QHttpEngine library to the runtime and install directories
+if(WIN32)
+    include(SharedLibrary)
+    copy_lib_win(qhttpengine api)
+endif()
