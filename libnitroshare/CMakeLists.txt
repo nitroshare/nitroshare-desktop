@@ -69,3 +69,9 @@ install(FILES "${CMAKE_CURRENT_BINARY_DIR}/nitroshareConfigVersion.cmake"
 if(BUILD_TESTS)
     add_subdirectory(tests)
 endif()
+
+if(WIN32)
+    # Ensure the Qt runtime libraries are installed
+    include(Windeployqt)
+    windeployqt(nitroshare ${INSTALL_BIN_PATH})
+endif()
