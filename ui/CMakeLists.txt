@@ -20,12 +20,12 @@ install(TARGETS nitroshare-ui
 
 if(WIN32)
     # Ensure the Qt runtime libraries are installed
-    include(DeployQt)
-    windeployqt(nitroshare-ui)
+    include(Windeployqt)
+    windeployqt(nitroshare-ui ${INSTALL_BIN_PATH})
 endif()
 
 if(APPLE)
     # Ensure the Qt runtime libraries are installed
-    include(DeployQt)
+    include(Macdeployqt)
     macdeployqt(nitroshare-ui)
 endif()
