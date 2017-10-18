@@ -1,3 +1,6 @@
+# Determine the relative path from the executable to the plugins
+file(RELATIVE_PATH RELATIVE_PLUGIN_PATH /${INSTALL_BIN_PATH} /${INSTALL_PLUGIN_PATH})
+
 configure_file(config.h.in "${CMAKE_CURRENT_BINARY_DIR}/nitroshare/config.h")
 
 file(GLOB HEADERS include/nitroshare/*.h)
