@@ -1,6 +1,6 @@
 # The MIT License (MIT)
 #
-# Copyright (c) 2016 Nathan Osman
+# Copyright (c) 2017 Nathan Osman
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -38,8 +38,10 @@ if(MACDEPLOYQT_EXECUTABLE)
 endif()
 
 # Add commands that copy the required Qt files to the same directory as the
-# target after being built, including the system libraries
+# target after being built as well as including them in final installation
 function(windeployqt target)
+
+    # Run windeployqt immediately after build
     add_custom_command(TARGET ${target} POST_BUILD
         COMMAND "${CMAKE_COMMAND}" -E
             env PATH="${_qt_bin_dir}" "${WINDEPLOYQT_EXECUTABLE}"
@@ -50,6 +52,10 @@ function(windeployqt target)
                 \"$<TARGET_FILE:${target}>\"
         COMMENT "Deploying Qt..."
     )
+
+    # Install the files found in the destination directory
+    install(FILES "$<TARGET_FILE_DIR:${target}>/*"
+        DESTINATION "$<TARGET_PROPERTY:RUNTIME_OUTPUT_DIRECTORY>")
 
     # windeployqt doesn't work correctly with the system runtime libraries,
     # so we fall back to one of CMake's own modules for copying them over
