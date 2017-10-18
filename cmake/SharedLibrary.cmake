@@ -20,12 +20,16 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# Copy the runtime files for the src shared library to the dest target.
-function(copy_lib_win src dest)
+# Copy the runtime files for the src shared library to the dest target and
+# ensure that it is installed
+function(copy_lib_win src dest directory)
     add_custom_command(TARGET ${dest} POST_BUILD
         COMMAND "${CMAKE_COMMAND}" -E
             copy_if_different \"$<TARGET_FILE:${src}>\" \"$<TARGET_FILE_DIR:${dest}>\"
         COMMENT "Copying ${src} to ${dest}..."
+    )
+    install(FILES "$<TARGET_FILE:${src}>"
+        DESTINATION ${directory}
     )
 endfunction()
 
