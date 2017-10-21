@@ -1,0 +1,10 @@
+{
+    "Name": "deviceui",
+    "Title": "Device UI",
+    "Vendor": "Nathan Osman",
+    "Version": "${VERSION}",
+    "Description": "User interface for interacting with devices",
+    "Dependencies": [
+        "ui"
+    ]
+}
