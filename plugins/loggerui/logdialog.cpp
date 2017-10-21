@@ -56,7 +56,7 @@ LogDialog::LogDialog(Application *application)
     textEdit->setFont(font);
 
     // Log all messages to the dialog
-    connect(application->logger(), &Logger::messageLogged,
+    connect(application->logger(), &Logger::messageLogged, this,
             [textEdit](Logger::MessageType messageType, const QString &tag, const QString &message) {
         textEdit->append(
             QString("[%1:%2] %3").arg(MessageTypeMap.value(messageType)).arg(tag).arg(message)
