@@ -22,20 +22,37 @@
  * IN THE SOFTWARE.
  */
 
-#include <nitroshare/application.h>
-#include <nitroshare/actionregistry.h>
+#ifndef LOGACTION_H
+#define LOGACTION_H
 
-#include "logaction.h"
-#include "loggeruiplugin.h"
+#include <nitroshare/action.h>
 
-void LoggerUiPlugin::initialize(Application *application)
+#include "logdialog.h"
+
+class Application;
+
+class LogAction : public Action
 {
-    mLogAction = new LogAction(application);
-    application->actionRegistry()->add(mLogAction);
-}
+    Q_OBJECT
+    Q_PROPERTY(bool ui READ ui)
+    Q_PROPERTY(QString title READ title)
 
-void LoggerUiPlugin::cleanup(Application *application)
-{
-    application->actionRegistry()->remove(mLogAction);
-    delete mLogAction;
-}
+public:
+
+    explicit LogAction(Application *application);
+
+    virtual QString name() const;
+
+    bool ui() const;
+    QString title() const;
+
+public slots:
+
+    virtual bool invoke(const QVariantMap &params = QVariantMap());
+
+private:
+
+    LogDialog mDialog;
+};
+
+#endif // LOGACTION_H

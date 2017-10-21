@@ -22,20 +22,20 @@
  * IN THE SOFTWARE.
  */
 
-#include <nitroshare/application.h>
-#include <nitroshare/actionregistry.h>
+#ifndef LOGDIALOG_H
+#define LOGDIALOG_H
 
-#include "logaction.h"
-#include "loggeruiplugin.h"
+#include <QDialog>
 
-void LoggerUiPlugin::initialize(Application *application)
+class Application;
+
+class LogDialog : public QDialog
 {
-    mLogAction = new LogAction(application);
-    application->actionRegistry()->add(mLogAction);
-}
+    Q_OBJECT
 
-void LoggerUiPlugin::cleanup(Application *application)
-{
-    application->actionRegistry()->remove(mLogAction);
-    delete mLogAction;
-}
+public:
+
+    explicit LogDialog(Application *application);
+};
+
+#endif // LOGDIALOG_H

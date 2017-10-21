@@ -1,6 +1,10 @@
 configure_file(loggerui.json.in "${CMAKE_CURRENT_BINARY_DIR}/loggerui.json")
 
 set(SRC
+    logaction.h
+    logaction.cpp
+    logdialog.h
+    logdialog.cpp
     loggeruiplugin.h
     loggeruiplugin.cpp
 )
@@ -15,7 +19,7 @@ set_target_properties(loggerui PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY "${PLUGIN_OUTPUT_DIRECTORY}"
 )
 
-target_link_libraries(loggerui nitroshare)
+target_link_libraries(loggerui Qt5::Widgets nitroshare)
 
 install(TARGETS loggerui
     DESTINATION "${INSTALL_PLUGIN_PATH}"

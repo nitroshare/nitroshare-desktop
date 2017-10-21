@@ -22,20 +22,29 @@
  * IN THE SOFTWARE.
  */
 
-#include <nitroshare/application.h>
-#include <nitroshare/actionregistry.h>
-
 #include "logaction.h"
-#include "loggeruiplugin.h"
 
-void LoggerUiPlugin::initialize(Application *application)
+LogAction::LogAction(Application *application)
+    : mDialog(application)
 {
-    mLogAction = new LogAction(application);
-    application->actionRegistry()->add(mLogAction);
 }
 
-void LoggerUiPlugin::cleanup(Application *application)
+QString LogAction::name() const
 {
-    application->actionRegistry()->remove(mLogAction);
-    delete mLogAction;
+    return "log";
+}
+
+bool LogAction::ui() const
+{
+    return true;
+}
+
+QString LogAction::title() const
+{
+    return tr("View Log");
+}
+
+bool LogAction::invoke(const QVariantMap &)
+{
+    mDialog.show();
 }

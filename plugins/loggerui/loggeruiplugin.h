@@ -27,6 +27,8 @@
 
 #include <nitroshare/iplugin.h>
 
+class LogAction;
+
 class Q_DECL_EXPORT LoggerUiPlugin : public IPlugin
 {
     Q_OBJECT
@@ -36,6 +38,10 @@ public:
 
     virtual void initialize(Application *application);
     virtual void cleanup(Application *application);
+
+private:
+
+    LogAction *mLogAction;
 };
 
 #endif // LOGGERUIPLUGIN_H
