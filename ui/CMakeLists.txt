@@ -9,7 +9,7 @@ if(WIN32)
     set(SRC ${SRC} resource.rc)
 endif()
 
-add_executable(nitroshare-ui ${SRC})
+add_executable(nitroshare-ui WIN32 ${SRC})
 
 set_target_properties(nitroshare-ui PROPERTIES
     CXX_STANDARD 11
