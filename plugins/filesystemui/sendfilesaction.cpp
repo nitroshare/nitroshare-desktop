@@ -22,9 +22,17 @@
  * IN THE SOFTWARE.
  */
 
+#include <QFileDialog>
+#include <QFileInfo>
+
+#include <nitroshare/action.h>
+#include <nitroshare/actionregistry.h>
+#include <nitroshare/application.h>
+
 #include "sendfilesaction.h"
 
 SendFilesAction::SendFilesAction(Application *application)
+    : mApplication(application)
 {
 }
 
@@ -45,7 +53,24 @@ QString SendFilesAction::title() const
 
 QVariant SendFilesAction::invoke(const QVariantMap &)
 {
-    //...
+    // Obtain the list of files from the user
+    QStringList filenames(QFileDialog::getOpenFileName(nullptr, tr("Select Files")));
+    if (!filenames.count()) {
+        return false;
+    }
 
-    return true;
+    // Find and invoke the browse action to obtain a device name
+    Action *browseAction = mApplication->actionRegistry()->find("browse");
+    QVariant deviceName = browseAction->invoke();
+    if (deviceName.type() != QVariant::String) {
+        return false;
+    }
+
+    // Find & invoke the send action - it's a dependency, so must exist
+    Action *sendAction = mApplication->actionRegistry()->find("send");
+    return sendAction->invoke({
+        { "device", deviceName },
+        { "root", QFileInfo(filenames.at(0)).path() },
+        { "items", filenames }
+    });
 }

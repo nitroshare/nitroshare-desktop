@@ -47,6 +47,10 @@ public:
 public slots:
 
     virtual QVariant invoke(const QVariantMap &params = QVariantMap());
+
+private:
+
+    Application *mApplication;
 };
 
 #endif // SENDFILESACTION_H

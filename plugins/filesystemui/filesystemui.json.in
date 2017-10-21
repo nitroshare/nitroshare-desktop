@@ -6,6 +6,7 @@
     "Description": "User interface for interacting with the local filesystem",
     "Dependencies": [
         "ui",
+        "deviceui",
         "filesystem"
     ]
 }
