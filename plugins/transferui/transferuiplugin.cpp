@@ -30,7 +30,7 @@
 
 void TransferUiPlugin::initialize(Application *application)
 {
-    mTransfersAction = new TransfersAction;
+    mTransfersAction = new TransfersAction(application);
     application->actionRegistry()->add(mTransfersAction);
 }
 

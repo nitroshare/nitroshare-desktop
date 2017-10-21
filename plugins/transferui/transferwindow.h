@@ -27,13 +27,15 @@
 
 #include <QMainWindow>
 
+class Application;
+
 class TransferWindow : public QMainWindow
 {
     Q_OBJECT
 
 public:
 
-    TransferWindow();
+    TransferWindow(Application *application);
 };
 
 #endif // TRANSFERWINDOW_H

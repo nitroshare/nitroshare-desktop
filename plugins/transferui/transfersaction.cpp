@@ -24,6 +24,11 @@
 
 #include "transfersaction.h"
 
+TransfersAction::TransfersAction(Application *application)
+    : mTransferWindow(application)
+{
+}
+
 QString TransfersAction::name() const
 {
     return "transfers";

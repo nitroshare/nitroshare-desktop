@@ -29,6 +29,8 @@
 
 #include "transferwindow.h"
 
+class Application;
+
 class TransfersAction : public Action
 {
     Q_OBJECT
@@ -36,6 +38,8 @@ class TransfersAction : public Action
     Q_PROPERTY(QString title READ title)
 
 public:
+
+    explicit TransfersAction(Application *application);
 
     virtual QString name() const;
 

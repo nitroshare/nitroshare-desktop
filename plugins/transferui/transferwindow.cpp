@@ -22,9 +22,48 @@
  * IN THE SOFTWARE.
  */
 
+#include <QFrame>
+#include <QHBoxLayout>
+#include <QPushButton>
+#include <QSpacerItem>
+#include <QTableView>
+#include <QVBoxLayout>
+#include <QWidget>
+
+#include <nitroshare/application.h>
+#include <nitroshare/transfermodel.h>
+
 #include "transferwindow.h"
 
-TransferWindow::TransferWindow()
+TransferWindow::TransferWindow(Application *application)
 {
     setWindowTitle(tr("Transfers"));
+    resize(640, 200);
+
+    QTableView *tableView = new QTableView;
+    tableView->setModel(application->transferModel());
+
+    QPushButton *viewFiles = new QPushButton(tr("View Files..."));
+    QPushButton *clear = new QPushButton(tr("Clear"));
+    connect(clear, &QPushButton::clicked, []() {
+        //...
+    });
+
+    QFrame *hline = new QFrame;
+    hline->setFrameShape(QFrame::HLine);
+    hline->setFrameShadow(QFrame::Sunken);
+
+    QVBoxLayout *vboxLayout = new QVBoxLayout;
+    vboxLayout->addWidget(viewFiles);
+    vboxLayout->addWidget(hline);
+    vboxLayout->addWidget(clear);
+    vboxLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::Expanding));
+
+    QHBoxLayout *hboxLayout = new QHBoxLayout;
+    hboxLayout->addWidget(tableView);
+    hboxLayout->addLayout(vboxLayout);
+
+    QWidget *widget = new QWidget;
+    widget->setLayout(hboxLayout);
+    setCentralWidget(widget);
 }
