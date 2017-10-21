@@ -66,6 +66,12 @@ void MdnsEnumerator::onHostnameChanged(const QByteArray &hostname) {
 
 void MdnsEnumerator::onServiceUpdated(const QMdnsEngine::Service &service)
 {
+    mApplication->logger()->log(
+        Logger::Debug,
+        LoggerTag,
+        QString("%1 updated").arg(QString(service.name()))
+    );
+
     // Send an update for the attributes currently known
     QString uuid = findUuid(service);
     QVariantMap properties = {
@@ -87,6 +93,12 @@ void MdnsEnumerator::onServiceUpdated(const QMdnsEngine::Service &service)
 
 void MdnsEnumerator::onServiceRemoved(const QMdnsEngine::Service &service)
 {
+    mApplication->logger()->log(
+        Logger::Debug,
+        LoggerTag,
+        QString("%1 removed").arg(QString(service.name()))
+    );
+
     emit deviceRemoved(findUuid(service));
 }
 
