@@ -27,7 +27,7 @@
 
 #include <nitroshare/iplugin.h>
 
-class Mdns;
+class MdnsEnumerator;
 
 class Q_DECL_EXPORT MdnsPlugin : public IPlugin
 {
@@ -41,7 +41,7 @@ public:
 
 private:
 
-    Mdns *mMdns;
+    MdnsEnumerator *mEnumerator;
 };
 
 #endif // MDNSPLUGIN_H

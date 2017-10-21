@@ -22,15 +22,20 @@
  * IN THE SOFTWARE.
  */
 
-#include "mdns.h"
+#include <nitroshare/application.h>
+#include <nitroshare/devicemodel.h>
+
+#include "mdnsenumerator.h"
 #include "mdnsplugin.h"
 
 void MdnsPlugin::initialize(Application *application)
 {
-    mMdns = new Mdns(application);
+    mEnumerator = new MdnsEnumerator(application);
+    application->deviceModel()->addEnumerator(mEnumerator);
 }
 
 void MdnsPlugin::cleanup(Application *application)
 {
-    delete mMdns;
+    application->deviceModel()->removeEnumerator(mEnumerator);
+    delete mEnumerator;
 }

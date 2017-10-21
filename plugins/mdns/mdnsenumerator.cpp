@@ -22,9 +22,13 @@
  * IN THE SOFTWARE.
  */
 
+#include <QTimer>
+
 #include <nitroshare/application.h>
 #include <nitroshare/logger.h>
 #include <nitroshare/settings.h>
+
+#include <qmdnsengine/resolver.h>
 
 #include "mdnsenumerator.h"
 
@@ -33,7 +37,7 @@ const QString LoggerTag = "mdns";
 const QByteArray ServiceType = "_nitroshare._tcp.local.";
 
 MdnsEnumerator::MdnsEnumerator(Application *application)
-    : mLogger(application->logger()),
+    : mApplication(application),
       mHostname(&mServer),
       mProvider(&mServer, &mHostname),
       mBrowser(&mServer, ServiceType, &mCache)
@@ -49,7 +53,7 @@ MdnsEnumerator::MdnsEnumerator(Application *application)
 }
 
 void MdnsEnumerator::onHostnameChanged(const QByteArray &hostname) {
-    mLogger->log(
+    mApplication->logger()->log(
         Logger::Debug,
         LoggerTag,
         QString("hostname set to %1").arg(QString(hostname))
@@ -58,6 +62,7 @@ void MdnsEnumerator::onHostnameChanged(const QByteArray &hostname) {
 
 void MdnsEnumerator::onServiceUpdated(const QMdnsEngine::Service &service)
 {
+    // Send an update for the attributes currently known
     QString uuid = findUuid(service);
     QVariantMap properties = {
         { DeviceEnumerator::UuidKey, uuid },
@@ -65,6 +70,15 @@ void MdnsEnumerator::onServiceUpdated(const QMdnsEngine::Service &service)
         { DeviceEnumerator::PortKey, service.port() }
     };
     emit deviceUpdated(uuid, properties);
+
+    // Send an update every time an address is resolved
+    QMdnsEngine::Resolver *resolver = new QMdnsEngine::Resolver(&mServer, service.name(), &mCache, this);
+    connect(resolver, &QMdnsEngine::Resolver::resolved, [this, uuid](const QHostAddress &address) {
+        emit deviceUpdated(uuid, {{ DeviceEnumerator::AddressesKey, address }});
+    });
+
+    // Delete the resolver after 2 seconds
+    QTimer::singleShot(2000, resolver, &QMdnsEngine::Resolver::deleteLater);
 }
 
 void MdnsEnumerator::onServiceRemoved(const QMdnsEngine::Service &service)
@@ -76,8 +90,9 @@ void MdnsEnumerator::onSettingsChanged(const QStringList &keys)
 {
     QMdnsEngine::Service service;
     service.setType(ServiceType);
-    service.setName("");
+    service.setName(mApplication->deviceName());
     service.setPort(0);
+    service.setAttributes({ "uuid", mApplication->deviceUuid() });
     mProvider.update(service);
 }
 

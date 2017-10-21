@@ -35,7 +35,6 @@
 #include <qmdnsengine/service.h>
 
 class Application;
-class Logger;
 
 class MdnsEnumerator : public DeviceEnumerator
 {
@@ -56,7 +55,7 @@ private:
 
     QString findUuid(const QMdnsEngine::Service &service);
 
-    Logger *mLogger;
+    Application *mApplication;
 
     QMdnsEngine::Server mServer;
     QMdnsEngine::Hostname mHostname;
