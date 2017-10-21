@@ -59,18 +59,17 @@ QVariant SendFilesAction::invoke(const QVariantMap &)
         return false;
     }
 
-    // Find and invoke the browse action to obtain a device name
+    // Find and invoke the browse action to obtain a device UUID
     Action *browseAction = mApplication->actionRegistry()->find("browse");
-    QVariant deviceName = browseAction->invoke();
-    if (deviceName.type() != QVariant::String) {
+    QVariant deviceUuid = browseAction->invoke();
+    if (deviceUuid.type() != QVariant::String) {
         return false;
     }
 
     // Find & invoke the send action - it's a dependency, so must exist
     Action *sendAction = mApplication->actionRegistry()->find("send");
     return sendAction->invoke({
-        { "device", deviceName },
-        { "root", QFileInfo(filenames.at(0)).path() },
+        { "device", deviceUuid },
         { "items", filenames }
     });
 }

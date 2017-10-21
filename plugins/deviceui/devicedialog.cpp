@@ -44,7 +44,7 @@ DeviceDialog::DeviceDialog(Application *application)
     // Respond to the dialog buttons correctly
     connect(buttonBox, &QDialogButtonBox::rejected, this, &DeviceDialog::reject);
     connect(buttonBox, &QDialogButtonBox::accepted, [this, listView]() {
-        listView->currentIndex();
+        mDeviceUuid = listView->currentIndex().data(DeviceModel::UuidRole).toString();
         accept();
     });
 
@@ -60,7 +60,7 @@ DeviceDialog::DeviceDialog(Application *application)
     setLayout(vboxLayout);
 }
 
-QString DeviceDialog::deviceName() const
+QString DeviceDialog::deviceUuid() const
 {
-    return mDeviceName;
+    return mDeviceUuid;
 }

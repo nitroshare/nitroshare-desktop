@@ -37,11 +37,11 @@ public:
 
     explicit DeviceDialog(Application *application);
 
-    QString deviceName() const;
+    QString deviceUuid() const;
 
 private:
 
-    QString mDeviceName;
+    QString mDeviceUuid;
 };
 
 #endif // DEVICEDIALOG_H

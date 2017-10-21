@@ -39,7 +39,7 @@ QVariant BrowseAction::invoke(const QVariantMap &)
 {
     DeviceDialog dialog(mApplication);
     if (dialog.exec() == QDialog::Accepted) {
-        return dialog.deviceName();
+        return dialog.deviceUuid();
     }
     return false;
 }
