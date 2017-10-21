@@ -5,6 +5,8 @@ set(SRC
     browseaction.cpp
     devicedialog.h
     devicedialog.cpp
+    deviceproxymodel.h
+    deviceproxymodel.cpp
     deviceuiplugin.h
     deviceuiplugin.cpp
 )

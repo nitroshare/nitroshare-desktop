@@ -22,45 +22,20 @@
  * IN THE SOFTWARE.
  */
 
-#include <QDialogButtonBox>
-#include <QLabel>
-#include <QListView>
-#include <QVBoxLayout>
-
-#include <nitroshare/application.h>
 #include <nitroshare/devicemodel.h>
 
-#include "devicedialog.h"
 #include "deviceproxymodel.h"
 
-DeviceDialog::DeviceDialog(Application *application)
+DeviceProxyModel::DeviceProxyModel(QObject *parent)
+    : QIdentityProxyModel(parent)
 {
-    setWindowTitle(tr("Select Device"));
-
-    QLabel *label = new QLabel(tr("Select a device from the list below:"));
-    QListView *listView = new QListView;
-    QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
-
-    // Respond to the dialog buttons correctly
-    connect(buttonBox, &QDialogButtonBox::rejected, this, &DeviceDialog::reject);
-    connect(buttonBox, &QDialogButtonBox::accepted, [this, listView]() {
-        listView->currentIndex();
-        accept();
-    });
-
-    DeviceProxyModel *model = new DeviceProxyModel(this);
-    model->setSourceModel(application->deviceModel());
-    listView->setModel(model);
-
-    // Add the widgets to the dialog
-    QVBoxLayout *vboxLayout = new QVBoxLayout;
-    vboxLayout->addWidget(label);
-    vboxLayout->addWidget(listView);
-    vboxLayout->addWidget(buttonBox);
-    setLayout(vboxLayout);
 }
 
-QString DeviceDialog::deviceName() const
+QVariant DeviceProxyModel::data(const QModelIndex &index, int role) const
 {
-    return mDeviceName;
+    if (role == Qt::DisplayRole) {
+        return QIdentityProxyModel::data(index, DeviceModel::NameRole);
+    } else {
+        return QIdentityProxyModel::data(index, role);
+    }
 }
