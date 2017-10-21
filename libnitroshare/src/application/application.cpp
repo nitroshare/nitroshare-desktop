@@ -37,8 +37,8 @@ const QString LoggerTag = "application";
 const QString PluginDir = "plugin-dir";
 const QString PluginBlacklist = "plugin-blacklist";
 
-const QString DeviceUuid = "DeviceUuid";
-const QString DeviceName = "DeviceName";
+const QString Application::DeviceUuid = "DeviceUuid";
+const QString Application::DeviceName = "DeviceName";
 
 ApplicationPrivate::ApplicationPrivate(Application *application)
     : QObject(application),
@@ -47,8 +47,8 @@ ApplicationPrivate::ApplicationPrivate(Application *application)
       settings(&baseSettings),
       uiEnabled(false)
 {
-    settings.addSetting(DeviceUuid, {{Settings::DefaultKey, QUuid::createUuid().toString()}});
-    settings.addSetting(DeviceName, {{Settings::DefaultKey, QHostInfo::localHostName()}});
+    settings.addSetting(Application::DeviceUuid, {{Settings::DefaultKey, QUuid::createUuid().toString()}});
+    settings.addSetting(Application::DeviceName, {{Settings::DefaultKey, QHostInfo::localHostName()}});
 }
 
 Application::Application(QObject *parent)

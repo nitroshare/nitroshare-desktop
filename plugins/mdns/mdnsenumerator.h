@@ -62,6 +62,7 @@ private:
     QMdnsEngine::Provider mProvider;
     QMdnsEngine::Cache mCache;
     QMdnsEngine::Browser mBrowser;
+    QMdnsEngine::Service mService;
 };
 
 #endif // MDNSENUMERATOR_H

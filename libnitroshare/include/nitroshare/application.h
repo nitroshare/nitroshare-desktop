@@ -56,6 +56,16 @@ class NITROSHARE_EXPORT Application : public QObject
 public:
 
     /**
+     * @brief Settings key for the device UUID
+     */
+    static const QString DeviceUuid;
+
+    /**
+     * @brief Settings key for the device name
+     */
+    static const QString DeviceName;
+
+    /**
      * @brief Create a new application object
      * @param parent QObject
      */

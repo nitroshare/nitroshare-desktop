@@ -48,13 +48,17 @@ MdnsEnumerator::MdnsEnumerator(Application *application)
     connect(&mBrowser, &QMdnsEngine::Browser::serviceRemoved, this, &MdnsEnumerator::onServiceRemoved);
     connect(application->settings(), &Settings::settingsChanged, this, &MdnsEnumerator::onSettingsChanged);
 
+    // Initialize the service
+    mService.setType(ServiceType);
+    mService.setAttributes({{ "uuid", mApplication->deviceUuid().toUtf8() }});
+
     // Trigger loading the initial settings
-    onSettingsChanged({});
+    onSettingsChanged({ Application::DeviceName });
 }
 
 void MdnsEnumerator::onHostnameChanged(const QByteArray &hostname) {
     mApplication->logger()->log(
-        Logger::Debug,
+        Logger::Info,
         LoggerTag,
         QString("hostname set to %1").arg(QString(hostname))
     );
@@ -74,7 +78,7 @@ void MdnsEnumerator::onServiceUpdated(const QMdnsEngine::Service &service)
     // Send an update every time an address is resolved
     QMdnsEngine::Resolver *resolver = new QMdnsEngine::Resolver(&mServer, service.name(), &mCache, this);
     connect(resolver, &QMdnsEngine::Resolver::resolved, [this, uuid](const QHostAddress &address) {
-        emit deviceUpdated(uuid, {{ DeviceEnumerator::AddressesKey, address }});
+        emit deviceUpdated(uuid, {{ DeviceEnumerator::AddressesKey, address.toString() }});
     });
 
     // Delete the resolver after 2 seconds
@@ -88,12 +92,11 @@ void MdnsEnumerator::onServiceRemoved(const QMdnsEngine::Service &service)
 
 void MdnsEnumerator::onSettingsChanged(const QStringList &keys)
 {
-    QMdnsEngine::Service service;
-    service.setType(ServiceType);
-    service.setName(mApplication->deviceName());
-    service.setPort(0);
-    service.setAttributes({ "uuid", mApplication->deviceUuid() });
-    mProvider.update(service);
+    if (keys.contains(Application::DeviceName)) {
+        mService.setName(mApplication->deviceName().toUtf8());
+        mService.setPort(0);
+        mProvider.update(mService);
+    }
 }
 
 QString MdnsEnumerator::findUuid(const QMdnsEngine::Service &service)
