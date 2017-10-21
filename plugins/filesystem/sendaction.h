@@ -50,7 +50,7 @@ public:
 
 public Q_SLOTS:
 
-    virtual bool invoke(const QVariantMap &params);
+    virtual QVariant invoke(const QVariantMap &params);
 
 private:
 

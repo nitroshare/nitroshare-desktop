@@ -43,7 +43,7 @@ QString SendFilesAction::title() const
     return tr("Send Files...");
 }
 
-bool SendFilesAction::invoke(const QVariantMap &params)
+QVariant SendFilesAction::invoke(const QVariantMap &)
 {
     //...
 

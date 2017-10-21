@@ -44,7 +44,7 @@ QString LogAction::title() const
     return tr("View Log");
 }
 
-bool LogAction::invoke(const QVariantMap &)
+QVariant LogAction::invoke(const QVariantMap &)
 {
     mDialog.show();
     return true;

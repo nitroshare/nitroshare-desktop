@@ -43,7 +43,7 @@ QString SendDirectoryAction::title() const
     return tr("Send Directory...");
 }
 
-bool SendDirectoryAction::invoke(const QVariantMap &params)
+QVariant SendDirectoryAction::invoke(const QVariantMap &params)
 {
     //...
 

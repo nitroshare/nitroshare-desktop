@@ -26,6 +26,7 @@
 #define LIBNITROSHARE_ACTION_H
 
 #include <QObject>
+#include <QVariant>
 #include <QVariantMap>
 
 #include <nitroshare/config.h>
@@ -55,9 +56,9 @@ public Q_SLOTS:
     /**
      * @brief Invoke the action
      * @param params parameters for the action
-     * @return true if the action succeeded
+     * @return result of the action
      */
-    virtual bool invoke(const QVariantMap &params = QVariantMap()) = 0;
+    virtual QVariant invoke(const QVariantMap &params = QVariantMap()) = 0;
 };
 
 #endif // LIBNITROSHARE_ACTION_H

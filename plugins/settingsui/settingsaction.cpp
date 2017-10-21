@@ -40,7 +40,7 @@ QString SettingsAction::title() const
     return tr("Settings");
 }
 
-bool SettingsAction::invoke(const QVariantMap &)
+QVariant SettingsAction::invoke(const QVariantMap &)
 {
     return static_cast<bool>(SettingsDialog().exec());
 }

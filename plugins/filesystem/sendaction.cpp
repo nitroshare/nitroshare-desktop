@@ -44,7 +44,7 @@ QString SendAction::name() const
     return "send";
 }
 
-bool SendAction::invoke(const QVariantMap &params)
+QVariant SendAction::invoke(const QVariantMap &params)
 {
     // Attempt to retrieve the device identified by the given name
     QString deviceName = params.value("device").toString();

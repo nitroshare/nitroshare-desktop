@@ -48,7 +48,7 @@ public:
 
 public slots:
 
-    virtual bool invoke(const QVariantMap &params = QVariantMap());
+    virtual QVariant invoke(const QVariantMap &params = QVariantMap());
 
 private:
 
