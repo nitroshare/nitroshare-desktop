@@ -1,6 +1,10 @@
 configure_file(deviceui.json.in "${CMAKE_CURRENT_BINARY_DIR}/deviceui.json")
 
 set(SRC
+    browseaction.h
+    browseaction.cpp
+    devicedialog.h
+    devicedialog.cpp
     deviceuiplugin.h
     deviceuiplugin.cpp
 )

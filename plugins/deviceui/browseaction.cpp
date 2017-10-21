@@ -22,26 +22,24 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef DEVICEUIPLUGIN_H
-#define DEVICEUIPLUGIN_H
+#include "browseaction.h"
+#include "devicedialog.h"
 
-#include <nitroshare/iplugin.h>
-
-class BrowseAction;
-
-class Q_DECL_EXPORT DeviceUiPlugin : public IPlugin
+BrowseAction::BrowseAction(Application *application)
+    : mApplication(application)
 {
-    Q_OBJECT
-    Q_PLUGIN_METADATA(IID Plugin_iid FILE "deviceui.json")
+}
 
-public:
+QString BrowseAction::name() const
+{
+    return "browse";
+}
 
-    virtual void initialize(Application *application);
-    virtual void cleanup(Application *application);
-
-private:
-
-    BrowseAction *mBrowseAction;
-};
-
-#endif // DEVICEUIPLUGIN_H
+QVariant BrowseAction::invoke(const QVariantMap &)
+{
+    DeviceDialog dialog(mApplication);
+    if (dialog.exec() == QDialog::Accepted) {
+        return dialog.deviceName();
+    }
+    return false;
+}

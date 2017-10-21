@@ -22,14 +22,20 @@
  * IN THE SOFTWARE.
  */
 
+#include <nitroshare/actionregistry.h>
+#include <nitroshare/application.h>
+
+#include "browseaction.h"
 #include "deviceuiplugin.h"
 
 void DeviceUiPlugin::initialize(Application *application)
 {
-    //...
+    mBrowseAction = new BrowseAction(application);
+    application->actionRegistry()->add(mBrowseAction);
 }
 
 void DeviceUiPlugin::cleanup(Application *application)
 {
-    //...
+    application->actionRegistry()->remove(mBrowseAction);
+    delete mBrowseAction;
 }

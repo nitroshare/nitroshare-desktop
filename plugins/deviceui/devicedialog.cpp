@@ -22,26 +22,13 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef DEVICEUIPLUGIN_H
-#define DEVICEUIPLUGIN_H
+#include "devicedialog.h"
 
-#include <nitroshare/iplugin.h>
-
-class BrowseAction;
-
-class Q_DECL_EXPORT DeviceUiPlugin : public IPlugin
+DeviceDialog::DeviceDialog(Application *application)
 {
-    Q_OBJECT
-    Q_PLUGIN_METADATA(IID Plugin_iid FILE "deviceui.json")
+}
 
-public:
-
-    virtual void initialize(Application *application);
-    virtual void cleanup(Application *application);
-
-private:
-
-    BrowseAction *mBrowseAction;
-};
-
-#endif // DEVICEUIPLUGIN_H
+QString DeviceDialog::deviceName() const
+{
+    return mDeviceName;
+}

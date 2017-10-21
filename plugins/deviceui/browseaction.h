@@ -22,26 +22,30 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef DEVICEUIPLUGIN_H
-#define DEVICEUIPLUGIN_H
+#ifndef BROWSEACTION_H
+#define BROWSEACTION_H
 
-#include <nitroshare/iplugin.h>
+#include <nitroshare/action.h>
 
-class BrowseAction;
+class Application;
 
-class Q_DECL_EXPORT DeviceUiPlugin : public IPlugin
+class BrowseAction : public Action
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID Plugin_iid FILE "deviceui.json")
 
 public:
 
-    virtual void initialize(Application *application);
-    virtual void cleanup(Application *application);
+    explicit BrowseAction(Application *application);
+
+    virtual QString name() const;
+
+public slots:
+
+    virtual QVariant invoke(const QVariantMap &params = QVariantMap());
 
 private:
 
-    BrowseAction *mBrowseAction;
+    Application *mApplication;
 };
 
-#endif // DEVICEUIPLUGIN_H
+#endif // BROWSEACTION_H
