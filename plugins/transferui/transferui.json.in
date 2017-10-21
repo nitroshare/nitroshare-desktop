@@ -1,0 +1,10 @@
+{
+    "Name": "transferui",
+    "Title": "Transfer UI",
+    "Vendor": "Nathan Osman",
+    "Version": "${VERSION}",
+    "Description": "User interface for viewing transfers",
+    "Dependencies": [
+        "ui"
+    ]
+}

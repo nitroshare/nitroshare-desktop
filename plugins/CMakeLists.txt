@@ -7,6 +7,7 @@ if(Qt5Widgets_FOUND)
     add_subdirectory(filesystemui)
     add_subdirectory(loggerui)
     add_subdirectory(settingsui)
+    add_subdirectory(transferui)
     add_subdirectory(tray)
 endif()
 
