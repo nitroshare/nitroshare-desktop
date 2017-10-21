@@ -23,8 +23,9 @@
  */
 
 #include <QFont>
-#include <QVBoxLayout>
+#include <QPushButton>
 #include <QTextEdit>
+#include <QVBoxLayout>
 
 #include <nitroshare/application.h>
 #include <nitroshare/logger.h>
@@ -32,6 +33,7 @@
 #include "logdialog.h"
 
 // TODO: this was copied from StderrWriter
+// maybe it should be moved somewhere common
 
 QMap<Logger::MessageType, QString> MessageTypeMap = {
     { Logger::Debug, "d" },
@@ -63,8 +65,15 @@ LogDialog::LogDialog(Application *application)
         );
     });
 
-    // Create the layout and add the text edit
+    // Create the button for clearing the edit
+    QPushButton *pushButton = new QPushButton(tr("Clear"));
+    connect(pushButton, &QPushButton::clicked, [textEdit]() {
+        textEdit->clear();
+    });
+
+    // Create the layout and add the widgets
     QVBoxLayout *vboxLayout = new QVBoxLayout;
     vboxLayout->addWidget(textEdit);
+    vboxLayout->addWidget(pushButton);
     setLayout(vboxLayout);
 }
