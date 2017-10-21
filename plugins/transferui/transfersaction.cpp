@@ -42,4 +42,5 @@ QString TransfersAction::title() const
 QVariant TransfersAction::invoke(const QVariantMap &)
 {
     mTransferWindow.show();
+    return true;
 }
