@@ -1,0 +1,10 @@
+{
+    "Name": "loggerui",
+    "Title": "Log Viewer",
+    "Vendor": "Nathan Osman",
+    "Version": "${VERSION}",
+    "Description": "View log messages",
+    "Dependencies": [
+        "ui"
+    ]
+}

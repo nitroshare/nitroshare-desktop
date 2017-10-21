@@ -3,6 +3,7 @@ add_subdirectory(filesystem)
 add_subdirectory(lan)
 
 if(Qt5Widgets_FOUND)
+    add_subdirectory(loggerui)
     add_subdirectory(settingsui)
     add_subdirectory(tray)
 endif()
