@@ -22,20 +22,35 @@
  * IN THE SOFTWARE.
  */
 
-#include <nitroshare/actionregistry.h>
-#include <nitroshare/application.h>
+#ifndef MANAGEPLUGINSACTION_H
+#define MANAGEPLUGINSACTION_H
 
-#include "managepluginsaction.h"
-#include "pluginuiplugin.h"
+#include <nitroshare/action.h>
 
-void PluginUiPlugin::initialize(Application *application)
+class Application;
+
+class ManagePluginsAction : public Action
 {
-    mManagePluginsAction = new ManagePluginsAction(application);
-    application->actionRegistry()->add(mManagePluginsAction);
-}
+    Q_OBJECT
+    Q_PROPERTY(bool ui READ ui)
+    Q_PROPERTY(QString title READ title)
 
-void PluginUiPlugin::cleanup(Application *application)
-{
-    application->actionRegistry()->remove(mManagePluginsAction);
-    delete mManagePluginsAction;
-}
+public:
+
+    explicit ManagePluginsAction(Application *application);
+
+    virtual QString name() const;
+
+    bool ui() const;
+    QString title() const;
+
+public slots:
+
+    virtual QVariant invoke(const QVariantMap &params = QVariantMap());
+
+private:
+
+    Application *mApplication;
+};
+
+#endif // MANAGEPLUGINSACTION_H

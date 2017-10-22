@@ -1,6 +1,10 @@
 configure_file(pluginui.json.in "${CMAKE_CURRENT_BINARY_DIR}/pluginui.json")
 
 set(SRC
+    managepluginsaction.h
+    managepluginsaction.cpp
+    plugindialog.h
+    plugindialog.cpp
     pluginuiplugin.h
     pluginuiplugin.cpp
 )

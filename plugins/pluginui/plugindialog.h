@@ -22,20 +22,20 @@
  * IN THE SOFTWARE.
  */
 
-#include <nitroshare/actionregistry.h>
-#include <nitroshare/application.h>
+#ifndef PLUGINDIALOG_H
+#define PLUGINDIALOG_H
 
-#include "managepluginsaction.h"
-#include "pluginuiplugin.h"
+#include <QDialog>
 
-void PluginUiPlugin::initialize(Application *application)
+class Application;
+
+class PluginDialog : public QDialog
 {
-    mManagePluginsAction = new ManagePluginsAction(application);
-    application->actionRegistry()->add(mManagePluginsAction);
-}
+    Q_OBJECT
 
-void PluginUiPlugin::cleanup(Application *application)
-{
-    application->actionRegistry()->remove(mManagePluginsAction);
-    delete mManagePluginsAction;
-}
+public:
+
+    explicit PluginDialog(Application *application);
+};
+
+#endif // PLUGINDIALOG_H

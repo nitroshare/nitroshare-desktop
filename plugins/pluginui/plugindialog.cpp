@@ -22,20 +22,18 @@
  * IN THE SOFTWARE.
  */
 
-#include <nitroshare/actionregistry.h>
-#include <nitroshare/application.h>
+#include <QTableView>
+#include <QVBoxLayout>
 
-#include "managepluginsaction.h"
-#include "pluginuiplugin.h"
+#include "plugindialog.h"
 
-void PluginUiPlugin::initialize(Application *application)
+PluginDialog::PluginDialog(Application *)
 {
-    mManagePluginsAction = new ManagePluginsAction(application);
-    application->actionRegistry()->add(mManagePluginsAction);
-}
+    setWindowTitle(tr("Plugins"));
 
-void PluginUiPlugin::cleanup(Application *application)
-{
-    application->actionRegistry()->remove(mManagePluginsAction);
-    delete mManagePluginsAction;
+    QTableView *tableView = new QTableView;
+
+    QVBoxLayout *vboxLayout = new QVBoxLayout;
+    vboxLayout->addWidget(tableView);
+    setLayout(vboxLayout);
 }

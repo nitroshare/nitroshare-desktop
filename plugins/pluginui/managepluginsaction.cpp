@@ -22,20 +22,30 @@
  * IN THE SOFTWARE.
  */
 
-#include <nitroshare/actionregistry.h>
-#include <nitroshare/application.h>
-
 #include "managepluginsaction.h"
-#include "pluginuiplugin.h"
+#include "plugindialog.h"
 
-void PluginUiPlugin::initialize(Application *application)
+ManagePluginsAction::ManagePluginsAction(Application *application)
+    : mApplication(application)
 {
-    mManagePluginsAction = new ManagePluginsAction(application);
-    application->actionRegistry()->add(mManagePluginsAction);
 }
 
-void PluginUiPlugin::cleanup(Application *application)
+QString ManagePluginsAction::name() const
 {
-    application->actionRegistry()->remove(mManagePluginsAction);
-    delete mManagePluginsAction;
+    return "manageplugins";
+}
+
+bool ManagePluginsAction::ui() const
+{
+    return true;
+}
+
+QString ManagePluginsAction::title() const
+{
+    return tr("Manage Plugins...");
+}
+
+QVariant ManagePluginsAction::invoke(const QVariantMap &)
+{
+    return PluginDialog(mApplication).exec() == QDialog::Accepted;
 }
