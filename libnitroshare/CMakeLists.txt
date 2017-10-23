@@ -22,6 +22,7 @@ set(SRC
     src/transfer/transfer.cpp
     src/transfer/transfermodel.cpp
     src/util/logger.cpp
+    src/util/message.cpp
     src/util/settings.cpp
     src/util/signalnotifier.cpp
     src/util/stderrwriter.cpp
