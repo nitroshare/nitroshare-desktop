@@ -46,7 +46,7 @@ public:
     void emitChangeSignal(Plugin *plugin);
     bool loadPlugin(Plugin *plugin);
     void unloadPlugin(Plugin *plugin);
-    void initializePlugin(Plugin *plugin);
+    bool initializePlugin(Plugin *plugin);
     void cleanupPlugin(Plugin *plugin);
 
     PluginModel *const q;

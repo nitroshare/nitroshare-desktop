@@ -74,13 +74,18 @@ void PluginModelPrivate::unloadPlugin(Plugin *plugin)
     emitChangeSignal(plugin);
 }
 
-void PluginModelPrivate::initializePlugin(Plugin *plugin)
+bool PluginModelPrivate::initializePlugin(Plugin *plugin)
 {
     foreach (const QString &name, plugin->dependencies()) {
-        initializePlugin(pluginHash.value(name));
+        if (!initializePlugin(pluginHash.value(name))) {
+            return false;
+        }
     }
-    plugin->initialize();
+    if (!plugin->initialize()) {
+        return false;
+    }
     emitChangeSignal(plugin);
+    return true;
 }
 
 void PluginModelPrivate::cleanupPlugin(Plugin *plugin)
@@ -156,8 +161,7 @@ bool PluginModel::initializePlugin(const QString &name)
     if (!plugin) {
         return false;
     }
-    d->initializePlugin(plugin);
-    return true;
+    return d->initializePlugin(plugin);
 }
 
 bool PluginModel::cleanupPlugin(const QString &name)

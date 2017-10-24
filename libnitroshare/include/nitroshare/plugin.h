@@ -123,11 +123,11 @@ public:
 
     /**
      * @brief Initialize the plugin
+     * @return true if the plugin was initialized
      *
-     * This method has no effect if the plugin was already initialized or was
-     * not first loaded.
+     * This method has no effect if the plugin was already initialized.
      */
-    void initialize();
+    bool initialize();
 
     /**
      * @brief Cleanup the plugin

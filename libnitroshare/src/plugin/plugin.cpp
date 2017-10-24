@@ -120,12 +120,16 @@ void Plugin::unload()
     }
 }
 
-void Plugin::initialize()
+bool Plugin::initialize()
 {
-    if (d->loader.isLoaded() && !d->initialized) {
+    if (!d->initialized) {
+        if (!d->loader.isLoaded()) {
+            return false;
+        }
         d->iplugin->initialize(d->application);
         d->initialized = true;
     }
+    return true;
 }
 
 void Plugin::cleanup()
