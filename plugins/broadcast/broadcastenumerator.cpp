@@ -38,7 +38,7 @@
 
 #include "broadcastenumerator.h"
 
-const QString LoggerTag = "broadcast";
+const QString MessageTag = "broadcast";
 
 // Time (in MS) between broadcast packets
 const QString BroadcastInterval = "BroadcastInterval";
@@ -169,7 +169,7 @@ void BroadcastEnumerator::onSettingsChanged(const QStringList &keys)
                 mApplication->settings()->value(BroadcastPort).toInt())) {
             mApplication->logger()->log(new Message(
                 Message::Error,
-                LoggerTag,
+                MessageTag,
                 mSocket.errorString()
             ));
         }

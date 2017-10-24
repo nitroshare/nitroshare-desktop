@@ -31,7 +31,7 @@
 
 #include "apiserver.h"
 
-const QString LoggerTag = "api";
+const QString MessageTag = "api";
 
 // True to enable the HTTP API
 const QString ApiEnabled = "ApiEnabled";
@@ -61,7 +61,7 @@ void ApiServer::start()
     if (!mServer.listen(QHostAddress::LocalHost)) {
         mApplication->logger()->log(new Message(
             Message::Error,
-            LoggerTag,
+            MessageTag,
             "unable to find a port for the local API"
         ));
         return;
@@ -70,7 +70,7 @@ void ApiServer::start()
     // Log the port that we have bound to
     mApplication->logger()->log(new Message(
         Message::Info,
-        LoggerTag,
+        MessageTag,
         QString("listening on port %1").arg(mServer.serverPort())
     ));
 

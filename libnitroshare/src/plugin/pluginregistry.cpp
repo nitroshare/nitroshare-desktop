@@ -33,7 +33,7 @@
 
 #include "pluginregistry_p.h"
 
-const QString LoggerTag = "pluginregistry";
+const QString MessageTag = "pluginregistry";
 
 PluginRegistryPrivate::PluginRegistryPrivate(PluginRegistry *parent, Application *application)
     : QObject(parent),
@@ -65,7 +65,7 @@ void PluginRegistryPrivate::unloadPlugin(int index)
     // Log that a plugin is being unloaded
     application->logger()->log(new Message(
         Message::Debug,
-        LoggerTag,
+        MessageTag,
         QString("unloading %1").arg(pluginName)
     ));
 
@@ -100,7 +100,7 @@ void PluginRegistry::loadPluginsFromDirectories(const QStringList &directories)
 {
     d->application->logger()->log(new Message(
         Message::Info,
-        LoggerTag,
+        MessageTag,
         QString("loading plugins from %1").arg(directories.join(", "))
     ));
 
@@ -138,7 +138,7 @@ void PluginRegistry::loadPluginsFromDirectories(const QStringList &directories)
             if (!missingDependencies) {
                 d->application->logger()->log(new Message(
                     Message::Debug,
-                    LoggerTag,
+                    MessageTag,
                     QString("initializing %1").arg(plugin->name())
                 ));
                 plugin->initialize();
@@ -163,7 +163,7 @@ void PluginRegistry::loadPluginsFromDirectories(const QStringList &directories)
         }
         d->application->logger()->log(new Message(
             Message::Error,
-            LoggerTag,
+            MessageTag,
             QString("cannot load %1 - missing dependencies: %2")
                 .arg(plugin->name())
                 .arg(missingDependencies.join(", "))
@@ -175,7 +175,7 @@ void PluginRegistry::loadPluginsFromDirectories(const QStringList &directories)
 
     d->application->logger()->log(new Message(
         Message::Info,
-        LoggerTag,
+        MessageTag,
         QString("loaded %1 plugin(s)").arg(numPluginsInitialized)
     ));
 }

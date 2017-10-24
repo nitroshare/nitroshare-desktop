@@ -33,7 +33,7 @@
 
 #include "mdnsenumerator.h"
 
-const QString LoggerTag = "mdns";
+const QString MessageTag = "mdns";
 
 const QByteArray ServiceType = "_nitroshare._tcp.local.";
 
@@ -60,7 +60,7 @@ MdnsEnumerator::MdnsEnumerator(Application *application)
 void MdnsEnumerator::onHostnameChanged(const QByteArray &hostname) {
     mApplication->logger()->log(new Message(
         Message::Info,
-        LoggerTag,
+        MessageTag,
         QString("hostname set to %1").arg(QString(hostname))
     ));
 }
@@ -69,7 +69,7 @@ void MdnsEnumerator::onServiceUpdated(const QMdnsEngine::Service &service)
 {
     mApplication->logger()->log(new Message(
         Message::Debug,
-        LoggerTag,
+        MessageTag,
         QString("%1 updated").arg(QString(service.name()))
     ));
 
@@ -96,7 +96,7 @@ void MdnsEnumerator::onServiceRemoved(const QMdnsEngine::Service &service)
 {
     mApplication->logger()->log(new Message(
         Message::Debug,
-        LoggerTag,
+        MessageTag,
         QString("%1 removed").arg(QString(service.name()))
     ));
 

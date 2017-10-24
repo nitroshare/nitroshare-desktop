@@ -32,7 +32,7 @@
 
 #include "application_p.h"
 
-const QString LoggerTag = "application";
+const QString MessageTag = "application";
 
 const QString PluginDir = "plugin-dir";
 const QString PluginBlacklist = "plugin-blacklist";
