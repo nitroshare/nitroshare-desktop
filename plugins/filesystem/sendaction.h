@@ -48,7 +48,7 @@ public:
 
     virtual QString name() const;
 
-public Q_SLOTS:
+public slots:
 
     virtual QVariant invoke(const QVariantMap &params);
 

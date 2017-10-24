@@ -26,6 +26,7 @@
 
 #include <nitroshare/application.h>
 #include <nitroshare/logger.h>
+#include <nitroshare/message.h>
 #include <nitroshare/settings.h>
 
 #include <qmdnsengine/resolver.h>
@@ -57,20 +58,20 @@ MdnsEnumerator::MdnsEnumerator(Application *application)
 }
 
 void MdnsEnumerator::onHostnameChanged(const QByteArray &hostname) {
-    mApplication->logger()->log(
-        Logger::Info,
+    mApplication->logger()->log(new Message(
+        Message::Info,
         LoggerTag,
         QString("hostname set to %1").arg(QString(hostname))
-    );
+    ));
 }
 
 void MdnsEnumerator::onServiceUpdated(const QMdnsEngine::Service &service)
 {
-    mApplication->logger()->log(
-        Logger::Debug,
+    mApplication->logger()->log(new Message(
+        Message::Debug,
         LoggerTag,
         QString("%1 updated").arg(QString(service.name()))
-    );
+    ));
 
     // Send an update for the attributes currently known
     QString uuid = findUuid(service);
@@ -93,11 +94,11 @@ void MdnsEnumerator::onServiceUpdated(const QMdnsEngine::Service &service)
 
 void MdnsEnumerator::onServiceRemoved(const QMdnsEngine::Service &service)
 {
-    mApplication->logger()->log(
-        Logger::Debug,
+    mApplication->logger()->log(new Message(
+        Message::Debug,
         LoggerTag,
         QString("%1 removed").arg(QString(service.name()))
-    );
+    ));
 
     emit deviceRemoved(findUuid(service));
 }

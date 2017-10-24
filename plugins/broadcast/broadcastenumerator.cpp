@@ -33,6 +33,7 @@
 
 #include <nitroshare/application.h>
 #include <nitroshare/logger.h>
+#include <nitroshare/message.h>
 #include <nitroshare/settings.h>
 
 #include "broadcastenumerator.h"
@@ -166,7 +167,11 @@ void BroadcastEnumerator::onSettingsChanged(const QStringList &keys)
         mSocket.close();
         if (!mSocket.bind(QHostAddress::Any,
                 mApplication->settings()->value(BroadcastPort).toInt())) {
-            mApplication->logger()->log(Logger::Error, LoggerTag, mSocket.errorString());
+            mApplication->logger()->log(new Message(
+                Message::Error,
+                LoggerTag,
+                mSocket.errorString()
+            ));
         }
     }
 }

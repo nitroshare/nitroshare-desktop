@@ -24,56 +24,61 @@
 
 #include <QFont>
 #include <QPushButton>
-#include <QTextEdit>
 #include <QVBoxLayout>
 
 #include <nitroshare/application.h>
 #include <nitroshare/logger.h>
+#include <nitroshare/message.h>
 
 #include "logdialog.h"
 
 // TODO: this was copied from StderrWriter
 // maybe it should be moved somewhere common
 
-QMap<Logger::MessageType, QString> MessageTypeMap = {
-    { Logger::Debug, "d" },
-    { Logger::Info, "i" },
-    { Logger::Warning, "w" },
-    { Logger::Error, "e" }
+QMap<Message::Type, QString> MessageTypeMap = {
+    { Message::Debug, "d" },
+    { Message::Info, "i" },
+    { Message::Warning, "w" },
+    { Message::Error, "e" }
 };
 
 LogDialog::LogDialog(Application *application)
+    : mTextEdit(new QTextEdit)
 {
     setWindowTitle(tr("View Log"));
     resize(640, 480);
 
-    // Create the text edit
-    QTextEdit *textEdit = new QTextEdit;
-    textEdit->setReadOnly(true);
+    // Prepare the text edit
+    mTextEdit->setReadOnly(true);
 
     // Select a monospace font
-    QFont font = textEdit->font();
+    QFont font = mTextEdit->font();
     font.setFamily("");
     font.setStyleHint(QFont::Monospace);
-    textEdit->setFont(font);
+    mTextEdit->setFont(font);
 
     // Log all messages to the dialog
-    connect(application->logger(), &Logger::messageLogged, this,
-            [textEdit](Logger::MessageType messageType, const QString &tag, const QString &message) {
-        textEdit->append(
-            QString("[%1:%2] %3").arg(MessageTypeMap.value(messageType)).arg(tag).arg(message)
-        );
-    });
+    connect(application->logger(), &Logger::messageLogged, this, &LogDialog::onMessageLogged);
 
     // Create the button for clearing the edit
     QPushButton *pushButton = new QPushButton(tr("Clear"));
-    connect(pushButton, &QPushButton::clicked, [textEdit]() {
-        textEdit->clear();
+    connect(pushButton, &QPushButton::clicked, [this]() {
+        mTextEdit->clear();
     });
 
     // Create the layout and add the widgets
     QVBoxLayout *vboxLayout = new QVBoxLayout;
-    vboxLayout->addWidget(textEdit);
+    vboxLayout->addWidget(mTextEdit);
     vboxLayout->addWidget(pushButton);
     setLayout(vboxLayout);
+}
+
+void LogDialog::onMessageLogged(const Message *message)
+{
+    mTextEdit->append(
+        QString("[%1:%2] %3")
+            .arg(MessageTypeMap.value(message->type()))
+            .arg(message->tag())
+            .arg(message->body())
+    );
 }

@@ -26,8 +26,10 @@
 #define LOGDIALOG_H
 
 #include <QDialog>
+#include <QTextEdit>
 
 class Application;
+class Message;
 
 class LogDialog : public QDialog
 {
@@ -36,6 +38,14 @@ class LogDialog : public QDialog
 public:
 
     explicit LogDialog(Application *application);
+
+private slots:
+
+    void onMessageLogged(const Message *message);
+
+private:
+
+    QTextEdit *mTextEdit;
 };
 
 #endif // LOGDIALOG_H

@@ -26,6 +26,7 @@
 
 #include <nitroshare/application.h>
 #include <nitroshare/logger.h>
+#include <nitroshare/message.h>
 #include <nitroshare/settings.h>
 
 #include "apiserver.h"
@@ -58,12 +59,20 @@ void ApiServer::start()
 {
     // Bind to a local port
     if (!mServer.listen(QHostAddress::LocalHost)) {
-        mApplication->logger()->log(Logger::Error, LoggerTag, "unable to find a port for the local API");
+        mApplication->logger()->log(new Message(
+            Message::Error,
+            LoggerTag,
+            "unable to find a port for the local API"
+        ));
         return;
     }
 
     // Log the port that we have bound to
-    mApplication->logger()->log(Logger::Info, LoggerTag, QString("listening on port %1").arg(mServer.serverPort()));
+    mApplication->logger()->log(new Message(
+        Message::Info,
+        LoggerTag,
+        QString("listening on port %1").arg(mServer.serverPort())
+    ));
 
     // Set the port in the local file
     mAuth.setData({{ "port", mServer.serverPort() }});

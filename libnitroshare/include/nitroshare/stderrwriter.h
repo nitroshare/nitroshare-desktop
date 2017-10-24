@@ -28,7 +28,8 @@
 #include <QObject>
 
 #include <nitroshare/config.h>
-#include <nitroshare/logger.h>
+
+class Message;
 
 class NITROSHARE_EXPORT StderrWriterPrivate;
 
@@ -50,12 +51,10 @@ public:
 public Q_SLOTS:
 
     /**
-     * @brief Write an informational message
-     * @param messageType type of message
-     * @param tag classifier for the message
-     * @param message body of the message
+     * @brief Write a message
+     * @param message pointer to Message
      */
-    void writeMessage(Logger::MessageType messageType, const QString &tag, const QString &message);
+    void writeMessage(const Message *message);
 
 private:
 

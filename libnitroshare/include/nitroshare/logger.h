@@ -25,33 +25,27 @@
 #ifndef LIBNITROSHARE_LOGGER_H
 #define LIBNITROSHARE_LOGGER_H
 
+#include <QList>
 #include <QObject>
 
 #include <nitroshare/config.h>
 
+class Message;
+
+class NITROSHARE_EXPORT LoggerPrivate;
+
 /**
  * @brief Manage status and error message from the application and its plugins
  *
- * This class models the fan-out messaging pattern. All info, warning, and
- * error messages are sent to this class for dispatch, allowing plugins to
- * react to the messages as they are generated.
+ * This class models the fan-out messaging pattern. All messages are sent to
+ * this class for dispatch, allowing plugins to react to the messages as they
+ * are generated.
  */
 class NITROSHARE_EXPORT Logger : public QObject
 {
     Q_OBJECT
-    Q_ENUMS(MessageType)
 
 public:
-
-    /**
-     * @brief Type of message
-     */
-    enum MessageType {
-        Debug,
-        Info,
-        Warning,
-        Error
-    };
 
     /**
      * @brief Create a new logger
@@ -59,25 +53,33 @@ public:
      */
     explicit Logger(QObject *parent = nullptr);
 
+    /**
+     * @brief Retrieve all messages that have been logged
+     * @return list of messages
+     */
+    QList<Message*> messages() const;
+
 public Q_SLOTS:
 
     /**
      * @brief Log the specified message
-     * @param messageType type of message
-     * @param tag classifier for the message
-     * @param message body of the message
+     * @param message pointer to Message
+     *
+     * This class will assume ownership of the message.
      */
-    void log(MessageType messageType, const QString &tag, const QString &message);
+    void log(Message *message);
 
 Q_SIGNALS:
 
     /**
-     * @brief Indicate that a status or informational message was logged
-     * @param messageType type of message
-     * @param tag classifier for the message
-     * @param message body of the message
+     * @brief Indicate that a message was logged
+     * @param message pointer to Message
      */
-    void messageLogged(MessageType messageType, const QString &tag, const QString &message);
+    void messageLogged(const Message *message);
+
+private:
+
+    LoggerPrivate *const d;
 };
 
 #endif // LIBNITROSHARE_LOGGER_H

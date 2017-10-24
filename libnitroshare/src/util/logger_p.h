@@ -22,41 +22,24 @@
  * IN THE SOFTWARE.
  */
 
-#include <nitroshare/logger.h>
-#include <nitroshare/message.h>
+#ifndef LIBNITROSHARE_LOGGER_P_H
+#define LIBNITROSHARE_LOGGER_P_H
 
-#include "logger_p.h"
+#include <QList>
+#include <QObject>
 
-LoggerPrivate::LoggerPrivate(QObject *parent)
-    : QObject(parent)
+class Message;
+
+class LoggerPrivate : public QObject
 {
-}
+    Q_OBJECT
 
-LoggerPrivate::~LoggerPrivate()
-{
-    qDeleteAll(messages);
-}
+public:
 
-Logger::Logger(QObject *parent)
-    : QObject(parent),
-      d(new LoggerPrivate(this))
-{
-}
+    explicit LoggerPrivate(QObject *parent);
+    virtual ~LoggerPrivate();
 
-QList<Message*> Logger::messages() const
-{
-    return d->messages;
-}
+    QList <Message*> messages;
+};
 
-void Logger::log(Message *message)
-{
-    d->messages.append(message);
-    emit messageLogged(message);
-
-    // TODO: make this into a setting?
-
-    // Prevent too many messages from accumulating
-    if (d->messages.count() > 100) {
-        delete d->messages.takeFirst();
-    }
-}
+#endif // LIBNITROSHARE_LOGGER_P_H

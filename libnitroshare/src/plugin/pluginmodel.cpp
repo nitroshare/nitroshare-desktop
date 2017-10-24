@@ -24,6 +24,7 @@
 
 #include <nitroshare/application.h>
 #include <nitroshare/logger.h>
+#include <nitroshare/message.h>
 #include <nitroshare/plugin.h>
 #include <nitroshare/pluginmodel.h>
 
@@ -62,11 +63,11 @@ Plugin *PluginModel::findPlugin(const QString &name)
 
 void PluginModel::loadPluginsFromDirectories(const QStringList &directories)
 {
-    d->application->logger()->log(
-        Logger::Info,
+    d->application->logger()->log(new Message(
+        Message::Info,
         LoggerTag,
         QString("loading plugins from %1").arg(directories.join(", "))
-    );
+    ));
 
     //...
 }

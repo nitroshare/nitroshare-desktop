@@ -27,6 +27,7 @@
 
 #include <nitroshare/application.h>
 #include <nitroshare/logger.h>
+#include <nitroshare/message.h>
 #include <nitroshare/signalnotifier.h>
 #include <nitroshare/stderrwriter.h>
 
