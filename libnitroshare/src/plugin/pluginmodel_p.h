@@ -43,6 +43,7 @@ public:
     virtual ~PluginModelPrivate();
 
     Plugin *findPlugin(const QString &name);
+    void keyChanged(const QString &name);
     bool loadPlugin(Plugin *plugin);
     void unloadPlugin(Plugin *plugin);
     void initializePlugin(Plugin *plugin);

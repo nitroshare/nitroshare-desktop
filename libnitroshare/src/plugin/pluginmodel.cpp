@@ -22,6 +22,8 @@
  * IN THE SOFTWARE.
  */
 
+#include <iterator>
+
 #include <QDir>
 #include <QLibrary>
 
@@ -66,6 +68,12 @@ Plugin *PluginModelPrivate::findPlugin(const QString &name)
     return nullptr;
 }
 
+void PluginModelPrivate::keyChanged(const QString &name)
+{
+    int index = std::distance(plugins.constBegin(), plugins.constFind(name));
+    emit q->dataChanged(q->index(index), q->index(index));
+}
+
 bool PluginModelPrivate::loadPlugin(Plugin *plugin)
 {
     foreach (const QString &name, plugin->dependencies()) {
@@ -77,7 +85,7 @@ bool PluginModelPrivate::loadPlugin(Plugin *plugin)
     if (!plugin->load()) {
         return false;
     }
-    // TODO: data changed signal
+    keyChanged(plugin->name());
     return true;
 }
 
@@ -87,7 +95,7 @@ void PluginModelPrivate::unloadPlugin(Plugin *plugin)
         unloadPlugin(childPlugin);
     }
     plugin->unload();
-    // TODO: data changed signal
+    keyChanged(plugin->name());
 }
 
 void PluginModelPrivate::initializePlugin(Plugin *plugin)
@@ -96,7 +104,7 @@ void PluginModelPrivate::initializePlugin(Plugin *plugin)
         initializePlugin(plugins.value(name));
     }
     plugin->initialize();
-    // TODO: data changed signal
+    keyChanged(plugin->name());
 }
 
 void PluginModelPrivate::cleanupPlugin(Plugin *plugin)
@@ -105,7 +113,7 @@ void PluginModelPrivate::cleanupPlugin(Plugin *plugin)
         cleanupPlugin(childPlugin);
     }
     plugin->cleanup();
-    // TODO: data changed signal
+    keyChanged(plugin->name());
 }
 
 void PluginModel::loadPluginsFromDirectories(const QStringList &directories)
