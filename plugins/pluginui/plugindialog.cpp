@@ -25,13 +25,17 @@
 #include <QTableView>
 #include <QVBoxLayout>
 
+#include <nitroshare/application.h>
+#include <nitroshare/pluginmodel.h>
+
 #include "plugindialog.h"
 
-PluginDialog::PluginDialog(Application *)
+PluginDialog::PluginDialog(Application *application)
 {
     setWindowTitle(tr("Plugins"));
 
     QTableView *tableView = new QTableView;
+    tableView->setModel(application->pluginModel());
 
     QVBoxLayout *vboxLayout = new QVBoxLayout;
     vboxLayout->addWidget(tableView);

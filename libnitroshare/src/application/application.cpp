@@ -43,7 +43,7 @@ const QString Application::DeviceName = "DeviceName";
 ApplicationPrivate::ApplicationPrivate(Application *application)
     : QObject(application),
       q(application),
-      pluginRegistry(application),
+      pluginModel(application),
       settings(&baseSettings),
       uiEnabled(false)
 {
@@ -65,7 +65,7 @@ void Application::addCliOptions(QCommandLineParser *parser)
 
 void Application::processCliOptions(QCommandLineParser *parser)
 {
-    pluginRegistry()->loadPluginsFromDirectories(parser->values(PluginDir));
+    pluginModel()->loadPluginsFromDirectories(parser->values(PluginDir));
 }
 
 QString Application::deviceUuid() const
@@ -103,9 +103,9 @@ Logger *Application::logger() const
     return &d->logger;
 }
 
-PluginRegistry *Application::pluginRegistry() const
+PluginModel *Application::pluginModel() const
 {
-    return &d->pluginRegistry;
+    return &d->pluginModel;
 }
 
 Settings *Application::settings() const
