@@ -25,9 +25,12 @@
 #ifndef LIBNITROSHARE_PLUGIN_P_H
 #define LIBNITROSHARE_PLUGIN_P_H
 
+#include <QJsonArray>
 #include <QJsonObject>
+#include <QList>
 #include <QObject>
 #include <QPluginLoader>
+#include <QStringList>
 
 class Application;
 class IPlugin;
@@ -42,13 +45,18 @@ public:
     PluginPrivate(Plugin *plugin, Application *application, const QString &filename);
     virtual ~PluginPrivate();
 
+    QStringList arrayToStringList(const QJsonArray &array);
+
     Plugin *const q;
 
     Application *application;
     QPluginLoader loader;
     QJsonObject metadata;
+    QStringList dependencies;
     IPlugin *iplugin;
     bool initialized;
+
+    QList<Plugin*> children;
 };
 
 #endif // LIBNITROSHARE_PLUGIN_P_H

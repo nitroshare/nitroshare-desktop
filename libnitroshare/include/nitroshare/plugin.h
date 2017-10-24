@@ -25,6 +25,7 @@
 #ifndef LIBNITROSHARE_PLUGIN_H
 #define LIBNITROSHARE_PLUGIN_H
 
+#include <QList>
 #include <QObject>
 
 #include <nitroshare/config.h>
@@ -100,7 +101,7 @@ public:
     QString description() const;
 
     /**
-     * @brief Retrieve the plugins dependencies
+     * @brief Retrieve the plugin's dependencies
      */
     QStringList dependencies() const;
 
@@ -134,6 +135,23 @@ public:
      * This method has no effect if the plugin was not initialized.
      */
     void cleanup();
+
+    /**
+     * @brief Add the specified plugin as a child
+     * @param plugin child plugin
+     */
+    void addChild(Plugin *plugin);
+
+    /**
+     * @brief Remove the specified plugin as a child
+     * @param plugin child plugin
+     */
+    void removeChild(Plugin *plugin);
+
+    /**
+     * @brief Retrieve the list of child plugins
+     */
+    QList<Plugin*> children() const;
 
 private:
 

@@ -44,6 +44,15 @@ PluginPrivate::~PluginPrivate()
     q->unload();
 }
 
+QStringList PluginPrivate::arrayToStringList(const QJsonArray &array)
+{
+    QStringList list;
+    foreach (const QJsonValue &value, array) {
+        list.append(value.toString());
+    }
+    return list;
+}
+
 Plugin::Plugin(Application *application, const QString &filename, QObject *parent)
     : QObject(parent),
       d(new PluginPrivate(this, application, filename))
@@ -62,32 +71,32 @@ bool Plugin::isInitialized() const
 
 QString Plugin::name() const
 {
-    d->metadata.value("Name").toString();
+    return d->metadata.value("Name").toString();
 }
 
 QString Plugin::title() const
 {
-    d->metadata.value("Title").toString();
+    return d->metadata.value("Title").toString();
 }
 
 QString Plugin::vendor() const
 {
-    d->metadata.value("Vendor").toString();
+    return d->metadata.value("Vendor").toString();
 }
 
 QString Plugin::version() const
 {
-    d->metadata.value("Version").toString();
+    return d->metadata.value("Version").toString();
 }
 
 QString Plugin::description() const
 {
-    d->metadata.value("Description").toString();
+    return d->metadata.value("Description").toString();
 }
 
 QStringList Plugin::dependencies() const
 {
-    d->metadata.value("Dependencies").toString();
+    return d->dependencies;
 }
 
 bool Plugin::load()
@@ -97,6 +106,7 @@ bool Plugin::load()
             return false;
         }
         d->metadata = d->loader.metaData().value("MetaData").toObject();
+        d->dependencies = d->arrayToStringList(d->metadata.value("Dependencies").toArray());
         d->iplugin = qobject_cast<IPlugin*>(d->loader.instance());
     }
     return d->iplugin;
@@ -124,4 +134,19 @@ void Plugin::cleanup()
         d->iplugin->cleanup(d->application);
         d->initialized = false;
     }
+}
+
+void Plugin::addChild(Plugin *plugin)
+{
+    d->children.append(plugin);
+}
+
+void Plugin::removeChild(Plugin *plugin)
+{
+    d->children.removeOne(plugin);
+}
+
+QList<Plugin*> Plugin::children() const
+{
+    return d->children;
 }
