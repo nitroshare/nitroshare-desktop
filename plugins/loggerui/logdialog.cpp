@@ -57,7 +57,12 @@ LogDialog::LogDialog(Application *application)
     font.setStyleHint(QFont::Monospace);
     mTextEdit->setFont(font);
 
-    // Log all messages to the dialog
+    // Log existing messages
+    foreach (Message *message, application->logger()->messages()) {
+        onMessageLogged(message);
+    }
+
+    // Log all new messages
     connect(application->logger(), &Logger::messageLogged, this, &LogDialog::onMessageLogged);
 
     // Create the button for clearing the edit
