@@ -54,7 +54,8 @@ public:
         VersionRole,
         DescriptionRole,
         DependenciesRole,
-        InitializedRole,
+        IsLoadedRole,
+        IsInitializedRole
     };
 
     /**

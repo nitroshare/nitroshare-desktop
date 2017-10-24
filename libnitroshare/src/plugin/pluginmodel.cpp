@@ -22,8 +22,6 @@
  * IN THE SOFTWARE.
  */
 
-#include <iterator>
-
 #include <QDir>
 #include <QLibrary>
 
@@ -46,10 +44,10 @@ PluginModelPrivate::PluginModelPrivate(PluginModel *model, Application *applicat
 
 PluginModelPrivate::~PluginModelPrivate()
 {
-    while (plugins.count()) {
-        unloadPlugin(plugins.take(plugins.firstKey()));
+    while (pluginList.count()) {
+        cleanupPlugin(pluginList.last());
     }
-    qDeleteAll(plugins);
+    qDeleteAll(pluginList);
 }
 
 PluginModel::PluginModel(Application *application, QObject *parent)
@@ -58,26 +56,16 @@ PluginModel::PluginModel(Application *application, QObject *parent)
 {
 }
 
-Plugin *PluginModelPrivate::findPlugin(const QString &name)
+void PluginModelPrivate::emitChangeSignal(Plugin *plugin)
 {
-    foreach (Plugin *plugin, plugins) {
-        if (plugin->name() == name) {
-            return plugin;
-        }
-    }
-    return nullptr;
-}
-
-void PluginModelPrivate::keyChanged(const QString &name)
-{
-    int index = std::distance(plugins.constBegin(), plugins.constFind(name));
-    emit q->dataChanged(q->index(index), q->index(index));
+    QModelIndex index = q->index(pluginList.indexOf(plugin));
+    emit q->dataChanged(index, index);
 }
 
 bool PluginModelPrivate::loadPlugin(Plugin *plugin)
 {
     foreach (const QString &name, plugin->dependencies()) {
-        Plugin *dependentPlugin = plugins.value(name);
+        Plugin *dependentPlugin = pluginHash.value(name);
         if (!dependentPlugin || !loadPlugin(dependentPlugin)) {
             return false;
         }
@@ -85,7 +73,7 @@ bool PluginModelPrivate::loadPlugin(Plugin *plugin)
     if (!plugin->load()) {
         return false;
     }
-    keyChanged(plugin->name());
+    emitChangeSignal(plugin);
     return true;
 }
 
@@ -95,16 +83,16 @@ void PluginModelPrivate::unloadPlugin(Plugin *plugin)
         unloadPlugin(childPlugin);
     }
     plugin->unload();
-    keyChanged(plugin->name());
+    emitChangeSignal(plugin);
 }
 
 void PluginModelPrivate::initializePlugin(Plugin *plugin)
 {
     foreach (const QString &name, plugin->dependencies()) {
-        initializePlugin(plugins.value(name));
+        initializePlugin(pluginHash.value(name));
     }
     plugin->initialize();
-    keyChanged(plugin->name());
+    emitChangeSignal(plugin);
 }
 
 void PluginModelPrivate::cleanupPlugin(Plugin *plugin)
@@ -113,17 +101,40 @@ void PluginModelPrivate::cleanupPlugin(Plugin *plugin)
         cleanupPlugin(childPlugin);
     }
     plugin->cleanup();
-    keyChanged(plugin->name());
+    emitChangeSignal(plugin);
 }
 
 void PluginModel::loadPluginsFromDirectories(const QStringList &directories)
 {
-    // TODO
+    foreach (const QString &directory, directories) {
+        d->application->logger()->log(new Message(
+            Message::Info,
+            MessageTag,
+            QString("loading plugins from %1").arg(directory)
+        ));
+        QDir dir(directory);
+        foreach (QString filename, dir.entryList(QDir::Files)) {
+            filename = dir.absoluteFilePath(filename);
+            if (!QLibrary::isLibrary(filename)) {
+                continue;
+            }
+            Plugin *plugin = new Plugin(d->application, filename);
+            if (!plugin->load()) {
+                delete plugin;
+                continue;
+            }
+            int newIndex = d->pluginList.count();
+            beginInsertRows(QModelIndex(), newIndex, newIndex);
+            d->pluginList.append(plugin);
+            d->pluginHash.insert(plugin->name(), plugin);
+            endInsertRows();
+        }
+    }
 }
 
 bool PluginModel::loadPlugin(const QString &name)
 {
-    Plugin *plugin = d->plugins.value(name);
+    Plugin *plugin = d->pluginHash.value(name);
     if (!plugin) {
         return false;
     }
@@ -132,7 +143,7 @@ bool PluginModel::loadPlugin(const QString &name)
 
 bool PluginModel::unloadPlugin(const QString &name)
 {
-    Plugin *plugin = d->findPlugin(name);
+    Plugin *plugin = d->pluginHash.value(name);
     if (!plugin) {
         return false;
     }
@@ -142,7 +153,7 @@ bool PluginModel::unloadPlugin(const QString &name)
 
 bool PluginModel::initializePlugin(const QString &name)
 {
-    Plugin *plugin = d->findPlugin(name);
+    Plugin *plugin = d->pluginHash.value(name);
     if (!plugin) {
         return false;
     }
@@ -152,7 +163,7 @@ bool PluginModel::initializePlugin(const QString &name)
 
 bool PluginModel::cleanupPlugin(const QString &name)
 {
-    Plugin *plugin = d->findPlugin(name);
+    Plugin *plugin = d->pluginHash.value(name);
     if (!plugin) {
         return false;
     }
@@ -160,14 +171,36 @@ bool PluginModel::cleanupPlugin(const QString &name)
     return true;
 }
 
-int PluginModel::rowCount(const QModelIndex &parent) const
+int PluginModel::rowCount(const QModelIndex &) const
 {
-    return d->plugins.count();
+    return d->pluginList.count();
 }
 
 QVariant PluginModel::data(const QModelIndex &index, int role) const
 {
-    // TODO
+    // Ensure the index points to a valid row
+    if (!index.isValid() || index.row() < 0 || index.row() >= d->pluginList.count()) {
+        return QVariant();
+    }
+
+    Plugin *plugin = d->pluginList.at(index.row());
+
+    switch (role) {
+    case NameRole:
+        return plugin->name();
+    case TitleRole:
+        return plugin->title();
+    case VendorRole:
+        return plugin->vendor();
+    case VersionRole:
+        return plugin->version();
+    case DescriptionRole:
+        return plugin->dependencies();
+    case IsLoadedRole:
+        return plugin->isLoaded();
+    case IsInitializedRole:
+        return plugin->isInitialized();
+    }
 
     return QVariant();
 }
@@ -181,6 +214,7 @@ QHash<int, QByteArray> PluginModel::roleNames() const
         { VersionRole, "version" },
         { DescriptionRole, "description" },
         { DependenciesRole, "dependencies" },
-        { InitializedRole, "initialized" }
+        { IsLoadedRole, "isLoaded" },
+        { IsInitializedRole, "isInitialized" }
     };
 }

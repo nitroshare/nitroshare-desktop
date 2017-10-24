@@ -25,7 +25,8 @@
 #ifndef LIBNITROSHARE_PLUGINMODEL_P_H
 #define LIBNITROSHARE_PLUGINMODEL_P_H
 
-#include <QMap>
+#include <QHash>
+#include <QList>
 #include <QObject>
 
 #include <nitroshare/pluginmodel.h>
@@ -42,8 +43,7 @@ public:
     PluginModelPrivate(PluginModel *model, Application *application);
     virtual ~PluginModelPrivate();
 
-    Plugin *findPlugin(const QString &name);
-    void keyChanged(const QString &name);
+    void emitChangeSignal(Plugin *plugin);
     bool loadPlugin(Plugin *plugin);
     void unloadPlugin(Plugin *plugin);
     void initializePlugin(Plugin *plugin);
@@ -52,7 +52,8 @@ public:
     PluginModel *const q;
 
     Application *application;
-    QMap<QString, Plugin*> plugins;
+    QList<Plugin*> pluginList;
+    QHash<QString, Plugin*> pluginHash;
 };
 
 #endif // LIBNITROSHARE_PLUGINMODEL_P_H
