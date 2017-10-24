@@ -66,6 +66,11 @@ public:
     PluginModel(Application *application, QObject *parent = nullptr);
 
     /**
+     * @brief Clean up the plugin model
+     */
+    virtual ~PluginModel();
+
+    /**
      * @brief Add plugins to the blacklist
      * @param names plugin names
      */

@@ -44,9 +44,6 @@ PluginModelPrivate::PluginModelPrivate(PluginModel *model, Application *applicat
 
 PluginModelPrivate::~PluginModelPrivate()
 {
-    while (pluginList.count()) {
-        cleanupPlugin(pluginList.last());
-    }
     qDeleteAll(pluginList);
 }
 
@@ -79,14 +76,15 @@ bool PluginModelPrivate::initializePlugin(Plugin *plugin)
     if (pluginBlacklist.contains(plugin->name())) {
         return false;
     }
-    foreach (const QString &name, plugin->dependencies()) {
-        if (name == "ui") {
+    foreach (const QString &dependency, plugin->dependencies()) {
+        if (dependency == "ui") {
             continue;
         }
-        Plugin *dependentPlugin = pluginHash.value(name);
+        Plugin *dependentPlugin = pluginHash.value(dependency);
         if (!dependentPlugin || !initializePlugin(dependentPlugin)) {
             return false;
         }
+        dependentPlugin->addChild(plugin);
     }
     if (!plugin->initialize()) {
         return false;
@@ -99,6 +97,7 @@ void PluginModelPrivate::cleanupPlugin(Plugin *plugin)
 {
     foreach (Plugin *childPlugin, plugin->children()) {
         cleanupPlugin(childPlugin);
+        plugin->removeChild(childPlugin);
     }
     plugin->cleanup();
     emitChangeSignal(plugin);
@@ -108,6 +107,13 @@ PluginModel::PluginModel(Application *application, QObject *parent)
     : QAbstractListModel(parent),
       d(new PluginModelPrivate(this, application))
 {
+}
+
+PluginModel::~PluginModel()
+{
+    foreach (Plugin *plugin, d->pluginList) {
+        d->cleanupPlugin(plugin);
+    }
 }
 
 void PluginModel::addToBlacklist(const QStringList &names)
