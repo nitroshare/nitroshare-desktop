@@ -59,16 +59,6 @@ Plugin::Plugin(Application *application, const QString &filename, QObject *paren
 {
 }
 
-bool Plugin::isLoaded() const
-{
-    return d->loader.isLoaded() && d->iplugin;
-}
-
-bool Plugin::isInitialized() const
-{
-    return d->initialized;
-}
-
 QString Plugin::name() const
 {
     return d->metadata.value("Name").toString();
@@ -97,6 +87,16 @@ QString Plugin::description() const
 QStringList Plugin::dependencies() const
 {
     return d->dependencies;
+}
+
+bool Plugin::isLoaded() const
+{
+    return d->loader.isLoaded() && d->iplugin;
+}
+
+bool Plugin::isInitialized() const
+{
+    return d->initialized;
 }
 
 bool Plugin::load()

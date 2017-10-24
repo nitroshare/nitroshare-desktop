@@ -46,14 +46,14 @@ class NITROSHARE_EXPORT PluginPrivate;
 class NITROSHARE_EXPORT Plugin : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(bool isLoaded READ isLoaded)
-    Q_PROPERTY(bool isInitialized READ isInitialized)
     Q_PROPERTY(QString name READ name)
     Q_PROPERTY(QString title READ title)
     Q_PROPERTY(QString vendor READ vendor)
     Q_PROPERTY(QString version READ version)
     Q_PROPERTY(QString description READ description)
     Q_PROPERTY(QStringList dependencies READ dependencies)
+    Q_PROPERTY(bool isLoaded READ isLoaded)
+    Q_PROPERTY(bool isInitialized READ isInitialized)
 
 public:
 
@@ -64,16 +64,6 @@ public:
      * @param parent parent QObject
      */
     Plugin(Application *application, const QString &filename, QObject *parent = nullptr);
-
-    /**
-     * @brief Determine if the plugin was loaded
-     */
-    bool isLoaded() const;
-
-    /**
-     * @brief Determine if the plugin was initialized
-     */
-    bool isInitialized() const;
 
     /**
      * @brief Retrieve the plugin's unique name
@@ -104,6 +94,16 @@ public:
      * @brief Retrieve the plugin's dependencies
      */
     QStringList dependencies() const;
+
+    /**
+     * @brief Determine if the plugin was loaded
+     */
+    bool isLoaded() const;
+
+    /**
+     * @brief Determine if the plugin was initialized
+     */
+    bool isInitialized() const;
 
     /**
      * @brief Attempt to load the plugin from disk
