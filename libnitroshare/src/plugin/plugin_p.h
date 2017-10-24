@@ -27,9 +27,9 @@
 
 #include <QJsonArray>
 #include <QJsonObject>
+#include <QList>
 #include <QObject>
 #include <QPluginLoader>
-#include <QSet>
 #include <QStringList>
 
 class Application;
@@ -56,7 +56,7 @@ public:
     IPlugin *iplugin;
     bool initialized;
 
-    QSet<Plugin*> children;
+    QList<Plugin*> children;
 };
 
 #endif // LIBNITROSHARE_PLUGIN_P_H

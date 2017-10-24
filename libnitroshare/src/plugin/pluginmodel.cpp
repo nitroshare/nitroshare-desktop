@@ -78,7 +78,11 @@ bool PluginModelPrivate::initializePlugin(Plugin *plugin)
     }
     foreach (const QString &dependency, plugin->dependencies()) {
         if (dependency == "ui") {
-            continue;
+            if (application->isUiEnabled()) {
+                continue;
+            } else {
+                return false;
+            }
         }
         Plugin *dependentPlugin = pluginHash.value(dependency);
         if (!dependentPlugin || !initializePlugin(dependentPlugin)) {
@@ -97,9 +101,14 @@ void PluginModelPrivate::cleanupPlugin(Plugin *plugin)
 {
     foreach (Plugin *childPlugin, plugin->children()) {
         cleanupPlugin(childPlugin);
-        plugin->removeChild(childPlugin);
     }
     plugin->cleanup();
+    foreach (const QString &dependency, plugin->dependencies()) {
+        if (dependency == "ui") {
+            continue;
+        }
+        pluginHash.value(dependency)->removeChild(plugin);
+    }
     emitChangeSignal(plugin);
 }
 

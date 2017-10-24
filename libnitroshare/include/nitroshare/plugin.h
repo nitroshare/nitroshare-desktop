@@ -25,8 +25,8 @@
 #ifndef LIBNITROSHARE_PLUGIN_H
 #define LIBNITROSHARE_PLUGIN_H
 
+#include <QList>
 #include <QObject>
-#include <QSet>
 
 #include <nitroshare/config.h>
 
@@ -149,9 +149,9 @@ public:
     void removeChild(Plugin *plugin);
 
     /**
-     * @brief Retrieve the set of child plugins
+     * @brief Retrieve the list of child plugins
      */
-    QSet<Plugin*> children() const;
+    QList<Plugin*> children() const;
 
 private:
 
