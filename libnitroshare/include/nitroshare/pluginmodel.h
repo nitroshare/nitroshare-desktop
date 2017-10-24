@@ -66,10 +66,10 @@ public:
     PluginModel(Application *application, QObject *parent = nullptr);
 
     /**
-     * @brief Add a plugin to the blacklist
-     * @param name plugin name
+     * @brief Add plugins to the blacklist
+     * @param names plugin names
      */
-    void addToBlacklist(const QString &name);
+    void addToBlacklist(const QStringList &names);
 
     /**
      * @brief Load plugins from the specified directories
@@ -103,6 +103,11 @@ public:
      * This method will fail if any dependencies aren't loaded.
      */
     bool initializePlugin(const QString &name);
+
+    /**
+     * @brief Initialize all loaded plugins
+     */
+    void initializeAll();
 
     /**
      * @brief Cleanup the specified plugin and others that depend on it

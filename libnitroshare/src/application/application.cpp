@@ -65,7 +65,14 @@ void Application::addCliOptions(QCommandLineParser *parser)
 
 void Application::processCliOptions(QCommandLineParser *parser)
 {
+    // Load all plugins in the directories
     pluginModel()->loadPluginsFromDirectories(parser->values(PluginDir));
+
+    // Blacklist the specified ones
+    pluginModel()->addToBlacklist(parser->values(PluginBlacklist));
+
+    // Initialize the plugins
+    pluginModel()->initializeAll();
 }
 
 QString Application::deviceUuid() const

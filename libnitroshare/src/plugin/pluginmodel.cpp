@@ -76,8 +76,15 @@ void PluginModelPrivate::unloadPlugin(Plugin *plugin)
 
 bool PluginModelPrivate::initializePlugin(Plugin *plugin)
 {
+    if (pluginBlacklist.contains(plugin->name())) {
+        return false;
+    }
     foreach (const QString &name, plugin->dependencies()) {
-        if (!initializePlugin(pluginHash.value(name))) {
+        if (name == "ui") {
+            continue;
+        }
+        Plugin *dependentPlugin = pluginHash.value(name);
+        if (!dependentPlugin || !initializePlugin(dependentPlugin)) {
             return false;
         }
     }
@@ -103,9 +110,9 @@ PluginModel::PluginModel(Application *application, QObject *parent)
 {
 }
 
-void PluginModel::addToBlacklist(const QString &name)
+void PluginModel::addToBlacklist(const QStringList &names)
 {
-    d->pluginBlacklist.append(name);
+    d->pluginBlacklist.append(names);
 }
 
 void PluginModel::loadPluginsFromDirectories(const QStringList &directories)
@@ -162,6 +169,13 @@ bool PluginModel::initializePlugin(const QString &name)
         return false;
     }
     return d->initializePlugin(plugin);
+}
+
+void PluginModel::initializeAll()
+{
+    foreach (Plugin *plugin, d->pluginList) {
+        d->initializePlugin(plugin);
+    }
 }
 
 bool PluginModel::cleanupPlugin(const QString &name)
