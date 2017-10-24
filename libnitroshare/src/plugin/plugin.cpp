@@ -142,15 +142,15 @@ void Plugin::cleanup()
 
 void Plugin::addChild(Plugin *plugin)
 {
-    d->children.append(plugin);
+    d->children.insert(plugin);
 }
 
 void Plugin::removeChild(Plugin *plugin)
 {
-    d->children.removeOne(plugin);
+    d->children.remove(plugin);
 }
 
-QList<Plugin*> Plugin::children() const
+QSet<Plugin*> Plugin::children() const
 {
     return d->children;
 }
