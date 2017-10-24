@@ -15,17 +15,17 @@ set(SRC
     src/discovery/deviceenumerator.cpp
     src/discovery/devicemodel.cpp
     src/handler/handlerregistry.cpp
+    src/log/logger.cpp
+    src/log/message.cpp
+    src/log/stderrwriter.cpp
     src/plugin/plugin.cpp
     src/plugin/pluginmodel.cpp
     src/plugin/pluginregistry.cpp
     src/transfer/packet.cpp
     src/transfer/transfer.cpp
     src/transfer/transfermodel.cpp
-    src/util/logger.cpp
-    src/util/message.cpp
     src/util/settings.cpp
     src/util/signalnotifier.cpp
-    src/util/stderrwriter.cpp
 )
 
 add_library(nitroshare SHARED ${HEADERS} ${SRC})
