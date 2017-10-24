@@ -22,6 +22,9 @@
  * IN THE SOFTWARE.
  */
 
+#include <QDir>
+#include <QLibrary>
+
 #include <nitroshare/application.h>
 #include <nitroshare/logger.h>
 #include <nitroshare/message.h>
@@ -30,7 +33,7 @@
 
 #include "pluginmodel_p.h"
 
-const QString LoggerTag = "pluginmodel";
+const QString MessageTag = "pluginmodel";
 
 PluginModelPrivate::PluginModelPrivate(PluginModel *model, Application *application)
     : QObject(model),
@@ -41,19 +44,21 @@ PluginModelPrivate::PluginModelPrivate(PluginModel *model, Application *applicat
 
 PluginModelPrivate::~PluginModelPrivate()
 {
-    q->unloadAll();
+    while (plugins.count()) {
+        unloadPlugin(plugins.take(plugins.firstKey()));
+    }
+    qDeleteAll(plugins);
 }
 
 PluginModel::PluginModel(Application *application, QObject *parent)
     : QAbstractListModel(parent),
       d(new PluginModelPrivate(this, application))
 {
-    //...
 }
 
-Plugin *PluginModel::findPlugin(const QString &name)
+Plugin *PluginModelPrivate::findPlugin(const QString &name)
 {
-    foreach (Plugin *plugin, d->plugins) {
+    foreach (Plugin *plugin, plugins) {
         if (plugin->name() == name) {
             return plugin;
         }
@@ -61,25 +66,90 @@ Plugin *PluginModel::findPlugin(const QString &name)
     return nullptr;
 }
 
+bool PluginModelPrivate::loadPlugin(Plugin *plugin)
+{
+    foreach (const QString &name, plugin->dependencies()) {
+        Plugin *dependentPlugin = plugins.value(name);
+        if (!dependentPlugin || !loadPlugin(dependentPlugin)) {
+            return false;
+        }
+    }
+    if (!plugin->load()) {
+        return false;
+    }
+    // TODO: data changed signal
+    return true;
+}
+
+void PluginModelPrivate::unloadPlugin(Plugin *plugin)
+{
+    foreach (Plugin *childPlugin, plugin->children()) {
+        unloadPlugin(childPlugin);
+    }
+    plugin->unload();
+    // TODO: data changed signal
+}
+
+void PluginModelPrivate::initializePlugin(Plugin *plugin)
+{
+    foreach (const QString &name, plugin->dependencies()) {
+        initializePlugin(plugins.value(name));
+    }
+    plugin->initialize();
+    // TODO: data changed signal
+}
+
+void PluginModelPrivate::cleanupPlugin(Plugin *plugin)
+{
+    foreach (Plugin *childPlugin, plugin->children()) {
+        cleanupPlugin(childPlugin);
+    }
+    plugin->cleanup();
+    // TODO: data changed signal
+}
+
 void PluginModel::loadPluginsFromDirectories(const QStringList &directories)
 {
-    d->application->logger()->log(new Message(
-        Message::Info,
-        LoggerTag,
-        QString("loading plugins from %1").arg(directories.join(", "))
-    ));
-
-    //...
+    // TODO
 }
 
-void PluginModel::unloadPlugin(const QString &name)
+bool PluginModel::loadPlugin(const QString &name)
 {
-    //...
+    Plugin *plugin = d->plugins.value(name);
+    if (!plugin) {
+        return false;
+    }
+    return d->loadPlugin(plugin);
 }
 
-void PluginModel::unloadAll()
+bool PluginModel::unloadPlugin(const QString &name)
 {
-    //...
+    Plugin *plugin = d->findPlugin(name);
+    if (!plugin) {
+        return false;
+    }
+    d->unloadPlugin(plugin);
+    return true;
+}
+
+bool PluginModel::initializePlugin(const QString &name)
+{
+    Plugin *plugin = d->findPlugin(name);
+    if (!plugin) {
+        return false;
+    }
+    d->initializePlugin(plugin);
+    return true;
+}
+
+bool PluginModel::cleanupPlugin(const QString &name)
+{
+    Plugin *plugin = d->findPlugin(name);
+    if (!plugin) {
+        return false;
+    }
+    d->cleanupPlugin(plugin);
+    return true;
 }
 
 int PluginModel::rowCount(const QModelIndex &parent) const
@@ -89,10 +159,20 @@ int PluginModel::rowCount(const QModelIndex &parent) const
 
 QVariant PluginModel::data(const QModelIndex &index, int role) const
 {
+    // TODO
+
     return QVariant();
 }
 
 QHash<int, QByteArray> PluginModel::roleNames() const
 {
-    return {};
+    return {
+        { NameRole, "name" },
+        { TitleRole, "title" },
+        { VendorRole, "vendor" },
+        { VersionRole, "version" },
+        { DescriptionRole, "description" },
+        { DependenciesRole, "dependencies" },
+        { InitializedRole, "initialized" }
+    };
 }

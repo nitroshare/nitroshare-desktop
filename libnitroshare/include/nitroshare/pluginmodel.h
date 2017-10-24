@@ -47,6 +47,16 @@ class NITROSHARE_EXPORT PluginModel : public QAbstractListModel
 
 public:
 
+    enum Role {
+        NameRole = Qt::UserRole,
+        TitleRole,
+        VendorRole,
+        VersionRole,
+        DescriptionRole,
+        DependenciesRole,
+        InitializedRole,
+    };
+
     /**
      * @brief Create a new plugin model
      * @param application pointer to Application
@@ -55,47 +65,49 @@ public:
     PluginModel(Application *application, QObject *parent = nullptr);
 
     /**
-     * @brief Retrieve a plugin by name
-     * @param name plugin name
-     * @return pointer to Plugin or nullptr if no match
-     */
-    Plugin *findPlugin(const QString &name);
-
-    /**
      * @brief Load plugins from the specified directories
      * @param directories list of directories to load plugins from
+     *
+     * This method loads plugins only and does not initialize them.
      */
     void loadPluginsFromDirectories(const QStringList &directories);
 
     /**
-     * @brief Unload a plugin and all others that depend on it
+     * @brief Load the specified plugin
      * @param name plugin name
+     * @return true if the plugin was loaded
      */
-    void unloadPlugin(const QString &name);
+    bool loadPlugin(const QString &name);
 
     /**
-     * @brief Unload all plugins
+     * @brief Unload the specified plugin and others that depend on it
+     * @param name plugin name
+     * @return true if the plugin was unloaded
+     *
+     * The plugin and all of its dependencies will first be cleaned up.
      */
-    void unloadAll();
+    bool unloadPlugin(const QString &name);
+
+    /**
+     * @brief Initialize the specified plugin and its dependencies
+     * @param name plugin name
+     * @return true if the plugin was initialized
+     *
+     * This method will fail if any dependencies aren't loaded.
+     */
+    bool initializePlugin(const QString &name);
+
+    /**
+     * @brief Cleanup the specified plugin and others that depend on it
+     * @param name plugin name
+     * @return true if the plugin was cleaned up
+     */
+    bool cleanupPlugin(const QString &name);
 
     // Reimplemented virtual methods
     virtual int rowCount(const QModelIndex &parent) const;
     virtual QVariant data(const QModelIndex &index, int role) const;
     virtual QHash<int, QByteArray> roleNames() const;
-
-Q_SIGNALS:
-
-    /**
-     * @brief Indicate that the specified plugin was loaded
-     * @param name plugin name
-     */
-    void pluginLoaded(const QString &name);
-
-    /**
-     * @brief Indicate that the specified plugin was unloaded
-     * @param name plugin name
-     */
-    void pluginUnloaded(const QString &name);
 
 private:
 
