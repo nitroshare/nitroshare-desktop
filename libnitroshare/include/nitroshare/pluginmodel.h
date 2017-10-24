@@ -66,6 +66,12 @@ public:
     PluginModel(Application *application, QObject *parent = nullptr);
 
     /**
+     * @brief Add a plugin to the blacklist
+     * @param name plugin name
+     */
+    void addToBlacklist(const QString &name);
+
+    /**
      * @brief Load plugins from the specified directories
      * @param directories list of directories to load plugins from
      *

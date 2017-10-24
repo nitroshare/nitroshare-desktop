@@ -54,6 +54,7 @@ public:
     Application *application;
     QList<Plugin*> pluginList;
     QHash<QString, Plugin*> pluginHash;
+    QStringList pluginBlacklist;
 };
 
 #endif // LIBNITROSHARE_PLUGINMODEL_P_H

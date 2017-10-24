@@ -50,12 +50,6 @@ PluginModelPrivate::~PluginModelPrivate()
     qDeleteAll(pluginList);
 }
 
-PluginModel::PluginModel(Application *application, QObject *parent)
-    : QAbstractListModel(parent),
-      d(new PluginModelPrivate(this, application))
-{
-}
-
 void PluginModelPrivate::emitChangeSignal(Plugin *plugin)
 {
     QModelIndex index = q->index(pluginList.indexOf(plugin));
@@ -64,12 +58,6 @@ void PluginModelPrivate::emitChangeSignal(Plugin *plugin)
 
 bool PluginModelPrivate::loadPlugin(Plugin *plugin)
 {
-    foreach (const QString &name, plugin->dependencies()) {
-        Plugin *dependentPlugin = pluginHash.value(name);
-        if (!dependentPlugin || !loadPlugin(dependentPlugin)) {
-            return false;
-        }
-    }
     if (!plugin->load()) {
         return false;
     }
@@ -102,6 +90,17 @@ void PluginModelPrivate::cleanupPlugin(Plugin *plugin)
     }
     plugin->cleanup();
     emitChangeSignal(plugin);
+}
+
+PluginModel::PluginModel(Application *application, QObject *parent)
+    : QAbstractListModel(parent),
+      d(new PluginModelPrivate(this, application))
+{
+}
+
+void PluginModel::addToBlacklist(const QString &name)
+{
+    d->pluginBlacklist.append(name);
 }
 
 void PluginModel::loadPluginsFromDirectories(const QStringList &directories)
