@@ -51,6 +51,7 @@ class NITROSHARE_EXPORT Plugin : public QObject
     Q_PROPERTY(QString version READ version)
     Q_PROPERTY(QString description READ description)
     Q_PROPERTY(QStringList dependencies READ dependencies)
+    Q_PROPERTY(bool initialized READ initialized)
 
 public:
 
@@ -103,6 +104,11 @@ public:
      * @brief Retrieve the names of plugins required by this one
      */
     QStringList dependencies() const;
+
+    /**
+     * @brief Determine if the plugin was initialized
+     */
+    bool initialized() const;
 
 private:
 

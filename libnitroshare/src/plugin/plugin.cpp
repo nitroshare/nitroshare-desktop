@@ -109,3 +109,8 @@ QStringList Plugin::dependencies() const
     }
     return list;
 }
+
+bool Plugin::initialized() const
+{
+    return static_cast<bool>(d->iplugin);
+}
