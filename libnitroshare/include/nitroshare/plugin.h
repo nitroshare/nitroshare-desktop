@@ -45,13 +45,14 @@ class NITROSHARE_EXPORT PluginPrivate;
 class NITROSHARE_EXPORT Plugin : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(bool isLoaded READ isLoaded)
+    Q_PROPERTY(bool isInitialized READ isInitialized)
     Q_PROPERTY(QString name READ name)
     Q_PROPERTY(QString title READ title)
     Q_PROPERTY(QString vendor READ vendor)
     Q_PROPERTY(QString version READ version)
     Q_PROPERTY(QString description READ description)
     Q_PROPERTY(QStringList dependencies READ dependencies)
-    Q_PROPERTY(bool initialized READ initialized)
 
 public:
 
@@ -64,16 +65,14 @@ public:
     Plugin(Application *application, const QString &filename, QObject *parent = nullptr);
 
     /**
-     * @brief Load the plugin from disk
-     * @return true if the plugin was successfully loaded
+     * @brief Determine if the plugin was loaded
      */
-    bool load();
+    bool isLoaded() const;
 
     /**
-     * @brief Initialize the plugin
-     * @return true if the plugin was successfully initialized
+     * @brief Determine if the plugin was initialized
      */
-    bool initialize();
+    bool isInitialized() const;
 
     /**
      * @brief Retrieve the plugin's unique name
@@ -81,12 +80,12 @@ public:
     QString name() const;
 
     /**
-     * @brief Retrieve the plugin's human-friendly title
+     * @brief Retrieve the plugin's title
      */
     QString title() const;
 
     /**
-     * @brief Retrieve the plugin's vendor (author or company)
+     * @brief Retrieve the plugin's vendor
      */
     QString vendor() const;
 
@@ -96,19 +95,45 @@ public:
     QString version() const;
 
     /**
-     * @brief Retrieve the plugin's brief description
+     * @brief Retrieve a description of the plugin
      */
     QString description() const;
 
     /**
-     * @brief Retrieve the names of plugins required by this one
+     * @brief Retrieve the plugins dependencies
      */
     QStringList dependencies() const;
 
     /**
-     * @brief Determine if the plugin was initialized
+     * @brief Attempt to load the plugin from disk
+     * @return true if the plugin was loaded
+     *
+     * This method has no effect if the plugin was already loaded.
      */
-    bool initialized() const;
+    bool load();
+
+    /**
+     * @brief Unload the plugin
+     *
+     * This method will ensure that the plugin is cleaned up before attempting
+     * to unload it. This method has no effect if the plugin is not loaded.
+     */
+    void unload();
+
+    /**
+     * @brief Initialize the plugin
+     *
+     * This method has no effect if the plugin was already initialized or was
+     * not first loaded.
+     */
+    void initialize();
+
+    /**
+     * @brief Cleanup the plugin
+     *
+     * This method has no effect if the plugin was not initialized.
+     */
+    void cleanup();
 
 private:
 

@@ -31,6 +31,7 @@
 
 class Application;
 class IPlugin;
+class Plugin;
 
 class PluginPrivate : public QObject
 {
@@ -38,13 +39,16 @@ class PluginPrivate : public QObject
 
 public:
 
-    PluginPrivate(QObject *parent, Application *application, const QString &filename);
+    PluginPrivate(Plugin *plugin, Application *application, const QString &filename);
     virtual ~PluginPrivate();
+
+    Plugin *const q;
 
     Application *application;
     QPluginLoader loader;
     QJsonObject metadata;
     IPlugin *iplugin;
+    bool initialized;
 };
 
 #endif // LIBNITROSHARE_PLUGIN_P_H

@@ -22,34 +22,26 @@
  * IN THE SOFTWARE.
  */
 
-#include <QJsonArray>
-#include <QJsonObject>
+#include <QJsonValue>
 
 #include <nitroshare/iplugin.h>
 #include <nitroshare/plugin.h>
 
 #include "plugin_p.h"
 
-const QString NameKey = "Name";
-const QString TitleKey = "Title";
-const QString VendorKey = "Vendor";
-const QString VersionKey = "Version";
-const QString DescriptionKey = "Description";
-const QString DependenciesKey = "Dependencies";
-
-PluginPrivate::PluginPrivate(QObject *parent, Application *application, const QString &filename)
-    : QObject(parent),
+PluginPrivate::PluginPrivate(Plugin *plugin, Application *application, const QString &filename)
+    : QObject(plugin),
+      q(plugin),
       application(application),
       loader(filename),
-      iplugin(nullptr)
+      iplugin(nullptr),
+      initialized(false)
 {
 }
 
 PluginPrivate::~PluginPrivate()
 {
-    if (iplugin) {
-        iplugin->cleanup(application);
-    }
+    q->unload();
 }
 
 Plugin::Plugin(Application *application, const QString &filename, QObject *parent)
@@ -58,59 +50,78 @@ Plugin::Plugin(Application *application, const QString &filename, QObject *paren
 {
 }
 
-bool Plugin::load()
+bool Plugin::isLoaded() const
 {
-    if (d->loader.load()) {
-        d->metadata = d->loader.metaData().value("MetaData").toObject();
-    }
-    return d->loader.isLoaded();
+    return d->loader.isLoaded() && d->iplugin;
 }
 
-bool Plugin::initialize()
+bool Plugin::isInitialized() const
 {
-    d->iplugin = qobject_cast<IPlugin*>(d->loader.instance());
-    if (d->iplugin) {
-        d->iplugin->initialize(d->application);
-    }
-    return d->iplugin;
+    return d->initialized;
 }
 
 QString Plugin::name() const
 {
-    return d->metadata.value(NameKey).toString();
+    d->metadata.value("Name").toString();
 }
 
 QString Plugin::title() const
 {
-    return d->metadata.value(TitleKey).toString();
+    d->metadata.value("Title").toString();
 }
 
 QString Plugin::vendor() const
 {
-    return d->metadata.value(VendorKey).toString();
+    d->metadata.value("Vendor").toString();
 }
 
 QString Plugin::version() const
 {
-    return d->metadata.value(VersionKey).toString();
+    d->metadata.value("Version").toString();
 }
 
 QString Plugin::description() const
 {
-    return d->metadata.value(DescriptionKey).toString();
+    d->metadata.value("Description").toString();
 }
 
 QStringList Plugin::dependencies() const
 {
-    QJsonArray array = d->metadata.value(DependenciesKey).toArray();
-    QStringList list;
-    foreach (QJsonValue value, array) {
-        list.append(value.toString());
-    }
-    return list;
+    d->metadata.value("Dependencies").toString();
 }
 
-bool Plugin::initialized() const
+bool Plugin::load()
 {
-    return static_cast<bool>(d->iplugin);
+    if (!d->loader.isLoaded()) {
+        if (!d->loader.load()) {
+            return false;
+        }
+        d->metadata = d->loader.metaData().value("MetaData").toObject();
+        d->iplugin = qobject_cast<IPlugin*>(d->loader.instance());
+    }
+    return d->iplugin;
+}
+
+void Plugin::unload()
+{
+    cleanup();
+    if (d->loader.isLoaded()) {
+        d->loader.unload();
+    }
+}
+
+void Plugin::initialize()
+{
+    if (d->loader.isLoaded() && !d->initialized) {
+        d->iplugin->initialize(d->application);
+        d->initialized = true;
+    }
+}
+
+void Plugin::cleanup()
+{
+    if (d->initialized) {
+        d->iplugin->cleanup(d->application);
+        d->initialized = false;
+    }
 }
