@@ -23,6 +23,7 @@
  */
 
 #include <QHeaderView>
+#include <QMessageBox>
 #include <QPushButton>
 #include <QVBoxLayout>
 
@@ -70,9 +71,19 @@ void PluginDialog::addButtons(int row)
 {
     QPushButton *pushButton = new QPushButton(tr("Unload"));
     connect(pushButton, &QPushButton::clicked, [this, row]() {
-        mApplication->pluginModel()->unloadPlugin(
-            mModel.data(mModel.index(row, 0), PluginModel::NameRole).toString()
-        );
+        QString name = mModel.data(mModel.index(row, 0), PluginModel::NameRole).toString();
+        if (name == "pluginui") {
+            int response = QMessageBox::warning(
+                this,
+                tr("Warning"),
+                tr("Unloading the pluginui plugin will close this dialog and make further changes impossible. Are you sure you want to unload this plugin?"),
+                QMessageBox::Yes | QMessageBox::No
+            );
+            if (response == QMessageBox::No) {
+                return;
+            }
+        }
+        mApplication->pluginModel()->unloadPlugin(name);
     });
     mTableView->setIndexWidget(mModel.index(row, PluginProxyModel::ActionsColumn), pushButton);
 }
