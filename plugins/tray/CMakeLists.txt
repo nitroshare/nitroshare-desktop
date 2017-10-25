@@ -2,6 +2,8 @@ configure_file(tray.json.in "${CMAKE_CURRENT_BINARY_DIR}/tray.json")
 
 set(SRC
     resource.qrc
+    traymenu.h
+    traymenu.cpp
     trayplugin.h
     trayplugin.cpp
 )

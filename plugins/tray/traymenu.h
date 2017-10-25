@@ -22,29 +22,43 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef TRAYPLUGIN_H
-#define TRAYPLUGIN_H
+#ifndef TRAYMENU_H
+#define TRAYMENU_H
 
-#include <nitroshare/iplugin.h>
+#include <QAction>
+#include <QHash>
+#include <QMenu>
+#include <QObject>
+#include <QSystemTrayIcon>
 
-class TrayMenu;
+class Action;
+class Application;
 
-/**
- * @brief Provide a system tray icon
- */
-class Q_DECL_EXPORT TrayPlugin : public IPlugin
+class TrayMenu : public QObject
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID Plugin_iid FILE "tray.json")
 
 public:
 
-    virtual void initialize(Application *application);
-    virtual void cleanup(Application *application);
+    explicit TrayMenu(Application *application);
+    virtual ~TrayMenu();
+
+private slots:
+
+    void onActionAdded(Action *action);
+    void onActionRemoved(Action *action);
+
+    void onAbout();
+    void onAboutQt();
 
 private:
 
-    TrayMenu *mTrayMenu;
+    Application *mApplication;
+
+    QSystemTrayIcon mIcon;
+    QMenu mMenu;
+    QAction mSeparator;
+    QHash<QString, QAction*> mActions;
 };
 
-#endif // TRAYPLUGIN_H
+#endif // TRAYMENU_H
