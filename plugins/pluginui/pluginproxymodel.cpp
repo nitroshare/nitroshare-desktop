@@ -22,6 +22,9 @@
  * IN THE SOFTWARE.
  */
 
+#include <QGuiApplication>
+#include <QPalette>
+
 #include <nitroshare/pluginmodel.h>
 
 #include "pluginproxymodel.h"
@@ -46,12 +49,12 @@ QModelIndex PluginProxyModel::index(int row, int column, const QModelIndex &) co
 
 QModelIndex PluginProxyModel::mapFromSource(const QModelIndex &sourceIndex) const
 {
-    return createIndex(sourceIndex.row(), sourceIndex.column());
+    return createIndex(sourceIndex.row(), 0);
 }
 
 QModelIndex PluginProxyModel::mapToSource(const QModelIndex &proxyIndex) const
 {
-    return sourceModel()->index(proxyIndex.row(), proxyIndex.column());
+    return sourceModel()->index(proxyIndex.row(), 0);
 }
 
 QModelIndex PluginProxyModel::parent(const QModelIndex &) const
@@ -79,11 +82,14 @@ QVariant PluginProxyModel::data(const QModelIndex &proxyIndex, int role) const
     case Qt::DisplayRole:
         switch (proxyIndex.column()) {
         case TitleColumn:
-            return sourceRole(proxyIndex, PluginModel::TitleRole);
+            role = PluginModel::TitleRole;
+            break;
         case VendorColumn:
-            return sourceRole(proxyIndex, PluginModel::VendorRole);
+            role = PluginModel::VendorRole;
+            break;
         case VersionColumn:
-            return sourceRole(proxyIndex, PluginModel::VersionRole);
+            role = PluginModel::VersionRole;
+            break;
         case StatusColumn:
             if (sourceRole(proxyIndex, PluginModel::IsInitializedRole).toBool()) {
                 return tr("Initialized");
@@ -94,6 +100,7 @@ QVariant PluginProxyModel::data(const QModelIndex &proxyIndex, int role) const
             }
             break;
         }
+        break;
     case Qt::TextAlignmentRole:
         switch (proxyIndex.column()) {
         case VersionColumn:
@@ -101,9 +108,14 @@ QVariant PluginProxyModel::data(const QModelIndex &proxyIndex, int role) const
             return Qt::AlignCenter;
         }
         break;
+    case Qt::ForegroundRole:
+        if (!sourceRole(proxyIndex, PluginModel::IsInitializedRole).toBool()) {
+            return QGuiApplication::palette().color(QPalette::Disabled, QPalette::WindowText);
+        }
+        break;
     }
 
-    return QVariant();
+    return sourceRole(proxyIndex, role);
 }
 
 QVariant PluginProxyModel::headerData(int section, Qt::Orientation orientation, int role) const
