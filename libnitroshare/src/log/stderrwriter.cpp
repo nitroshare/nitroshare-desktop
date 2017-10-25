@@ -24,19 +24,10 @@
 
 #include <iostream>
 
-#include <QMap>
-
 #include <nitroshare/message.h>
 #include <nitroshare/stderrwriter.h>
 
 #include "stderrwriter_p.h"
-
-QMap<Message::Type, QString> MessageTypeMap = {
-    { Message::Debug, "d" },
-    { Message::Info, "i" },
-    { Message::Warning, "w" },
-    { Message::Error, "e" }
-};
 
 StderrWriterPrivate::StderrWriterPrivate(QObject *parent)
     : QObject(parent)
@@ -51,9 +42,5 @@ StderrWriter::StderrWriter(QObject *parent)
 
 void StderrWriter::writeMessage(const Message *message)
 {
-    QString line = QString("[%1:%2] %3")
-        .arg(MessageTypeMap.value(message->type()))
-        .arg(message->tag())
-        .arg(message->body());
-    std::cerr << line.toUtf8().constData() << std::endl;
+    std::cerr << message->toString().toUtf8().constData() << std::endl;
 }

@@ -80,6 +80,11 @@ public:
      */
     QString body() const;
 
+    /**
+     * @brief Combine the message data into a single string
+     */
+    QString toString() const;
+
 private:
 
     MessagePrivate *const d;

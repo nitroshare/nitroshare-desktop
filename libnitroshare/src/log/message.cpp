@@ -22,9 +22,18 @@
  * IN THE SOFTWARE.
  */
 
+#include <QMap>
+
 #include <nitroshare/message.h>
 
 #include "message_p.h"
+
+QMap<Message::Type, QString> TypeMap = {
+    { Message::Debug, "d" },
+    { Message::Info, "i" },
+    { Message::Warning, "w" },
+    { Message::Error, "e" }
+};
 
 MessagePrivate::MessagePrivate(QObject *parent, Message::Type type, const QString &tag, const QString &body)
     : QObject(parent),
@@ -52,4 +61,12 @@ QString Message::tag() const
 QString Message::body() const
 {
     return d->body;
+}
+
+QString Message::toString() const
+{
+    return QString("[%1:%2] %3")
+        .arg(TypeMap.value(d->type))
+        .arg(d->tag)
+        .arg(d->body);
 }

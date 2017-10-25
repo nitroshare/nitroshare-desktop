@@ -32,16 +32,6 @@
 
 #include "logdialog.h"
 
-// TODO: this was copied from StderrWriter
-// maybe it should be moved somewhere common
-
-QMap<Message::Type, QString> MessageTypeMap = {
-    { Message::Debug, "d" },
-    { Message::Info, "i" },
-    { Message::Warning, "w" },
-    { Message::Error, "e" }
-};
-
 LogDialog::LogDialog(Application *application)
     : mTextEdit(new QTextEdit)
 {
@@ -80,10 +70,5 @@ LogDialog::LogDialog(Application *application)
 
 void LogDialog::onMessageLogged(const Message *message)
 {
-    mTextEdit->append(
-        QString("[%1:%2] %3")
-            .arg(MessageTypeMap.value(message->type()))
-            .arg(message->tag())
-            .arg(message->body())
-    );
+    mTextEdit->append(message->toString());
 }
