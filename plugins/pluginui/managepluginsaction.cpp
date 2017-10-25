@@ -23,10 +23,10 @@
  */
 
 #include "managepluginsaction.h"
-#include "plugindialog.h"
 
 ManagePluginsAction::ManagePluginsAction(Application *application)
-    : mApplication(application)
+    : mApplication(application),
+      mDialog(application)
 {
 }
 
@@ -47,5 +47,5 @@ QString ManagePluginsAction::title() const
 
 QVariant ManagePluginsAction::invoke(const QVariantMap &)
 {
-    return PluginDialog(mApplication).exec() == QDialog::Accepted;
+    mDialog.show();
 }

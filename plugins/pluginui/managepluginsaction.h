@@ -27,6 +27,8 @@
 
 #include <nitroshare/action.h>
 
+#include "plugindialog.h"
+
 class Application;
 
 class ManagePluginsAction : public Action
@@ -51,6 +53,8 @@ public slots:
 private:
 
     Application *mApplication;
+
+    PluginDialog mDialog;
 };
 
 #endif // MANAGEPLUGINSACTION_H
