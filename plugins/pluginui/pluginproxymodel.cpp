@@ -62,7 +62,23 @@ QVariant PluginProxyModel::data(const QModelIndex &proxyIndex, int role) const
         case VersionColumn:
             role = PluginModel::VersionRole;
             break;
+        case StatusColumn:
+            if (QIdentityProxyModel::data(proxyIndex, PluginModel::IsInitializedRole).toBool()) {
+                return tr("Initialized");
+            } else if (QIdentityProxyModel::data(proxyIndex, PluginModel::IsLoadedRole).toBool()) {
+                return tr("Loaded");
+            } else {
+                return tr("Unloaded");
+            }
         }
+        break;
+    case Qt::TextAlignmentRole:
+        switch (proxyIndex.column()) {
+        case VersionColumn:
+        case StatusColumn:
+            return Qt::AlignCenter;
+        }
+        break;
     }
 
     return QIdentityProxyModel::data(proxyIndex, role);
@@ -81,6 +97,10 @@ QVariant PluginProxyModel::headerData(int section, Qt::Orientation orientation, 
         return tr("Vendor");
     case VersionColumn:
         return tr("Version");
+    case StatusColumn:
+        return tr("Status");
+    case ActionsColumn:
+        return tr("Actions");
     }
 
     return QVariant();

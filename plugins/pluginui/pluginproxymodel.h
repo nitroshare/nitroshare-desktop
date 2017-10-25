@@ -33,21 +33,21 @@ class PluginProxyModel : public QIdentityProxyModel
 
 public:
 
+    enum {
+        TitleColumn,
+        VendorColumn,
+        VersionColumn,
+        StatusColumn,
+        ActionsColumn,
+        ColumnCount
+    };
+
     explicit PluginProxyModel(QObject *parent);
 
     virtual QModelIndex index(int row, int column, const QModelIndex &parent) const;
     virtual int columnCount(const QModelIndex &parent) const;
     virtual QVariant data(const QModelIndex &proxyIndex, int role) const;
     virtual QVariant headerData(int section, Qt::Orientation orientation, int role) const;
-
-private:
-
-    enum {
-        TitleColumn,
-        VendorColumn,
-        VersionColumn,
-        ColumnCount
-    };
 };
 
 #endif // PLUGINPROXYMODEL_H

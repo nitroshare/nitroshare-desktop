@@ -35,17 +35,20 @@
 PluginDialog::PluginDialog(Application *application)
 {
     setWindowTitle(tr("Plugins"));
-    resize(640, 300);
-
-    QTableView *tableView = new QTableView;
-    tableView->horizontalHeader()->setDefaultSectionSize(200);
-    tableView->horizontalHeader()->setStretchLastSection(true);
-    tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
-    tableView->verticalHeader()->setVisible(false);
+    resize(800, 300);
 
     PluginProxyModel *model = new PluginProxyModel(this);
     model->setSourceModel(application->pluginModel());
+
+    connect(model, &PluginProxyModel::rowsInserted, this, &PluginDialog::onRowsInserted);
+
+    QTableView *tableView = new QTableView;
     tableView->setModel(model);
+    tableView->horizontalHeader()->setDefaultSectionSize(160);
+    tableView->horizontalHeader()->setStretchLastSection(true);
+    tableView->horizontalHeader()->resizeSection(PluginProxyModel::VersionColumn, 80);
+    tableView->setSelectionMode(QAbstractItemView::NoSelection);
+    tableView->verticalHeader()->setVisible(false);
 
     QVBoxLayout *vboxLayout = new QVBoxLayout;
     vboxLayout->addWidget(tableView);
