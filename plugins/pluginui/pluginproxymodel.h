@@ -22,32 +22,32 @@
  * IN THE SOFTWARE.
  */
 
-#include <QHeaderView>
-#include <QTableView>
-#include <QVBoxLayout>
+#ifndef PLUGINPROXYMODEL_H
+#define PLUGINPROXYMODEL_H
 
-#include <nitroshare/application.h>
-#include <nitroshare/pluginmodel.h>
+#include <QIdentityProxyModel>
 
-#include "plugindialog.h"
-#include "pluginproxymodel.h"
-
-PluginDialog::PluginDialog(Application *application)
+class PluginProxyModel : public QIdentityProxyModel
 {
-    setWindowTitle(tr("Plugins"));
-    resize(640, 300);
+    Q_OBJECT
 
-    QTableView *tableView = new QTableView;
-    tableView->horizontalHeader()->setDefaultSectionSize(200);
-    tableView->horizontalHeader()->setStretchLastSection(true);
-    tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
-    tableView->verticalHeader()->setVisible(false);
+public:
 
-    PluginProxyModel *model = new PluginProxyModel(this);
-    model->setSourceModel(application->pluginModel());
-    tableView->setModel(model);
+    explicit PluginProxyModel(QObject *parent);
 
-    QVBoxLayout *vboxLayout = new QVBoxLayout;
-    vboxLayout->addWidget(tableView);
-    setLayout(vboxLayout);
-}
+    virtual QModelIndex index(int row, int column, const QModelIndex &parent) const;
+    virtual int columnCount(const QModelIndex &parent) const;
+    virtual QVariant data(const QModelIndex &proxyIndex, int role) const;
+    virtual QVariant headerData(int section, Qt::Orientation orientation, int role) const;
+
+private:
+
+    enum {
+        TitleColumn,
+        VendorColumn,
+        VersionColumn,
+        ColumnCount
+    };
+};
+
+#endif // PLUGINPROXYMODEL_H

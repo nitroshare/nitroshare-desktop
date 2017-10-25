@@ -5,6 +5,8 @@ set(SRC
     managepluginsaction.cpp
     plugindialog.h
     plugindialog.cpp
+    pluginproxymodel.h
+    pluginproxymodel.cpp
     pluginuiplugin.h
     pluginuiplugin.cpp
 )
