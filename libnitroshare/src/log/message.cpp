@@ -37,6 +37,7 @@ QMap<Message::Type, QString> TypeMap = {
 
 MessagePrivate::MessagePrivate(QObject *parent, Message::Type type, const QString &tag, const QString &body)
     : QObject(parent),
+      dateTime(QDateTime::currentDateTime()),
       type(type),
       tag(tag),
       body(body)
@@ -46,6 +47,11 @@ MessagePrivate::MessagePrivate(QObject *parent, Message::Type type, const QStrin
 Message::Message(Type type, const QString &tag, const QString &body)
     : d(new MessagePrivate(this, type, tag, body))
 {
+}
+
+QDateTime Message::dateTime() const
+{
+    return d->dateTime;
 }
 
 Message::Type Message::type() const
@@ -65,8 +71,9 @@ QString Message::body() const
 
 QString Message::toString() const
 {
-    return QString("[%1:%2] %3")
-        .arg(TypeMap.value(d->type))
+    return QString("%1 [%2:%3] %4")
+        .arg(d->dateTime.toString(Qt::ISODateWithMs))
         .arg(d->tag)
+        .arg(TypeMap.value(d->type))
         .arg(d->body);
 }

@@ -25,6 +25,7 @@
 #ifndef LIBNITROSHARE_MESSAGE_H
 #define LIBNITROSHARE_MESSAGE_H
 
+#include <QDateTime>
 #include <QObject>
 
 #include <nitroshare/config.h>
@@ -64,6 +65,11 @@ public:
      * @param body content of the message
      */
     Message(Type type, const QString &tag, const QString &body);
+
+    /**
+     * @brief Retrieve the date and time of the message
+     */
+    QDateTime dateTime() const;
 
     /**
      * @brief Retrieve message type

@@ -25,6 +25,7 @@
 #ifndef LIBNITROSHARE_MESSAGE_P_H
 #define LIBNITROSHARE_MESSAGE_P_H
 
+#include <QDateTime>
 #include <QObject>
 
 #include <nitroshare/message.h>
@@ -37,6 +38,7 @@ public:
 
     explicit MessagePrivate(QObject *parent, Message::Type type, const QString &tag, const QString &body);
 
+    QDateTime dateTime;
     Message::Type type;
     QString tag;
     QString body;
