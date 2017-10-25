@@ -2,7 +2,7 @@
     "Name": "pluginui",
     "Title": "Plugin Manager",
     "Vendor": "Nathan Osman",
-    "Version": "${VERSION}",
+    "Version": "${PROJECT_VERSION}",
     "Description": "Manage installed plugins",
     "Dependencies": [
         "ui"

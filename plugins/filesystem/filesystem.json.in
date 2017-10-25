@@ -2,7 +2,7 @@
     "Name": "filesystem",
     "Title": "Local Filesystem",
     "Vendor": "Nathan Osman",
-    "Version": "${VERSION}",
+    "Version": "${PROJECT_VERSION}",
     "Description": "Provide access to the local filesystem",
     "Dependencies": []
 }

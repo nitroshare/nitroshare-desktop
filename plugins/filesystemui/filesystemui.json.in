@@ -2,7 +2,7 @@
     "Name": "filesystemui",
     "Title": "Local Filesystem UI",
     "Vendor": "Nathan Osman",
-    "Version": "${VERSION}",
+    "Version": "${PROJECT_VERSION}",
     "Description": "User interface for interacting with the local filesystem",
     "Dependencies": [
         "ui",

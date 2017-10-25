@@ -2,7 +2,7 @@
     "Name": "loggerui",
     "Title": "Log Viewer",
     "Vendor": "Nathan Osman",
-    "Version": "${VERSION}",
+    "Version": "${PROJECT_VERSION}",
     "Description": "View log messages",
     "Dependencies": [
         "ui"

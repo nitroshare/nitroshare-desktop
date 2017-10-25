@@ -2,7 +2,7 @@
     "Name": "api",
     "Title": "Local HTTP API",
     "Vendor": "Nathan Osman",
-    "Version": "${VERSION}",
+    "Version": "${PROJECT_VERSION}",
     "Description": "Provide local clients with an API",
     "Dependencies": []
 }

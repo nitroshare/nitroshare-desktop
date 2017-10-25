@@ -2,7 +2,7 @@
     "Name": "lan",
     "Title": "LAN",
     "Vendor": "Nathan Osman",
-    "Version": "${VERSION}",
+    "Version": "${PROJECT_VERSION}",
     "Description": "Provide transfers over the local network",
     "Dependencies": []
 }

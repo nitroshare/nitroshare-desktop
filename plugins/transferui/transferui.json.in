@@ -2,7 +2,7 @@
     "Name": "transferui",
     "Title": "Transfer UI",
     "Vendor": "Nathan Osman",
-    "Version": "${VERSION}",
+    "Version": "${PROJECT_VERSION}",
     "Description": "User interface for viewing transfers",
     "Dependencies": [
         "ui"

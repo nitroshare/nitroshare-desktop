@@ -2,7 +2,7 @@
     "Name": "mdns",
     "Title": "mDNS Discovery",
     "Vendor": "Nathan Osman",
-    "Version": "${VERSION}",
+    "Version": "${PROJECT_VERSION}",
     "Description": "Discover peers using multicast DNS (mDNS)",
     "Dependencies": [
         "lan"

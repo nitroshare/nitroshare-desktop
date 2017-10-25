@@ -2,7 +2,7 @@
     "Name": "settingsui",
     "Title": "Settings UI",
     "Vendor": "Nathan Osman",
-    "Version": "${VERSION}",
+    "Version": "${PROJECT_VERSION}",
     "Description": "Dialog for adjusting application settings",
     "Dependencies": [
         "ui"
