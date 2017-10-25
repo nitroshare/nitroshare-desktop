@@ -24,10 +24,15 @@
 
 #include <QJsonValue>
 
+#include <nitroshare/application.h>
 #include <nitroshare/iplugin.h>
+#include <nitroshare/logger.h>
+#include <nitroshare/message.h>
 #include <nitroshare/plugin.h>
 
 #include "plugin_p.h"
+
+const QString MessageTag = "plugin";
 
 PluginPrivate::PluginPrivate(Plugin *plugin, Application *application, const QString &filename)
     : QObject(plugin),
@@ -128,6 +133,12 @@ bool Plugin::initialize()
         }
         d->iplugin->initialize(d->application);
         d->initialized = true;
+
+        d->application->logger()->log(new Message(
+            Message::Debug,
+            MessageTag,
+            QString("%1 initialized").arg(name())
+        ));
     }
     return true;
 }
