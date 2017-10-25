@@ -23,34 +23,56 @@
  */
 
 #include <QHeaderView>
-#include <QTableView>
+#include <QPushButton>
 #include <QVBoxLayout>
 
 #include <nitroshare/application.h>
 #include <nitroshare/pluginmodel.h>
 
 #include "plugindialog.h"
-#include "pluginproxymodel.h"
 
 PluginDialog::PluginDialog(Application *application)
+    : mApplication(application),
+      mTableView(new QTableView)
 {
     setWindowTitle(tr("Plugins"));
     resize(800, 300);
 
-    PluginProxyModel *model = new PluginProxyModel(this);
-    model->setSourceModel(application->pluginModel());
+    connect(&mModel, &PluginProxyModel::rowsInserted, this, &PluginDialog::onRowsInserted);
 
-    connect(model, &PluginProxyModel::rowsInserted, this, &PluginDialog::onRowsInserted);
+    mModel.setSourceModel(application->pluginModel());
 
-    QTableView *tableView = new QTableView;
-    tableView->setModel(model);
-    tableView->horizontalHeader()->setDefaultSectionSize(160);
-    tableView->horizontalHeader()->setStretchLastSection(true);
-    tableView->horizontalHeader()->resizeSection(PluginProxyModel::VersionColumn, 80);
-    tableView->setSelectionMode(QAbstractItemView::NoSelection);
-    tableView->verticalHeader()->setVisible(false);
+    mTableView->setModel(&mModel);
+    mTableView->horizontalHeader()->setDefaultSectionSize(160);
+    mTableView->horizontalHeader()->setStretchLastSection(true);
+    mTableView->horizontalHeader()->resizeSection(PluginProxyModel::VersionColumn, 80);
+    mTableView->setSelectionMode(QAbstractItemView::NoSelection);
+    mTableView->setStyleSheet("QTableView::item { padding: 4px; }");
+    mTableView->verticalHeader()->setVisible(false);
+
+    for (int row = 0; row < mModel.rowCount(); ++row) {
+        addButtons(row);
+    }
 
     QVBoxLayout *vboxLayout = new QVBoxLayout;
-    vboxLayout->addWidget(tableView);
+    vboxLayout->addWidget(mTableView);
     setLayout(vboxLayout);
+}
+
+void PluginDialog::onRowsInserted(const QModelIndex &parent, int start, int end)
+{
+    for (int row = start; row <= end; ++row) {
+        addButtons(row);
+    }
+}
+
+void PluginDialog::addButtons(int row)
+{
+    QPushButton *pushButton = new QPushButton(tr("Unload"));
+    connect(pushButton, &QPushButton::clicked, [this, row]() {
+        mApplication->pluginModel()->unloadPlugin(
+            mModel.data(mModel.index(row, 0), PluginModel::NameRole).toString()
+        );
+    });
+    mTableView->setIndexWidget(mModel.index(row, PluginProxyModel::ActionsColumn), pushButton);
 }

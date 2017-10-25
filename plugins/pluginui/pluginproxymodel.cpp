@@ -26,22 +26,47 @@
 
 #include "pluginproxymodel.h"
 
-PluginProxyModel::PluginProxyModel(QObject *parent)
-    : QIdentityProxyModel(parent)
+void PluginProxyModel::setSourceModel(QAbstractItemModel *sourceModel)
 {
+    QAbstractProxyModel::setSourceModel(sourceModel);
+
+    connect(sourceModel, &QAbstractItemModel::dataChanged, this,
+            [this](const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &) {
+        emit dataChanged(
+            createIndex(topLeft.row(), 0),
+            createIndex(bottomRight.row(), ColumnCount - 1)
+        );
+    });
 }
 
-QModelIndex PluginProxyModel::index(int row, int column, const QModelIndex &parent) const
+QModelIndex PluginProxyModel::index(int row, int column, const QModelIndex &) const
 {
-    if (column) {
-        return createIndex(row, column);
-    }
-    return QIdentityProxyModel::index(row, column, parent);
+    return createIndex(row, column);
 }
 
-int PluginProxyModel::columnCount(const QModelIndex &parent) const
+QModelIndex PluginProxyModel::mapFromSource(const QModelIndex &sourceIndex) const
 {
-    return parent.isValid() ? 0 : ColumnCount;
+    return createIndex(sourceIndex.row(), sourceIndex.column());
+}
+
+QModelIndex PluginProxyModel::mapToSource(const QModelIndex &proxyIndex) const
+{
+    return sourceModel()->index(proxyIndex.row(), proxyIndex.column());
+}
+
+QModelIndex PluginProxyModel::parent(const QModelIndex &) const
+{
+    return QModelIndex();
+}
+
+int PluginProxyModel::rowCount(const QModelIndex &) const
+{
+    return sourceModel()->rowCount();
+}
+
+int PluginProxyModel::columnCount(const QModelIndex &) const
+{
+    return ColumnCount;
 }
 
 QVariant PluginProxyModel::data(const QModelIndex &proxyIndex, int role) const
@@ -54,24 +79,21 @@ QVariant PluginProxyModel::data(const QModelIndex &proxyIndex, int role) const
     case Qt::DisplayRole:
         switch (proxyIndex.column()) {
         case TitleColumn:
-            role = PluginModel::TitleRole;
-            break;
+            return sourceRole(proxyIndex, PluginModel::TitleRole);
         case VendorColumn:
-            role = PluginModel::VendorRole;
-            break;
+            return sourceRole(proxyIndex, PluginModel::VendorRole);
         case VersionColumn:
-            role = PluginModel::VersionRole;
-            break;
+            return sourceRole(proxyIndex, PluginModel::VersionRole);
         case StatusColumn:
-            if (QIdentityProxyModel::data(proxyIndex, PluginModel::IsInitializedRole).toBool()) {
+            if (sourceRole(proxyIndex, PluginModel::IsInitializedRole).toBool()) {
                 return tr("Initialized");
-            } else if (QIdentityProxyModel::data(proxyIndex, PluginModel::IsLoadedRole).toBool()) {
+            } else if (sourceRole(proxyIndex, PluginModel::IsLoadedRole).toBool()) {
                 return tr("Loaded");
             } else {
                 return tr("Unloaded");
             }
+            break;
         }
-        break;
     case Qt::TextAlignmentRole:
         switch (proxyIndex.column()) {
         case VersionColumn:
@@ -81,13 +103,13 @@ QVariant PluginProxyModel::data(const QModelIndex &proxyIndex, int role) const
         break;
     }
 
-    return QIdentityProxyModel::data(proxyIndex, role);
+    return QVariant();
 }
 
 QVariant PluginProxyModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
     if (orientation != Qt::Horizontal || role != Qt::DisplayRole) {
-        return QIdentityProxyModel::headerData(section, orientation, role);
+        return QVariant();
     }
 
     switch (section) {
@@ -104,4 +126,9 @@ QVariant PluginProxyModel::headerData(int section, Qt::Orientation orientation, 
     }
 
     return QVariant();
+}
+
+QVariant PluginProxyModel::sourceRole(const QModelIndex &proxyIndex, int role) const
+{
+    return sourceModel()->data(mapToSource(proxyIndex), role);
 }
