@@ -93,6 +93,11 @@ public:
      */
     bool unload(Plugin *plugin);
 
+    /**
+     * @brief Unload all plugins
+     */
+    void unloadAll();
+
     // Reimplemented virtual methods
     virtual int rowCount(const QModelIndex &parent) const;
     virtual QVariant data(const QModelIndex &index, int role) const;

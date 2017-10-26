@@ -64,6 +64,12 @@ Application::Application(QObject *parent)
 {
 }
 
+Application::~Application()
+{
+    // Unload all plugins before the remaining members are destroyed
+    d->pluginModel.unloadAll();
+}
+
 void Application::addCliOptions(QCommandLineParser *parser)
 {
     parser->addOption(QCommandLineOption(PluginDir, tr("load plugins in directory"), tr("directory"), NITROSHARE_PLUGIN_PATH));

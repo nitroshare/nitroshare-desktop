@@ -72,6 +72,11 @@ public:
     explicit Application(QObject *parent = nullptr);
 
     /**
+     * @brief Clean up the application
+     */
+    virtual ~Application();
+
+    /**
      * @brief Add library-specific command line options
      * @param parser pointer to QCommandLineParser
      */

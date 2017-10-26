@@ -51,9 +51,8 @@ PluginModel::PluginModel(Application *application, QObject *parent)
 
 PluginModel::~PluginModel()
 {
-    foreach (Plugin *plugin, d->plugins) {
-        unload(plugin);
-    }
+    unloadAll();
+    qDeleteAll(d->plugins);
 }
 
 void PluginModel::addToBlacklist(const QStringList &names)
@@ -194,6 +193,13 @@ bool PluginModel::unload(Plugin *plugin)
         return plugin->d->loader.unload();
     }
     return true;
+}
+
+void PluginModel::unloadAll()
+{
+    foreach (Plugin *plugin, d->plugins) {
+        unload(plugin);
+    }
 }
 
 int PluginModel::rowCount(const QModelIndex &) const
