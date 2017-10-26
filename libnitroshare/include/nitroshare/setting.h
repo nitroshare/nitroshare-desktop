@@ -38,18 +38,34 @@ class NITROSHARE_EXPORT SettingPrivate;
 class NITROSHARE_EXPORT Setting : public QObject
 {
     Q_OBJECT
+    Q_ENUMS(Type)
+    Q_PROPERTY(Type type READ type)
     Q_PROPERTY(QString name READ name)
     Q_PROPERTY(QVariant defaultValue READ defaultValue)
 
 public:
 
     /**
+     * @brief Type of value used for setting
+     */
+    enum Type {
+        String,
+        Integer
+    };
+
+    /**
      * @brief Create a new setting
-     * @param parent QObject
+     * @param type setting type
+     * @param name setting name
      * @param defaultValue default value
      * @param parent QObject
      */
-    Setting(const QString &name, const QVariant &defaultValue, QObject *parent = nullptr);
+    Setting(Type type, const QString &name, const QVariant &defaultValue, QObject *parent = nullptr);
+
+    /**
+     * @brief Retrieve the type of value stored in the setting
+     */
+    Type type() const;
 
     /**
      * @brief Retrieve the unique name of the setting

@@ -28,14 +28,17 @@
 #include <QObject>
 #include <QVariant>
 
+#include <nitroshare/setting.h>
+
 class SettingPrivate : public QObject
 {
     Q_OBJECT
 
 public:
 
-    SettingPrivate(QObject *parent, const QString &name, const QVariant &defaultValue);
+    SettingPrivate(QObject *parent, Setting::Type type, const QString &name, const QVariant &defaultValue);
 
+    Setting::Type type;
     QString name;
     QVariant defaultValue;
 };
