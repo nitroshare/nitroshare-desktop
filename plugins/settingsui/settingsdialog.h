@@ -26,10 +26,15 @@
 #define SETTINGSDIALOG_H
 
 #include <QDialog>
+#include <QHash>
+#include <QSpacerItem>
 #include <QStringList>
+#include <QVBoxLayout>
 
 class Application;
 class Setting;
+
+class SettingWidget;
 
 class SettingsDialog : public QDialog
 {
@@ -46,9 +51,11 @@ private slots:
 
 private:
 
-    void addSettings(const QStringList &keys);
-
     Application *mApplication;
+
+    QVBoxLayout *mLayout;
+    QSpacerItem *mSpacer;
+    QHash<Setting*, SettingWidget*> mWidgets;
 };
 
 #endif // SETTINGSDIALOG_H

@@ -22,42 +22,56 @@
  * IN THE SOFTWARE.
  */
 
-#include <QLabel>
-#include <QVBoxLayout>
-
 #include <nitroshare/application.h>
 #include <nitroshare/setting.h>
 #include <nitroshare/settingsregistry.h>
 
 #include "settingsdialog.h"
+#include "stringsettingwidget.h"
 
 SettingsDialog::SettingsDialog(Application *application)
-    : mApplication(application)
+    : mApplication(application),
+      mLayout(new QVBoxLayout),
+      mSpacer(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::Expanding))
 {
     setWindowTitle(tr("Settings"));
 
     connect(mApplication->settingsRegistry(), &SettingsRegistry::settingAdded, this, &SettingsDialog::onSettingAdded);
     connect(mApplication->settingsRegistry(), &SettingsRegistry::settingRemoved, this, &SettingsDialog::onSettingRemoved);
 
-    setLayout(new QVBoxLayout);
+    // Add exisiting settings
+    foreach (Setting *setting, mApplication->settingsRegistry()->settings()) {
+        onSettingAdded(setting);
+    }
 
-    //...
+    mLayout->addItem(mSpacer);
+    setLayout(mLayout);
 }
 
 void SettingsDialog::onSettingAdded(Setting *setting)
 {
-    //...
+    SettingWidget *widget = nullptr;
+
+    // Create the widget of the appropriate type
+    switch (setting->type()) {
+    case Setting::String:
+        widget = new StringSettingWidget(setting);
+        break;
+    }
+
+    if (widget) {
+
+        // Set the initial value
+        widget->setValue(mApplication->settingsRegistry()->value(setting->name()));
+
+        // Add the widget
+        mLayout->insertWidget(mWidgets.count(), widget);
+        mWidgets.insert(setting, widget);
+    }
 }
 
 void SettingsDialog::onSettingRemoved(Setting *setting)
 {
-    //...
-}
-
-void SettingsDialog::addSettings(const QStringList &keys)
-{
-    foreach (const QString &key, keys) {
-        QLabel *label = new QLabel(key);
-        layout()->addWidget(label);
-    }
+    SettingWidget *widget = mWidgets.take(setting);
+    mLayout->removeWidget(widget);
 }
