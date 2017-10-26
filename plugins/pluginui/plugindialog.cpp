@@ -36,6 +36,8 @@
 
 #include "plugindialog.h"
 
+const QString ThisPlugin = "pluginui";
+
 PluginDialog::PluginDialog(Application *application)
     : mApplication(application),
       mTableView(new QTableView),
@@ -91,7 +93,7 @@ void PluginDialog::onLoad()
 void PluginDialog::onUnload()
 {
     Plugin *plugin = currentPlugin();
-    if (plugin->name() == "pluginui") {
+    if (plugin->name() == ThisPlugin) {
         int response = QMessageBox::warning(
             this,
             tr("Warning"),
@@ -103,7 +105,9 @@ void PluginDialog::onUnload()
         }
     }
     mApplication->pluginModel()->unload(plugin);
-    mTableView->selectionModel()->clear();
+    if (plugin->name() != ThisPlugin) {
+        mTableView->selectionModel()->clear();
+    }
 }
 
 Plugin *PluginDialog::currentPlugin() const
