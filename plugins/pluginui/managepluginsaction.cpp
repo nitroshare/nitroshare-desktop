@@ -48,4 +48,5 @@ QString ManagePluginsAction::title() const
 QVariant ManagePluginsAction::invoke(const QVariantMap &)
 {
     mDialog.show();
+    return true;
 }
