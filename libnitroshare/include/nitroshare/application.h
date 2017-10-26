@@ -36,7 +36,7 @@ class DeviceModel;
 class HandlerRegistry;
 class Logger;
 class PluginModel;
-class Settings;
+class SettingsRegistry;
 class TransferModel;
 
 class NITROSHARE_EXPORT ApplicationPrivate;
@@ -132,10 +132,10 @@ public:
     PluginModel *pluginModel() const;
 
     /**
-     * @brief Retrieve the global settings instance
-     * @return pointer to Settings
+     * @brief Retrieve the global SettingsRegistry instance
+     * @return pointer to SettingsRegistry
      */
-    Settings *settings() const;
+    SettingsRegistry *settingsRegistry() const;
 
     /**
      * @brief Retrieve the global TransferModel instance

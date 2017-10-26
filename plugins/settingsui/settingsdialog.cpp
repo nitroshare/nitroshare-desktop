@@ -26,7 +26,8 @@
 #include <QVBoxLayout>
 
 #include <nitroshare/application.h>
-#include <nitroshare/settings.h>
+#include <nitroshare/setting.h>
+#include <nitroshare/settingsregistry.h>
 
 #include "settingsdialog.h"
 
@@ -35,21 +36,20 @@ SettingsDialog::SettingsDialog(Application *application)
 {
     setWindowTitle(tr("Settings"));
 
-    connect(mApplication->settings(), &Settings::settingsAdded, this, &SettingsDialog::onSettingsAdded);
-    connect(mApplication->settings(), &Settings::settingsRemoved, this, &SettingsDialog::onSettingsRemoved);
+    connect(mApplication->settingsRegistry(), &SettingsRegistry::settingAdded, this, &SettingsDialog::onSettingAdded);
+    connect(mApplication->settingsRegistry(), &SettingsRegistry::settingRemoved, this, &SettingsDialog::onSettingRemoved);
 
     setLayout(new QVBoxLayout);
 
-    // Initialize widgets for all existing settings
-    addSettings(mApplication->settings()->settings().keys());
+    //...
 }
 
-void SettingsDialog::onSettingsAdded(const QStringList &keys)
+void SettingsDialog::onSettingAdded(Setting *setting)
 {
-    addSettings(keys);
+    //...
 }
 
-void SettingsDialog::onSettingsRemoved(const QStringList &keys)
+void SettingsDialog::onSettingRemoved(Setting *setting)
 {
     //...
 }

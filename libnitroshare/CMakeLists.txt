@@ -25,7 +25,6 @@ set(SRC
     src/transfer/packet.cpp
     src/transfer/transfer.cpp
     src/transfer/transfermodel.cpp
-    src/util/settings.cpp
     src/util/signalnotifier.cpp
 )
 

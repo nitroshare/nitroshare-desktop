@@ -25,15 +25,14 @@
 #ifndef LIBNITROSHARE_APPLICATION_P_H
 #define LIBNITROSHARE_APPLICATION_P_H
 
-#include <QSettings>
-
 #include <nitroshare/actionregistry.h>
 #include <nitroshare/application.h>
 #include <nitroshare/devicemodel.h>
 #include <nitroshare/handlerregistry.h>
 #include <nitroshare/logger.h>
 #include <nitroshare/pluginmodel.h>
-#include <nitroshare/settings.h>
+#include <nitroshare/setting.h>
+#include <nitroshare/settingsregistry.h>
 #include <nitroshare/transfermodel.h>
 
 class ApplicationPrivate : public QObject
@@ -43,17 +42,19 @@ class ApplicationPrivate : public QObject
 public:
 
     explicit ApplicationPrivate(Application *application);
+    virtual ~ApplicationPrivate();
 
     Application *const q;
 
-    QSettings baseSettings;
+    Setting deviceUuid;
+    Setting deviceName;
 
     ActionRegistry actionRegistry;
     DeviceModel deviceModel;
     HandlerRegistry handlerRegistry;
     Logger logger;
     PluginModel pluginModel;
-    Settings settings;
+    SettingsRegistry settingsRegistry;
     TransferModel transferModel;
 
     bool uiEnabled;

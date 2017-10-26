@@ -28,6 +28,8 @@
 #include <QObject>
 #include <QStringList>
 
+#include <nitroshare/setting.h>
+
 #include <qhttpengine/localauthmiddleware.h>
 #include <qhttpengine/server.h>
 
@@ -42,6 +44,7 @@ class ApiServer : public QObject
 public:
 
     explicit ApiServer(Application *application);
+    virtual ~ApiServer();
 
     void start();
     void stop();
@@ -57,6 +60,8 @@ private:
     ActionHandler mHandler;
     QHttpEngine::Server mServer;
     QHttpEngine::LocalAuthMiddleware mAuth;
+
+    Setting mApiEnabled;
 };
 
 #endif // APISERVER_H

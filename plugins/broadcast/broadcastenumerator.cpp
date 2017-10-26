@@ -34,47 +34,41 @@
 #include <nitroshare/application.h>
 #include <nitroshare/logger.h>
 #include <nitroshare/message.h>
-#include <nitroshare/settings.h>
+#include <nitroshare/settingsregistry.h>
 
 #include "broadcastenumerator.h"
 
 const QString MessageTag = "broadcast";
 
-// Time (in MS) between broadcast packets
 const QString BroadcastInterval = "BroadcastInterval";
-const QVariant BroadcastIntervalDefault = 5000;
-
-// Time (in MS) before a remote peer expires
 const QString BroadcastExpiry = "BroadcastExpiry";
-const QVariant BroadcastExpiryDefault = 30000;
-
-// Port to use for listening for broadcast packets
 const QString BroadcastPort = "BroadcastPort";
-const QVariant BroadcastPortDefault = 40816;
 
 BroadcastEnumerator::BroadcastEnumerator(Application *application)
-    : mApplication(application)
+    : mApplication(application),
+      mBroadcastInterval(Setting::Integer, BroadcastInterval, 5000),
+      mBroadcastExpiry(Setting::Integer, BroadcastExpiry, 30000),
+      mBroadcastPort(Setting::Integer, BroadcastPort, 40816)
+
 {
     connect(&mBroadcastTimer, &QTimer::timeout, this, &BroadcastEnumerator::onBroadcastTimeout);
     connect(&mExpiryTimer, &QTimer::timeout, this, &BroadcastEnumerator::onExpiryTimeout);
     connect(&mSocket, &QUdpSocket::readyRead, this, &BroadcastEnumerator::onReadyRead);
-    connect(mApplication->settings(), &Settings::settingsChanged, this, &BroadcastEnumerator::onSettingsChanged);
+    connect(mApplication->settingsRegistry(), &SettingsRegistry::settingsChanged, this, &BroadcastEnumerator::onSettingsChanged);
 
-    mApplication->settings()->addSetting(
-        BroadcastInterval,
-        {{Settings::DefaultKey, BroadcastIntervalDefault}}
-    );
-    mApplication->settings()->addSetting(
-        BroadcastExpiry,
-        {{Settings::DefaultKey, BroadcastExpiryDefault}}
-    );
-    mApplication->settings()->addSetting(
-        BroadcastPort,
-        {{Settings::DefaultKey, BroadcastPortDefault}}
-    );
+    mApplication->settingsRegistry()->add(&mBroadcastInterval);
+    mApplication->settingsRegistry()->add(&mBroadcastExpiry);
+    mApplication->settingsRegistry()->add(&mBroadcastPort);
 
     // Trigger loading the initial settings
     onSettingsChanged({ BroadcastInterval, BroadcastExpiry, BroadcastPort });
+}
+
+BroadcastEnumerator::~BroadcastEnumerator()
+{
+    mApplication->settingsRegistry()->remove(&mBroadcastInterval);
+    mApplication->settingsRegistry()->remove(&mBroadcastExpiry);
+    mApplication->settingsRegistry()->remove(&mBroadcastPort);
 }
 
 void BroadcastEnumerator::onBroadcastTimeout()
@@ -108,7 +102,7 @@ void BroadcastEnumerator::onExpiryTimeout()
 {
     // Grab the current time in MS and the timeout interval
     qint64 ms = QDateTime::currentMSecsSinceEpoch();
-    int expiry = mApplication->settings()->value(BroadcastExpiry).toInt();
+    int expiry = mApplication->settingsRegistry()->value(BroadcastExpiry).toInt();
 
     // Remove any devices that have expired
     auto i = mDevices.begin();
@@ -148,7 +142,7 @@ void BroadcastEnumerator::onSettingsChanged(const QStringList &keys)
     if (keys.contains(BroadcastInterval)) {
         mBroadcastTimer.stop();
         mBroadcastTimer.setInterval(
-            mApplication->settings()->value(BroadcastInterval).toInt()
+            mApplication->settingsRegistry()->value(BroadcastInterval).toInt()
         );
         onBroadcastTimeout();
         mBroadcastTimer.start();
@@ -157,7 +151,7 @@ void BroadcastEnumerator::onSettingsChanged(const QStringList &keys)
     if (keys.contains(BroadcastExpiry)) {
         mExpiryTimer.stop();
         mExpiryTimer.setInterval(
-            mApplication->settings()->value(BroadcastExpiry).toInt()
+            mApplication->settingsRegistry()->value(BroadcastExpiry).toInt()
         );
         onExpiryTimeout();
         mExpiryTimer.start();
@@ -166,7 +160,7 @@ void BroadcastEnumerator::onSettingsChanged(const QStringList &keys)
     if (keys.contains(BroadcastPort)) {
         mSocket.close();
         if (!mSocket.bind(QHostAddress::Any,
-                mApplication->settings()->value(BroadcastPort).toInt())) {
+                mApplication->settingsRegistry()->value(BroadcastPort).toInt())) {
             mApplication->logger()->log(new Message(
                 Message::Error,
                 MessageTag,

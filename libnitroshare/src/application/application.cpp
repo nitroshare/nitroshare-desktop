@@ -43,12 +43,19 @@ const QString Application::DeviceName = "DeviceName";
 ApplicationPrivate::ApplicationPrivate(Application *application)
     : QObject(application),
       q(application),
+      deviceUuid(Setting::String, Application::DeviceUuid, QUuid::createUuid().toString()),
+      deviceName(Setting::String, Application::DeviceName, QHostInfo::localHostName()),
       pluginModel(application),
-      settings(&baseSettings),
       uiEnabled(false)
 {
-    settings.addSetting(Application::DeviceUuid, {{Settings::DefaultKey, QUuid::createUuid().toString()}});
-    settings.addSetting(Application::DeviceName, {{Settings::DefaultKey, QHostInfo::localHostName()}});
+    settingsRegistry.add(&deviceUuid);
+    settingsRegistry.add(&deviceName);
+}
+
+ApplicationPrivate::~ApplicationPrivate()
+{
+    settingsRegistry.remove(&deviceUuid);
+    settingsRegistry.remove(&deviceName);
 }
 
 Application::Application(QObject *parent)
@@ -74,12 +81,12 @@ void Application::processCliOptions(QCommandLineParser *parser)
 
 QString Application::deviceUuid() const
 {
-    return d->settings.value(DeviceUuid).toString();
+    return d->settingsRegistry.value(DeviceUuid).toString();
 }
 
 QString Application::deviceName() const
 {
-    return d->settings.value(DeviceName).toString();
+    return d->settingsRegistry.value(DeviceName).toString();
 }
 
 QString Application::version() const
@@ -112,9 +119,9 @@ PluginModel *Application::pluginModel() const
     return &d->pluginModel;
 }
 
-Settings *Application::settings() const
+SettingsRegistry *Application::settingsRegistry() const
 {
-    return &d->settings;
+    return &d->settingsRegistry;
 }
 
 TransferModel *Application::transferModel() const

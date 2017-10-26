@@ -27,7 +27,7 @@
 #include <nitroshare/application.h>
 #include <nitroshare/logger.h>
 #include <nitroshare/message.h>
-#include <nitroshare/settings.h>
+#include <nitroshare/settingsregistry.h>
 
 #include <qmdnsengine/resolver.h>
 
@@ -47,7 +47,7 @@ MdnsEnumerator::MdnsEnumerator(Application *application)
     connect(&mBrowser, &QMdnsEngine::Browser::serviceAdded, this, &MdnsEnumerator::onServiceUpdated);
     connect(&mBrowser, &QMdnsEngine::Browser::serviceUpdated, this, &MdnsEnumerator::onServiceUpdated);
     connect(&mBrowser, &QMdnsEngine::Browser::serviceRemoved, this, &MdnsEnumerator::onServiceRemoved);
-    connect(application->settings(), &Settings::settingsChanged, this, &MdnsEnumerator::onSettingsChanged);
+    connect(application->settingsRegistry(), &SettingsRegistry::settingsChanged, this, &MdnsEnumerator::onSettingsChanged);
 
     // Initialize the service
     mService.setType(ServiceType);

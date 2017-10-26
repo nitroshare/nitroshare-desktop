@@ -23,7 +23,7 @@
  */
 
 #include <nitroshare/application.h>
-#include <nitroshare/settings.h>
+#include <nitroshare/settingsregistry.h>
 
 #include "lantransport.h"
 #include "lantransportserver.h"
@@ -33,7 +33,7 @@ LanTransportServer::LanTransportServer(Application *application)
     connect(&mServer, &Server::newSocketDescriptor, this, &LanTransportServer::onNewSocketDescriptor);
 
     // Watch for settings changing and trigger the initial values
-    connect(application->settings(), &Settings::settingsChanged, this, &LanTransportServer::onSettingsChanged);
+    connect(application->settingsRegistry(), &SettingsRegistry::settingsChanged, this, &LanTransportServer::onSettingsChanged);
     onSettingsChanged({});
 }
 

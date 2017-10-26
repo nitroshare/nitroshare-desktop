@@ -29,6 +29,7 @@
 #include <QStringList>
 
 class Application;
+class Setting;
 
 class SettingsDialog : public QDialog
 {
@@ -40,8 +41,8 @@ public:
 
 private slots:
 
-    void onSettingsAdded(const QStringList &keys);
-    void onSettingsRemoved(const QStringList &keys);
+    void onSettingAdded(Setting *setting);
+    void onSettingRemoved(Setting *setting);
 
 private:
 

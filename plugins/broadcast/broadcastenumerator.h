@@ -30,6 +30,7 @@
 #include <QUdpSocket>
 
 #include <nitroshare/deviceenumerator.h>
+#include <nitroshare/setting.h>
 
 class Application;
 
@@ -50,6 +51,7 @@ class BroadcastEnumerator : public DeviceEnumerator
 public:
 
     explicit BroadcastEnumerator(Application *application);
+    virtual ~BroadcastEnumerator();
 
 private slots:
 
@@ -66,6 +68,10 @@ private:
     QTimer mExpiryTimer;
     QUdpSocket mSocket;
     QMap<QString, qint64> mDevices;
+
+    Setting mBroadcastInterval;
+    Setting mBroadcastExpiry;
+    Setting mBroadcastPort;
 };
 
 #endif // BROADCASTENUMERATOR_H

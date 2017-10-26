@@ -25,7 +25,7 @@
 #include <nitroshare/application.h>
 #include <nitroshare/logger.h>
 #include <nitroshare/message.h>
-#include <nitroshare/settings.h>
+#include <nitroshare/settingsregistry.h>
 
 #include "apiserver.h"
 
@@ -33,22 +33,26 @@ const QString MessageTag = "api";
 
 // True to enable the HTTP API
 const QString ApiEnabled = "ApiEnabled";
-const QVariant ApiEnabledDefault = true;
 
 ApiServer::ApiServer(Application *application)
     : mApplication(application),
       mHandler(application),
-      mServer(&mHandler)
-
+      mServer(&mHandler),
+      mApiEnabled(Setting::Boolean, ApiEnabled, true)
 {
     mHandler.addMiddleware(&mAuth);
 
     // Add the setting for enabling the API and watch for it changing
-    mApplication->settings()->addSetting(ApiEnabled, {{Settings::DefaultKey, ApiEnabledDefault}});
-    connect(mApplication->settings(), &Settings::settingsChanged, this, &ApiServer::onSettingsChanged);
+    mApplication->settingsRegistry()->add(&mApiEnabled);
+    connect(mApplication->settingsRegistry(), &SettingsRegistry::settingsChanged, this, &ApiServer::onSettingsChanged);
 
     // Trigger the initial settings
     onSettingsChanged({ ApiEnabled });
+}
+
+ApiServer::~ApiServer()
+{
+    mApplication->settingsRegistry()->remove(&mApiEnabled);
 }
 
 void ApiServer::start()
@@ -83,7 +87,7 @@ void ApiServer::onSettingsChanged(const QStringList &keys)
 {
     if (keys.contains(ApiEnabled)) {
         stop();
-        if (mApplication->settings()->value(ApiEnabled).toBool()) {
+        if (mApplication->settingsRegistry()->value(ApiEnabled).toBool()) {
             start();
         }
     }
