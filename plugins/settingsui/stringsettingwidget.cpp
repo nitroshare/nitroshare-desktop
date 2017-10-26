@@ -35,6 +35,8 @@ StringSettingWidget::StringSettingWidget(Setting *setting)
     QLabel *label = new QLabel(setting->title());
 
     QVBoxLayout *vboxLayout = new QVBoxLayout;
+    vboxLayout->setMargin(0);
+    vboxLayout->setSpacing(0);
     vboxLayout->addWidget(label);
     vboxLayout->addWidget(mLineEdit);
     setLayout(vboxLayout);
