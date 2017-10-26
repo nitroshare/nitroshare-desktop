@@ -56,6 +56,7 @@ void SettingsDialog::onSettingAdded(Setting *setting)
     // Create the widget of the appropriate type
     switch (setting->type()) {
     case Setting::String:
+    case Setting::Integer:
         widget = new StringSettingWidget(setting);
         break;
     case Setting::Boolean:
