@@ -26,6 +26,7 @@
 #include <nitroshare/setting.h>
 #include <nitroshare/settingsregistry.h>
 
+#include "booleansettingwidget.h"
 #include "settingsdialog.h"
 #include "stringsettingwidget.h"
 
@@ -56,6 +57,9 @@ void SettingsDialog::onSettingAdded(Setting *setting)
     switch (setting->type()) {
     case Setting::String:
         widget = new StringSettingWidget(setting);
+        break;
+    case Setting::Boolean:
+        widget = new BooleanSettingWidget(setting);
         break;
     }
 
