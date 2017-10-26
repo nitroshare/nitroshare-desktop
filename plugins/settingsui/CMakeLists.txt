@@ -7,6 +7,9 @@ set(SRC
     settingsdialog.cpp
     settingsuiplugin.h
     settingsuiplugin.cpp
+    settingwidget.h
+    stringsettingwidget.h
+    stringsettingwidget.cpp
 )
 
 add_library(settingsui MODULE ${SRC})
