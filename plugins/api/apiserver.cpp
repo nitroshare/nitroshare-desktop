@@ -22,8 +22,6 @@
  * IN THE SOFTWARE.
  */
 
-#include <QVariant>
-
 #include <nitroshare/application.h>
 #include <nitroshare/logger.h>
 #include <nitroshare/message.h>
@@ -39,13 +37,11 @@ const QVariant ApiEnabledDefault = true;
 
 ApiServer::ApiServer(Application *application)
     : mApplication(application),
-      mApi(application),
+      mHandler(application),
       mServer(&mHandler)
+
 {
-    // Set up the handler
     mHandler.addMiddleware(&mAuth);
-    mHandler.registerMethod("version", &mApi, &Api::version);
-    mHandler.registerMethod("sendItems", &mApi, &Api::sendItems);
 
     // Add the setting for enabling the API and watch for it changing
     mApplication->settings()->addSetting(ApiEnabled, {{Settings::DefaultKey, ApiEnabledDefault}});

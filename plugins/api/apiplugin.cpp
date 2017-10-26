@@ -23,6 +23,7 @@
  */
 
 #include "apiplugin.h"
+#include "apiserver.h"
 
 void ApiPlugin::initialize(Application *application)
 {

@@ -1,8 +1,8 @@
 configure_file(api.json.in "${CMAKE_CURRENT_BINARY_DIR}/api.json")
 
 set(SRC
-    api.h
-    api.cpp
+    actionhandler.h
+    actionhandler.cpp
     apiplugin.h
     apiplugin.cpp
     apiserver.h

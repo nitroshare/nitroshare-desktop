@@ -29,10 +29,9 @@
 #include <QStringList>
 
 #include <qhttpengine/localauthmiddleware.h>
-#include <qhttpengine/qobjecthandler.h>
 #include <qhttpengine/server.h>
 
-#include "api.h"
+#include "actionhandler.h"
 
 class Application;
 
@@ -55,11 +54,9 @@ private:
 
     Application *mApplication;
 
-    Api mApi;
-
-    QHttpEngine::LocalAuthMiddleware mAuth;
-    QHttpEngine::QObjectHandler mHandler;
+    ActionHandler mHandler;
     QHttpEngine::Server mServer;
+    QHttpEngine::LocalAuthMiddleware mAuth;
 };
 
 #endif // APISERVER_H

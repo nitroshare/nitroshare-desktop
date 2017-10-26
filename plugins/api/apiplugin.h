@@ -27,7 +27,7 @@
 
 #include <nitroshare/iplugin.h>
 
-#include "apiserver.h"
+class ApiServer;
 
 class Q_DECL_EXPORT ApiPlugin : public IPlugin
 {
