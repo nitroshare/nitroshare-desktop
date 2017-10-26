@@ -157,6 +157,10 @@ bool PluginModel::load(Plugin *plugin)
         iplugin->initialize(d->application);
         plugin->d->initialized = true;
 
+        // Emit the signal indicating the state of the plugin has changed
+        QModelIndex index = createIndex(d->plugins.indexOf(plugin), 0);
+        emit dataChanged(index, index);
+
         // Prevent the dependencies from cleanup until this one is cleaned up
         foreach (Plugin *dependentPlugin, dependentPlugins) {
             dependentPlugin->d->children.append(plugin);
@@ -180,6 +184,10 @@ bool PluginModel::unload(Plugin *plugin)
         IPlugin *iplugin = qobject_cast<IPlugin*>(plugin->d->loader.instance());
         iplugin->cleanup(d->application);
         plugin->d->initialized = false;
+
+        // Emit the signal indicating the state of the plugin has changed
+        QModelIndex index = createIndex(d->plugins.indexOf(plugin), 0);
+        emit dataChanged(index, index);
 
         // Remove this plugin from its dependencies
         foreach (const QString &dependency, plugin->d->dependencies) {
