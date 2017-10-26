@@ -87,12 +87,6 @@ void PluginModel::loadPluginsFromDirectories(const QStringList &directories)
                 continue;
             }
 
-            // Refuse to load blacklisted plugins
-            if (d->blacklist.contains(plugin->name())) {
-                delete plugin;
-                continue;
-            }
-
             // Insert the plugin into the model
             beginInsertRows(QModelIndex(), d->plugins.count(), d->plugins.count());
             d->plugins.append(plugin);
@@ -131,6 +125,11 @@ bool PluginModel::load(Plugin *plugin)
         return false;
     }
     if (!plugin->d->initialized) {
+
+        // Refuse to initialize blacklisted plugins
+        if (d->blacklist.contains(plugin->name())) {
+            return false;
+        }
 
         // For each dependency, check if the plugin exists and if so, attempt
         // to initialize it
