@@ -26,6 +26,7 @@
 #include <QLibrary>
 
 #include <nitroshare/application.h>
+#include <nitroshare/iplugin.h>
 #include <nitroshare/logger.h>
 #include <nitroshare/message.h>
 #include <nitroshare/plugin.h>
@@ -51,7 +52,7 @@ PluginModel::PluginModel(Application *application, QObject *parent)
 PluginModel::~PluginModel()
 {
     foreach (Plugin *plugin, d->plugins) {
-        plugin->d->unload(d->application);
+        unload(plugin);
     }
 }
 
@@ -98,19 +99,14 @@ void PluginModel::loadPluginsFromDirectories(const QStringList &directories)
             d->plugins.append(plugin);
             endInsertRows();
 
-            // Indicate when plugin state changes
-            connect(plugin, &Plugin::isLoadedChanged, [this, plugin]() {
-                QModelIndex idx = index(d->plugins.indexOf(plugin), 0);
-                emit dataChanged(idx, idx, { Qt::UserRole });
-            });
-
+            // Remember that this is one of the new plugins
             newPlugins.append(plugin);
         }
     }
 
     // Attempt to initialize the new plugins
     foreach (Plugin *plugin, newPlugins) {
-        if (!plugin->d->initialize(d->application)) {
+        if (!load(plugin)) {
             d->application->logger()->log(new Message(
                 Message::Error,
                 MessageTag,
@@ -132,16 +128,70 @@ Plugin *PluginModel::find(const QString &name) const
 
 bool PluginModel::load(Plugin *plugin)
 {
-    if (!plugin->d->load() || !plugin->d->initialize(d->application)) {
+    if (!plugin->d->load()) {
         return false;
+    }
+    if (!plugin->d->initialized) {
+
+        // For each dependency, check if the plugin exists and if so, attempt
+        // to initialize it
+        QList<Plugin*> dependentPlugins;
+        foreach (const QString &dependency, plugin->d->dependencies) {
+            if (dependency == "ui") {
+                if (d->application->isUiEnabled()) {
+                    continue;
+                } else {
+                    return false;
+                }
+            }
+            Plugin *dependentPlugin = find(dependency);
+            if (!dependentPlugin || !load(dependentPlugin)) {
+                return false;
+            }
+            dependentPlugins.append(dependentPlugin);
+        }
+
+        // Retrieve the IPlugin interface from the plugin
+        IPlugin *iplugin = qobject_cast<IPlugin*>(plugin->d->loader.instance());
+        if (!iplugin) {
+            return false;
+        }
+        iplugin->initialize(d->application);
+        plugin->d->initialized = true;
+
+        // Prevent the dependencies from cleanup until this one is cleaned up
+        foreach (Plugin *dependentPlugin, dependentPlugins) {
+            dependentPlugin->d->children.append(plugin);
+        }
     }
     return true;
 }
 
 bool PluginModel::unload(Plugin *plugin)
 {
-    if (!plugin->d->unload(d->application)) {
-        return false;
+    if (plugin->d->initialized) {
+
+        // Unload all children first
+        foreach (Plugin *childPlugin, plugin->d->children) {
+            if (!unload(childPlugin)) {
+                return false;
+            }
+        }
+
+        // Clean up this plugin
+        IPlugin *iplugin = qobject_cast<IPlugin*>(plugin->d->loader.instance());
+        iplugin->cleanup(d->application);
+        plugin->d->initialized = false;
+
+        // Remove this plugin from its dependencies
+        foreach (const QString &dependency, plugin->d->dependencies) {
+            if (dependency != "ui") {
+               find(dependency)->d->children.removeOne(plugin);
+            }
+        }
+    }
+    if (plugin->d->loader.isLoaded()) {
+        return plugin->d->loader.unload();
     }
     return true;
 }

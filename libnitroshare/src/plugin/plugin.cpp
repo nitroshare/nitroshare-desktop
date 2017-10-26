@@ -24,16 +24,12 @@
 
 #include <QJsonValue>
 
-#include <nitroshare/application.h>
-#include <nitroshare/iplugin.h>
 #include <nitroshare/plugin.h>
-#include <nitroshare/pluginmodel.h>
 
 #include "plugin_p.h"
 
-PluginPrivate::PluginPrivate(Plugin *plugin, const QString &filename)
-    : QObject(plugin),
-      q(plugin),
+PluginPrivate::PluginPrivate(QObject *parent, const QString &filename)
+    : QObject(parent),
       loader(filename),
       initialized(false)
 {
@@ -56,77 +52,6 @@ bool PluginPrivate::load()
         }
         metadata = loader.metaData().value("MetaData").toObject();
         dependencies = arrayToList(metadata.value("Dependencies").toArray());
-    }
-    return true;
-}
-
-bool PluginPrivate::unload(Application *application)
-{
-    if (initialized) {
-
-        // Unload all children first
-        foreach (Plugin *plugin, children) {
-            if (!plugin->d->unload(application)) {
-                return false;
-            }
-        }
-
-        // Clean up this plugin
-        qobject_cast<IPlugin*>(loader.instance())->cleanup(application);
-        initialized = false;
-
-        // Remove this plugin from its dependencies
-        foreach (const QString &dependency, dependencies) {
-            if (dependency != "ui") {
-                application->pluginModel()->find(dependency)->d->children.removeOne(q);
-            }
-        }
-    }
-    if (loader.isLoaded()) {
-        if (!loader.unload()) {
-            return false;
-        }
-        emit q->isLoadedChanged();
-    }
-    return true;
-}
-
-bool PluginPrivate::initialize(Application *application)
-{
-    if (!initialized) {
-
-        // For each dependency, check if the plugin exists and if so, attempt
-        // to initialize it
-        QList<Plugin*> dependentPlugins;
-        foreach (const QString &dependency, dependencies) {
-            if (dependency == "ui") {
-                if (application->isUiEnabled()) {
-                    continue;
-                } else {
-                    return false;
-                }
-            }
-            Plugin *dependentPlugin = application->pluginModel()->find(dependency);
-            if (!dependentPlugin || !dependentPlugin->d->initialize(application)) {
-                return false;
-            }
-            dependentPlugins.append(dependentPlugin);
-        }
-
-        // Retrieve the IPlugin interface from the plugin
-        IPlugin *iplugin = qobject_cast<IPlugin*>(loader.instance());
-        if (!iplugin) {
-            return false;
-        }
-        iplugin->initialize(application);
-        initialized = true;
-
-        // Prevent the dependencies from cleanup until this one is cleaned up
-        foreach (Plugin *dependentPlugin, dependentPlugins) {
-            dependentPlugin->d->children.append(q);
-        }
-
-        emit q->isLoadedChanged();
     }
     return true;
 }

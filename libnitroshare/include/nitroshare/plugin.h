@@ -47,7 +47,7 @@ class NITROSHARE_EXPORT Plugin : public QObject
     Q_PROPERTY(QString vendor READ vendor)
     Q_PROPERTY(QString version READ version)
     Q_PROPERTY(QString description READ description)
-    Q_PROPERTY(bool isLoaded READ isLoaded NOTIFY isLoadedChanged)
+    Q_PROPERTY(bool isLoaded READ isLoaded)
 
 public:
 
@@ -88,17 +88,9 @@ public:
      */
     bool isLoaded() const;
 
-Q_SIGNALS:
-
-    /**
-     * @brief Indicate that the status of the plugin changed
-     */
-    void isLoadedChanged();
-
 private:
 
     PluginPrivate *const d;
-    friend class PluginPrivate;
     friend class PluginModel;
 };
 

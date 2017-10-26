@@ -31,7 +31,6 @@
 #include <QList>
 #include <QPluginLoader>
 
-class Application;
 class Plugin;
 
 class PluginPrivate : public QObject
@@ -40,15 +39,11 @@ class PluginPrivate : public QObject
 
 public:
 
-    PluginPrivate(Plugin *plugin, const QString &filename);
+    PluginPrivate(QObject *parent, const QString &filename);
 
     QStringList arrayToList(const QJsonArray &array);
 
     bool load();
-    bool unload(Application *Application);
-    bool initialize(Application *application);
-
-    Plugin *q;
 
     QPluginLoader loader;
     QJsonObject metadata;
