@@ -46,9 +46,9 @@ const QString BroadcastPort = "BroadcastPort";
 
 BroadcastEnumerator::BroadcastEnumerator(Application *application)
     : mApplication(application),
-      mBroadcastInterval(Setting::Integer, BroadcastInterval, 5000),
-      mBroadcastExpiry(Setting::Integer, BroadcastExpiry, 30000),
-      mBroadcastPort(Setting::Integer, BroadcastPort, 40816)
+      mBroadcastInterval(Setting::Integer, BroadcastInterval, tr("Broadcast Interval"), 5000),
+      mBroadcastExpiry(Setting::Integer, BroadcastExpiry, tr("Broadcast Expiry"), 30000),
+      mBroadcastPort(Setting::Integer, BroadcastPort, tr("Broadcast Port"), 40816)
 
 {
     connect(&mBroadcastTimer, &QTimer::timeout, this, &BroadcastEnumerator::onBroadcastTimeout);

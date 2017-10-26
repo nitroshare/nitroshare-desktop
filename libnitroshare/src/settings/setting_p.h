@@ -36,10 +36,11 @@ class SettingPrivate : public QObject
 
 public:
 
-    SettingPrivate(QObject *parent, Setting::Type type, const QString &name, const QVariant &defaultValue);
+    SettingPrivate(QObject *parent, Setting::Type type, const QString &name, const QString &title, const QVariant &defaultValue);
 
     Setting::Type type;
     QString name;
+    QString title;
     QVariant defaultValue;
 };
 

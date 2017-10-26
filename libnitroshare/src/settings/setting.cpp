@@ -26,17 +26,18 @@
 
 #include "setting_p.h"
 
-SettingPrivate::SettingPrivate(QObject *parent, Setting::Type type, const QString &name, const QVariant &defaultValue)
+SettingPrivate::SettingPrivate(QObject *parent, Setting::Type type, const QString &name, const QString &title, const QVariant &defaultValue)
     : QObject(parent),
       type(type),
       name(name),
+      title(title),
       defaultValue(defaultValue)
 {
 }
 
-Setting::Setting(Type type, const QString &name, const QVariant &defaultValue, QObject *parent)
+Setting::Setting(Type type, const QString &name, const QString &title, const QVariant &defaultValue, QObject *parent)
     : QObject(parent),
-      d(new SettingPrivate(this, type, name, defaultValue))
+      d(new SettingPrivate(this, type, name, title, defaultValue))
 {
 }
 
@@ -48,6 +49,11 @@ Setting::Type Setting::type() const
 QString Setting::name() const
 {
     return d->name;
+}
+
+QString Setting::title() const
+{
+    return d->title;
 }
 
 QVariant Setting::defaultValue() const

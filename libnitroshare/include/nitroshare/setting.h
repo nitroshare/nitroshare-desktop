@@ -41,6 +41,7 @@ class NITROSHARE_EXPORT Setting : public QObject
     Q_ENUMS(Type)
     Q_PROPERTY(Type type READ type)
     Q_PROPERTY(QString name READ name)
+    Q_PROPERTY(QString title READ title)
     Q_PROPERTY(QVariant defaultValue READ defaultValue)
 
 public:
@@ -61,7 +62,7 @@ public:
      * @param defaultValue default value
      * @param parent QObject
      */
-    Setting(Type type, const QString &name, const QVariant &defaultValue, QObject *parent = nullptr);
+    Setting(Type type, const QString &name, const QString &title, const QVariant &defaultValue, QObject *parent = nullptr);
 
     /**
      * @brief Retrieve the type of value stored in the setting
@@ -72,6 +73,11 @@ public:
      * @brief Retrieve the unique name of the setting
      */
     QString name() const;
+
+    /**
+     * @brief Retrieve a descriptive title for the setting
+     */
+    QString title() const;
 
     /**
      * @brief Retrieve the default value of the setting

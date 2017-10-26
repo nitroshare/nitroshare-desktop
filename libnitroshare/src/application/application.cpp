@@ -43,8 +43,8 @@ const QString Application::DeviceName = "DeviceName";
 ApplicationPrivate::ApplicationPrivate(Application *application)
     : QObject(application),
       q(application),
-      deviceUuid(Setting::String, Application::DeviceUuid, QUuid::createUuid().toString()),
-      deviceName(Setting::String, Application::DeviceName, QHostInfo::localHostName()),
+      deviceUuid(Setting::String, Application::DeviceUuid, tr("Device UUID"), QUuid::createUuid().toString()),
+      deviceName(Setting::String, Application::DeviceName, tr("Device Name"), QHostInfo::localHostName()),
       pluginModel(application),
       uiEnabled(false)
 {

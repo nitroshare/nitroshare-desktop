@@ -38,7 +38,7 @@ ApiServer::ApiServer(Application *application)
     : mApplication(application),
       mHandler(application),
       mServer(&mHandler),
-      mApiEnabled(Setting::Boolean, ApiEnabled, true)
+      mApiEnabled(Setting::Boolean, ApiEnabled, tr("API Enabled"), true)
 {
     mHandler.addMiddleware(&mAuth);
 
