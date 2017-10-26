@@ -26,12 +26,13 @@
 #define PLUGINDIALOG_H
 
 #include <QDialog>
-#include <QModelIndex>
+#include <QPushButton>
 #include <QTableView>
 
 #include "pluginproxymodel.h"
 
 class Application;
+class Plugin;
 
 class PluginDialog : public QDialog
 {
@@ -43,16 +44,20 @@ public:
 
 private slots:
 
-    void onRowsInserted(const QModelIndex &parent, int start, int end);
+    void onSelectionChanged();
+
+    void onUnload();
 
 private:
 
-    void addButtons(int row);
+    Plugin *currentPlugin() const;
 
     Application *mApplication;
 
     QTableView *mTableView;
     PluginProxyModel mModel;
+
+    QPushButton *mUnloadButton;
 };
 
 #endif // PLUGINDIALOG_H

@@ -25,6 +25,7 @@
 #include <QGuiApplication>
 #include <QPalette>
 
+#include <nitroshare/plugin.h>
 #include <nitroshare/pluginmodel.h>
 
 #include "pluginproxymodel.h"
@@ -78,27 +79,28 @@ QVariant PluginProxyModel::data(const QModelIndex &proxyIndex, int role) const
         return QVariant();
     }
 
+    Plugin *plugin = sourceRole(proxyIndex, Qt::UserRole).value<Plugin*>();
+
     switch (role) {
     case Qt::DisplayRole:
         switch (proxyIndex.column()) {
+        case NameColumn:
+            return plugin->name();
         case TitleColumn:
-            role = PluginModel::TitleRole;
-            break;
+            return plugin->title();
         case VendorColumn:
-            role = PluginModel::VendorRole;
-            break;
+            return plugin->vendor();
         case VersionColumn:
-            role = PluginModel::VersionRole;
-            break;
+            return plugin->version();
         case StatusColumn:
-            if (sourceRole(proxyIndex, PluginModel::IsInitializedRole).toBool()) {
-                return tr("Initialized");
-            } else if (sourceRole(proxyIndex, PluginModel::IsLoadedRole).toBool()) {
+            if (plugin->isLoaded()) {
                 return tr("Loaded");
             } else {
                 return tr("Unloaded");
             }
             break;
+        case DescriptionColumn:
+            return plugin->description();
         }
         break;
     case Qt::TextAlignmentRole:
@@ -109,7 +111,7 @@ QVariant PluginProxyModel::data(const QModelIndex &proxyIndex, int role) const
         }
         break;
     case Qt::ForegroundRole:
-        if (!sourceRole(proxyIndex, PluginModel::IsInitializedRole).toBool()) {
+        if (!plugin->isLoaded()) {
             return QGuiApplication::palette().color(QPalette::Disabled, QPalette::WindowText);
         }
         break;
@@ -123,8 +125,9 @@ QVariant PluginProxyModel::headerData(int section, Qt::Orientation orientation, 
     if (orientation != Qt::Horizontal || role != Qt::DisplayRole) {
         return QVariant();
     }
-
     switch (section) {
+    case NameColumn:
+        return tr("Name");
     case TitleColumn:
         return tr("Title");
     case VendorColumn:
@@ -133,10 +136,9 @@ QVariant PluginProxyModel::headerData(int section, Qt::Orientation orientation, 
         return tr("Version");
     case StatusColumn:
         return tr("Status");
-    case ActionsColumn:
-        return tr("Actions");
+    case DescriptionColumn:
+        return tr("Description");
     }
-
     return QVariant();
 }
 

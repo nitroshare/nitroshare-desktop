@@ -31,7 +31,6 @@
 #include <nitroshare/config.h>
 
 class Application;
-class Plugin;
 
 class NITROSHARE_EXPORT PluginModelPrivate;
 
@@ -46,17 +45,6 @@ class NITROSHARE_EXPORT PluginModel : public QAbstractListModel
     Q_OBJECT
 
 public:
-
-    enum Role {
-        NameRole = Qt::UserRole,
-        TitleRole,
-        VendorRole,
-        VersionRole,
-        DescriptionRole,
-        DependenciesRole,
-        IsLoadedRole,
-        IsInitializedRole
-    };
 
     /**
      * @brief Create a new plugin model
@@ -124,7 +112,6 @@ public:
     // Reimplemented virtual methods
     virtual int rowCount(const QModelIndex &parent) const;
     virtual QVariant data(const QModelIndex &index, int role) const;
-    virtual QHash<int, QByteArray> roleNames() const;
 
 private:
 

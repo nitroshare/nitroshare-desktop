@@ -22,68 +22,77 @@
  * IN THE SOFTWARE.
  */
 
+#include <QHBoxLayout>
 #include <QHeaderView>
+#include <QItemSelectionModel>
 #include <QMessageBox>
-#include <QPushButton>
+#include <QModelIndexList>
+#include <QSpacerItem>
 #include <QVBoxLayout>
 
 #include <nitroshare/application.h>
+#include <nitroshare/plugin.h>
 #include <nitroshare/pluginmodel.h>
 
 #include "plugindialog.h"
 
 PluginDialog::PluginDialog(Application *application)
     : mApplication(application),
-      mTableView(new QTableView)
+      mTableView(new QTableView),
+      mUnloadButton(new QPushButton(tr("Unload")))
 {
     setWindowTitle(tr("Plugins"));
     resize(800, 300);
-
-    connect(&mModel, &PluginProxyModel::rowsInserted, this, &PluginDialog::onRowsInserted);
 
     mModel.setSourceModel(application->pluginModel());
 
     mTableView->setModel(&mModel);
     mTableView->horizontalHeader()->setDefaultSectionSize(160);
+    mTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     mTableView->horizontalHeader()->setStretchLastSection(true);
-    mTableView->horizontalHeader()->resizeSection(PluginProxyModel::VersionColumn, 80);
-    mTableView->setSelectionMode(QAbstractItemView::NoSelection);
-    mTableView->setStyleSheet("QTableView::item { padding: 4px; }");
+    mTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    mTableView->setSelectionMode(QAbstractItemView::SingleSelection);
     mTableView->verticalHeader()->setVisible(false);
 
-    for (int row = 0; row < mModel.rowCount(); ++row) {
-        addButtons(row);
-    }
+    connect(mTableView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &PluginDialog::onSelectionChanged);
+
+    mUnloadButton->setEnabled(false);
+    connect(mUnloadButton, &QPushButton::clicked, this, &PluginDialog::onUnload);
 
     QVBoxLayout *vboxLayout = new QVBoxLayout;
-    vboxLayout->addWidget(mTableView);
-    setLayout(vboxLayout);
+    vboxLayout->addWidget(mUnloadButton);
+    vboxLayout->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::Expanding));
+
+    QHBoxLayout *hboxLayout = new QHBoxLayout;
+    hboxLayout->addWidget(mTableView);
+    hboxLayout->addLayout(vboxLayout);
+    setLayout(hboxLayout);
 }
 
-void PluginDialog::onRowsInserted(const QModelIndex &parent, int start, int end)
+void PluginDialog::onSelectionChanged()
 {
-    for (int row = start; row <= end; ++row) {
-        addButtons(row);
-    }
+    mUnloadButton->setEnabled(mTableView->selectionModel()->hasSelection());
 }
 
-void PluginDialog::addButtons(int row)
+void PluginDialog::onUnload()
 {
-    QPushButton *pushButton = new QPushButton(tr("Unload"));
-    connect(pushButton, &QPushButton::clicked, [this, row]() {
-        QString name = mModel.data(mModel.index(row, 0), PluginModel::NameRole).toString();
-        if (name == "pluginui") {
-            int response = QMessageBox::warning(
-                this,
-                tr("Warning"),
-                tr("Unloading the pluginui plugin will close this dialog and make further changes impossible. Are you sure you want to unload this plugin?"),
-                QMessageBox::Yes | QMessageBox::No
-            );
-            if (response == QMessageBox::No) {
-                return;
-            }
+    Plugin *plugin = currentPlugin();
+    if (plugin->name() == "pluginui") {
+        int response = QMessageBox::warning(
+            this,
+            tr("Warning"),
+            tr("Unloading the pluginui plugin will close this dialog and make further changes impossible. Are you sure you want to unload this plugin?"),
+            QMessageBox::Yes | QMessageBox::No
+        );
+        if (response == QMessageBox::No) {
+            return;
         }
-        mApplication->pluginModel()->unloadPlugin(name);
-    });
-    mTableView->setIndexWidget(mModel.index(row, PluginProxyModel::ActionsColumn), pushButton);
+    }
+    mApplication->pluginModel()->unloadPlugin(plugin->name());
+}
+
+Plugin *PluginDialog::currentPlugin() const
+{
+    QModelIndexList selection(mTableView->selectionModel()->selectedIndexes());
+    return selection.at(0).data(Qt::UserRole).value<Plugin*>();
 }

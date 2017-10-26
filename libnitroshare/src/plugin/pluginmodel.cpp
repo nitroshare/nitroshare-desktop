@@ -210,43 +210,9 @@ int PluginModel::rowCount(const QModelIndex &) const
 
 QVariant PluginModel::data(const QModelIndex &index, int role) const
 {
-    // Ensure the index points to a valid row
-    if (!index.isValid() || index.row() < 0 || index.row() >= d->pluginList.count()) {
+    if (!index.isValid() || index.row() < 0 ||
+            index.row() >= d->pluginList.count() || role != Qt::UserRole) {
         return QVariant();
     }
-
-    Plugin *plugin = d->pluginList.at(index.row());
-
-    switch (role) {
-    case NameRole:
-        return plugin->name();
-    case TitleRole:
-        return plugin->title();
-    case VendorRole:
-        return plugin->vendor();
-    case VersionRole:
-        return plugin->version();
-    case DescriptionRole:
-        return plugin->dependencies();
-    case IsLoadedRole:
-        return plugin->isLoaded();
-    case IsInitializedRole:
-        return plugin->isInitialized();
-    }
-
-    return QVariant();
-}
-
-QHash<int, QByteArray> PluginModel::roleNames() const
-{
-    return {
-        { NameRole, "name" },
-        { TitleRole, "title" },
-        { VendorRole, "vendor" },
-        { VersionRole, "version" },
-        { DescriptionRole, "description" },
-        { DependenciesRole, "dependencies" },
-        { IsLoadedRole, "isLoaded" },
-        { IsInitializedRole, "isInitialized" }
-    };
+    return QVariant::fromValue(d->pluginList.at(index.row()));
 }

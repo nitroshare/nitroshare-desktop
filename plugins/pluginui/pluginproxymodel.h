@@ -34,11 +34,12 @@ class PluginProxyModel : public QAbstractProxyModel
 public:
 
     enum {
+        NameColumn,
         TitleColumn,
         VendorColumn,
         VersionColumn,
         StatusColumn,
-        ActionsColumn,
+        DescriptionColumn,
         ColumnCount
     };
 
