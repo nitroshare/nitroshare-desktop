@@ -21,6 +21,7 @@ set(SRC
     src/plugin/plugin.cpp
     src/plugin/pluginmodel.cpp
     src/settings/setting.cpp
+    src/settings/settingsregistry.cpp
     src/transfer/packet.cpp
     src/transfer/transfer.cpp
     src/transfer/transfermodel.cpp
