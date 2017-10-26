@@ -74,4 +74,5 @@ void SettingsDialog::onSettingRemoved(Setting *setting)
 {
     SettingWidget *widget = mWidgets.take(setting);
     mLayout->removeWidget(widget);
+    delete widget;
 }
