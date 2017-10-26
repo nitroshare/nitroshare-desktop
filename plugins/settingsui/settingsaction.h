@@ -27,6 +27,10 @@
 
 #include <nitroshare/action.h>
 
+#include "settingsdialog.h"
+
+class Application;
+
 class SettingsAction : public Action
 {
     Q_OBJECT
@@ -34,6 +38,8 @@ class SettingsAction : public Action
     Q_PROPERTY(QString title READ title)
 
 public:
+
+    explicit SettingsAction(Application *application);
 
     virtual QString name() const;
 
@@ -43,6 +49,12 @@ public:
 public Q_SLOTS:
 
     virtual QVariant invoke(const QVariantMap &params);
+
+private:
+
+    Application *mApplication;
+
+    SettingsDialog mDialog;
 };
 
 #endif // SETTINGSACTION_H

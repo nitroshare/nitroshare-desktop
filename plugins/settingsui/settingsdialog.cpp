@@ -22,16 +22,31 @@
  * IN THE SOFTWARE.
  */
 
+#include <QLabel>
+#include <QVBoxLayout>
+
+#include <nitroshare/application.h>
+#include <nitroshare/settings.h>
+
 #include "settingsdialog.h"
 
-SettingsDialog::SettingsDialog()
+SettingsDialog::SettingsDialog(Application *application)
+    : mApplication(application)
 {
     setWindowTitle(tr("Settings"));
+
+    connect(mApplication->settings(), &Settings::settingsAdded, this, &SettingsDialog::onSettingsAdded);
+    connect(mApplication->settings(), &Settings::settingsRemoved, this, &SettingsDialog::onSettingsRemoved);
+
+    setLayout(new QVBoxLayout);
+
+    // Initialize widgets for all existing settings
+    addSettings(mApplication->settings()->settings().keys());
 }
 
 void SettingsDialog::onSettingsAdded(const QStringList &keys)
 {
-    //...
+    addSettings(keys);
 }
 
 void SettingsDialog::onSettingsRemoved(const QStringList &keys)
@@ -39,7 +54,10 @@ void SettingsDialog::onSettingsRemoved(const QStringList &keys)
     //...
 }
 
-void SettingsDialog::onSettingsChanged(const QStringList &keys)
+void SettingsDialog::addSettings(const QStringList &keys)
 {
-    //...
+    foreach (const QString &key, keys) {
+        QLabel *label = new QLabel(key);
+        layout()->addWidget(label);
+    }
 }

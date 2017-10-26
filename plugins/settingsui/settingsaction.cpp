@@ -23,7 +23,12 @@
  */
 
 #include "settingsaction.h"
-#include "settingsdialog.h"
+
+SettingsAction::SettingsAction(Application *application)
+    : mApplication(application),
+      mDialog(application)
+{
+}
 
 QString SettingsAction::name() const
 {
@@ -37,10 +42,11 @@ bool SettingsAction::ui() const
 
 QString SettingsAction::title() const
 {
-    return tr("Settings");
+    return tr("Settings...");
 }
 
 QVariant SettingsAction::invoke(const QVariantMap &)
 {
-    return static_cast<bool>(SettingsDialog().exec());
+    mDialog.show();
+    return true;
 }

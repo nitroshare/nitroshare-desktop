@@ -27,7 +27,7 @@
 
 #include <nitroshare/iplugin.h>
 
-#include "settingsaction.h"
+class SettingsAction;
 
 class Q_DECL_EXPORT SettingsUiPlugin : public IPlugin
 {
@@ -41,7 +41,7 @@ public:
 
 private:
 
-    SettingsAction mAction;
+    SettingsAction *mSettingsAction;
 };
 
 #endif // SETTINGSUIPLUGIN_H

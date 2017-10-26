@@ -25,14 +25,17 @@
 #include <nitroshare/actionregistry.h>
 #include <nitroshare/application.h>
 
+#include "settingsaction.h"
 #include "settingsuiplugin.h"
 
 void SettingsUiPlugin::initialize(Application *application)
 {
-    application->actionRegistry()->add(&mAction);
+    mSettingsAction = new SettingsAction(application);
+    application->actionRegistry()->add(mSettingsAction);
 }
 
 void SettingsUiPlugin::cleanup(Application *application)
 {
-    application->actionRegistry()->remove(&mAction);
+    application->actionRegistry()->remove(mSettingsAction);
+    delete mSettingsAction;
 }

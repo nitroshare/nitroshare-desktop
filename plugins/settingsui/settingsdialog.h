@@ -28,23 +28,26 @@
 #include <QDialog>
 #include <QStringList>
 
+class Application;
+
 class SettingsDialog : public QDialog
 {
     Q_OBJECT
 
 public:
 
-    SettingsDialog();
+    explicit SettingsDialog(Application *application);
 
 private slots:
 
     void onSettingsAdded(const QStringList &keys);
     void onSettingsRemoved(const QStringList &keys);
-    void onSettingsChanged(const QStringList &keys);
 
 private:
 
-    //...
+    void addSettings(const QStringList &keys);
+
+    Application *mApplication;
 };
 
 #endif // SETTINGSDIALOG_H
