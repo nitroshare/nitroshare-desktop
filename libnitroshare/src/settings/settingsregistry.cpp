@@ -70,7 +70,12 @@ QVariant SettingsRegistry::value(const QString &name) const
 {
     Setting *setting = find(name);
     if (setting) {
-        return d->settings.value(name, setting->defaultValue());
+        if (d->settings.contains(name)) {
+            return d->settings.value(name);
+        } else {
+            d->settings.setValue(name, setting->defaultValue());
+            return setting->defaultValue();
+        }
     } else {
         return QVariant();
     }
