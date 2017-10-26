@@ -39,6 +39,7 @@
 PluginDialog::PluginDialog(Application *application)
     : mApplication(application),
       mTableView(new QTableView),
+      mLoadButton(new QPushButton(tr("Load"))),
       mUnloadButton(new QPushButton(tr("Unload")))
 {
     setWindowTitle(tr("Plugins"));
@@ -56,10 +57,14 @@ PluginDialog::PluginDialog(Application *application)
 
     connect(mTableView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &PluginDialog::onSelectionChanged);
 
+    mLoadButton->setEnabled(false);
+    connect(mLoadButton, &QPushButton::clicked, this, &PluginDialog::onLoad);
+
     mUnloadButton->setEnabled(false);
     connect(mUnloadButton, &QPushButton::clicked, this, &PluginDialog::onUnload);
 
     QVBoxLayout *vboxLayout = new QVBoxLayout;
+    vboxLayout->addWidget(mLoadButton);
     vboxLayout->addWidget(mUnloadButton);
     vboxLayout->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::Expanding));
 
@@ -71,7 +76,16 @@ PluginDialog::PluginDialog(Application *application)
 
 void PluginDialog::onSelectionChanged()
 {
-    mUnloadButton->setEnabled(mTableView->selectionModel()->hasSelection());
+    Plugin *plugin = currentPlugin();
+
+    mLoadButton->setEnabled(plugin && !plugin->isLoaded());
+    mUnloadButton->setEnabled(plugin && plugin->isLoaded());
+}
+
+void PluginDialog::onLoad()
+{
+    mApplication->pluginModel()->load(currentPlugin());
+    mTableView->selectionModel()->clear();
 }
 
 void PluginDialog::onUnload()
@@ -88,11 +102,12 @@ void PluginDialog::onUnload()
             return;
         }
     }
-    mApplication->pluginModel()->unloadPlugin(plugin->name());
+    mApplication->pluginModel()->unload(plugin);
+    mTableView->selectionModel()->clear();
 }
 
 Plugin *PluginDialog::currentPlugin() const
 {
     QModelIndexList selection(mTableView->selectionModel()->selectedIndexes());
-    return selection.at(0).data(Qt::UserRole).value<Plugin*>();
+    return selection.size() ? selection.at(0).data(Qt::UserRole).value<Plugin*>() : nullptr;
 }

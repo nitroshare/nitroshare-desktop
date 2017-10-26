@@ -27,13 +27,11 @@
 
 #include <QJsonArray>
 #include <QJsonObject>
-#include <QList>
 #include <QObject>
+#include <QList>
 #include <QPluginLoader>
-#include <QStringList>
 
 class Application;
-class IPlugin;
 class Plugin;
 
 class PluginPrivate : public QObject
@@ -42,18 +40,19 @@ class PluginPrivate : public QObject
 
 public:
 
-    PluginPrivate(Plugin *plugin, Application *application, const QString &filename);
-    virtual ~PluginPrivate();
+    PluginPrivate(Plugin *plugin, const QString &filename);
 
-    QStringList arrayToStringList(const QJsonArray &array);
+    QStringList arrayToList(const QJsonArray &array);
 
-    Plugin *const q;
+    bool load();
+    bool unload(Application *Application);
+    bool initialize(Application *application);
 
-    Application *application;
+    Plugin *q;
+
     QPluginLoader loader;
     QJsonObject metadata;
     QStringList dependencies;
-    IPlugin *iplugin;
     bool initialized;
 
     QList<Plugin*> children;

@@ -46,6 +46,7 @@ private slots:
 
     void onSelectionChanged();
 
+    void onLoad();
     void onUnload();
 
 private:
@@ -57,6 +58,7 @@ private:
     QTableView *mTableView;
     PluginProxyModel mModel;
 
+    QPushButton *mLoadButton;
     QPushButton *mUnloadButton;
 };
 

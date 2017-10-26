@@ -31,85 +31,15 @@
 #include <nitroshare/plugin.h>
 #include <nitroshare/pluginmodel.h>
 
+#include "plugin_p.h"
 #include "pluginmodel_p.h"
 
 const QString MessageTag = "pluginmodel";
 
-PluginModelPrivate::PluginModelPrivate(PluginModel *model, Application *application)
-    : QObject(model),
-      q(model),
+PluginModelPrivate::PluginModelPrivate(QObject *parent, Application *application)
+    : QObject(parent),
       application(application)
 {
-}
-
-PluginModelPrivate::~PluginModelPrivate()
-{
-    qDeleteAll(pluginList);
-}
-
-void PluginModelPrivate::emitChangeSignal(Plugin *plugin)
-{
-    QModelIndex index = q->index(pluginList.indexOf(plugin));
-    emit q->dataChanged(index, index);
-}
-
-bool PluginModelPrivate::loadPlugin(Plugin *plugin)
-{
-    if (!plugin->load()) {
-        return false;
-    }
-    emitChangeSignal(plugin);
-    return true;
-}
-
-void PluginModelPrivate::unloadPlugin(Plugin *plugin)
-{
-    foreach (Plugin *childPlugin, plugin->children()) {
-        unloadPlugin(childPlugin);
-    }
-    plugin->unload();
-    emitChangeSignal(plugin);
-}
-
-bool PluginModelPrivate::initializePlugin(Plugin *plugin)
-{
-    if (pluginBlacklist.contains(plugin->name())) {
-        return false;
-    }
-    foreach (const QString &dependency, plugin->dependencies()) {
-        if (dependency == "ui") {
-            if (application->isUiEnabled()) {
-                continue;
-            } else {
-                return false;
-            }
-        }
-        Plugin *dependentPlugin = pluginHash.value(dependency);
-        if (!dependentPlugin || !initializePlugin(dependentPlugin)) {
-            return false;
-        }
-        dependentPlugin->addChild(plugin);
-    }
-    if (!plugin->initialize()) {
-        return false;
-    }
-    emitChangeSignal(plugin);
-    return true;
-}
-
-void PluginModelPrivate::cleanupPlugin(Plugin *plugin)
-{
-    foreach (Plugin *childPlugin, plugin->children()) {
-        cleanupPlugin(childPlugin);
-    }
-    plugin->cleanup();
-    foreach (const QString &dependency, plugin->dependencies()) {
-        if (dependency == "ui") {
-            continue;
-        }
-        pluginHash.value(dependency)->removeChild(plugin);
-    }
-    emitChangeSignal(plugin);
 }
 
 PluginModel::PluginModel(Application *application, QObject *parent)
@@ -120,99 +50,101 @@ PluginModel::PluginModel(Application *application, QObject *parent)
 
 PluginModel::~PluginModel()
 {
-    foreach (Plugin *plugin, d->pluginList) {
-        d->cleanupPlugin(plugin);
+    foreach (Plugin *plugin, d->plugins) {
+        plugin->d->unload(d->application);
     }
 }
 
 void PluginModel::addToBlacklist(const QStringList &names)
 {
-    d->pluginBlacklist.append(names);
+    d->blacklist.append(names);
 }
 
 void PluginModel::loadPluginsFromDirectories(const QStringList &directories)
 {
+    d->application->logger()->log(new Message(
+        Message::Info,
+        MessageTag,
+        QString("loading plugins from %1").arg(directories.join(";"))
+    ));
+
+    // Load all of the plugins in the directories
+    QList<Plugin*> newPlugins;
     foreach (const QString &directory, directories) {
-        d->application->logger()->log(new Message(
-            Message::Info,
-            MessageTag,
-            QString("loading plugins from %1").arg(directory)
-        ));
         QDir dir(directory);
         foreach (QString filename, dir.entryList(QDir::Files)) {
             filename = dir.absoluteFilePath(filename);
             if (!QLibrary::isLibrary(filename)) {
                 continue;
             }
-            Plugin *plugin = new Plugin(d->application, filename);
-            if (!plugin->load()) {
+            Plugin *plugin = new Plugin(filename);
+            if (!plugin->d->load()) {
                 delete plugin;
                 continue;
             }
-            int newIndex = d->pluginList.count();
-            beginInsertRows(QModelIndex(), newIndex, newIndex);
-            d->pluginList.append(plugin);
-            d->pluginHash.insert(plugin->name(), plugin);
+            if (d->blacklist.contains(plugin->name())) {
+                delete plugin;
+                continue;
+            }
+            newPlugins.append(plugin);
+            beginInsertRows(QModelIndex(), d->plugins.count(), d->plugins.count());
+            d->plugins.append(plugin);
             endInsertRows();
+        }
+    }
+
+    // Attempt to initialize the new plugins
+    foreach (Plugin *plugin, newPlugins) {
+        if (!plugin->d->initialize(d->application)) {
+            d->application->logger()->log(new Message(
+                Message::Error,
+                MessageTag,
+                QString("unable to initialize %1").arg(plugin->name())
+            ));
         }
     }
 }
 
-bool PluginModel::loadPlugin(const QString &name)
+Plugin *PluginModel::find(const QString &name) const
 {
-    Plugin *plugin = d->pluginHash.value(name);
-    if (!plugin) {
-        return false;
+    foreach (Plugin *plugin, d->plugins) {
+        if (plugin->name() == name) {
+            return plugin;
+        }
     }
-    return d->loadPlugin(plugin);
+    return nullptr;
 }
 
-bool PluginModel::unloadPlugin(const QString &name)
+// TODO: emitting dataChanged for the entire model is not efficient
+
+bool PluginModel::load(Plugin *plugin)
 {
-    Plugin *plugin = d->pluginHash.value(name);
-    if (!plugin) {
+    if (!plugin->d->load() || !plugin->d->initialize(d->application)) {
         return false;
     }
-    d->unloadPlugin(plugin);
+    emit dataChanged(index(0, 0), index(d->plugins.count(), 0));
     return true;
 }
 
-bool PluginModel::initializePlugin(const QString &name)
+bool PluginModel::unload(Plugin *plugin)
 {
-    Plugin *plugin = d->pluginHash.value(name);
-    if (!plugin) {
+    if (!plugin->d->unload(d->application)) {
         return false;
     }
-    return d->initializePlugin(plugin);
-}
-
-void PluginModel::initializeAll()
-{
-    foreach (Plugin *plugin, d->pluginList) {
-        d->initializePlugin(plugin);
-    }
-}
-
-bool PluginModel::cleanupPlugin(const QString &name)
-{
-    Plugin *plugin = d->pluginHash.value(name);
-    if (!plugin) {
-        return false;
-    }
-    d->cleanupPlugin(plugin);
+    emit dataChanged(index(0, 0), index(d->plugins.count(), 0));
     return true;
 }
 
 int PluginModel::rowCount(const QModelIndex &) const
 {
-    return d->pluginList.count();
+    return d->plugins.count();
 }
 
 QVariant PluginModel::data(const QModelIndex &index, int role) const
 {
     if (!index.isValid() || index.row() < 0 ||
-            index.row() >= d->pluginList.count() || role != Qt::UserRole) {
+            index.row() >= d->plugins.count() || role != Qt::UserRole) {
         return QVariant();
     }
-    return QVariant::fromValue(d->pluginList.at(index.row()));
+    return QVariant::fromValue(d->plugins.at(index.row()));
 }

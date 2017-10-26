@@ -31,14 +31,14 @@
 #include <nitroshare/config.h>
 
 class Application;
+class Plugin;
 
 class NITROSHARE_EXPORT PluginModelPrivate;
 
 /**
  * @brief Model for application plugins
  *
- * This class provides lifecycle management for plugins. This includes
- * dependency resolution, initializing, unloading, etc.
+ * To interact with plugins, use
  */
 class NITROSHARE_EXPORT PluginModel : public QAbstractListModel
 {
@@ -73,41 +73,25 @@ public:
     void loadPluginsFromDirectories(const QStringList &directories);
 
     /**
-     * @brief Load the specified plugin
+     * @brief Find a plugin by name
      * @param name plugin name
+     * @return pointer to Plugin or nullptr
+     */
+    Plugin *find(const QString &name) const;
+
+    /**
+     * @brief Attempt to load the specified plugin
+     * @param plugin pointer to Plugin
      * @return true if the plugin was loaded
      */
-    bool loadPlugin(const QString &name);
+    bool load(Plugin *plugin);
 
     /**
-     * @brief Unload the specified plugin and others that depend on it
-     * @param name plugin name
+     * @brief Attempt to unload the specified plugin
+     * @param plugin pointer to Plugin
      * @return true if the plugin was unloaded
-     *
-     * The plugin and all of its dependencies will first be cleaned up.
      */
-    bool unloadPlugin(const QString &name);
-
-    /**
-     * @brief Initialize the specified plugin and its dependencies
-     * @param name plugin name
-     * @return true if the plugin was initialized
-     *
-     * This method will fail if any dependencies aren't loaded.
-     */
-    bool initializePlugin(const QString &name);
-
-    /**
-     * @brief Initialize all loaded plugins
-     */
-    void initializeAll();
-
-    /**
-     * @brief Cleanup the specified plugin and others that depend on it
-     * @param name plugin name
-     * @return true if the plugin was cleaned up
-     */
-    bool cleanupPlugin(const QString &name);
+    bool unload(Plugin *plugin);
 
     // Reimplemented virtual methods
     virtual int rowCount(const QModelIndex &parent) const;

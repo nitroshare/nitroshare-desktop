@@ -26,30 +26,20 @@
 
 #include <nitroshare/application.h>
 #include <nitroshare/iplugin.h>
-#include <nitroshare/logger.h>
-#include <nitroshare/message.h>
 #include <nitroshare/plugin.h>
+#include <nitroshare/pluginmodel.h>
 
 #include "plugin_p.h"
 
-const QString MessageTag = "plugin";
-
-PluginPrivate::PluginPrivate(Plugin *plugin, Application *application, const QString &filename)
+PluginPrivate::PluginPrivate(Plugin *plugin, const QString &filename)
     : QObject(plugin),
       q(plugin),
-      application(application),
       loader(filename),
-      iplugin(nullptr),
       initialized(false)
 {
 }
 
-PluginPrivate::~PluginPrivate()
-{
-    q->unload();
-}
-
-QStringList PluginPrivate::arrayToStringList(const QJsonArray &array)
+QStringList PluginPrivate::arrayToList(const QJsonArray &array)
 {
     QStringList list;
     foreach (const QJsonValue &value, array) {
@@ -58,9 +48,87 @@ QStringList PluginPrivate::arrayToStringList(const QJsonArray &array)
     return list;
 }
 
-Plugin::Plugin(Application *application, const QString &filename, QObject *parent)
+bool PluginPrivate::load()
+{
+    if (!loader.isLoaded()) {
+        if (!loader.load()) {
+            return false;
+        }
+        metadata = loader.metaData().value("MetaData").toObject();
+        dependencies = arrayToList(metadata.value("Dependencies").toArray());
+    }
+    return true;
+}
+
+bool PluginPrivate::unload(Application *application)
+{
+    if (initialized) {
+
+        // Unload all children first
+        foreach (Plugin *plugin, children) {
+            if (!plugin->d->unload(application)) {
+                return false;
+            }
+        }
+
+        // Clean up this plugin
+        qobject_cast<IPlugin*>(loader.instance())->cleanup(application);
+        initialized = false;
+
+        // Remove this plugin from its dependencies
+        foreach (const QString &dependency, dependencies) {
+            if (dependency != "ui") {
+                application->pluginModel()->find(dependency)->d->children.removeOne(q);
+            }
+        }
+    }
+    if (loader.isLoaded()) {
+        return loader.unload();
+    }
+    return true;
+}
+
+bool PluginPrivate::initialize(Application *application)
+{
+    if (!initialized) {
+
+        // For each dependency, check if the plugin exists and if so, attempt
+        // to initialize it
+        QList<Plugin*> dependentPlugins;
+        foreach (const QString &dependency, dependencies) {
+            if (dependency == "ui") {
+                if (application->isUiEnabled()) {
+                    continue;
+                } else {
+                    return false;
+                }
+            }
+            Plugin *dependentPlugin = application->pluginModel()->find(dependency);
+            if (!dependentPlugin || !dependentPlugin->d->initialize(application)) {
+                return false;
+            }
+            dependentPlugins.append(dependentPlugin);
+        }
+
+        // Retrieve the IPlugin interface from the plugin
+        IPlugin *iplugin = qobject_cast<IPlugin*>(loader.instance());
+        if (!iplugin) {
+            return false;
+        }
+        iplugin->initialize(application);
+        initialized = true;
+
+        // Prevent the dependencies from cleanup until this one is cleaned up
+        foreach (Plugin *dependentPlugin, dependentPlugins) {
+            dependentPlugin->d->children.append(q);
+        }
+    }
+    return true;
+}
+
+Plugin::Plugin(const QString &filename, QObject *parent)
     : QObject(parent),
-      d(new PluginPrivate(this, application, filename))
+      d(new PluginPrivate(this, filename))
 {
 }
 
@@ -89,79 +157,7 @@ QString Plugin::description() const
     return d->metadata.value("Description").toString();
 }
 
-QStringList Plugin::dependencies() const
-{
-    return d->dependencies;
-}
-
 bool Plugin::isLoaded() const
 {
-    return d->loader.isLoaded() && d->iplugin;
-}
-
-bool Plugin::isInitialized() const
-{
-    return d->initialized;
-}
-
-bool Plugin::load()
-{
-    if (!d->loader.isLoaded()) {
-        if (!d->loader.load()) {
-            return false;
-        }
-        d->metadata = d->loader.metaData().value("MetaData").toObject();
-        d->dependencies = d->arrayToStringList(d->metadata.value("Dependencies").toArray());
-        d->iplugin = qobject_cast<IPlugin*>(d->loader.instance());
-    }
-    return d->iplugin;
-}
-
-void Plugin::unload()
-{
-    cleanup();
-    if (d->loader.isLoaded()) {
-        d->loader.unload();
-    }
-}
-
-bool Plugin::initialize()
-{
-    if (!d->initialized) {
-        if (!d->loader.isLoaded()) {
-            return false;
-        }
-        d->iplugin->initialize(d->application);
-        d->initialized = true;
-
-        d->application->logger()->log(new Message(
-            Message::Debug,
-            MessageTag,
-            QString("%1 initialized").arg(name())
-        ));
-    }
-    return true;
-}
-
-void Plugin::cleanup()
-{
-    if (d->initialized) {
-        d->iplugin->cleanup(d->application);
-        d->initialized = false;
-    }
-}
-
-void Plugin::addChild(Plugin *plugin)
-{
-    d->children.append(plugin);
-}
-
-void Plugin::removeChild(Plugin *plugin)
-{
-    d->children.removeOne(plugin);
-}
-
-QList<Plugin*> Plugin::children() const
-{
-    return d->children;
+    return d->loader.isLoaded();
 }

@@ -25,12 +25,9 @@
 #ifndef LIBNITROSHARE_PLUGIN_H
 #define LIBNITROSHARE_PLUGIN_H
 
-#include <QList>
 #include <QObject>
 
 #include <nitroshare/config.h>
-
-class Application;
 
 class NITROSHARE_EXPORT PluginPrivate;
 
@@ -40,8 +37,7 @@ class NITROSHARE_EXPORT PluginPrivate;
  * Plugins enable additional functionality without the need to recompile the
  * library. They also allow the code to be organized in a more modular fashion.
  *
- * Although this class will return a list of dependencies, it does not take
- * them into account when loading or unloading the plugin.
+ * The plugin registry is used to load and unload plugins.
  */
 class NITROSHARE_EXPORT Plugin : public QObject
 {
@@ -51,19 +47,16 @@ class NITROSHARE_EXPORT Plugin : public QObject
     Q_PROPERTY(QString vendor READ vendor)
     Q_PROPERTY(QString version READ version)
     Q_PROPERTY(QString description READ description)
-    Q_PROPERTY(QStringList dependencies READ dependencies)
     Q_PROPERTY(bool isLoaded READ isLoaded)
-    Q_PROPERTY(bool isInitialized READ isInitialized)
 
 public:
 
     /**
      * @brief Create a plugin from the specified loader
-     * @param application pointer to Application
      * @param filename plugin filename
      * @param parent parent QObject
      */
-    Plugin(Application *application, const QString &filename, QObject *parent = nullptr);
+    Plugin(const QString &filename, QObject *parent = nullptr);
 
     /**
      * @brief Retrieve the plugin's unique name
@@ -91,71 +84,15 @@ public:
     QString description() const;
 
     /**
-     * @brief Retrieve the plugin's dependencies
-     */
-    QStringList dependencies() const;
-
-    /**
      * @brief Determine if the plugin was loaded
      */
     bool isLoaded() const;
 
-    /**
-     * @brief Determine if the plugin was initialized
-     */
-    bool isInitialized() const;
-
-    /**
-     * @brief Attempt to load the plugin from disk
-     * @return true if the plugin was loaded
-     *
-     * This method has no effect if the plugin was already loaded.
-     */
-    bool load();
-
-    /**
-     * @brief Unload the plugin
-     *
-     * This method will ensure that the plugin is cleaned up before attempting
-     * to unload it. This method has no effect if the plugin is not loaded.
-     */
-    void unload();
-
-    /**
-     * @brief Initialize the plugin
-     * @return true if the plugin was initialized
-     *
-     * This method has no effect if the plugin was already initialized.
-     */
-    bool initialize();
-
-    /**
-     * @brief Cleanup the plugin
-     *
-     * This method has no effect if the plugin was not initialized.
-     */
-    void cleanup();
-
-    /**
-     * @brief Add the specified plugin as a child
-     * @param plugin child plugin
-     */
-    void addChild(Plugin *plugin);
-
-    /**
-     * @brief Remove the specified plugin as a child
-     * @param plugin child plugin
-     */
-    void removeChild(Plugin *plugin);
-
-    /**
-     * @brief Retrieve the list of child plugins
-     */
-    QList<Plugin*> children() const;
-
 private:
 
     PluginPrivate *const d;
+    friend class PluginPrivate;
+    friend class PluginModel;
 };
 
 #endif // LIBNITROSHARE_PLUGIN_H
