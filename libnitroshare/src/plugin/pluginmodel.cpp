@@ -74,22 +74,37 @@ void PluginModel::loadPluginsFromDirectories(const QStringList &directories)
         QDir dir(directory);
         foreach (QString filename, dir.entryList(QDir::Files)) {
             filename = dir.absoluteFilePath(filename);
+
+            // Ensure that the file is a library
             if (!QLibrary::isLibrary(filename)) {
                 continue;
             }
+
+            // Attempt to load the file as a plugin
             Plugin *plugin = new Plugin(filename);
             if (!plugin->d->load()) {
                 delete plugin;
                 continue;
             }
+
+            // Refuse to load blacklisted plugins
             if (d->blacklist.contains(plugin->name())) {
                 delete plugin;
                 continue;
             }
-            newPlugins.append(plugin);
+
+            // Insert the plugin into the model
             beginInsertRows(QModelIndex(), d->plugins.count(), d->plugins.count());
             d->plugins.append(plugin);
             endInsertRows();
+
+            // Indicate when plugin state changes
+            connect(plugin, &Plugin::isLoadedChanged, [this, plugin]() {
+                QModelIndex idx = index(d->plugins.indexOf(plugin), 0);
+                emit dataChanged(idx, idx, { Qt::UserRole });
+            });
+
+            newPlugins.append(plugin);
         }
     }
 
@@ -115,14 +130,11 @@ Plugin *PluginModel::find(const QString &name) const
     return nullptr;
 }
 
-// TODO: emitting dataChanged for the entire model is not efficient
-
 bool PluginModel::load(Plugin *plugin)
 {
     if (!plugin->d->load() || !plugin->d->initialize(d->application)) {
         return false;
     }
-    emit dataChanged(index(0, 0), index(d->plugins.count(), 0));
     return true;
 }
 
@@ -131,7 +143,6 @@ bool PluginModel::unload(Plugin *plugin)
     if (!plugin->d->unload(d->application)) {
         return false;
     }
-    emit dataChanged(index(0, 0), index(d->plugins.count(), 0));
     return true;
 }
 

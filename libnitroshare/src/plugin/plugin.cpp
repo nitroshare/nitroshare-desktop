@@ -83,7 +83,10 @@ bool PluginPrivate::unload(Application *application)
         }
     }
     if (loader.isLoaded()) {
-        return loader.unload();
+        if (!loader.unload()) {
+            return false;
+        }
+        emit q->isLoadedChanged();
     }
     return true;
 }
@@ -122,6 +125,8 @@ bool PluginPrivate::initialize(Application *application)
         foreach (Plugin *dependentPlugin, dependentPlugins) {
             dependentPlugin->d->children.append(q);
         }
+
+        emit q->isLoadedChanged();
     }
     return true;
 }
