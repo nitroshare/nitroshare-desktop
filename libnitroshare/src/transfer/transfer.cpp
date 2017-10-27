@@ -35,11 +35,15 @@
 #include <nitroshare/handler.h>
 #include <nitroshare/handlerregistry.h>
 #include <nitroshare/item.h>
+#include <nitroshare/logger.h>
+#include <nitroshare/message.h>
 #include <nitroshare/packet.h>
 #include <nitroshare/transfer.h>
 #include <nitroshare/transport.h>
 
 #include "transfer_p.h"
+
+const QString MessageTag = "Transfer";
 
 TransferPrivate::TransferPrivate(Transfer *parent, Application *application, Transport *transport,
                                  Bundle *bundle, Transfer::Direction direction)
@@ -273,6 +277,12 @@ void TransferPrivate::setSuccess(bool send)
 
 void TransferPrivate::setError(const QString &message, bool send)
 {
+    application->logger()->log(new Message(
+        Message::Error,
+        MessageTag,
+        message
+    ));
+
     if (send) {
         Packet packet(Packet::Error, message.toUtf8());
         transport->sendPacket(&packet);
