@@ -22,6 +22,8 @@
  * IN THE SOFTWARE.
  */
 
+#include <QColor>
+
 #include <nitroshare/transfer.h>
 
 #include "transferproxymodel.h"
@@ -45,7 +47,7 @@ QVariant TransferProxyModel::data(const QModelIndex &proxyIndex, int role) const
         case DeviceColumn:
             return transfer->deviceName();
         case ProgressColumn:
-            return QString("%1%%").arg(transfer->progress());
+            return QString("%1%").arg(transfer->progress());
         case StatusColumn:
             switch (transfer->state()) {
             case Transfer::Connecting:
@@ -53,14 +55,21 @@ QVariant TransferProxyModel::data(const QModelIndex &proxyIndex, int role) const
             case Transfer::InProgress:
                 return tr("In Progress");
             case Transfer::Failed:
-                return tr("Failed");
+                return transfer->error();
             case Transfer::Succeeded:
                 return tr("Succeeded");
-            default:
-                return tr("Unknown");
             }
         }
         break;
+    case Qt::ForegroundRole:
+        if (proxyIndex.column() == StatusColumn) {
+            switch (transfer->state()) {
+            case Transfer::Failed:
+                return QColor(Qt::darkRed);
+            case Transfer::Succeeded:
+                return QColor(Qt::darkGreen);
+            }
+        }
     }
 
     return sourceData(proxyIndex, role);
