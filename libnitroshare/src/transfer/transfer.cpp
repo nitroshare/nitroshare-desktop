@@ -263,12 +263,15 @@ void TransferPrivate::processNext()
 
 void TransferPrivate::updateProgress()
 {
-    int oldProgress = progress;
-    int newProgress = static_cast<int>(100.0 * bytesTotal ?
-        static_cast<double>(bytesTransferred) / static_cast<double>(bytesTotal) : 0.0);
+    int newProgress = 0;
+    if (bytesTotal) {
+        newProgress = static_cast<int>(100.0 *
+            static_cast<double>(bytesTransferred) /
+            static_cast<double>(bytesTotal));
+    }
 
     // Only update progress if it has actually changed
-    if (newProgress != oldProgress) {
+    if (newProgress != progress) {
         emit q->progressChanged(progress = newProgress);
     }
 }
