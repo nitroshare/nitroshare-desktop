@@ -22,7 +22,6 @@
  * IN THE SOFTWARE.
  */
 
-#include <QFont>
 #include <QPushButton>
 #include <QVBoxLayout>
 
@@ -40,12 +39,7 @@ LogDialog::LogDialog(Application *application)
 
     // Prepare the text edit
     mTextEdit->setReadOnly(true);
-
-    // Select a monospace font
-    QFont font = mTextEdit->font();
-    font.setFamily("");
-    font.setStyleHint(QFont::Monospace);
-    mTextEdit->setFont(font);
+    mTextEdit->setStyleSheet("QTextEdit { font-family: monospace; }");
 
     // Log existing messages
     foreach (Message *message, application->logger()->messages()) {
@@ -70,5 +64,20 @@ LogDialog::LogDialog(Application *application)
 
 void LogDialog::onMessageLogged(const Message *message)
 {
+    switch (message->type()) {
+    case Message::Error:
+        mTextEdit->setTextColor(QColor(Qt::darkRed));
+        break;
+    case Message::Warning:
+        mTextEdit->setTextColor(QColor(Qt::darkYellow));
+        break;
+    case Message::Info:
+        mTextEdit->setTextColor(QColor(Qt::darkBlue));
+        break;
+    default:
+        mTextEdit->setTextColor(QColor(Qt::gray));
+        break;
+    }
+
     mTextEdit->append(message->toString());
 }

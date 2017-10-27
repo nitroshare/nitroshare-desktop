@@ -64,6 +64,12 @@ Transport *LanTransportServer::createTransport(const QVariantMap &properties)
 
 void LanTransportServer::onNewSocketDescriptor(qintptr socketDescriptor)
 {
+    mApplication->logger()->log(new Message(
+        Message::Debug,
+        MessageTag,
+        "socket descriptor for incoming connection received"
+    ));
+
     emit transportReceived(new LanTransport(socketDescriptor));
 }
 
