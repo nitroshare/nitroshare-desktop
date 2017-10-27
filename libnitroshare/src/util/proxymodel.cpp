@@ -33,6 +33,8 @@ void ProxyModel::setSourceModel(QAbstractItemModel *sourceModel)
 {
     QAbstractProxyModel::setSourceModel(sourceModel);
 
+    connect(sourceModel, &QAbstractItemModel::rowsInserted, this, &ProxyModel::rowsInserted);
+    connect(sourceModel, &QAbstractItemModel::rowsRemoved, this, &ProxyModel::rowsRemoved);
     connect(sourceModel, &QAbstractItemModel::dataChanged, this,
             [this](const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &) {
         emit dataChanged(
