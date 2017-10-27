@@ -83,6 +83,9 @@ QVariant SettingsRegistry::value(const QString &name) const
 
 void SettingsRegistry::setValue(const QString &name, const QVariant &value)
 {
+    if (d->settings.contains(name) && d->settings.value(name) == value) {
+        return;
+    }
     d->settings.setValue(name, value);
     if (d->isInGroup) {
         d->groupNames.insert(name);
