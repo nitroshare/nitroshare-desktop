@@ -69,6 +69,7 @@ public:
 private:
 
     TransferModelPrivate *const d;
+    friend class TransferModelPrivate;
 };
 
 #endif // LIBNITROSHARE_TRANSFERMODEL_H

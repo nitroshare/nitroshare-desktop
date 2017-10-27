@@ -47,7 +47,10 @@ TransferModelPrivate::~TransferModelPrivate()
 void TransferModelPrivate::addTransfer(Transfer *transfer)
 {
     // TODO: monitor transfer for changes & update models
-    // TODO: insert row (transfer) into model
+
+    q->beginInsertRows(QModelIndex(), transfers.count(), transfers.count());
+    transfers.append(transfer);
+    q->endInsertRows();
 }
 
 void TransferModelPrivate::processTransport(Transport *transport)
