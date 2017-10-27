@@ -61,7 +61,7 @@ QVariant SendAction::invoke(const QVariantMap &params)
     Bundle *bundle = new Bundle();
     foreach (QString item, items) {
         QFileInfo info(root.absoluteFilePath(item));
-        bundle->addItem(new File(root, info, 0));
+        bundle->add(new File(root, info, 0));
     }
 
     return true;

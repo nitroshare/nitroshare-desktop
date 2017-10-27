@@ -55,7 +55,7 @@ public:
      *
      * The bundle assumes ownership of the item.
      */
-    void addItem(Item *item);
+    void add(Item *item);
 
     /**
      * @brief Total size of bundle contents
@@ -66,7 +66,6 @@ public:
     // Reimplemented virtual methods
     virtual int rowCount(const QModelIndex &parent) const;
     virtual QVariant data(const QModelIndex &index, int role) const;
-    virtual QHash<int, QByteArray> roleNames() const;
 
 private:
 

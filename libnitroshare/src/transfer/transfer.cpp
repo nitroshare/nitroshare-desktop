@@ -61,9 +61,7 @@ TransferPrivate::TransferPrivate(Transfer *parent, HandlerRegistry *handlerRegis
 {
     // If sending data, trigger the first packet after connection
     if (direction == Transfer::Send) {
-        connect(transport, &Transport::connected, [this]() {
-            onPacketSent();
-        });
+        connect(transport, &Transport::connected, this, &TransferPrivate::onPacketSent);
     }
 
     connect(transport, &Transport::packetReceived, this, &TransferPrivate::onPacketReceived);
@@ -89,7 +87,7 @@ void TransferPrivate::sendTransferHeader()
 void TransferPrivate::sendItemHeader()
 {
     // Grab the next item and attempt to open it
-    currentItem = bundle->data(bundle->index(itemIndex, 0), Qt::UserRole).value<Item*>();
+    currentItem = bundle->index(itemIndex, 0).data(Qt::UserRole).value<Item*>();
     if (!currentItem->open(Item::Read)) {
         setError(tr("unable to open \"%1\" for reading").arg(currentItem->name()), true);
         return;
@@ -325,6 +323,11 @@ void TransferPrivate::onPacketReceived(Packet *packet)
 
 void TransferPrivate::onPacketSent()
 {
+    // We don't care about sent packets when receiving data
+    if (direction == Transfer::Receive) {
+        return;
+    }
+
     switch (protocolState) {
     case TransferHeader:
         sendTransferHeader();

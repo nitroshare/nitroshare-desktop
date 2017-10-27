@@ -44,9 +44,8 @@ Bundle::Bundle(QObject *parent)
 {
 }
 
-void Bundle::addItem(Item *item)
+void Bundle::add(Item *item)
 {
-    item->setParent(this);
     d->items.append(item);
     d->totalSize += item->size();
 }
@@ -63,15 +62,9 @@ int Bundle::rowCount(const QModelIndex &parent) const
 
 QVariant Bundle::data(const QModelIndex &index, int role) const
 {
-    // Ensure the index points to a valid row
-    if (index.isValid() && index.row() >= 0 && index.row() < d->items.count() && role == Qt::UserRole) {
-        return QVariant::fromValue(d->items.at(index.row()));
+    if (!index.isValid() || index.row() < 0 ||
+            index.row() >= d->items.count() || role != Qt::UserRole) {
+        return QVariant();
     }
-
-    return QVariant();
-}
-
-QHash<int, QByteArray> Bundle::roleNames() const
-{
-    return { { Qt::UserRole, "item" } };
+    return QVariant::fromValue(d->items.at(index.row()));
 }
