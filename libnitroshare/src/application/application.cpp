@@ -45,6 +45,7 @@ ApplicationPrivate::ApplicationPrivate(Application *application)
           { Setting::TypeKey, Setting::String },
           { Setting::NameKey, Application::DeviceUuid },
           { Setting::TitleKey, tr("Device UUID") },
+          { Setting::IsHiddenKey, true },
           { Setting::DefaultValueKey, QUuid::createUuid().toString() }
       }),
       deviceName({

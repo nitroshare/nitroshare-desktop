@@ -43,6 +43,7 @@ class NITROSHARE_EXPORT Setting : public QObject
     Q_PROPERTY(Type type READ type)
     Q_PROPERTY(QString name READ name)
     Q_PROPERTY(QString title READ title)
+    Q_PROPERTY(bool isHidden READ isHidden)
     Q_PROPERTY(QVariant defaultValue READ defaultValue)
 
 public:
@@ -65,6 +66,9 @@ public:
 
     /// Key for the setting's human-friendly title
     static const QString TitleKey;
+
+    /// Key for the visibility of the setting
+    static const QString IsHiddenKey;
 
     /// Key for the setting's default value
     static const QString DefaultValueKey;
@@ -90,6 +94,11 @@ public:
      * @brief Retrieve a descriptive title for the setting
      */
     QString title() const;
+
+    /**
+     * @brief Determine if the setting should be hidden
+     */
+    bool isHidden() const;
 
     /**
      * @brief Retrieve the default value of the setting

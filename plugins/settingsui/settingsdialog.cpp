@@ -75,6 +75,11 @@ void SettingsDialog::accept()
 
 void SettingsDialog::onSettingAdded(Setting *setting)
 {
+    // Only add settings that are not hidden
+    if (setting->isHidden()) {
+        return;
+    }
+
     SettingWidget *widget = nullptr;
 
     // Create the widget of the appropriate type
