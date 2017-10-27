@@ -86,7 +86,13 @@ void PluginDialog::onSelectionChanged()
 
 void PluginDialog::onLoad()
 {
-    mApplication->pluginModel()->load(currentPlugin());
+    if (!mApplication->pluginModel()->load(currentPlugin())) {
+        QMessageBox::critical(
+            this,
+            tr("Error"),
+            tr("Unable to load the specified plugin or its dependencies.")
+        );
+    }
     mTableView->selectionModel()->clear();
 }
 
