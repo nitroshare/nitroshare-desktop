@@ -1,6 +1,8 @@
 configure_file(transferui.json.in "${CMAKE_CURRENT_BINARY_DIR}/transferui.json")
 
 set(SRC
+    transferproxymodel.h
+    transferproxymodel.cpp
     transfersaction.h
     transfersaction.cpp
     transferuiplugin.h
