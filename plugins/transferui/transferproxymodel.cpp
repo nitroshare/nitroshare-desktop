@@ -26,44 +26,6 @@
 
 #include "transferproxymodel.h"
 
-void TransferProxyModel::setSourceModel(QAbstractItemModel *sourceModel)
-{
-    QAbstractProxyModel::setSourceModel(sourceModel);
-
-    connect(sourceModel, &QAbstractItemModel::dataChanged, this,
-            [this](const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &) {
-        emit dataChanged(
-            createIndex(topLeft.row(), 0),
-            createIndex(bottomRight.row(), ColumnCount - 1)
-        );
-    });
-}
-
-QModelIndex TransferProxyModel::index(int row, int column, const QModelIndex &) const
-{
-    return createIndex(row, column);
-}
-
-QModelIndex TransferProxyModel::mapFromSource(const QModelIndex &sourceIndex) const
-{
-    return createIndex(sourceIndex.row(), 0);
-}
-
-QModelIndex TransferProxyModel::mapToSource(const QModelIndex &proxyIndex) const
-{
-    return sourceModel()->index(proxyIndex.row(), 0);
-}
-
-QModelIndex TransferProxyModel::parent(const QModelIndex &) const
-{
-    return QModelIndex();
-}
-
-int TransferProxyModel::rowCount(const QModelIndex &) const
-{
-    return sourceModel()->rowCount();
-}
-
 int TransferProxyModel::columnCount(const QModelIndex &) const
 {
     return ColumnCount;
@@ -75,7 +37,7 @@ QVariant TransferProxyModel::data(const QModelIndex &proxyIndex, int role) const
         return QVariant();
     }
 
-    Transfer *transfer = sourceRole(proxyIndex, Qt::UserRole).value<Transfer*>();
+    Transfer *transfer = sourceData(proxyIndex, Qt::UserRole).value<Transfer*>();
 
     switch (role) {
     case Qt::DisplayRole:
@@ -101,7 +63,7 @@ QVariant TransferProxyModel::data(const QModelIndex &proxyIndex, int role) const
         break;
     }
 
-    return sourceRole(proxyIndex, role);
+    return sourceData(proxyIndex, role);
 }
 
 QVariant TransferProxyModel::headerData(int section, Qt::Orientation orientation, int role) const
@@ -118,9 +80,4 @@ QVariant TransferProxyModel::headerData(int section, Qt::Orientation orientation
         return tr("Status");
     }
     return QVariant();
-}
-
-QVariant TransferProxyModel::sourceRole(const QModelIndex &proxyIndex, int role) const
-{
-    return sourceModel()->data(mapToSource(proxyIndex), role);
 }

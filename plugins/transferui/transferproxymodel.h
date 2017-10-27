@@ -25,9 +25,9 @@
 #ifndef TRANSFERPROXYMODEL_H
 #define TRANSFERPROXYMODEL_H
 
-#include <QAbstractProxyModel>
+#include <nitroshare/proxymodel.h>
 
-class TransferProxyModel : public QAbstractProxyModel
+class TransferProxyModel : public ProxyModel
 {
     Q_OBJECT
 
@@ -40,21 +40,9 @@ public:
         ColumnCount
     };
 
-    virtual void setSourceModel(QAbstractItemModel *sourceModel);
-
-    virtual QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const;
-    virtual QModelIndex mapFromSource(const QModelIndex &sourceIndex) const;
-    virtual QModelIndex mapToSource(const QModelIndex &proxyIndex) const;
-    virtual QModelIndex parent(const QModelIndex &child) const;
-
-    virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
     virtual int columnCount(const QModelIndex &parent = QModelIndex()) const;
     virtual QVariant data(const QModelIndex &proxyIndex, int role) const;
     virtual QVariant headerData(int section, Qt::Orientation orientation, int role) const;
-
-private:
-
-    QVariant sourceRole(const QModelIndex &proxyIndex, int role) const;
 };
 
 #endif // TRANSFERPROXYMODEL_H
