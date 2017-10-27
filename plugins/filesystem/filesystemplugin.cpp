@@ -27,20 +27,24 @@
 #include <nitroshare/handlerregistry.h>
 
 #include "file.h"
+#include "filehandler.h"
 #include "filesystemplugin.h"
+#include "sendaction.h"
 
 void FilesystemPlugin::initialize(Application *application)
 {
+    mFileHandler = new FileHandler;
     mSendAction = new SendAction(application);
 
-    application->handlerRegistry()->addHandler("file", &mFileHandler);
+    application->handlerRegistry()->add(mFileHandler);
     application->actionRegistry()->add(mSendAction);
 }
 
 void FilesystemPlugin::cleanup(Application *application)
 {
-    application->handlerRegistry()->removeHandler("file");
+    application->handlerRegistry()->remove(mFileHandler);
     application->actionRegistry()->remove(mSendAction);
 
+    delete mFileHandler;
     delete mSendAction;
 }

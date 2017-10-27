@@ -190,7 +190,7 @@ void TransferPrivate::processItemHeader(Packet *packet)
     }
 
     // Attempt to locate a handler for the type
-    Handler *handler = handlerRegistry->handlerForType(type);
+    Handler *handler = handlerRegistry->find(type);
     if (!handler) {
         setError(tr("unrecognized item type \"%1\"").arg(type), true);
         return;

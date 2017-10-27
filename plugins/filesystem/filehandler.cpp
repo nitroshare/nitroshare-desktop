@@ -25,6 +25,11 @@
 #include "file.h"
 #include "filehandler.h"
 
+QString FileHandler::name() const
+{
+    return "file";
+}
+
 Item *FileHandler::createItem(const QString &, const QVariantMap &properties)
 {
     return new File(properties);

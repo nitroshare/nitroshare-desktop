@@ -22,6 +22,7 @@
  * IN THE SOFTWARE.
  */
 
+#include <nitroshare/handler.h>
 #include <nitroshare/handlerregistry.h>
 
 #include "handlerregistry_p.h"
@@ -37,17 +38,17 @@ HandlerRegistry::HandlerRegistry(QObject *parent)
 {
 }
 
-void HandlerRegistry::addHandler(const QString &identifier, Handler *handler)
+Handler *HandlerRegistry::find(const QString &name)
 {
-    d->handlers.insert(identifier, handler);
+    return d->handlers.value(name);
 }
 
-void HandlerRegistry::removeHandler(const QString &identifier)
+void HandlerRegistry::add(Handler *handler)
 {
-    d->handlers.remove(identifier);
+    d->handlers.insert(handler->name(), handler);
 }
 
-Handler *HandlerRegistry::handlerForType(const QString &identifer)
+void HandlerRegistry::remove(Handler *handler)
 {
-    return d->handlers.value(identifer);
+    d->handlers.remove(handler->name());
 }

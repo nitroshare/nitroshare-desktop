@@ -52,24 +52,23 @@ public:
     explicit HandlerRegistry(QObject *parent = nullptr);
 
     /**
+     * @brief Find a handler by its name
+     * @param name unique identifier for the handler
+     * @return pointer to Handler or nullptr
+     */
+    Handler *find(const QString &name);
+
+    /**
      * @brief Add a handler for the specified type to the registry
-     * @param identifier unique identifier for the type
      * @param handler pointer to Handler
      */
-    void addHandler(const QString &identifier, Handler *handler);
+    void add(Handler *handler);
 
     /**
      * @brief Remove the handler for the specified type
-     * @param identifier unique identifier for the type
+     * @param handler pointer to Handler
      */
-    void removeHandler(const QString &identifier);
-
-    /**
-     * @brief Retrieve the handler for the specified type
-     * @param identifer unique identifier for the type
-     * @return pointer to Handler
-     */
-    Handler *handlerForType(const QString &identifer);
+    void remove(Handler *handler);
 
 private:
 

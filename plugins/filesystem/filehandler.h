@@ -32,8 +32,11 @@
  */
 class FileHandler : public Handler
 {
+    Q_OBJECT
+
 public:
 
+    virtual QString name() const;
     virtual Item *createItem(const QString &type, const QVariantMap &properties);
 };
 

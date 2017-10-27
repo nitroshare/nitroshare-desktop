@@ -25,7 +25,7 @@
 #ifndef LIBNITROSHARE_HANDLER_H
 #define LIBNITROSHARE_HANDLER_H
 
-#include <QString>
+#include <QObject>
 #include <QVariantMap>
 
 #include <nitroshare/config.h>
@@ -40,9 +40,17 @@ class Item;
  * Application::registerHandler(). The handler's methods will be invoked as
  * necessary to create Item instances for items in a bundle.
  */
-class NITROSHARE_EXPORT Handler
+class NITROSHARE_EXPORT Handler : public QObject
 {
+    Q_OBJECT
+    Q_PROPERTY(QString name READ name)
+
 public:
+
+    /**
+     * @brief Retrieve the name of the handler
+     */
+    virtual QString name() const = 0;
 
     /**
      * @brief Create an item for the specified type
