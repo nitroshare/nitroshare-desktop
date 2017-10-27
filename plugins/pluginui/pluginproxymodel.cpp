@@ -30,44 +30,6 @@
 
 #include "pluginproxymodel.h"
 
-void PluginProxyModel::setSourceModel(QAbstractItemModel *sourceModel)
-{
-    QAbstractProxyModel::setSourceModel(sourceModel);
-
-    connect(sourceModel, &QAbstractItemModel::dataChanged, this,
-            [this](const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &) {
-        emit dataChanged(
-            createIndex(topLeft.row(), 0),
-            createIndex(bottomRight.row(), ColumnCount - 1)
-        );
-    });
-}
-
-QModelIndex PluginProxyModel::index(int row, int column, const QModelIndex &) const
-{
-    return createIndex(row, column);
-}
-
-QModelIndex PluginProxyModel::mapFromSource(const QModelIndex &sourceIndex) const
-{
-    return createIndex(sourceIndex.row(), 0);
-}
-
-QModelIndex PluginProxyModel::mapToSource(const QModelIndex &proxyIndex) const
-{
-    return sourceModel()->index(proxyIndex.row(), 0);
-}
-
-QModelIndex PluginProxyModel::parent(const QModelIndex &) const
-{
-    return QModelIndex();
-}
-
-int PluginProxyModel::rowCount(const QModelIndex &) const
-{
-    return sourceModel()->rowCount();
-}
-
 int PluginProxyModel::columnCount(const QModelIndex &) const
 {
     return ColumnCount;
@@ -79,7 +41,7 @@ QVariant PluginProxyModel::data(const QModelIndex &proxyIndex, int role) const
         return QVariant();
     }
 
-    Plugin *plugin = sourceRole(proxyIndex, Qt::UserRole).value<Plugin*>();
+    Plugin *plugin = sourceData(proxyIndex, Qt::UserRole).value<Plugin*>();
 
     switch (role) {
     case Qt::DisplayRole:
@@ -117,7 +79,7 @@ QVariant PluginProxyModel::data(const QModelIndex &proxyIndex, int role) const
         break;
     }
 
-    return sourceRole(proxyIndex, role);
+    return sourceData(proxyIndex, role);
 }
 
 QVariant PluginProxyModel::headerData(int section, Qt::Orientation orientation, int role) const
@@ -140,9 +102,4 @@ QVariant PluginProxyModel::headerData(int section, Qt::Orientation orientation, 
         return tr("Description");
     }
     return QVariant();
-}
-
-QVariant PluginProxyModel::sourceRole(const QModelIndex &proxyIndex, int role) const
-{
-    return sourceModel()->data(mapToSource(proxyIndex), role);
 }
