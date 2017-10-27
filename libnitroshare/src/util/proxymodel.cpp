@@ -24,6 +24,11 @@
 
 #include <nitroshare/proxymodel.h>
 
+ProxyModel::ProxyModel(QObject *parent)
+    : QAbstractProxyModel(parent)
+{
+}
+
 void ProxyModel::setSourceModel(QAbstractItemModel *sourceModel)
 {
     QAbstractProxyModel::setSourceModel(sourceModel);
