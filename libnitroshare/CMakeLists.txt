@@ -24,6 +24,7 @@ set(SRC
     src/transfer/packet.cpp
     src/transfer/transfer.cpp
     src/transfer/transfermodel.cpp
+    src/util/proxymodel.cpp
     src/util/signalnotifier.cpp
 )
 
