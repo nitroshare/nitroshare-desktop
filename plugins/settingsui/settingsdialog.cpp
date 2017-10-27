@@ -23,6 +23,7 @@
  */
 
 #include <QDialogButtonBox>
+#include <QFrame>
 
 #include <nitroshare/application.h>
 #include <nitroshare/setting.h>
@@ -47,11 +48,16 @@ SettingsDialog::SettingsDialog(Application *application)
         onSettingAdded(setting);
     }
 
+    QFrame *frame = new QFrame;
+    frame->setFrameShape(QFrame::HLine);
+    frame->setFrameShadow(QFrame::Sunken);
+
     QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Save | QDialogButtonBox::Cancel);
     connect(buttonBox, &QDialogButtonBox::accepted, this, &SettingsDialog::accept);
     connect(buttonBox, &QDialogButtonBox::rejected, this, &SettingsDialog::reject);
 
     mLayout->addItem(mSpacer);
+    mLayout->addWidget(frame);
     mLayout->addWidget(buttonBox);
     setLayout(mLayout);
 }
