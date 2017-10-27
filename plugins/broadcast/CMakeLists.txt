@@ -17,6 +17,7 @@ set_target_properties(broadcast PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY "${PLUGIN_OUTPUT_DIRECTORY}"
 )
 
+target_include_directories(broadcast PUBLIC "${CMAKE_CURRENT_BINARY_DIR}")
 target_link_libraries(broadcast nitroshare Qt5::Network)
 
 install(TARGETS broadcast

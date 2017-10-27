@@ -19,6 +19,7 @@ set_target_properties(loggerui PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY "${PLUGIN_OUTPUT_DIRECTORY}"
 )
 
+target_include_directories(loggerui PUBLIC "${CMAKE_CURRENT_BINARY_DIR}")
 target_link_libraries(loggerui Qt5::Widgets nitroshare)
 
 install(TARGETS loggerui

@@ -21,6 +21,7 @@ set_target_properties(lan PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY "${PLUGIN_OUTPUT_DIRECTORY}"
 )
 
+target_include_directories(lan PUBLIC "${CMAKE_CURRENT_BINARY_DIR}")
 target_link_libraries(lan nitroshare Qt5::Network)
 
 install(TARGETS lan

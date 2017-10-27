@@ -19,6 +19,7 @@ set_target_properties(transferui PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY "${PLUGIN_OUTPUT_DIRECTORY}"
 )
 
+target_include_directories(transferui PUBLIC "${CMAKE_CURRENT_BINARY_DIR}")
 target_link_libraries(transferui Qt5::Widgets nitroshare)
 
 install(TARGETS transferui

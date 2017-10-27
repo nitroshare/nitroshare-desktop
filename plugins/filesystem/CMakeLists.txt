@@ -21,6 +21,7 @@ set_target_properties(filesystem PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY "${PLUGIN_OUTPUT_DIRECTORY}"
 )
 
+target_include_directories(filesystem PUBLIC "${CMAKE_CURRENT_BINARY_DIR}")
 target_link_libraries(filesystem nitroshare)
 
 install(TARGETS filesystem

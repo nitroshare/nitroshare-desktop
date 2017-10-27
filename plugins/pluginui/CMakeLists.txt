@@ -21,6 +21,7 @@ set_target_properties(pluginui PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY "${PLUGIN_OUTPUT_DIRECTORY}"
 )
 
+target_include_directories(pluginui PUBLIC "${CMAKE_CURRENT_BINARY_DIR}")
 target_link_libraries(pluginui Qt5::Widgets nitroshare)
 
 install(TARGETS pluginui

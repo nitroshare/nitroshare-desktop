@@ -19,6 +19,7 @@ set_target_properties(api PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY "${PLUGIN_OUTPUT_DIRECTORY}"
 )
 
+target_include_directories(api PUBLIC "${CMAKE_CURRENT_BINARY_DIR}")
 target_link_libraries(api nitroshare qhttpengine)
 
 install(TARGETS api
