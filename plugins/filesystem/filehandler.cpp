@@ -22,8 +22,32 @@
  * IN THE SOFTWARE.
  */
 
+#include <QStandardPaths>
+
+#include <nitroshare/application.h>
+#include <nitroshare/settingsregistry.h>
+
 #include "file.h"
 #include "filehandler.h"
+
+const QString TransferDirectory = "TransferDirectory";
+
+FileHandler::FileHandler(Application *application)
+    : mApplication(application),
+      mTransferDirectory({
+          { Setting::TypeKey, Setting::DirectoryPath },
+          { Setting::NameKey, TransferDirectory },
+          { Setting::TitleKey, tr("Transfer Directory") },
+          { Setting::DefaultValueKey, QStandardPaths::writableLocation(QStandardPaths::DownloadLocation) }
+      })
+{
+    mApplication->settingsRegistry()->add(&mTransferDirectory);
+}
+
+FileHandler::~FileHandler()
+{
+    mApplication->settingsRegistry()->remove(&mTransferDirectory);
+}
 
 QString FileHandler::name() const
 {
@@ -32,5 +56,8 @@ QString FileHandler::name() const
 
 Item *FileHandler::createItem(const QString &, const QVariantMap &properties)
 {
-    return new File(properties);
+    return new File(
+        mApplication->settingsRegistry()->value(TransferDirectory).toString(),
+        properties
+    );
 }

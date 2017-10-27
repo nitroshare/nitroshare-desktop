@@ -26,6 +26,9 @@
 #define FILEHANDLER_H
 
 #include <nitroshare/handler.h>
+#include <nitroshare/setting.h>
+
+class Application;
 
 /**
  * @brief Handler for files on the local filesystem
@@ -36,8 +39,17 @@ class FileHandler : public Handler
 
 public:
 
+    explicit FileHandler(Application *application);
+    virtual ~FileHandler();
+
     virtual QString name() const;
     virtual Item *createItem(const QString &type, const QVariantMap &properties);
+
+private:
+
+    Application *mApplication;
+
+    Setting mTransferDirectory;
 };
 
 #endif // FILEHANDLER_H

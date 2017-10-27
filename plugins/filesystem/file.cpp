@@ -24,11 +24,12 @@
 
 #include "file.h"
 
-File::File(const QVariantMap &properties)
+File::File(const QString &root, const QVariantMap &properties)
 {
-    // TODO: set mFile
-
     mRelativeFilename = properties.value("name").toString();
+
+    // Create the full path by combining the root with the relative filename
+    mFile.setFileName(QDir::cleanPath(root + QDir::separator() + mRelativeFilename));
 
     mSize = properties.value("size").toLongLong();
     mReadOnly = properties.value("read_only").toBool();
@@ -97,6 +98,9 @@ qint64 File::size() const
 
 bool File::open(OpenMode openMode)
 {
+    if (openMode == Write && !QDir(QFileInfo(mFile.fileName()).absolutePath()).mkpath(".")) {
+        return false;
+    }
     return mFile.open(openMode == Read ? QIODevice::ReadOnly : QIODevice::WriteOnly);
 }
 

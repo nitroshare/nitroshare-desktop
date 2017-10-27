@@ -47,7 +47,7 @@ class File : public Item
 
 public:
 
-    File(const QVariantMap &properties);
+    File(const QString &root, const QVariantMap &properties);
     File(const QDir &root, const QFileInfo &info, int blockSize);
 
     bool readOnly() const;

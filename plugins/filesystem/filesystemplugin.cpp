@@ -33,7 +33,7 @@
 
 void FilesystemPlugin::initialize(Application *application)
 {
-    mFileHandler = new FileHandler;
+    mFileHandler = new FileHandler(application);
     mSendAction = new SendAction(application);
 
     application->handlerRegistry()->add(mFileHandler);
