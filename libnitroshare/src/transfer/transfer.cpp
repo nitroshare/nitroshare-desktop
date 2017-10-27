@@ -304,6 +304,9 @@ void TransferPrivate::setError(const QString &message, bool send)
 
     // An error on either end necessitates the transport be closed
     transport->close();
+
+    // The protocol dictates that the transfer is now "finished"
+    protocolState = Finished;
 }
 
 void TransferPrivate::onPacketReceived(Packet *packet)

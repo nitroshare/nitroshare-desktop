@@ -86,7 +86,8 @@ void LanTransport::onReadyRead()
 
             // Grab the type and data
             const char type = mBuffer.at(0);
-            QByteArray data = mBuffer.remove(1, mBufferSize - 1);
+            QByteArray data = mBuffer.mid(1, mBufferSize - 1);
+            mBuffer.remove(0, mBufferSize);
 
             // Emit the new packet and reset the size
             emit packetReceived(new Packet(static_cast<Packet::Type>(type), data));
