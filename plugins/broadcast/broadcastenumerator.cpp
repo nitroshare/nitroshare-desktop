@@ -46,10 +46,24 @@ const QString BroadcastPort = "BroadcastPort";
 
 BroadcastEnumerator::BroadcastEnumerator(Application *application)
     : mApplication(application),
-      mBroadcastInterval(Setting::Integer, BroadcastInterval, tr("Broadcast Interval"), 5000),
-      mBroadcastExpiry(Setting::Integer, BroadcastExpiry, tr("Broadcast Expiry"), 30000),
-      mBroadcastPort(Setting::Integer, BroadcastPort, tr("Broadcast Port"), 40816)
-
+      mBroadcastInterval({
+          { Setting::TypeKey, Setting::Integer },
+          { Setting::NameKey, BroadcastInterval },
+          { Setting::TitleKey, tr("Broadcast Interval") },
+          { Setting::DefaultValueKey, 5000 }
+      }),
+      mBroadcastExpiry({
+          { Setting::TypeKey, Setting::Integer },
+          { Setting::NameKey, BroadcastExpiry },
+          { Setting::TitleKey, tr("Broadcast Expiry") },
+          { Setting::DefaultValueKey, 30000 }
+      }),
+      mBroadcastPort({
+          { Setting::TypeKey, Setting::Integer },
+          { Setting::NameKey, BroadcastPort },
+          { Setting::TitleKey, tr("Broadcast Port") },
+          { Setting::DefaultValueKey, 40816 }
+      })
 {
     connect(&mBroadcastTimer, &QTimer::timeout, this, &BroadcastEnumerator::onBroadcastTimeout);
     connect(&mExpiryTimer, &QTimer::timeout, this, &BroadcastEnumerator::onExpiryTimeout);

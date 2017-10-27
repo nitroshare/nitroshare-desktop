@@ -38,7 +38,12 @@ ApiServer::ApiServer(Application *application)
     : mApplication(application),
       mHandler(application),
       mServer(&mHandler),
-      mApiEnabled(Setting::Boolean, ApiEnabled, tr("API Enabled"), true)
+      mApiEnabled({
+          { Setting::TypeKey, Setting::Boolean },
+          { Setting::NameKey, ApiEnabled },
+          { Setting::TitleKey, tr("API Enabled") },
+          { Setting::DefaultValueKey, true }
+      })
 {
     mHandler.addMiddleware(&mAuth);
 

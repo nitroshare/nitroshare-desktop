@@ -26,9 +26,7 @@
 #define LIBNITROSHARE_SETTING_P_H
 
 #include <QObject>
-#include <QVariant>
-
-#include <nitroshare/setting.h>
+#include <QVariantMap>
 
 class SettingPrivate : public QObject
 {
@@ -36,12 +34,9 @@ class SettingPrivate : public QObject
 
 public:
 
-    SettingPrivate(QObject *parent, Setting::Type type, const QString &name, const QString &title, const QVariant &defaultValue);
+    SettingPrivate(QObject *parent, const QVariantMap &properties);
 
-    Setting::Type type;
-    QString name;
-    QString title;
-    QVariant defaultValue;
+    QVariantMap properties;
 };
 
 #endif // LIBNITROSHARE_SETTING_P_H

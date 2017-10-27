@@ -27,6 +27,7 @@
 
 #include <QObject>
 #include <QVariant>
+#include <QVariantMap>
 
 #include <nitroshare/config.h>
 
@@ -50,19 +51,30 @@ public:
      * @brief Type of value used for setting
      */
     enum Type {
+        Invalid,
         String,
         Integer,
         Boolean,
     };
 
+    /// Key for the setting type
+    static const QString TypeKey;
+
+    /// Key for the setting's machine-friendly name
+    static const QString NameKey;
+
+    /// Key for the setting's human-friendly title
+    static const QString TitleKey;
+
+    /// Key for the setting's default value
+    static const QString DefaultValueKey;
+
     /**
-     * @brief Create a new setting
-     * @param type setting type
-     * @param name setting name
-     * @param defaultValue default value
+     * @brief Create a new setting with the specified properties
+     * @param properties map of properties
      * @param parent QObject
      */
-    Setting(Type type, const QString &name, const QString &title, const QVariant &defaultValue, QObject *parent = nullptr);
+    Setting(const QVariantMap &properties, QObject *parent = nullptr);
 
     /**
      * @brief Retrieve the type of value stored in the setting
@@ -88,5 +100,7 @@ private:
 
     SettingPrivate *const d;
 };
+
+Q_DECLARE_METATYPE(Setting::Type)
 
 #endif // LIBNITROSHARE_SETTING_H

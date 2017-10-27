@@ -32,8 +32,6 @@
 
 #include "application_p.h"
 
-const QString MessageTag = "application";
-
 const QString PluginDir = "plugin-dir";
 const QString PluginBlacklist = "plugin-blacklist";
 
@@ -43,8 +41,18 @@ const QString Application::DeviceName = "DeviceName";
 ApplicationPrivate::ApplicationPrivate(Application *application)
     : QObject(application),
       q(application),
-      deviceUuid(Setting::String, Application::DeviceUuid, tr("Device UUID"), QUuid::createUuid().toString()),
-      deviceName(Setting::String, Application::DeviceName, tr("Device Name"), QHostInfo::localHostName()),
+      deviceUuid({
+          { Setting::TypeKey, Setting::String },
+          { Setting::NameKey, Application::DeviceUuid },
+          { Setting::TitleKey, tr("Device UUID") },
+          { Setting::DefaultValueKey, QUuid::createUuid().toString() }
+      }),
+      deviceName({
+          { Setting::TypeKey, Setting::String },
+          { Setting::NameKey, Application::DeviceName },
+          { Setting::TitleKey, tr("Device Name") },
+          { Setting::DefaultValueKey, QHostInfo::localHostName() }
+      }),
       pluginModel(application),
       uiEnabled(false)
 {
