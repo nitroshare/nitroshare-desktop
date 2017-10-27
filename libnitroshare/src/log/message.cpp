@@ -72,7 +72,7 @@ QString Message::body() const
 QString Message::toString() const
 {
     return QString("%1 [%2:%3] %4")
-        .arg(d->dateTime.toString(Qt::ISODateWithMs))
+        .arg(d->dateTime.toString(Qt::ISODate))
         .arg(TypeMap.value(d->type))
         .arg(d->tag)
         .arg(d->body);
