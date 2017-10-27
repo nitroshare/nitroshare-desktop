@@ -27,6 +27,7 @@
 
 #include <QList>
 #include <QObject>
+#include <QSettings>
 #include <QStringList>
 #include <QVariant>
 
@@ -50,8 +51,10 @@ public:
 
     /**
      * @brief Create a new settings registry
+     * @param settings pointer to QSettings
+     * @param parent QObject
      */
-    explicit SettingsRegistry(QObject *parent = nullptr);
+    explicit SettingsRegistry(QSettings *settings, QObject *parent = nullptr);
 
     /**
      * @brief Retrieve a list of all settings

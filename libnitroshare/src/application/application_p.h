@@ -25,6 +25,8 @@
 #ifndef LIBNITROSHARE_APPLICATION_P_H
 #define LIBNITROSHARE_APPLICATION_P_H
 
+#include <QSettings>
+
 #include <nitroshare/actionregistry.h>
 #include <nitroshare/application.h>
 #include <nitroshare/devicemodel.h>
@@ -48,6 +50,8 @@ public:
 
     Setting deviceUuid;
     Setting deviceName;
+
+    QSettings settings;
 
     ActionRegistry actionRegistry;
     DeviceModel deviceModel;

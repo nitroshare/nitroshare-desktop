@@ -38,9 +38,9 @@ class SettingsRegistryPrivate : public QObject
 
 public:
 
-    explicit SettingsRegistryPrivate(QObject *parent);
+    explicit SettingsRegistryPrivate(QObject *parent, QSettings *settings);
 
-    QSettings settings;
+    QSettings *settings;
     QList<Setting*> settingsList;
 
     bool isInGroup;

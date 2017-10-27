@@ -3,7 +3,7 @@ add_subdirectory(dummy)
 
 set(TESTS
     TestDeviceModel
-    TestSettings
+    TestSettingsRegistry
 )
 
 foreach(_test ${TESTS})

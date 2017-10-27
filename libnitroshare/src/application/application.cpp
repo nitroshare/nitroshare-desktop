@@ -55,6 +55,7 @@ ApplicationPrivate::ApplicationPrivate(Application *application)
           { Setting::DefaultValueKey, QHostInfo::localHostName() }
       }),
       pluginModel(application),
+      settingsRegistry(&settings),
       transferModel(application),
       uiEnabled(false)
 {

@@ -27,15 +27,16 @@
 
 #include "settingsregistry_p.h"
 
-SettingsRegistryPrivate::SettingsRegistryPrivate(QObject *parent)
+SettingsRegistryPrivate::SettingsRegistryPrivate(QObject *parent, QSettings *settings)
     : QObject(parent),
+      settings(settings),
       isInGroup(false)
 {
 }
 
-SettingsRegistry::SettingsRegistry(QObject *parent)
+SettingsRegistry::SettingsRegistry(QSettings *settings, QObject *parent)
     : QObject(parent),
-      d(new SettingsRegistryPrivate(this))
+      d(new SettingsRegistryPrivate(this, settings))
 {
 }
 
@@ -70,10 +71,10 @@ QVariant SettingsRegistry::value(const QString &name) const
 {
     Setting *setting = find(name);
     if (setting) {
-        if (d->settings.contains(name)) {
-            return d->settings.value(name);
+        if (d->settings->contains(name)) {
+            return d->settings->value(name);
         } else {
-            d->settings.setValue(name, setting->defaultValue());
+            d->settings->setValue(name, setting->defaultValue());
             return setting->defaultValue();
         }
     } else {
@@ -83,10 +84,10 @@ QVariant SettingsRegistry::value(const QString &name) const
 
 void SettingsRegistry::setValue(const QString &name, const QVariant &value)
 {
-    if (d->settings.contains(name) && d->settings.value(name) == value) {
+    if (d->settings->contains(name) && d->settings->value(name) == value) {
         return;
     }
-    d->settings.setValue(name, value);
+    d->settings->setValue(name, value);
     if (d->isInGroup) {
         d->groupNames.insert(name);
     } else {
