@@ -29,8 +29,8 @@
 
 #include <nitroshare/transfer.h>
 
+class Application;
 class Bundle;
-class HandlerRegistry;
 class Item;
 class Packet;
 class Transport;
@@ -41,7 +41,7 @@ class TransferPrivate : public QObject
 
 public:
 
-    TransferPrivate(Transfer *parent, HandlerRegistry *handlerRegistry, Transport *transport,
+    TransferPrivate(Transfer *parent, Application *application, Transport *transport,
                     Bundle *bundle, Transfer::Direction direction);
 
     void sendTransferHeader();
@@ -61,7 +61,7 @@ public:
 
     Transfer *const q;
 
-    HandlerRegistry *handlerRegistry;
+    Application *application;
     Transport *transport;
     Bundle *bundle;
 

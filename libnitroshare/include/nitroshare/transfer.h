@@ -29,8 +29,8 @@
 
 #include <nitroshare/config.h>
 
+class Application;
 class Bundle;
-class HandlerRegistry;
 class Settings;
 class Transport;
 
@@ -80,20 +80,20 @@ public:
 
     /**
      * @brief Create a transfer to receive items
-     * @param handlerRegistry pointer to HandlerRegistry
+     * @param application pointer to Application
      * @param transport pointer to Transport
      * @param parent QObject
      */
-    Transfer(HandlerRegistry *handlerRegistry, Transport *transport, QObject *parent = nullptr);
+    Transfer(Application *application, Transport *transport, QObject *parent = nullptr);
 
     /**
      * @brief Create a transfer to send items
-     * @param handlerRegistry pointer to HandlerRegistry
+     * @param application pointer to Application
      * @param transport pointer to Transport
      * @param bundle pointer to Bundle
      * @param parent QObject
      */
-    Transfer(HandlerRegistry *handlerRegistry, Transport *transport, Bundle *bundle, QObject *parent = nullptr);
+    Transfer(Application *application, Transport *transport, Bundle *bundle, QObject *parent = nullptr);
 
     /**
      * @brief Retrieve the direction of transfer

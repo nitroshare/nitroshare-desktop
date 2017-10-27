@@ -30,6 +30,7 @@
 #include <QMetaProperty>
 #include <QtEndian>
 
+#include <nitroshare/application.h>
 #include <nitroshare/bundle.h>
 #include <nitroshare/handler.h>
 #include <nitroshare/handlerregistry.h>
@@ -40,11 +41,11 @@
 
 #include "transfer_p.h"
 
-TransferPrivate::TransferPrivate(Transfer *parent, HandlerRegistry *handlerRegistry, Transport *transport,
+TransferPrivate::TransferPrivate(Transfer *parent, Application *application, Transport *transport,
                                  Bundle *bundle, Transfer::Direction direction)
     : QObject(parent),
       q(parent),
-      handlerRegistry(handlerRegistry),
+      application(application),
       transport(transport),
       bundle(bundle),
       protocolState(TransferHeader),
@@ -188,7 +189,7 @@ void TransferPrivate::processItemHeader(Packet *packet)
     }
 
     // Attempt to locate a handler for the type
-    Handler *handler = handlerRegistry->find(type);
+    Handler *handler = application->handlerRegistry()->find(type);
     if (!handler) {
         setError(tr("unrecognized item type \"%1\"").arg(type), true);
         return;
@@ -343,15 +344,15 @@ void TransferPrivate::onError(const QString &message)
     setError(message, true);
 }
 
-Transfer::Transfer(HandlerRegistry *handlerRegistry, Transport *transport, QObject *parent)
+Transfer::Transfer(Application *application, Transport *transport, QObject *parent)
     : QObject(parent),
-      d(new TransferPrivate(this, handlerRegistry, transport, nullptr, Transfer::Receive))
+      d(new TransferPrivate(this, application, transport, nullptr, Transfer::Receive))
 {
 }
 
-Transfer::Transfer(HandlerRegistry *handlerRegistry, Transport *transport, Bundle *bundle, QObject *parent)
+Transfer::Transfer(Application *application, Transport *transport, Bundle *bundle, QObject *parent)
     : QObject(parent),
-      d(new TransferPrivate(this, handlerRegistry, transport, bundle, Transfer::Send))
+      d(new TransferPrivate(this, application, transport, bundle, Transfer::Send))
 {
 }
 

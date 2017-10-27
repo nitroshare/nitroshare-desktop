@@ -52,7 +52,7 @@ void TransferModelPrivate::addTransfer(Transfer *transfer)
 void TransferModelPrivate::processTransport(Transport *transport)
 {
     // Create a new transfer from the transport
-    addTransfer(new Transfer(application->handlerRegistry(), transport));
+    addTransfer(new Transfer(application, transport));
 }
 
 TransferModel::TransferModel(Application *application, QObject *parent)
