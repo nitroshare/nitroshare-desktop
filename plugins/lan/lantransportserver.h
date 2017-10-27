@@ -27,6 +27,7 @@
 
 #include <QStringList>
 
+#include <nitroshare/setting.h>
 #include <nitroshare/transportserver.h>
 
 #include "server.h"
@@ -40,6 +41,7 @@ class LanTransportServer : public TransportServer
 public:
 
     explicit LanTransportServer(Application *application);
+    virtual ~LanTransportServer();
 
     virtual Transport *createTransport(const QVariantMap &properties);
 
@@ -50,7 +52,11 @@ private slots:
 
 private:
 
+    Application *mApplication;
+
     Server mServer;
+
+    Setting mTransferPort;
 };
 
 #endif // LANTRANSPORTSERVER_H

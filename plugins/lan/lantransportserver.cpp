@@ -23,18 +23,38 @@
  */
 
 #include <nitroshare/application.h>
+#include <nitroshare/logger.h>
+#include <nitroshare/message.h>
 #include <nitroshare/settingsregistry.h>
 
 #include "lantransport.h"
 #include "lantransportserver.h"
 
+const QString MessageTag = "lantransportserver";
+
+const QString TransferPort = "TransferPort";
+
 LanTransportServer::LanTransportServer(Application *application)
+    : mApplication(application),
+      mTransferPort({
+          { Setting::TypeKey, Setting::Integer },
+          { Setting::NameKey, TransferPort },
+          { Setting::TitleKey, tr("Transfer Port") },
+          { Setting::DefaultValueKey, 40818 }
+      })
 {
     connect(&mServer, &Server::newSocketDescriptor, this, &LanTransportServer::onNewSocketDescriptor);
+    connect(mApplication->settingsRegistry(), &SettingsRegistry::settingsChanged, this, &LanTransportServer::onSettingsChanged);
 
-    // Watch for settings changing and trigger the initial values
-    connect(application->settingsRegistry(), &SettingsRegistry::settingsChanged, this, &LanTransportServer::onSettingsChanged);
-    onSettingsChanged({});
+    mApplication->settingsRegistry()->add(&mTransferPort);
+
+    // Trigger loading the initial settings
+    onSettingsChanged({ TransferPort });
+}
+
+LanTransportServer::~LanTransportServer()
+{
+    mApplication->settingsRegistry()->remove(&mTransferPort);
 }
 
 Transport *LanTransportServer::createTransport(const QVariantMap &properties)
@@ -49,5 +69,15 @@ void LanTransportServer::onNewSocketDescriptor(qintptr socketDescriptor)
 
 void LanTransportServer::onSettingsChanged(const QStringList &keys)
 {
-    //...
+    if (keys.contains(TransferPort)) {
+        mServer.close();
+        if (!mServer.listen(QHostAddress::Any,
+                mApplication->settingsRegistry()->value(TransferPort).toInt())) {
+            mApplication->logger()->log(new Message(
+                Message::Error,
+                MessageTag,
+                mServer.errorString()
+            ));
+        }
+    }
 }
