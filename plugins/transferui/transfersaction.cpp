@@ -25,7 +25,7 @@
 #include "transfersaction.h"
 
 TransfersAction::TransfersAction(Application *application)
-    : mTransferWindow(application)
+    : mDialog(application)
 {
 }
 
@@ -46,6 +46,6 @@ QString TransfersAction::title() const
 
 QVariant TransfersAction::invoke(const QVariantMap &)
 {
-    mTransferWindow.show();
+    mDialog.show();
     return true;
 }

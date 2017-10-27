@@ -3,12 +3,12 @@ configure_file(transferui.json.in "${CMAKE_CURRENT_BINARY_DIR}/transferui.json")
 set(SRC
     transferproxymodel.h
     transferproxymodel.cpp
+    transferdialog.h
+    transferdialog.cpp
     transfersaction.h
     transfersaction.cpp
     transferuiplugin.h
     transferuiplugin.cpp
-    transferwindow.h
-    transferwindow.cpp
 )
 
 add_library(transferui MODULE ${SRC})

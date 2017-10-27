@@ -22,48 +22,31 @@
  * IN THE SOFTWARE.
  */
 
-#include <QFrame>
 #include <QHBoxLayout>
-#include <QPushButton>
-#include <QSpacerItem>
-#include <QTableView>
-#include <QVBoxLayout>
-#include <QWidget>
+#include <QHeaderView>
 
 #include <nitroshare/application.h>
 #include <nitroshare/transfermodel.h>
 
-#include "transferwindow.h"
+#include "transferdialog.h"
 
-TransferWindow::TransferWindow(Application *application)
+TransferDialog::TransferDialog(Application *application)
+    : mApplication(application),
+      mTableView(new QTableView)
 {
     setWindowTitle(tr("Transfers"));
-    resize(640, 200);
+    resize(800, 300);
 
-    QTableView *tableView = new QTableView;
-    tableView->setModel(application->transferModel());
+    mModel.setSourceModel(mApplication->transferModel());
 
-    QPushButton *viewFiles = new QPushButton(tr("View Files..."));
-    QPushButton *clear = new QPushButton(tr("Clear"));
-    connect(clear, &QPushButton::clicked, []() {
-        //...
-    });
-
-    QFrame *hline = new QFrame;
-    hline->setFrameShape(QFrame::HLine);
-    hline->setFrameShadow(QFrame::Sunken);
-
-    QVBoxLayout *vboxLayout = new QVBoxLayout;
-    vboxLayout->addWidget(viewFiles);
-    vboxLayout->addWidget(hline);
-    vboxLayout->addWidget(clear);
-    vboxLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::Expanding));
+    mTableView->setModel(&mModel);
+    mTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    mTableView->horizontalHeader()->setStretchLastSection(true);
+    mTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    mTableView->setSelectionMode(QAbstractItemView::SingleSelection);
+    mTableView->verticalHeader()->setVisible(false);
 
     QHBoxLayout *hboxLayout = new QHBoxLayout;
-    hboxLayout->addWidget(tableView);
-    hboxLayout->addLayout(vboxLayout);
-
-    QWidget *widget = new QWidget;
-    widget->setLayout(hboxLayout);
-    setCentralWidget(widget);
+    hboxLayout->addWidget(mTableView);
+    setLayout(hboxLayout);
 }

@@ -22,20 +22,30 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef TRANSFERWINDOW_H
-#define TRANSFERWINDOW_H
+#ifndef TRANSFERDIALOG_H
+#define TRANSFERDIALOG_H
 
-#include <QMainWindow>
+#include <QDialog>
+#include <QTableView>
+
+#include "transferproxymodel.h"
 
 class Application;
 
-class TransferWindow : public QMainWindow
+class TransferDialog : public QDialog
 {
     Q_OBJECT
 
 public:
 
-    TransferWindow(Application *application);
+    explicit TransferDialog(Application *application);
+
+private:
+
+    Application *mApplication;
+
+    QTableView *mTableView;
+    TransferProxyModel mModel;
 };
 
-#endif // TRANSFERWINDOW_H
+#endif // TRANSFERDIALOG_H

@@ -27,7 +27,7 @@
 
 #include <nitroshare/action.h>
 
-#include "transferwindow.h"
+#include "transferdialog.h"
 
 class Application;
 
@@ -52,7 +52,7 @@ public Q_SLOTS:
 
 private:
 
-    TransferWindow mTransferWindow;
+    TransferDialog mDialog;
 };
 
 #endif // TRANSFERSACTION_H
