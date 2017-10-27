@@ -22,6 +22,7 @@
  * IN THE SOFTWARE.
  */
 
+#include <nitroshare/application.h>
 #include <nitroshare/transfer.h>
 #include <nitroshare/transfermodel.h>
 #include <nitroshare/transport.h>
@@ -29,9 +30,10 @@
 
 #include "transfermodel_p.h"
 
-TransferModelPrivate::TransferModelPrivate(TransferModel *model)
+TransferModelPrivate::TransferModelPrivate(TransferModel *model, Application *application)
     : QObject(model),
-      q(model)
+      q(model),
+      application(application)
 {
 }
 
@@ -49,12 +51,13 @@ void TransferModelPrivate::addTransfer(Transfer *transfer)
 
 void TransferModelPrivate::processTransport(Transport *transport)
 {
-    //...
+    // Create a new transfer from the transport
+    addTransfer(new Transfer(application->handlerRegistry(), transport));
 }
 
-TransferModel::TransferModel(QObject *parent)
+TransferModel::TransferModel(Application *application, QObject *parent)
     : QAbstractListModel(parent),
-      d(new TransferModelPrivate(this))
+      d(new TransferModelPrivate(this, application))
 {
 }
 

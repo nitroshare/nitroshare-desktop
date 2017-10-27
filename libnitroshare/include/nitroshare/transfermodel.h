@@ -29,6 +29,7 @@
 
 #include <nitroshare/config.h>
 
+class Application;
 class TransportServer;
 
 class NITROSHARE_EXPORT TransferModelPrivate;
@@ -66,9 +67,10 @@ public:
 
     /**
      * @brief Create a transfer model
+     * @param application pointer to Application
      * @param parent QObject
      */
-    explicit TransferModel(QObject *parent = nullptr);
+    TransferModel(Application *application, QObject *parent = nullptr);
 
     /**
      * @brief Add a transport server

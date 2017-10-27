@@ -55,6 +55,7 @@ ApplicationPrivate::ApplicationPrivate(Application *application)
           { Setting::DefaultValueKey, QHostInfo::localHostName() }
       }),
       pluginModel(application),
+      transferModel(application),
       uiEnabled(false)
 {
     settingsRegistry.add(&deviceUuid);
