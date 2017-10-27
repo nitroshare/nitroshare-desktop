@@ -27,9 +27,9 @@
 
 #include <nitroshare/action.h>
 
-#include "settingsdialog.h"
-
 class Application;
+
+class SettingsDialog;
 
 class SettingsAction : public Action
 {
@@ -40,6 +40,7 @@ class SettingsAction : public Action
 public:
 
     explicit SettingsAction(Application *application);
+    virtual ~SettingsAction();
 
     virtual QString name() const;
 
@@ -54,7 +55,7 @@ private:
 
     Application *mApplication;
 
-    SettingsDialog mDialog;
+    SettingsDialog *mDialog;
 };
 
 #endif // SETTINGSACTION_H

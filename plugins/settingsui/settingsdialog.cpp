@@ -22,6 +22,8 @@
  * IN THE SOFTWARE.
  */
 
+#include <QDialogButtonBox>
+
 #include <nitroshare/application.h>
 #include <nitroshare/setting.h>
 #include <nitroshare/settingsregistry.h>
@@ -45,8 +47,30 @@ SettingsDialog::SettingsDialog(Application *application)
         onSettingAdded(setting);
     }
 
+    QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Save | QDialogButtonBox::Cancel);
+    connect(buttonBox, &QDialogButtonBox::accepted, this, &SettingsDialog::accept);
+    connect(buttonBox, &QDialogButtonBox::rejected, this, &SettingsDialog::reject);
+
     mLayout->addItem(mSpacer);
+    mLayout->addWidget(buttonBox);
     setLayout(mLayout);
+}
+
+void SettingsDialog::accept()
+{
+    // Set the value for all settings by retrieving the value from the widget
+    mApplication->settingsRegistry()->begin();
+    for (QHash<Setting*, SettingWidget*>::const_iterator i = mWidgets.constBegin();
+            i != mWidgets.constEnd(); ++i) {
+        mApplication->settingsRegistry()->setValue(
+            i.key()->name(),
+            i.value()->value()
+        );
+    }
+    mApplication->settingsRegistry()->end();
+
+    // Close the dialog
+    QDialog::accept();
 }
 
 void SettingsDialog::onSettingAdded(Setting *setting)

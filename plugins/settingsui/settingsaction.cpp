@@ -23,11 +23,19 @@
  */
 
 #include "settingsaction.h"
+#include "settingsdialog.h"
 
 SettingsAction::SettingsAction(Application *application)
     : mApplication(application),
-      mDialog(application)
+      mDialog(nullptr)
 {
+}
+
+SettingsAction::~SettingsAction()
+{
+    if (mDialog) {
+        delete mDialog;
+    }
 }
 
 QString SettingsAction::name() const
@@ -47,6 +55,17 @@ QString SettingsAction::title() const
 
 QVariant SettingsAction::invoke(const QVariantMap &)
 {
-    mDialog.show();
+    // Create the dialog if it does not exist
+    if (!mDialog) {
+        mDialog = new SettingsDialog(mApplication);
+        connect(mDialog, &SettingsDialog::finished, [this]() {
+            delete mDialog;
+            mDialog = nullptr;
+        });
+    }
+
+    // Show the dialog either way
+    mDialog->show();
+
     return true;
 }

@@ -44,6 +44,10 @@ public:
 
     explicit SettingsDialog(Application *application);
 
+public slots:
+
+    virtual void accept();
+
 private slots:
 
     void onSettingAdded(Setting *setting);
