@@ -35,35 +35,13 @@ class TransportServer;
 class NITROSHARE_EXPORT TransferModelPrivate;
 
 /**
- * @brief Model representing transfers completed and in progress
+ * @brief Model representing transfers in progress and completed
  */
 class NITROSHARE_EXPORT TransferModel : public QAbstractListModel
 {
     Q_OBJECT
-    Q_ENUMS(Direction)
-    Q_ENUMS(State)
 
 public:
-
-    enum Role {
-        DeviceNameRole = Qt::UserRole,
-        ProgressRole,
-        DirectionRole,
-        StateRole,
-        ErrorRole
-    };
-
-    enum Direction {
-        Send,
-        Receive
-    };
-
-    enum State {
-        Connecting,
-        InProgress,
-        Failed,
-        Succeeded
-    };
 
     /**
      * @brief Create a transfer model
@@ -87,7 +65,6 @@ public:
     // Reimplemented virtual methods
     virtual int rowCount(const QModelIndex &parent) const;
     virtual QVariant data(const QModelIndex &index, int role) const;
-    virtual QHash<int, QByteArray> roleNames() const;
 
 private:
 

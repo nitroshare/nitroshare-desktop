@@ -40,6 +40,7 @@ TransferModelPrivate::TransferModelPrivate(TransferModel *model, Application *ap
 TransferModelPrivate::~TransferModelPrivate()
 {
     // TODO: stop transfers gracefully (?)
+
     qDeleteAll(transfers);
 }
 
@@ -79,22 +80,9 @@ int TransferModel::rowCount(const QModelIndex &) const
 QVariant TransferModel::data(const QModelIndex &index, int role) const
 {
     // Ensure the index points to a valid row
-    if (!index.isValid() || index.row() < 0 || index.row() >= d->transfers.count()) {
+    if (!index.isValid() || index.row() < 0 ||
+            index.row() >= d->transfers.count() || role != Qt::UserRole) {
         return QVariant();
     }
-
-    Transfer *transfer = d->transfers.at(index.row());
-
-    return QVariant();
-}
-
-QHash<int, QByteArray> TransferModel::roleNames() const
-{
-    return {
-        { DeviceNameRole, "device_name" },
-        { ProgressRole, "progress" },
-        { DirectionRole, "direction" },
-        { StateRole, "state" },
-        { ErrorRole, "error" }
-    };
+    return QVariant::fromValue(d->transfers.at(index.row()));
 }

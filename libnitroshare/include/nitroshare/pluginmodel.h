@@ -37,8 +37,6 @@ class NITROSHARE_EXPORT PluginModelPrivate;
 
 /**
  * @brief Model for application plugins
- *
- * To interact with plugins, use
  */
 class NITROSHARE_EXPORT PluginModel : public QAbstractListModel
 {
