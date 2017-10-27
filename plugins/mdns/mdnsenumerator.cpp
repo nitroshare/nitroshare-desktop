@@ -35,6 +35,8 @@
 
 const QString MessageTag = "mdns";
 
+const QString TransferPort = "TransferPort";
+
 const QByteArray ServiceType = "_nitroshare._tcp.local.";
 
 MdnsEnumerator::MdnsEnumerator(Application *application)
@@ -107,7 +109,7 @@ void MdnsEnumerator::onSettingsChanged(const QStringList &keys)
 {
     if (keys.contains(Application::DeviceName)) {
         mService.setName(mApplication->deviceName().toUtf8());
-        mService.setPort(0);
+        mService.setPort(mApplication->settingsRegistry()->value(TransferPort).toInt());
         mProvider.update(mService);
     }
 }
