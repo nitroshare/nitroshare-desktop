@@ -46,11 +46,20 @@ TransferModelPrivate::~TransferModelPrivate()
 
 void TransferModelPrivate::addTransfer(Transfer *transfer)
 {
-    // TODO: monitor transfer for changes & update models
+    connect(transfer, &Transfer::stateChanged, this, &TransferModelPrivate::sendDataChanged);
+    connect(transfer, &Transfer::progressChanged, this, &TransferModelPrivate::sendDataChanged);
+    connect(transfer, &Transfer::deviceNameChanged, this, &TransferModelPrivate::sendDataChanged);
+    connect(transfer, &Transfer::errorChanged, this, &TransferModelPrivate::sendDataChanged);
 
     q->beginInsertRows(QModelIndex(), transfers.count(), transfers.count());
     transfers.append(transfer);
     q->endInsertRows();
+}
+
+void TransferModelPrivate::sendDataChanged()
+{
+    int row = transfers.indexOf(qobject_cast<Transfer*>(sender()));
+    emit q->dataChanged(q->index(row, 0), q->index(row, 0));
 }
 
 void TransferModelPrivate::processTransport(Transport *transport)

@@ -52,6 +52,7 @@ public:
 
 public Q_SLOTS:
 
+    void sendDataChanged();
     void processTransport(Transport *transport);
 };
 
