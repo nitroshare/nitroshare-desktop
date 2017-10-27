@@ -26,6 +26,7 @@
 
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QJsonParseError>
 #include <QMetaObject>
 #include <QMetaProperty>
 #include <QtEndian>
@@ -158,7 +159,12 @@ void TransferPrivate::sendNext()
 
 void TransferPrivate::processTransferHeader(Packet *packet)
 {
-    QJsonObject object = QJsonDocument::fromJson(packet->content()).object();
+    QJsonParseError error;
+    QJsonObject object = QJsonDocument::fromJson(packet->content(), &error).object();
+    if (error.error != QJsonParseError::NoError) {
+        setError(QString("transfer header: %1").arg(error.errorString()), true);
+        return;
+    }
 
     // If the device name was provided, use it
     deviceName = object.value("name").toString();
@@ -176,7 +182,12 @@ void TransferPrivate::processTransferHeader(Packet *packet)
 
 void TransferPrivate::processItemHeader(Packet *packet)
 {
-    QJsonObject object = QJsonDocument::fromJson(packet->content()).object();
+    QJsonParseError error;
+    QJsonObject object = QJsonDocument::fromJson(packet->content(), &error).object();
+    if (error.error != QJsonParseError::NoError) {
+        setError(QString("item header: %1").arg(error.errorString()), true);
+        return;
+    }
 
     // In order to maintain compatibility with legacy versions (which is very
     // desirable), if "type" is not in the object, assume "file" unless
