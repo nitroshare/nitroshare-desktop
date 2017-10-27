@@ -3,6 +3,8 @@ configure_file(settingsui.json.in "${CMAKE_CURRENT_BINARY_DIR}/settingsui.json")
 set(SRC
     booleansettingwidget.h
     booleansettingwidget.cpp
+    pathsettingwidget.h
+    pathsettingwidget.cpp
     settingsaction.h
     settingsaction.cpp
     settingsdialog.h

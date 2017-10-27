@@ -30,6 +30,7 @@
 #include <nitroshare/settingsregistry.h>
 
 #include "booleansettingwidget.h"
+#include "pathsettingwidget.h"
 #include "settingsdialog.h"
 #include "stringsettingwidget.h"
 
@@ -96,6 +97,10 @@ void SettingsDialog::onSettingAdded(Setting *setting)
         break;
     case Setting::Boolean:
         widget = new BooleanSettingWidget(setting);
+        break;
+    case Setting::FilePath:
+    case Setting::DirectoryPath:
+        widget = new PathSettingWidget(setting);
         break;
     }
 

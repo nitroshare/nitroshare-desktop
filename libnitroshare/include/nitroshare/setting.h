@@ -56,6 +56,8 @@ public:
         String,
         Integer,
         Boolean,
+        FilePath,
+        DirectoryPath
     };
 
     /// Key for the setting type
