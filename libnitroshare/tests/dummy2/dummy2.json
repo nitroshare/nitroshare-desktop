@@ -1,0 +1,10 @@
+{
+    "Name": "dummy2",
+    "Title": "Dummy 2",
+    "Vendor": "Nathan Osman",
+    "Version": "0.0.1",
+    "Description": "Second dummy plugin",
+    "Dependencies": [
+        "dummy"
+    ]
+}

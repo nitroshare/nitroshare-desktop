@@ -1,5 +1,6 @@
-# Some tests need a plugin available for testing
+# Some tests need a couple dummy plugins available for testing
 add_subdirectory(dummy)
+add_subdirectory(dummy2)
 
 set(TESTS
     TestDeviceModel
