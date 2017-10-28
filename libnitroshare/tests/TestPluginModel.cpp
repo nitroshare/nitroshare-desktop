@@ -29,15 +29,12 @@
 #include <QTest>
 
 #include <nitroshare/application.h>
+#include <nitroshare/plugin.h>
 #include <nitroshare/pluginmodel.h>
 
 class TestPluginModel : public QObject
 {
     Q_OBJECT
-
-public:
-
-    TestPluginModel();
 
 private slots:
 
@@ -45,31 +42,36 @@ private slots:
 
 private:
 
-    QString mPluginPath;
+    Plugin *loadPlugin(const QString &name);
 };
-
-TestPluginModel::TestPluginModel()
-    : mPluginPath(QDir::cleanPath(
-          QFileInfo(QCoreApplication::arguments().at(0)).absolutePath() +
-          QDir::separator() + "plugins"
-      ))
-{
-}
 
 void TestPluginModel::testSignals()
 {
     Application application;
+    Plugin *plugin = loadPlugin("dummy");
 
-    // Load the "dummy" plugins from the directory passed via env. variable and
-    // ensure that a signal was emitted when they were loaded
+    // Ensure the rowsInserted() signal is emitted when a plugin is added
     QSignalSpy rowsInsertedSpy(application.pluginModel(), &PluginModel::rowsInserted);
-    application.pluginModel()->loadPluginsFromDirectories({ mPluginPath });
-    QCOMPARE(rowsInsertedSpy.count(), 2);
+    application.pluginModel()->add(plugin);
+    QCOMPARE(rowsInsertedSpy.count(), 1);
 
-    // Unload the plugins and make sure the correct signal was emitted
+    // Ensure that the dataChanged() signal is emitted when the plugin is loaded
     QSignalSpy dataChangedSpy(application.pluginModel(), &PluginModel::dataChanged);
-    application.pluginModel()->unloadAll();
+    QVERIFY(application.pluginModel()->load(plugin));
+    QCOMPARE(dataChangedSpy.count(), 1);
+
+    // Ensure that the dataChanged() signal is emitted when the plugin is unloaded
+    QVERIFY(application.pluginModel()->unload(plugin));
     QCOMPARE(dataChangedSpy.count(), 2);
+}
+
+Plugin *TestPluginModel::loadPlugin(const QString &name)
+{
+    QString filename = QDir::cleanPath(
+        QFileInfo(QCoreApplication::arguments().at(0)).absolutePath() +
+        QDir::separator() + "plugins" + QDir::separator() + name
+    );
+    return new Plugin(filename);
 }
 
 QTEST_MAIN(TestPluginModel)
