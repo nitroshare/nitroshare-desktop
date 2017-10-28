@@ -3,6 +3,7 @@ add_subdirectory(dummy)
 
 set(TESTS
     TestDeviceModel
+    TestLogger
     TestSettingsRegistry
 )
 
