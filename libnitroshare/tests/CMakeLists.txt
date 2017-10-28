@@ -11,14 +11,12 @@ set(TESTS
 foreach(_test ${TESTS})
     add_executable(${_test} ${_test}.cpp)
     set_target_properties(${_test} PROPERTIES
-        CXX_STANDARD  11
+        CXX_STANDARD             11
+        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     )
     target_include_directories(${_test} PUBLIC "${CMAKE_CURRENT_BINARY_DIR}")
     target_link_libraries(${_test} nitroshare Qt5::Test)
     add_test(NAME ${_test}
         COMMAND ${_test}
-    )
-    set_tests_properties(${_test} PROPERTIES
-        ENVIRONMENT "PLUGIN_DIR=$<TARGET_FILE_DIR:dummy>"
     )
 endforeach()
