@@ -24,12 +24,43 @@
 
 #include "splashplugin.h"
 
-void SplashPlugin::initialize(Application *application)
+#include <nitroshare/application.h>
+#include <nitroshare/setting.h>
+#include <nitroshare/settingsregistry.h>
+
+#include "splashdialog.h"
+
+const QString SplashShown = "SplashShown";
+
+SplashPlugin::SplashPlugin()
+    : mSplashDialog(nullptr)
 {
-    //...
 }
 
-void SplashPlugin::cleanup(Application *application)
+void SplashPlugin::initialize(Application *application)
 {
-    //...
+    Setting splashShown({
+        { Setting::TypeKey, Setting::Boolean },
+        { Setting::NameKey, SplashShown },
+        { Setting::IsHiddenKey, true },
+        { Setting::DefaultValueKey, false }
+    });
+
+    application->settingsRegistry()->add(&splashShown);
+
+    // If the setting has not been shown, show it now
+    if (!application->settingsRegistry()->value(SplashShown).toBool()) {
+        mSplashDialog = new SplashDialog;
+        mSplashDialog->show();
+        application->settingsRegistry()->setValue(SplashShown, true);
+    }
+
+    application->settingsRegistry()->remove(&splashShown);
+}
+
+void SplashPlugin::cleanup(Application *)
+{
+    if (mSplashDialog) {
+        delete mSplashDialog;
+    }
 }

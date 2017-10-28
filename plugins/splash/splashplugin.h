@@ -27,6 +27,8 @@
 
 #include <nitroshare/iplugin.h>
 
+class SplashDialog;
+
 class Q_DECL_EXPORT SplashPlugin : public IPlugin
 {
     Q_OBJECT
@@ -34,8 +36,14 @@ class Q_DECL_EXPORT SplashPlugin : public IPlugin
 
 public:
 
+    SplashPlugin();
+
     virtual void initialize(Application *application);
     virtual void cleanup(Application *application);
+
+private:
+
+    SplashDialog *mSplashDialog;
 };
 
 #endif // SPLASHPLUGIN_H
