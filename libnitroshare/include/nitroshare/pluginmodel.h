@@ -63,10 +63,19 @@ public:
     void addToBlacklist(const QStringList &names);
 
     /**
+     * @brief Add the specified plugin to the model
+     * @param pointer to Plugin
+     *
+     * Note that the model assumes ownership of the plugin and will delete it
+     * during cleanup.
+     */
+    void add(Plugin *plugin);
+
+    /**
      * @brief Load plugins from the specified directories
      * @param directories list of directories to load plugins from
      *
-     * This method loads plugins only and does not initialize them.
+     * This method will initialize the new plugins after loading them.
      */
     void loadPluginsFromDirectories(const QStringList &directories);
 

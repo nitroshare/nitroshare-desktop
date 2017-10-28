@@ -60,6 +60,14 @@ void PluginModel::addToBlacklist(const QStringList &names)
     d->blacklist.append(names);
 }
 
+void PluginModel::add(Plugin *plugin)
+{
+    // Insert the plugin into the model
+    beginInsertRows(QModelIndex(), d->plugins.count(), d->plugins.count());
+    d->plugins.append(plugin);
+    endInsertRows();
+}
+
 void PluginModel::loadPluginsFromDirectories(const QStringList &directories)
 {
     d->application->logger()->log(new Message(
@@ -87,12 +95,8 @@ void PluginModel::loadPluginsFromDirectories(const QStringList &directories)
                 continue;
             }
 
-            // Insert the plugin into the model
-            beginInsertRows(QModelIndex(), d->plugins.count(), d->plugins.count());
-            d->plugins.append(plugin);
-            endInsertRows();
-
-            // Remember that this is one of the new plugins
+            // Add the plugin to the model and remember it is new
+            add(plugin);
             newPlugins.append(plugin);
         }
     }
