@@ -39,6 +39,7 @@ class TestPluginModel : public QObject
 private slots:
 
     void testSignals();
+    void testDependencies();
 
 private:
 
@@ -52,7 +53,7 @@ void TestPluginModel::testSignals()
 
     // Ensure the rowsInserted() signal is emitted when a plugin is added
     QSignalSpy rowsInsertedSpy(application.pluginModel(), &PluginModel::rowsInserted);
-    application.pluginModel()->add(plugin);
+    QVERIFY(application.pluginModel()->add(plugin));
     QCOMPARE(rowsInsertedSpy.count(), 1);
 
     // Ensure that the dataChanged() signal is emitted when the plugin is loaded
@@ -63,6 +64,27 @@ void TestPluginModel::testSignals()
     // Ensure that the dataChanged() signal is emitted when the plugin is unloaded
     QVERIFY(application.pluginModel()->unload(plugin));
     QCOMPARE(dataChangedSpy.count(), 2);
+}
+
+void TestPluginModel::testDependencies()
+{
+    Application application;
+    Plugin *dummy = loadPlugin("dummy");
+    Plugin *dummy2 = loadPlugin("dummy2");
+
+    // Add only the second plugin (which depends on the first)
+    QVERIFY(application.pluginModel()->add(dummy2));
+
+    // Loading the second plugin should fail since a dependency is missing
+    QVERIFY(!application.pluginModel()->load(dummy2));
+
+    // Add the first plugin and try again (it should succeed)
+    QVERIFY(application.pluginModel()->add(dummy));
+    QVERIFY(application.pluginModel()->load(dummy2));
+
+    // Unload the parent plugin and the child should be unloaded as well
+    QVERIFY(application.pluginModel()->unload(dummy));
+    QVERIFY(!dummy2->isLoaded());
 }
 
 Plugin *TestPluginModel::loadPlugin(const QString &name)

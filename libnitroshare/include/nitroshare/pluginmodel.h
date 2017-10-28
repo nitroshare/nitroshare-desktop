@@ -65,11 +65,12 @@ public:
     /**
      * @brief Add the specified plugin to the model
      * @param pointer to Plugin
+     * @return true if the plugin was successfully added
      *
      * Note that the model assumes ownership of the plugin and will delete it
-     * during cleanup.
+     * during cleanup. This applies even if adding fails.
      */
-    void add(Plugin *plugin);
+    bool add(Plugin *plugin);
 
     /**
      * @brief Load plugins from the specified directories

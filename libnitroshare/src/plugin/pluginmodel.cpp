@@ -60,12 +60,20 @@ void PluginModel::addToBlacklist(const QStringList &names)
     d->blacklist.append(names);
 }
 
-void PluginModel::add(Plugin *plugin)
+bool PluginModel::add(Plugin *plugin)
 {
-    // Insert the plugin into the model
+    // The plugin cannot be added unless it is loaded
+    if (!plugin->d->load()) {
+        delete plugin;
+        return false;
+    }
+
+    // Add the plugin to the model
     beginInsertRows(QModelIndex(), d->plugins.count(), d->plugins.count());
     d->plugins.append(plugin);
     endInsertRows();
+
+    return true;
 }
 
 void PluginModel::loadPluginsFromDirectories(const QStringList &directories)
@@ -83,21 +91,13 @@ void PluginModel::loadPluginsFromDirectories(const QStringList &directories)
         foreach (QString filename, dir.entryList(QDir::Files)) {
             filename = dir.absoluteFilePath(filename);
 
-            // Ensure that the file is a library
-            if (!QLibrary::isLibrary(filename)) {
-                continue;
+            // If the file is a library, attempt to add it to the model
+            if (QLibrary::isLibrary(filename)) {
+                Plugin *plugin = new Plugin(filename);
+                if (add(plugin)) {
+                    newPlugins.append(plugin);
+                }
             }
-
-            // Attempt to load the file as a plugin
-            Plugin *plugin = new Plugin(filename);
-            if (!plugin->d->load()) {
-                delete plugin;
-                continue;
-            }
-
-            // Add the plugin to the model and remember it is new
-            add(plugin);
-            newPlugins.append(plugin);
         }
     }
 

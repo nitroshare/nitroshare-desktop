@@ -9,6 +9,7 @@ set(TESTS
     TestSettingsRegistry
 )
 
+# Set up targets for each of the tests
 foreach(_test ${TESTS})
     add_executable(${_test} ${_test}.cpp)
     set_target_properties(${_test} PROPERTIES
@@ -27,5 +28,6 @@ if(WIN32)
     add_custom_target(copy_libnitroshare ALL
         COMMAND "${CMAKE_COMMAND}" -E
             copy_if_different \"$<TARGET_FILE:nitroshare>\" \"${CMAKE_CURRENT_BINARY_DIR}\"
+        DEPENDS nitroshare
     )
 endif()
