@@ -21,3 +21,11 @@ foreach(_test ${TESTS})
         COMMAND ${_test}
     )
 endforeach()
+
+# Ensure that the libnitroshare library is copied here for the tests
+if(WIN32)
+    add_custom_target(copy_libnitroshare ALL
+        COMMAND "${CMAKE_COMMAND}" -E
+            copy_if_different \"$<TARGET_FILE:nitroshare>\" \"${CMAKE_CURRENT_BINARY_DIR}\"
+    )
+endif()
