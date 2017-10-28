@@ -24,15 +24,23 @@
 
 #include <QHBoxLayout>
 #include <QHeaderView>
+#include <QItemSelectionModel>
+#include <QModelIndexList>
+#include <QSpacerItem>
+#include <QVBoxLayout>
 
 #include <nitroshare/application.h>
+#include <nitroshare/transfer.h>
 #include <nitroshare/transfermodel.h>
 
 #include "transferdialog.h"
 
 TransferDialog::TransferDialog(Application *application)
     : mApplication(application),
-      mTableView(new QTableView)
+      mTableView(new QTableView),
+      mStopButton(new QPushButton(tr("Stop"))),
+      mDismissButton(new QPushButton(tr("Dismiss"))),
+      mDismissAllButton(new QPushButton(tr("Dismiss All")))
 {
     setWindowTitle(tr("Transfers"));
     resize(800, 300);
@@ -46,7 +54,56 @@ TransferDialog::TransferDialog(Application *application)
     mTableView->setSelectionMode(QAbstractItemView::SingleSelection);
     mTableView->verticalHeader()->setVisible(false);
 
+    connect(&mModel, &TransferProxyModel::dataChanged, this, &TransferDialog::updateButtons);
+    connect(mTableView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &TransferDialog::updateButtons);
+
+    mStopButton->setEnabled(false);
+    connect(mStopButton, &QPushButton::clicked, this, &TransferDialog::onStop);
+
+    mDismissButton->setEnabled(false);
+    connect(mDismissButton, &QPushButton::clicked, this, &TransferDialog::onDismiss);
+    connect(mDismissAllButton, &QPushButton::clicked, this, &TransferDialog::onDismissAll);
+
+    QVBoxLayout *vboxLayout = new QVBoxLayout;
+    vboxLayout->addWidget(mStopButton);
+    vboxLayout->addWidget(mDismissButton);
+    vboxLayout->addWidget(mDismissAllButton);
+    vboxLayout->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::Expanding));
+
     QHBoxLayout *hboxLayout = new QHBoxLayout;
     hboxLayout->addWidget(mTableView);
+    hboxLayout->addLayout(vboxLayout);
     setLayout(hboxLayout);
+}
+
+void TransferDialog::updateButtons()
+{
+    Transfer *transfer = currentTransfer();
+
+    mStopButton->setEnabled(transfer && (transfer->state() == Transfer::Connecting ||
+                                         transfer->state() == Transfer::InProgress));
+
+    mDismissButton->setEnabled(transfer && (transfer->state() == Transfer::Failed ||
+                                            transfer->state() == Transfer::Succeeded));
+}
+
+void TransferDialog::onStop()
+{
+    //...
+}
+
+void TransferDialog::onDismiss()
+{
+    //...
+}
+
+void TransferDialog::onDismissAll()
+{
+    //...
+}
+
+Transfer *TransferDialog::currentTransfer() const
+{
+    QModelIndexList selection(mTableView->selectionModel()->selectedIndexes());
+    return selection.size() ? selection.at(0).data(Qt::UserRole).value<Transfer*>() : nullptr;
 }

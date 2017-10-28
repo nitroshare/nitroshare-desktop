@@ -26,11 +26,13 @@
 #define TRANSFERDIALOG_H
 
 #include <QDialog>
+#include <QPushButton>
 #include <QTableView>
 
 #include "transferproxymodel.h"
 
 class Application;
+class Transfer;
 
 class TransferDialog : public QDialog
 {
@@ -40,12 +42,27 @@ public:
 
     explicit TransferDialog(Application *application);
 
+private slots:
+
+    void updateButtons();
+
+    void onStop();
+    void onDismiss();
+    void onDismissAll();
+
 private:
+
+    Transfer *currentTransfer() const;
 
     Application *mApplication;
 
     QTableView *mTableView;
     TransferProxyModel mModel;
+
+    QPushButton *mStopButton;
+
+    QPushButton *mDismissButton;
+    QPushButton *mDismissAllButton;
 };
 
 #endif // TRANSFERDIALOG_H
