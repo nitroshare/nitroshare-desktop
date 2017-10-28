@@ -53,6 +53,7 @@ class NITROSHARE_EXPORT Transfer : public QObject
     Q_PROPERTY(int progress READ progress NOTIFY progressChanged)
     Q_PROPERTY(QString deviceName READ deviceName NOTIFY deviceNameChanged)
     Q_PROPERTY(QString error READ error NOTIFY errorChanged)
+    Q_PROPERTY(bool isFinished READ isFinished)
 
 public:
 
@@ -127,6 +128,12 @@ public:
      * @return error message
      */
     QString error() const;
+
+    /**
+     * @brief Determine if the transfer has failed or succeeded
+     * @return true if the transfer finished
+     */
+    bool isFinished() const;
 
 Q_SIGNALS:
 

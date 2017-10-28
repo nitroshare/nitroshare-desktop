@@ -408,6 +408,11 @@ QString Transfer::error() const
     return d->error;
 }
 
+bool Transfer::isFinished() const
+{
+    return d->state == Failed || d->state == Succeeded;
+}
+
 void Transfer::cancel()
 {
     d->setError(tr("transfer cancelled"), true);
