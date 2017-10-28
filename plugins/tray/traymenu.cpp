@@ -33,7 +33,8 @@
 #include "traymenu.h"
 
 TrayMenu::TrayMenu(Application *application)
-    : mApplication(application)
+    : mApplication(application),
+      mSeparator(nullptr)
 {
     connect(application->actionRegistry(), &ActionRegistry::actionAdded, this, &TrayMenu::onActionAdded);
     connect(application->actionRegistry(), &ActionRegistry::actionRemoved, this, &TrayMenu::onActionRemoved);
@@ -41,11 +42,14 @@ TrayMenu::TrayMenu(Application *application)
     mSeparator.setSeparator(true);
     mSeparator.setVisible(false);
 
+    // TODO: these can be converted to the new connection syntax after support
+    // for Qt 5.6 becomes a build requirement
+
     mMenu.addAction(&mSeparator);
-    mMenu.addAction(tr("About..."), this, &TrayMenu::onAbout);
-    mMenu.addAction(tr("About Qt..."), this, &TrayMenu::onAboutQt);
+    mMenu.addAction(tr("About..."), this, SLOT(onAbout()));
+    mMenu.addAction(tr("About Qt..."), this, SLOT(onAboutQt()));
     mMenu.addSeparator();
-    mMenu.addAction(tr("Quit"), mApplication, &Application::quit);
+    mMenu.addAction(tr("Quit"), mApplication, SLOT(quit()));
 
     // Add existing actions to the menu
     foreach (Action *action, application->actionRegistry()->actions()) {
@@ -76,7 +80,7 @@ void TrayMenu::onActionAdded(Action *action)
     }
 
     // Create a QAction for the action
-    QAction *menuAction = new QAction(title);
+    QAction *menuAction = new QAction(title, nullptr);
     connect(menuAction, &QAction::triggered, [action]() {
         action->invoke();
     });
