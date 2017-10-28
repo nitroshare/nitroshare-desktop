@@ -1,6 +1,8 @@
 configure_file(splash.json.in "${CMAKE_CURRENT_BINARY_DIR}/splash.json")
 
 set(SRC
+    splashdialog.h
+    splashdialog.cpp
     splashplugin.h
     splashplugin.cpp
 )
