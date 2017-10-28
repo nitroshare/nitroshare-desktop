@@ -39,6 +39,7 @@ class TestPluginModel : public QObject
 private slots:
 
     void testSignals();
+    void testBlacklist();
     void testDependencies();
 
 private:
@@ -64,6 +65,21 @@ void TestPluginModel::testSignals()
     // Ensure that the dataChanged() signal is emitted when the plugin is unloaded
     QVERIFY(application.pluginModel()->unload(plugin));
     QCOMPARE(dataChangedSpy.count(), 2);
+}
+
+void TestPluginModel::testBlacklist()
+{
+    Application application;
+    Plugin *dummy = loadPlugin("dummy");
+    Plugin *dummy2 = loadPlugin("dummy2");
+
+    // Add both plugins
+    QVERIFY(application.pluginModel()->add(dummy));
+    QVERIFY(application.pluginModel()->add(dummy2));
+
+    // Blacklist the dummy plugin and it its child should fail to load
+    application.pluginModel()->addToBlacklist({ "dummy" });
+    QVERIFY(!application.pluginModel()->load(dummy2));
 }
 
 void TestPluginModel::testDependencies()
