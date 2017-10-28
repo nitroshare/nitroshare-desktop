@@ -47,10 +47,9 @@ PluginDialog::PluginDialog(Application *application)
     setWindowTitle(tr("Plugins"));
     resize(800, 300);
 
-    mModel.setSourceModel(application->pluginModel());
+    mModel.setSourceModel(mApplication->pluginModel());
 
     mTableView->setModel(&mModel);
-    mTableView->horizontalHeader()->setDefaultSectionSize(160);
     mTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     mTableView->horizontalHeader()->setStretchLastSection(true);
     mTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
