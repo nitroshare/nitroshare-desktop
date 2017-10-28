@@ -55,6 +55,7 @@ TransferDialog::TransferDialog(Application *application)
     mTableView->verticalHeader()->setVisible(false);
 
     connect(&mModel, &TransferProxyModel::dataChanged, this, &TransferDialog::updateButtons);
+    connect(&mModel, &TransferProxyModel::rowsRemoved, this, &TransferDialog::updateButtons);
     connect(mTableView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &TransferDialog::updateButtons);
 
     mStopButton->setEnabled(false);
@@ -78,7 +79,12 @@ TransferDialog::TransferDialog(Application *application)
 
 void TransferDialog::updateButtons()
 {
-    Transfer *transfer = currentTransfer();
+    QModelIndex index = currentIndex();
+
+    Transfer *transfer = nullptr;
+    if (index.isValid()) {
+        transfer = index.data(Qt::UserRole).value<Transfer*>();
+    }
 
     mStopButton->setEnabled(transfer && !transfer->isFinished());
     mDismissButton->setEnabled(transfer && transfer->isFinished());
@@ -86,21 +92,28 @@ void TransferDialog::updateButtons()
 
 void TransferDialog::onStop()
 {
-    //...
+    QModelIndex index = currentIndex();
+    if (index.isValid()) {
+        index.data(Qt::UserRole).value<Transfer*>()->cancel();
+        mTableView->selectionModel()->clear();
+    }
 }
 
 void TransferDialog::onDismiss()
 {
-    //...
+    QModelIndex index = currentIndex();
+    if (index.isValid()) {
+        mApplication->transferModel()->dismiss(index.row());
+    }
 }
 
 void TransferDialog::onDismissAll()
 {
-    //...
+    mApplication->transferModel()->dismissAll();
 }
 
-Transfer *TransferDialog::currentTransfer() const
+QModelIndex TransferDialog::currentIndex() const
 {
-    QModelIndexList selection(mTableView->selectionModel()->selectedIndexes());
-    return selection.size() ? selection.at(0).data(Qt::UserRole).value<Transfer*>() : nullptr;
+    QModelIndexList selection = mTableView->selectionModel()->selectedIndexes();
+    return selection.size() ? selection.at(0) : QModelIndex();
 }

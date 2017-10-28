@@ -32,7 +32,6 @@
 #include "transferproxymodel.h"
 
 class Application;
-class Transfer;
 
 class TransferDialog : public QDialog
 {
@@ -52,7 +51,7 @@ private slots:
 
 private:
 
-    Transfer *currentTransfer() const;
+    QModelIndex currentIndex() const;
 
     Application *mApplication;
 
