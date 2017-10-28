@@ -84,6 +84,26 @@ void TransferModel::removeTransportServer(TransportServer *server)
     disconnect(server, &TransportServer::transportReceived, d, &TransferModelPrivate::processTransport);
 }
 
+void TransferModel::dismiss(int index)
+{
+    if (index < d->transfers.count()) {
+        Transfer *transfer = d->transfers.at(index);
+        if (transfer->isFinished()) {
+            beginRemoveRows(QModelIndex(), index, index);
+            d->transfers.removeAt(index);
+            endRemoveRows();
+            delete transfer;
+        }
+    }
+}
+
+void TransferModel::dismissAll()
+{
+    for (int i = 0; i < d->transfers.count(); ++i) {
+        dismiss(i);
+    }
+}
+
 int TransferModel::rowCount(const QModelIndex &) const
 {
     return d->transfers.count();

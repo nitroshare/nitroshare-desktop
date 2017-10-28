@@ -62,6 +62,17 @@ public:
      */
     void removeTransportServer(TransportServer *server);
 
+    /**
+     * @brief Dismiss the transfer at the specified index
+     * @param index transfer index
+     */
+    void dismiss(int index);
+
+    /**
+     * @brief Dismiss all transfers that are finished
+     */
+    void dismissAll();
+
     // Reimplemented virtual methods
     virtual int rowCount(const QModelIndex &parent) const;
     virtual QVariant data(const QModelIndex &index, int role) const;
