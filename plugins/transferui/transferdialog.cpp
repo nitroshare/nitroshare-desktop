@@ -80,11 +80,8 @@ void TransferDialog::updateButtons()
 {
     Transfer *transfer = currentTransfer();
 
-    mStopButton->setEnabled(transfer && (transfer->state() == Transfer::Connecting ||
-                                         transfer->state() == Transfer::InProgress));
-
-    mDismissButton->setEnabled(transfer && (transfer->state() == Transfer::Failed ||
-                                            transfer->state() == Transfer::Succeeded));
+    mStopButton->setEnabled(transfer && !transfer->isFinished());
+    mDismissButton->setEnabled(transfer && transfer->isFinished());
 }
 
 void TransferDialog::onStop()
