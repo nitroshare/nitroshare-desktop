@@ -27,7 +27,7 @@
 
 #include <nitroshare/iplugin.h>
 
-class DummyPlugin : public IPlugin
+class Q_DECL_EXPORT DummyPlugin : public IPlugin
 {
     Q_OBJECT
     Q_PLUGIN_METADATA(IID Plugin_iid FILE "dummy.json")
