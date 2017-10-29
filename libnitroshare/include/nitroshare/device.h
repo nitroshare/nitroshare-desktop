@@ -26,7 +26,6 @@
 #define LIBNITROSHARE_DEVICE_H
 
 #include <QObject>
-#include <QVariantMap>
 
 #include <nitroshare/config.h>
 
@@ -34,56 +33,30 @@ class NITROSHARE_EXPORT DevicePrivate;
 
 /**
  * @brief Peer available for transfers
+ *
+ * A device is created in response to a DeviceEnumerator emitting the
+ * deviceUpdated signal. Enumerators can add their own properties to devices,
+ * usually for the purpose of later establishing a connection to them through
+ * a transport.
  */
 class NITROSHARE_EXPORT Device : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString uuid READ uuid)
-    Q_PROPERTY(QString name READ name)
-    Q_PROPERTY(QStringList addresses READ addresses)
-    Q_PROPERTY(quint16 port READ port)
 
 public:
 
     /// Property key for the device UUID
     static const QString UuidKey;
 
-    /// Property key for the device name
-    static const QString NameKey;
-
-    /// Property key for the device's addresses
-    static const QString AddressesKey;
-
-    /// Property key for the device's port
-    static const QString PortKey;
-
-    /**
-     * @brief Create a new device object
-     * @param parent QObject
-     */
-    explicit Device(QObject *parent = nullptr);
-
     /**
      * @brief Retrieve the device's unique identifier
      */
     QString uuid() const;
 
-    /**
-     * @brief Retrieve the device name
-     */
-    QString name() const;
-
-    /**
-     * @brief Retrieve all of the addresses for the device
-     */
-    QStringList addresses() const;
-
-    /**
-     * @brief Retrieve the port for the device
-     */
-    quint16 port() const;
-
 private:
+
+    explicit Device(const QString &uuid);
 
     DevicePrivate *const d;
     friend class DeviceModel;

@@ -27,7 +27,6 @@
 
 #include <QMap>
 #include <QObject>
-#include <QSet>
 #include <QVariantMap>
 
 class DeviceEnumerator;
@@ -38,13 +37,14 @@ class DevicePrivate : public QObject
 
 public:
 
-    explicit DevicePrivate(QObject *parent);
+    DevicePrivate(QObject *parent, const QString &uuid);
 
-    void update(DeviceEnumerator *deviceEnumerator, const QVariantMap &properties);
-    void remove(DeviceEnumerator *deviceEnumerator);
+    bool update(DeviceEnumerator *deviceEnumerator, const QVariantMap &properties);
+    bool remove(DeviceEnumerator *deviceEnumerator);
 
-    QVariantMap properties;
-    QMap<DeviceEnumerator*, QSet<QString>> addresses;
+    QString uuid;
+
+    QMap<DeviceEnumerator*, QVariantMap> properties;
 };
 
 #endif // LIBNITROSHARE_DEVICE_P_H

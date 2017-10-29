@@ -22,72 +22,46 @@
  * IN THE SOFTWARE.
  */
 
-#include <QSet>
-
 #include <nitroshare/device.h>
 
 #include "device_p.h"
 
 const QString Device::UuidKey = "uuid";
-const QString Device::NameKey = "name";
-const QString Device::AddressesKey = "addresses";
-const QString Device::PortKey = "port";
 
-DevicePrivate::DevicePrivate(QObject *parent)
-    : QObject(parent)
+DevicePrivate::DevicePrivate(QObject *parent, const QString &uuid)
+    : QObject(parent),
+      uuid(uuid)
 {
 }
 
-void DevicePrivate::update(DeviceEnumerator *deviceEnumerator, const QVariantMap &newProperties)
+bool DevicePrivate::update(DeviceEnumerator *deviceEnumerator, const QVariantMap &newProperties)
 {
-    // Loop through each of the properties, adding them to the device's map or
-    // (in the case of addresses), adding them to the device=>address map
-    for (auto i = newProperties.constBegin(); i != newProperties.constEnd(); ++i) {
-        if (i.key() == Device::AddressesKey) {
-            auto newAddresses = i.value().toStringList().toSet();
-            auto j = addresses.find(deviceEnumerator);
-            if (j != addresses.end()) {
-                j.value().unite(newAddresses);
-            } else {
-                addresses.insert(deviceEnumerator, newAddresses);
-            }
-        } else {
-            properties.insert(i.key(), i.value());
+    auto i = properties.find(deviceEnumerator);
+    if (i != properties.end()) {
+        if (i.value() == newProperties) {
+            return false;
         }
+        i.value() = newProperties;
+        return true;
+    } else {
+        properties.insert(deviceEnumerator, newProperties);
+        return true;
     }
 }
 
-void DevicePrivate::remove(DeviceEnumerator *deviceEnumerator)
+bool DevicePrivate::remove(DeviceEnumerator *deviceEnumerator)
 {
-    addresses.remove(deviceEnumerator);
+    properties.remove(deviceEnumerator);
+    return properties.count();
 }
 
-Device::Device(QObject *parent)
-    : QObject(parent),
-      d(new DevicePrivate(this))
+Device::Device(const QString &uuid)
+    : d(new DevicePrivate(this, uuid))
 {
 }
 
 QString Device::uuid() const
 {
-    return d->properties.value(UuidKey).toString();
+    return d->uuid;
 }
 
-QString Device::name() const
-{
-    return d->properties.value(NameKey).toString();
-}
-
-QStringList Device::addresses() const
-{
-    QSet<QString> uniqueAddresses;
-    for (auto i = d->addresses.constBegin(); i != d->addresses.constEnd(); ++i) {
-        uniqueAddresses.unite(i.value());
-    }
-    return uniqueAddresses.toList();
-}
-
-quint16 Device::port() const
-{
-    return d->properties.value(PortKey).toUInt();
-}

@@ -23,10 +23,3 @@
  */
 
 #include <nitroshare/deviceenumerator.h>
-
-const QString DeviceEnumerator::UuidKey = "uuid";
-const QString DeviceEnumerator::NameKey = "name";
-const QString DeviceEnumerator::VersionKey = "version";
-const QString DeviceEnumerator::OperatingSystemKey = "operating_system";
-const QString DeviceEnumerator::AddressesKey = "addresses";
-const QString DeviceEnumerator::PortKey = "port";

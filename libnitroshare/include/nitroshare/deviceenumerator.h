@@ -43,24 +43,12 @@
  * deviceRemoved() signal after a predefined timeout.
  *
  * The properties map passed to deviceUpdated() should contain information
- * about the device. The list of officially recognized keys for the map is
- * provided by a number of static member variables.
- *
- * If a property was previously supplied, passing it again to deviceUpdated()
- * will cause the value to be replaced.
+ * about the device unique to the enumerator as well as common information such
+ * as the human readable name for the device.
  */
 class NITROSHARE_EXPORT DeviceEnumerator : public QObject
 {
     Q_OBJECT
-
-public:
-
-    static const QString UuidKey;
-    static const QString NameKey;
-    static const QString VersionKey;
-    static const QString OperatingSystemKey;
-    static const QString AddressesKey;
-    static const QString PortKey;
 
 Q_SIGNALS:
 

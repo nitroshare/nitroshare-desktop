@@ -25,6 +25,7 @@
 #include <QTimer>
 
 #include <nitroshare/application.h>
+#include <nitroshare/device.h>
 #include <nitroshare/logger.h>
 #include <nitroshare/message.h>
 #include <nitroshare/settingsregistry.h>
@@ -78,16 +79,16 @@ void MdnsEnumerator::onServiceUpdated(const QMdnsEngine::Service &service)
     // Send an update for the attributes currently known
     QString uuid = findUuid(service);
     QVariantMap properties = {
-        { DeviceEnumerator::UuidKey, uuid },
-        { DeviceEnumerator::NameKey, service.name() },
-        { DeviceEnumerator::PortKey, service.port() }
+        { Device::UuidKey, uuid },
+        //{ DeviceEnumerator::NameKey, service.name() },
+        //{ DeviceEnumerator::PortKey, service.port() }
     };
     emit deviceUpdated(uuid, properties);
 
     // Send an update every time an address is resolved
     QMdnsEngine::Resolver *resolver = new QMdnsEngine::Resolver(&mServer, service.name(), &mCache, this);
     connect(resolver, &QMdnsEngine::Resolver::resolved, [this, uuid](const QHostAddress &address) {
-        emit deviceUpdated(uuid, {{ DeviceEnumerator::AddressesKey, address.toString() }});
+        //emit deviceUpdated(uuid, {{ DeviceEnumerator::AddressesKey, address.toString() }});
     });
 
     // Delete the resolver after 2 seconds

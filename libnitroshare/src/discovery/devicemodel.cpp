@@ -48,23 +48,41 @@ void DeviceModelPrivate::onDeviceUpdated(const QString &uuid, const QVariantMap 
     Device *device = q->find(uuid);
     bool newDevice = static_cast<bool>(device);
     if (newDevice) {
-        device = new Device;
+        device = new Device(uuid);
     }
 
-    // TODO: emit signal for change
+    // Update the device with the properties from the enumerator
+    bool changed = device->d->update(enumerator, properties);
 
-    device->d->update(enumerator, properties);
-
+    // If this was a new device, then indicate that a row was inserted
     if (newDevice) {
         q->beginInsertRows(QModelIndex(), devices.count(), devices.count());
         devices.append(device);
         q->endInsertRows();
+    } else if (changed) {
+        int index = devices.indexOf(device);
+        emit q->dataChanged(q->index(index, 0), q->index(index, 0));
     }
 }
 
 void DeviceModelPrivate::onDeviceRemoved(const QString &uuid)
 {
-    // TODO
+    DeviceEnumerator *enumerator = qobject_cast<DeviceEnumerator*>(sender());
+
+    // Attempt to find the device
+    Device *device = q->find(uuid);
+    if (!device) {
+        return;
+    }
+
+    // Remove the enumerator from the device and if there are no others
+    // remaining, remove the device itself
+    if (device->d->remove(enumerator)) {
+        int index = devices.indexOf(device);
+        q->beginRemoveRows(QModelIndex(), index, index);
+        delete devices.takeAt(index);
+        q->endRemoveRows();
+    }
 }
 
 DeviceModel::DeviceModel(QObject *parent)

@@ -32,6 +32,7 @@
 #include <QVariantMap>
 
 #include <nitroshare/application.h>
+#include <nitroshare/device.h>
 #include <nitroshare/logger.h>
 #include <nitroshare/message.h>
 #include <nitroshare/settingsregistry.h>
@@ -101,8 +102,8 @@ void BroadcastEnumerator::onBroadcastTimeout()
 
     // Build the packet that will be broadcast
     QJsonObject object({
-        { DeviceEnumerator::UuidKey, mApplication->deviceUuid() },
-        { DeviceEnumerator::NameKey, mApplication->deviceName() }
+        { Device::UuidKey, mApplication->deviceUuid() },
+        //{ DeviceEnumerator::NameKey, mApplication->deviceName() }
     });
     QByteArray data = QJsonDocument(object).toJson(QJsonDocument::Compact);
 
