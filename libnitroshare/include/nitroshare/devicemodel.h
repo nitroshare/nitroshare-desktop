@@ -29,6 +29,7 @@
 
 #include <nitroshare/config.h>
 
+class Device;
 class DeviceEnumerator;
 
 class NITROSHARE_EXPORT DeviceModelPrivate;
@@ -42,16 +43,6 @@ class NITROSHARE_EXPORT DeviceModel : public QAbstractListModel
 
 public:
 
-    enum Role {
-        UuidRole = Qt::UserRole,
-        NameRole,
-        VersionRole,
-        OperatingSystemRole,
-        AddressesRole,
-        PortRole,
-        TlsRole
-    };
-
     /**
      * @brief Create a device model
      * @param parent QObject
@@ -60,20 +51,26 @@ public:
 
     /**
      * @brief Add an enumerator to the model
-     * @param enumerator device enumerator
+     * @param enumerator pointer to DeviceEnumerator
      */
-    void addEnumerator(DeviceEnumerator *enumerator);
+    void addDeviceEnumerator(DeviceEnumerator *enumerator);
 
     /**
      * @brief Remove the enumerator from the model
-     * @param enumerator device enumerator
+     * @param enumerator pointer to DeviceEnumerator
      */
-    void removeEnumerator(DeviceEnumerator *enumerator);
+    void removeDeviceEnumerator(DeviceEnumerator *enumerator);
+
+    /**
+     * @brief Attempt to find a device by its UUID
+     * @param uuid unique device identifier
+     * @return pointer to Device or nullptr
+     */
+    Device *find(const QString &uuid) const;
 
     // Reimplemented virtual methods
     virtual int rowCount(const QModelIndex &parent) const;
     virtual QVariant data(const QModelIndex &index, int role) const;
-    virtual QHash<int, QByteArray> roleNames() const;
 
 private:
 

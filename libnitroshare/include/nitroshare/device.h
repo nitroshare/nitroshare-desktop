@@ -25,31 +25,69 @@
 #ifndef LIBNITROSHARE_DEVICE_H
 #define LIBNITROSHARE_DEVICE_H
 
-#include <QMap>
 #include <QObject>
 #include <QVariantMap>
 
+#include <nitroshare/config.h>
+
+class NITROSHARE_EXPORT DevicePrivate;
+
 /**
- * @brief Maintain information about a specific device
- *
- * Since multiple enumerators can discover the same device, it is important
- * that the addresses associated with the device are organized in a map that
- * remembers which enumerator provided them. Removing an enumerator, for
- * example, requires all associated addresses to be removed.
+ * @brief Peer available for transfers
  */
-class Device
+class NITROSHARE_EXPORT Device : public QObject
 {
+    Q_OBJECT
+    Q_PROPERTY(QString uuid READ uuid)
+    Q_PROPERTY(QString name READ name)
+    Q_PROPERTY(QStringList addresses READ addresses)
+    Q_PROPERTY(quint16 port READ port)
+
 public:
 
+    /// Property key for the device UUID
+    static const QString UuidKey;
+
+    /// Property key for the device name
+    static const QString NameKey;
+
+    /// Property key for the device's addresses
+    static const QString AddressesKey;
+
+    /// Property key for the device's port
+    static const QString PortKey;
+
     /**
-     * @brief Retrieve all addresses for the device
-     * @return list of unique addresses
+     * @brief Create a new device object
+     * @param parent QObject
+     */
+    explicit Device(QObject *parent = nullptr);
+
+    /**
+     * @brief Retrieve the device's unique identifier
+     */
+    QString uuid() const;
+
+    /**
+     * @brief Retrieve the device name
+     */
+    QString name() const;
+
+    /**
+     * @brief Retrieve all of the addresses for the device
      */
     QStringList addresses() const;
 
-    QString uuid;
-    QVariantMap properties;
-    QMap<QObject*, QStringList> addressMap;
+    /**
+     * @brief Retrieve the port for the device
+     */
+    quint16 port() const;
+
+private:
+
+    DevicePrivate *const d;
+    friend class DeviceModel;
+    friend class DeviceModelPrivate;
 };
 
 #endif // LIBNITROSHARE_DEVICE_H

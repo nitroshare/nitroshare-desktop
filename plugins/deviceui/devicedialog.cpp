@@ -43,14 +43,16 @@ DeviceDialog::DeviceDialog(Application *application)
 
     // Respond to the dialog buttons correctly
     connect(buttonBox, &QDialogButtonBox::rejected, this, &DeviceDialog::reject);
+
+    /*
     connect(buttonBox, &QDialogButtonBox::accepted, [this, listView]() {
         mDeviceUuid = listView->currentIndex().data(DeviceModel::UuidRole).toString();
         accept();
     });
+    */
 
-    DeviceProxyModel *model = new DeviceProxyModel(this);
-    model->setSourceModel(application->deviceModel());
-    listView->setModel(model);
+    mModel.setSourceModel(application->deviceModel());
+    listView->setModel(&mModel);
 
     // Add the widgets to the dialog
     QVBoxLayout *vboxLayout = new QVBoxLayout;

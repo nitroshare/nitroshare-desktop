@@ -25,6 +25,7 @@
 #include <QSignalSpy>
 #include <QTest>
 
+#include <nitroshare/device.h>
 #include <nitroshare/deviceenumerator.h>
 #include <nitroshare/devicemodel.h>
 
@@ -54,62 +55,45 @@ private:
 void TestDeviceModel::testAddDevice()
 {
     DeviceModel model;
-    model.addEnumerator(&enumerator);
+    model.addDeviceEnumerator(&enumerator);
 
-    // Watch for rows being inserted
-    QSignalSpy spy(&model, &DeviceModel::rowsInserted);
+    // Ensure that a single row is added
+    QSignalSpy rowsInsertedSpy(&model, &DeviceModel::rowsInserted);
     addDevice();
+    QCOMPARE(rowsInsertedSpy.count(), 1);
 
-    // Ensure one row was inserted at the expected point
-    QCOMPARE(spy.count(), 1);
-    QCOMPARE(spy.at(0).at(1).toInt(), 0);
-    QCOMPARE(spy.at(0).at(2).toInt(), 0);
-
-    // Ensure the row contains the expected values
-    QCOMPARE(model.rowCount(QModelIndex()), 1);
-    QModelIndex index = model.index(0, 0);
-    QCOMPARE(model.data(index, DeviceModel::UuidRole).toString(), TestUuid);
-    QCOMPARE(model.data(index, DeviceModel::NameRole).toString(), TestName);
-    QStringList addresses = model.data(index, DeviceModel::AddressesRole).toStringList();
-    QCOMPARE(addresses.count(), 2);
-    QVERIFY(addresses.contains(TestAddress1));
-    QVERIFY(addresses.contains(TestAddress2));
+    // Ensure the device contains the expected values
+    Device *device = model.find(TestUuid);
+    QVERIFY(device);
+    QCOMPARE(device->uuid(), TestUuid);
+    QCOMPARE(device->name(), TestName);
+    QCOMPARE(device->addresses().count(), 2);
+    QVERIFY(device->addresses().contains(TestAddress1));
+    QVERIFY(device->addresses().contains(TestAddress2));
 }
 
 void TestDeviceModel::testUpdateDevice()
 {
     DeviceModel model;
-    model.addEnumerator(&enumerator);
+    model.addDeviceEnumerator(&enumerator);
     addDevice();
 
-    // Update the device with identical data
-    QSignalSpy spy(&model, &DeviceModel::dataChanged);
+    // Update the device with identical data and no signal should be emitted
+    QSignalSpy dataChangedSpy(&model, &DeviceModel::dataChanged);
     addDevice();
+    QCOMPARE(dataChangedSpy.count(), 0);
 
-    // No signal should be emitted
-    QCOMPARE(spy.count(), 0);
-
-    // Make a change - remove one of the addresses
+    // Make a change - remove an addresses - and ensure the signal is emitted
     emit enumerator.deviceUpdated(TestUuid, {
-        {"addresses", QStringList{TestAddress1 }}
+        { "addresses", QStringList{ TestAddress1 } }
     });
-
-    // Ensure the dataChanged signal was emitted
-    QCOMPARE(spy.count(), 1);
-    QCOMPARE(spy.at(0).at(0).toModelIndex().row(), 0);
-    QCOMPARE(spy.at(0).at(1).toModelIndex().row(), 0);
-
-    // Ensure the row was updated
-    QModelIndex index = model.index(0, 0);
-    QStringList addresses = model.data(index, DeviceModel::AddressesRole).toStringList();
-    QCOMPARE(addresses.count(), 1);
-    QVERIFY(addresses.contains(TestAddress1));
+    QCOMPARE(dataChangedSpy.count(), 1);
 }
 
 void TestDeviceModel::testRemoveDevice()
 {
     DeviceModel model;
-    model.addEnumerator(&enumerator);
+    model.addDeviceEnumerator(&enumerator);
     addDevice();
 
     // Watch for removal of the device
@@ -128,12 +112,12 @@ void TestDeviceModel::testRemoveDevice()
 void TestDeviceModel::testRemoveEnumerator()
 {
     DeviceModel model;
-    model.addEnumerator(&enumerator);
+    model.addDeviceEnumerator(&enumerator);
     addDevice();
 
     // Watch for removal of the device once the enumerator is removed
     QSignalSpy spy(&model, &DeviceModel::rowsRemoved);
-    model.removeEnumerator(&enumerator);
+    model.removeDeviceEnumerator(&enumerator);
 
     // Ensure a row was removed
     QCOMPARE(spy.count(), 1);

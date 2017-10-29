@@ -27,6 +27,8 @@
 
 #include <QDialog>
 
+#include "deviceproxymodel.h"
+
 class Application;
 
 class DeviceDialog : public QDialog
@@ -40,6 +42,8 @@ public:
     QString deviceUuid() const;
 
 private:
+
+    DeviceProxyModel mModel;
 
     QString mDeviceUuid;
 };

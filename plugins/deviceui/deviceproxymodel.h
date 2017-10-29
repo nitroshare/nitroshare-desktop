@@ -25,17 +25,22 @@
 #ifndef DEVICEPROXYMODEL_H
 #define DEVICEPROXYMODEL_H
 
-#include <QIdentityProxyModel>
+#include <nitroshare/proxymodel.h>
 
-class DeviceProxyModel : public QIdentityProxyModel
+class DeviceProxyModel : public ProxyModel
 {
     Q_OBJECT
 
 public:
 
-    explicit DeviceProxyModel(QObject *parent);
+    enum {
+        NameColumn,
+        ColumnCount
+    };
 
-    virtual QVariant data(const QModelIndex &index, int role) const;
+    virtual int columnCount(const QModelIndex &parent = QModelIndex()) const;
+    virtual QVariant data(const QModelIndex &proxyIndex, int role) const;
+    virtual QVariant headerData(int section, Qt::Orientation orientation, int role) const;
 };
 
 #endif // DEVICEPROXYMODEL_H

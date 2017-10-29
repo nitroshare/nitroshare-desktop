@@ -31,11 +31,11 @@
 void MdnsPlugin::initialize(Application *application)
 {
     mEnumerator = new MdnsEnumerator(application);
-    application->deviceModel()->addEnumerator(mEnumerator);
+    application->deviceModel()->addDeviceEnumerator(mEnumerator);
 }
 
 void MdnsPlugin::cleanup(Application *application)
 {
-    application->deviceModel()->removeEnumerator(mEnumerator);
+    application->deviceModel()->removeDeviceEnumerator(mEnumerator);
     delete mEnumerator;
 }

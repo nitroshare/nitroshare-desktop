@@ -22,20 +22,43 @@
  * IN THE SOFTWARE.
  */
 
-#include <nitroshare/devicemodel.h>
+#include <nitroshare/device.h>
 
 #include "deviceproxymodel.h"
 
-DeviceProxyModel::DeviceProxyModel(QObject *parent)
-    : QIdentityProxyModel(parent)
+int DeviceProxyModel::columnCount(const QModelIndex &) const
 {
+    return ColumnCount;
 }
 
-QVariant DeviceProxyModel::data(const QModelIndex &index, int role) const
+QVariant DeviceProxyModel::data(const QModelIndex &proxyIndex, int role) const
 {
-    if (role == Qt::DisplayRole) {
-        return QIdentityProxyModel::data(index, DeviceModel::NameRole);
-    } else {
-        return QIdentityProxyModel::data(index, role);
+    if (!proxyIndex.isValid() || proxyIndex.row() < 0 || proxyIndex.row() >= rowCount()) {
+        return QVariant();
     }
+
+    Device *device = sourceData(proxyIndex, Qt::UserRole).value<Device*>();
+
+    switch (role) {
+    case Qt::DisplayRole:
+        switch (proxyIndex.column()) {
+        case NameColumn:
+            return device->name();
+        }
+        break;
+    }
+
+    return sourceData(proxyIndex, role);
+}
+
+QVariant DeviceProxyModel::headerData(int section, Qt::Orientation orientation, int role) const
+{
+    if (orientation != Qt::Horizontal || role != Qt::DisplayRole) {
+        return QVariant();
+    }
+    switch (section) {
+    case NameColumn:
+        return tr("Name");
+    }
+    return QVariant();
 }

@@ -24,19 +24,70 @@
 
 #include <QSet>
 
-#include "device.h"
+#include <nitroshare/device.h>
+
+#include "device_p.h"
+
+const QString Device::UuidKey = "uuid";
+const QString Device::NameKey = "name";
+const QString Device::AddressesKey = "addresses";
+const QString Device::PortKey = "port";
+
+DevicePrivate::DevicePrivate(QObject *parent)
+    : QObject(parent)
+{
+}
+
+void DevicePrivate::update(DeviceEnumerator *deviceEnumerator, const QVariantMap &newProperties)
+{
+    // Loop through each of the properties, adding them to the device's map or
+    // (in the case of addresses), adding them to the device=>address map
+    for (auto i = newProperties.constBegin(); i != newProperties.constEnd(); ++i) {
+        if (i.key() == Device::AddressesKey) {
+            auto newAddresses = i.value().toStringList().toSet();
+            auto j = addresses.find(deviceEnumerator);
+            if (j != addresses.end()) {
+                j.value().unite(newAddresses);
+            } else {
+                addresses.insert(deviceEnumerator, newAddresses);
+            }
+        } else {
+            properties.insert(i.key(), i.value());
+        }
+    }
+}
+
+void DevicePrivate::remove(DeviceEnumerator *deviceEnumerator)
+{
+    addresses.remove(deviceEnumerator);
+}
+
+Device::Device(QObject *parent)
+    : QObject(parent),
+      d(new DevicePrivate(this))
+{
+}
+
+QString Device::uuid() const
+{
+    return d->properties.value(UuidKey).toString();
+}
+
+QString Device::name() const
+{
+    return d->properties.value(NameKey).toString();
+}
 
 QStringList Device::addresses() const
 {
     QSet<QString> uniqueAddresses;
-
-    auto i = addressMap.constBegin();
-    while (i != addressMap.constEnd()) {
-        foreach (QString address, i.value()) {
-            uniqueAddresses.insert(address);
-        }
-        ++i;
+    for (auto i = d->addresses.constBegin(); i != d->addresses.constEnd(); ++i) {
+        uniqueAddresses.unite(i.value());
     }
-
     return uniqueAddresses.toList();
+}
+
+quint16 Device::port() const
+{
+    return d->properties.value(PortKey).toUInt();
 }

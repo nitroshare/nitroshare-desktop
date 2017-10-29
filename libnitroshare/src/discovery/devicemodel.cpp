@@ -22,10 +22,11 @@
  * IN THE SOFTWARE.
  */
 
-#include <QModelIndex>
-
+#include <nitroshare/device.h>
+#include <nitroshare/deviceenumerator.h>
 #include <nitroshare/devicemodel.h>
 
+#include "device_p.h"
 #include "devicemodel_p.h"
 
 DeviceModelPrivate::DeviceModelPrivate(DeviceModel *model)
@@ -39,96 +40,31 @@ DeviceModelPrivate::~DeviceModelPrivate()
     qDeleteAll(devices);
 }
 
-int DeviceModelPrivate::findDevice(const QString &uuid)
-{
-    // Search for an existing device with the UUID
-    for (int i = 0; i < devices.count(); ++i) {
-        if (devices.at(i)->uuid == uuid) {
-            return i;
-        }
-    }
-
-    // Return an invalid index if the file was not found
-    return -1;
-}
-
-bool DeviceModelPrivate::removeEnumerator(QObject *enumerator, int index)
-{
-    Device *device = devices.at(index);
-
-    // Determine if the enumerator provided any addresses and then remove it
-    // from the address map for the device
-    bool empty = device->addressMap.value(enumerator).isEmpty();
-    bool removed = device->addressMap.remove(enumerator);
-
-    // If no addresses remain, remove the device and delete it
-    if (device->addressMap.isEmpty()) {
-
-        // Indicate to the model that the device is gone
-        q->beginRemoveRows(QModelIndex(), index, index);
-        devices.removeAt(index);
-        q->endRemoveRows();
-
-        delete device;
-        return true;
-    }
-
-    // If addresses were removed,
-    if (!empty && removed) {
-        emit q->dataChanged(q->index(index), q->index(index));
-    }
-
-    return false;
-}
-
 void DeviceModelPrivate::onDeviceUpdated(const QString &uuid, const QVariantMap &properties)
 {
-    Device *device = nullptr;
-    int index = findDevice(uuid);
-    if (index != -1) {
-        device = devices.at(index);
-    }
+    DeviceEnumerator *enumerator = qobject_cast<DeviceEnumerator*>(sender());
 
-    // If the device does not exist, create it
-    if (!device) {
+    // Attempt to find an existing device, creating one if it does not exist
+    Device *device = q->find(uuid);
+    bool newDevice = static_cast<bool>(device);
+    if (newDevice) {
         device = new Device;
-        device->uuid = uuid;
     }
 
-    // Update the properties for the device, taking note of anything that changed
-    bool changed = false;
-    auto i = properties.constBegin();
-    while (i != properties.constEnd()) {
-        if (i.key() == DeviceEnumerator::AddressesKey) {
-            QStringList addresses = i.value().toStringList();
-            qSort(addresses.begin(), addresses.end());
-            if (device->addressMap.value(sender()) != addresses) {
-                device->addressMap.insert(sender(), addresses);
-                changed = true;
-            }
-        } else if (device->properties.value(i.key()) != i.value()) {
-            device->properties.insert(i.key(), i.value());
-            changed = true;
-        }
-        ++i;
-    }
+    // TODO: emit signal for change
 
-    // Emit the appropriate signal(s)
-    if (index == -1) {
+    device->d->update(enumerator, properties);
+
+    if (newDevice) {
         q->beginInsertRows(QModelIndex(), devices.count(), devices.count());
         devices.append(device);
         q->endInsertRows();
-    } else if (changed) {
-        emit q->dataChanged(q->index(index), q->index(index));
     }
 }
 
 void DeviceModelPrivate::onDeviceRemoved(const QString &uuid)
 {
-    int index = findDevice(uuid);
-    if (index != -1) {
-        removeEnumerator(sender(), index);
-    }
+    // TODO
 }
 
 DeviceModel::DeviceModel(QObject *parent)
@@ -137,22 +73,31 @@ DeviceModel::DeviceModel(QObject *parent)
 {
 }
 
-void DeviceModel::addEnumerator(DeviceEnumerator *enumerator)
+void DeviceModel::addDeviceEnumerator(DeviceEnumerator *enumerator)
 {
     connect(enumerator, &DeviceEnumerator::deviceUpdated, d, &DeviceModelPrivate::onDeviceUpdated);
     connect(enumerator, &DeviceEnumerator::deviceRemoved, d, &DeviceModelPrivate::onDeviceRemoved);
 }
 
-void DeviceModel::removeEnumerator(DeviceEnumerator *enumerator)
+void DeviceModel::removeDeviceEnumerator(DeviceEnumerator *enumerator)
 {
     disconnect(enumerator, &DeviceEnumerator::deviceUpdated, d, &DeviceModelPrivate::onDeviceUpdated);
     disconnect(enumerator, &DeviceEnumerator::deviceRemoved, d, &DeviceModelPrivate::onDeviceRemoved);
 
-    for (int i = 0; i < d->devices.count(); ++i) {
-        if (d->removeEnumerator(enumerator, i)) {
-            --i;
+    // Remove anything associated with the enumerator from each device
+    foreach (Device *device, d->devices) {
+        device->d->remove(enumerator);
+    }
+}
+
+Device *DeviceModel::find(const QString &uuid) const
+{
+    foreach (Device *device, d->devices) {
+        if (device->uuid() == uuid) {
+            return device;
         }
     }
+    return nullptr;
 }
 
 int DeviceModel::rowCount(const QModelIndex &) const
@@ -163,35 +108,9 @@ int DeviceModel::rowCount(const QModelIndex &) const
 QVariant DeviceModel::data(const QModelIndex &index, int role) const
 {
     // Ensure the index points to a valid row
-    if (!index.isValid() || index.row() < 0 || index.row() >= d->devices.count()) {
+    if (!index.isValid() || index.row() < 0 ||
+            index.row() >= d->devices.count() || role != Qt::UserRole) {
         return QVariant();
     }
-
-    Device *device = d->devices.at(index.row());
-
-    switch (role) {
-    case UuidRole:
-        return device->uuid;
-    case NameRole:
-    case VersionRole:
-    case OperatingSystemRole:
-    case PortRole:
-        return device->properties.value(roleNames().value(role));
-    case AddressesRole:
-        return device->addresses();
-    }
-
-    return QVariant();
-}
-
-QHash<int, QByteArray> DeviceModel::roleNames() const
-{
-    return {
-        { UuidRole, DeviceEnumerator::UuidKey.toUtf8() },
-        { NameRole, DeviceEnumerator::NameKey.toUtf8() },
-        { VersionRole, DeviceEnumerator::VersionKey.toUtf8() },
-        { OperatingSystemRole, DeviceEnumerator::OperatingSystemKey.toUtf8() },
-        { AddressesRole, DeviceEnumerator::AddressesKey.toUtf8() },
-        { PortRole, DeviceEnumerator::PortKey.toUtf8() }
-    };
+    return QVariant::fromValue(d->devices.at(index.row()));
 }

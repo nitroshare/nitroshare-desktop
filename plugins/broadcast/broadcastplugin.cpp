@@ -30,11 +30,11 @@
 void BroadcastPlugin::initialize(Application *application)
 {
     mEnumerator = new BroadcastEnumerator(application);
-    application->deviceModel()->addEnumerator(mEnumerator);
+    application->deviceModel()->addDeviceEnumerator(mEnumerator);
 }
 
 void BroadcastPlugin::cleanup(Application *application)
 {
-    application->deviceModel()->removeEnumerator(mEnumerator);
+    application->deviceModel()->addDeviceEnumerator(mEnumerator);
     delete mEnumerator;
 }
