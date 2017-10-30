@@ -26,7 +26,6 @@
 #include <nitroshare/deviceenumerator.h>
 #include <nitroshare/devicemodel.h>
 
-#include "device_p.h"
 #include "devicemodel_p.h"
 
 DeviceModelPrivate::DeviceModelPrivate(DeviceModel *model)
@@ -35,54 +34,43 @@ DeviceModelPrivate::DeviceModelPrivate(DeviceModel *model)
 {
 }
 
-DeviceModelPrivate::~DeviceModelPrivate()
+void DeviceModelPrivate::addDevice(Device *device, DeviceEnumerator *enumerator)
 {
-    qDeleteAll(devices);
+    q->beginInsertRows(QModelIndex(), devices.count(), devices.count());
+    devices.append(device);
+    enumerators.insert(device, enumerator);
+    q->endInsertRows();
+
+    connect(device, &Device::nameChanged, this, &DeviceModelPrivate::onDeviceUpdated);
 }
 
-void DeviceModelPrivate::onDeviceUpdated(const QString &uuid, const QVariantMap &properties)
+void DeviceModelPrivate::removeDevice(Device *device)
 {
-    DeviceEnumerator *enumerator = qobject_cast<DeviceEnumerator*>(sender());
-
-    // Attempt to find an existing device, creating one if it does not exist
-    Device *device = q->find(uuid);
-    bool newDevice = static_cast<bool>(device);
-    if (newDevice) {
-        device = new Device(uuid);
-    }
-
-    // Update the device with the properties from the enumerator
-    bool changed = device->d->update(enumerator, properties);
-
-    // If this was a new device, then indicate that a row was inserted
-    if (newDevice) {
-        q->beginInsertRows(QModelIndex(), devices.count(), devices.count());
-        devices.append(device);
-        q->endInsertRows();
-    } else if (changed) {
-        int index = devices.indexOf(device);
-        emit q->dataChanged(q->index(index, 0), q->index(index, 0));
-    }
-}
-
-void DeviceModelPrivate::onDeviceRemoved(const QString &uuid)
-{
-    DeviceEnumerator *enumerator = qobject_cast<DeviceEnumerator*>(sender());
-
-    // Attempt to find the device
-    Device *device = q->find(uuid);
-    if (!device) {
-        return;
-    }
-
-    // Remove the enumerator from the device and if there are no others
-    // remaining, remove the device itself
-    if (device->d->remove(enumerator)) {
-        int index = devices.indexOf(device);
+    int index = devices.indexOf(device);
+    if (index != -1) {
         q->beginRemoveRows(QModelIndex(), index, index);
-        delete devices.takeAt(index);
+        devices.removeAt(index);
+        enumerators.remove(device);
         q->endRemoveRows();
+
+        disconnect(device, &Device::nameChanged, this, &DeviceModelPrivate::onDeviceUpdated);
     }
+}
+
+void DeviceModelPrivate::onDeviceAdded(Device *device)
+{
+    addDevice(device, qobject_cast<DeviceEnumerator*>(sender()));
+}
+
+void DeviceModelPrivate::onDeviceRemoved(Device *device)
+{
+    removeDevice(device);
+}
+
+void DeviceModelPrivate::onDeviceUpdated()
+{
+    auto index = q->index(devices.indexOf(qobject_cast<Device*>(sender())), 0);
+    emit q->dataChanged(index, index);
 }
 
 DeviceModel::DeviceModel(QObject *parent)
@@ -93,29 +81,24 @@ DeviceModel::DeviceModel(QObject *parent)
 
 void DeviceModel::addDeviceEnumerator(DeviceEnumerator *enumerator)
 {
-    connect(enumerator, &DeviceEnumerator::deviceUpdated, d, &DeviceModelPrivate::onDeviceUpdated);
+    connect(enumerator, &DeviceEnumerator::deviceAdded, d, &DeviceModelPrivate::onDeviceAdded);
     connect(enumerator, &DeviceEnumerator::deviceRemoved, d, &DeviceModelPrivate::onDeviceRemoved);
+
+    // Add all existing devices
+    foreach (Device *device, enumerator->devices()) {
+        d->addDevice(device, enumerator);
+    }
 }
 
 void DeviceModel::removeDeviceEnumerator(DeviceEnumerator *enumerator)
 {
-    disconnect(enumerator, &DeviceEnumerator::deviceUpdated, d, &DeviceModelPrivate::onDeviceUpdated);
+    disconnect(enumerator, &DeviceEnumerator::deviceAdded, d, &DeviceModelPrivate::onDeviceAdded);
     disconnect(enumerator, &DeviceEnumerator::deviceRemoved, d, &DeviceModelPrivate::onDeviceRemoved);
 
-    // Remove anything associated with the enumerator from each device
-    foreach (Device *device, d->devices) {
-        device->d->remove(enumerator);
+    // Remove all items that belong to the enumerator
+    foreach (Device *device, d->enumerators.keys(enumerator)) {
+        d->removeDevice(device);
     }
-}
-
-Device *DeviceModel::find(const QString &uuid) const
-{
-    foreach (Device *device, d->devices) {
-        if (device->uuid() == uuid) {
-            return device;
-        }
-    }
-    return nullptr;
 }
 
 int DeviceModel::rowCount(const QModelIndex &) const
@@ -125,7 +108,6 @@ int DeviceModel::rowCount(const QModelIndex &) const
 
 QVariant DeviceModel::data(const QModelIndex &index, int role) const
 {
-    // Ensure the index points to a valid row
     if (!index.isValid() || index.row() < 0 ||
             index.row() >= d->devices.count() || role != Qt::UserRole) {
         return QVariant();

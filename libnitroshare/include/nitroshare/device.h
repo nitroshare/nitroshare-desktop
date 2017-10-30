@@ -29,41 +29,36 @@
 
 #include <nitroshare/config.h>
 
-class NITROSHARE_EXPORT DevicePrivate;
-
 /**
  * @brief Peer available for transfers
  *
- * A device is created in response to a DeviceEnumerator emitting the
- * deviceUpdated signal. Enumerators can add their own properties to devices,
- * usually for the purpose of later establishing a connection to them through
- * a transport.
+ * A device is created by an enumerator.
  */
 class NITROSHARE_EXPORT Device : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString uuid READ uuid)
+    Q_PROPERTY(QString name READ name NOTIFY nameChanged)
 
 public:
-
-    /// Property key for the device UUID
-    static const QString UuidKey;
-
-    /// Property key for the device name
-    static const QString NameKey;
 
     /**
      * @brief Retrieve the device's unique identifier
      */
-    QString uuid() const;
+    virtual QString uuid() const = 0;
 
-private:
+    /**
+     * @brief Retrieve the human-friendly name for the device
+     */
+    virtual QString name() const = 0;
 
-    explicit Device(const QString &uuid);
+Q_SIGNALS:
 
-    DevicePrivate *const d;
-    friend class DeviceModel;
-    friend class DeviceModelPrivate;
+    /**
+     * @brief Indicate that the device name has changed
+     * @param name new name
+     */
+    void nameChanged(const QString &name);
 };
 
 #endif // LIBNITROSHARE_DEVICE_H

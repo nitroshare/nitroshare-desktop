@@ -10,9 +10,9 @@ set(SRC
     src/action/actionregistry.cpp
     src/application/application.cpp
     src/bundle/bundle.cpp
-    src/discovery/device.cpp
-    src/discovery/deviceenumerator.cpp
-    src/discovery/devicemodel.cpp
+    src/device/device.cpp
+    src/device/deviceenumerator.cpp
+    src/device/devicemodel.cpp
     src/handler/handlerregistry.cpp
     src/log/logger.cpp
     src/log/message.cpp

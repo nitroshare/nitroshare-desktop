@@ -22,32 +22,4 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef LIBNITROSHARE_DEVICEMODEL_P_H
-#define LIBNITROSHARE_DEVICEMODEL_P_H
-
-#include <QList>
-#include <QObject>
-
-class Device;
-class DeviceModel;
-
-class DeviceModelPrivate : public QObject
-{
-    Q_OBJECT
-
-public:
-
-    explicit DeviceModelPrivate(DeviceModel *model);
-    virtual ~DeviceModelPrivate();
-
-    DeviceModel *const q;
-
-    QList<Device*> devices;
-
-public Q_SLOTS:
-
-    void onDeviceUpdated(const QString &uuid, const QVariantMap &properties);
-    void onDeviceRemoved(const QString &uuid);
-};
-
-#endif // LIBNITROSHARE_DEVICEMODEL_P_H
+#include <nitroshare/device.h>

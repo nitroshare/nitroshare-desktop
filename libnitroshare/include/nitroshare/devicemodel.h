@@ -61,13 +61,6 @@ public:
      */
     void removeDeviceEnumerator(DeviceEnumerator *enumerator);
 
-    /**
-     * @brief Attempt to find a device by its UUID
-     * @param uuid unique device identifier
-     * @return pointer to Device or nullptr
-     */
-    Device *find(const QString &uuid) const;
-
     // Reimplemented virtual methods
     virtual int rowCount(const QModelIndex &parent) const;
     virtual QVariant data(const QModelIndex &index, int role) const;
