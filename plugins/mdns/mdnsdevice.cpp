@@ -22,48 +22,45 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef LIBNITROSHARE_DEVICE_H
-#define LIBNITROSHARE_DEVICE_H
+#include <nitroshare/device.h>
 
-#include <QObject>
+#include "mdnsdevice.h"
 
-#include <nitroshare/config.h>
+const QString AddressesKey = "addresses";
+const QString PortKey = "port";
 
-class NITROSHARE_EXPORT DevicePrivate;
-
-/**
- * @brief Peer available for transfers
- *
- * A device is created in response to a DeviceEnumerator emitting the
- * deviceUpdated signal. Enumerators can add their own properties to devices,
- * usually for the purpose of later establishing a connection to them through
- * a transport.
- */
-class NITROSHARE_EXPORT Device : public QObject
+MdnsDevice::MdnsDevice(QMdnsEngine::Server *server,
+                       QMdnsEngine::Cache *cache,
+                       const QMdnsEngine::Service &service)
+    : mUuid(service.attributes().value("uuid", service.name())),
+      mName(service.name()),
+      mResolver(server, service.hostname(), cache)
 {
-    Q_OBJECT
-    Q_PROPERTY(QString uuid READ uuid)
+    connect(&mResolver, &QMdnsEngine::Resolver::resolved, this, &MdnsDevice::onResolved);
+}
 
-public:
+QString MdnsDevice::uuid() const
+{
+    return mUuid;
+}
 
-    /// Property key for the device UUID
-    static const QString UuidKey;
+void MdnsDevice::update(const QMdnsEngine::Service &service)
+{
+    mPort = service.port();
+}
 
-    /// Property key for the device name
-    static const QString NameKey;
+QVariantMap MdnsDevice::toVariantMap() const
+{
+    return {
+        { Device::UuidKey, mUuid },
+        { Device::NameKey, mName },
+        { AddressesKey, mAddresses },
+        { PortKey, mPort }
+    };
+}
 
-    /**
-     * @brief Retrieve the device's unique identifier
-     */
-    QString uuid() const;
-
-private:
-
-    explicit Device(const QString &uuid);
-
-    DevicePrivate *const d;
-    friend class DeviceModel;
-    friend class DeviceModelPrivate;
-};
-
-#endif // LIBNITROSHARE_DEVICE_H
+void MdnsDevice::onResolved(const QHostAddress &address)
+{
+    mAddresses.append(address.toString());
+    emit updated();
+}

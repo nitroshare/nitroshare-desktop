@@ -22,16 +22,12 @@
  * IN THE SOFTWARE.
  */
 
-#include <QTimer>
-
 #include <nitroshare/application.h>
-#include <nitroshare/device.h>
 #include <nitroshare/logger.h>
 #include <nitroshare/message.h>
 #include <nitroshare/settingsregistry.h>
 
-#include <qmdnsengine/resolver.h>
-
+#include "mdnsdevice.h"
 #include "mdnsenumerator.h"
 
 const QString MessageTag = "mdns";
@@ -57,7 +53,12 @@ MdnsEnumerator::MdnsEnumerator(Application *application)
     mService.setAttributes({{ "uuid", mApplication->deviceUuid().toUtf8() }});
 
     // Trigger loading the initial settings
-    onSettingsChanged({ Application::DeviceName });
+    onSettingsChanged({ Application::DeviceName, TransferPort });
+}
+
+MdnsEnumerator::~MdnsEnumerator()
+{
+    qDeleteAll(mDevices);
 }
 
 void MdnsEnumerator::onHostnameChanged(const QByteArray &hostname) {
@@ -76,23 +77,17 @@ void MdnsEnumerator::onServiceUpdated(const QMdnsEngine::Service &service)
         QString("%1 updated").arg(QString(service.name()))
     ));
 
-    // Send an update for the attributes currently known
-    QString uuid = findUuid(service);
-    QVariantMap properties = {
-        { Device::UuidKey, uuid },
-        //{ DeviceEnumerator::NameKey, service.name() },
-        //{ DeviceEnumerator::PortKey, service.port() }
-    };
-    emit deviceUpdated(uuid, properties);
+    // Attempt to find an existing service with the provided name, creating a
+    // new one if it does not exist
+    auto i = mDevices.find(service.name());
+    if (i == mDevices.end()) {
+        i = mDevices.insert(service.name(), new MdnsDevice(&mServer, &mCache, service));
+        connect(i.value(), &MdnsDevice::updated, this, &MdnsEnumerator::onUpdated);
+    }
 
-    // Send an update every time an address is resolved
-    QMdnsEngine::Resolver *resolver = new QMdnsEngine::Resolver(&mServer, service.name(), &mCache, this);
-    connect(resolver, &QMdnsEngine::Resolver::resolved, [this, uuid](const QHostAddress &address) {
-        //emit deviceUpdated(uuid, {{ DeviceEnumerator::AddressesKey, address.toString() }});
-    });
-
-    // Delete the resolver after 2 seconds
-    QTimer::singleShot(2000, resolver, &QMdnsEngine::Resolver::deleteLater);
+    // Update the service and emit the appropriate signal
+    i.value()->update(service);
+    emit deviceUpdated(i.value()->uuid() ,i.value()->toVariantMap());
 }
 
 void MdnsEnumerator::onServiceRemoved(const QMdnsEngine::Service &service)
@@ -103,23 +98,25 @@ void MdnsEnumerator::onServiceRemoved(const QMdnsEngine::Service &service)
         QString("%1 removed").arg(QString(service.name()))
     ));
 
-    emit deviceRemoved(findUuid(service));
+    // Remove the device if it exists in the map
+    MdnsDevice *device = mDevices.take(service.name());
+    if (device) {
+        emit deviceRemoved(device->uuid());
+        delete device;
+    }
+}
+
+void MdnsEnumerator::onUpdated()
+{
+    MdnsDevice *device = qobject_cast<MdnsDevice*>(sender());
+    emit deviceUpdated(device->uuid(), device->toVariantMap());
 }
 
 void MdnsEnumerator::onSettingsChanged(const QStringList &keys)
 {
-    if (keys.contains(Application::DeviceName)) {
+    if (keys.contains(Application::DeviceName) || keys.contains(TransferPort)) {
         mService.setName(mApplication->deviceName().toUtf8());
         mService.setPort(mApplication->settingsRegistry()->value(TransferPort).toInt());
         mProvider.update(mService);
     }
-}
-
-QString MdnsEnumerator::findUuid(const QMdnsEngine::Service &service)
-{
-    QString uuid = service.attributes().value("uuid");
-    if (uuid.isNull()) {
-        uuid = service.name();
-    }
-    return uuid;
 }

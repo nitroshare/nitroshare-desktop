@@ -25,6 +25,8 @@
 #ifndef MDNSENUMERATOR_H
 #define MDNSENUMERATOR_H
 
+#include <QMap>
+
 #include <nitroshare/deviceenumerator.h>
 
 #include <qmdnsengine/browser.h>
@@ -36,6 +38,15 @@
 
 class Application;
 
+class MdnsDevice;
+
+/**
+ * @brief Enumerator using QMdnsEngine to discover peers
+ *
+ * This enumerator uses the device's name to announce the service on the local
+ * network. The LAN plugin provides the transfer port setting and is therefore
+ * a dependency of this plugin.
+ */
 class MdnsEnumerator : public DeviceEnumerator
 {
     Q_OBJECT
@@ -43,17 +54,17 @@ class MdnsEnumerator : public DeviceEnumerator
 public:
 
     explicit MdnsEnumerator(Application *application);
+    virtual ~MdnsEnumerator();
 
 private slots:
 
     void onHostnameChanged(const QByteArray &hostname);
     void onServiceUpdated(const QMdnsEngine::Service &service);
     void onServiceRemoved(const QMdnsEngine::Service &service);
+    void onUpdated();
     void onSettingsChanged(const QStringList &keys);
 
 private:
-
-    QString findUuid(const QMdnsEngine::Service &service);
 
     Application *mApplication;
 
@@ -63,6 +74,8 @@ private:
     QMdnsEngine::Cache mCache;
     QMdnsEngine::Browser mBrowser;
     QMdnsEngine::Service mService;
+
+    QMap<QString, MdnsDevice*> mDevices;
 };
 
 #endif // MDNSENUMERATOR_H

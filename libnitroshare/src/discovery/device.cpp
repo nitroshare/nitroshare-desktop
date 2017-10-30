@@ -27,6 +27,7 @@
 #include "device_p.h"
 
 const QString Device::UuidKey = "uuid";
+const QString Device::NameKey = "name";
 
 DevicePrivate::DevicePrivate(QObject *parent, const QString &uuid)
     : QObject(parent),

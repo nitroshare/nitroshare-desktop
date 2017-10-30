@@ -22,48 +22,49 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef LIBNITROSHARE_DEVICE_H
-#define LIBNITROSHARE_DEVICE_H
+#ifndef MDNSDEVICE_H
+#define MDNSDEVICE_H
 
+#include <QHostAddress>
 #include <QObject>
+#include <QVariantMap>
 
-#include <nitroshare/config.h>
+#include <qmdnsengine/cache.h>
+#include <qmdnsengine/resolver.h>
+#include <qmdnsengine/server.h>
+#include <qmdnsengine/service.h>
 
-class NITROSHARE_EXPORT DevicePrivate;
-
-/**
- * @brief Peer available for transfers
- *
- * A device is created in response to a DeviceEnumerator emitting the
- * deviceUpdated signal. Enumerators can add their own properties to devices,
- * usually for the purpose of later establishing a connection to them through
- * a transport.
- */
-class NITROSHARE_EXPORT Device : public QObject
+class MdnsDevice : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QString uuid READ uuid)
 
 public:
 
-    /// Property key for the device UUID
-    static const QString UuidKey;
+    explicit MdnsDevice(QMdnsEngine::Server *server,
+                        QMdnsEngine::Cache *cache,
+                        const QMdnsEngine::Service &service);
 
-    /// Property key for the device name
-    static const QString NameKey;
-
-    /**
-     * @brief Retrieve the device's unique identifier
-     */
     QString uuid() const;
+
+    void update(const QMdnsEngine::Service &service);
+    QVariantMap toVariantMap() const;
+
+signals:
+
+    void updated();
+
+private slots:
+
+    void onResolved(const QHostAddress &address);
 
 private:
 
-    explicit Device(const QString &uuid);
+    QString mUuid;
+    QString mName;
+    QStringList mAddresses;
+    quint16 mPort;
 
-    DevicePrivate *const d;
-    friend class DeviceModel;
-    friend class DeviceModelPrivate;
+    QMdnsEngine::Resolver mResolver;
 };
 
-#endif // LIBNITROSHARE_DEVICE_H
+#endif // MDNSDEVICE_H
