@@ -43,6 +43,7 @@ public:
     explicit LanTransportServer(Application *application);
     virtual ~LanTransportServer();
 
+    virtual QString name() const;
     virtual Transport *createTransport(const QVariantMap &properties);
 
 private slots:

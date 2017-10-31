@@ -37,8 +37,14 @@ class Transport;
 class NITROSHARE_EXPORT TransportServer : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(QString name READ name)
 
 public:
+
+    /**
+     * @brief Retrieve the unique identifier for the transport
+     */
+    virtual QString name() const = 0;
 
     /**
      * @brief Create a transport for sending items

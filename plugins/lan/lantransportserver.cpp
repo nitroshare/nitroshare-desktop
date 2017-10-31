@@ -57,6 +57,11 @@ LanTransportServer::~LanTransportServer()
     mApplication->settingsRegistry()->remove(&mTransferPort);
 }
 
+QString LanTransportServer::name() const
+{
+    return "lan";
+}
+
 Transport *LanTransportServer::createTransport(const QVariantMap &properties)
 {
     return nullptr;
