@@ -44,6 +44,16 @@ QString MdnsDevice::name() const
     return mName;
 }
 
+QStringList MdnsDevice::addresses() const
+{
+    return mAddresses;
+}
+
+quint16 MdnsDevice::port() const
+{
+    return mPort;
+}
+
 void MdnsDevice::update(const QMdnsEngine::Service &service)
 {
     mPort = service.port();

@@ -39,6 +39,16 @@ QString BroadcastDevice::name() const
     return mObject.value("name").toString();
 }
 
+QStringList BroadcastDevice::addresses() const
+{
+    return { mObject.value("address").toString() };
+}
+
+quint16 BroadcastDevice::port() const
+{
+    return mObject.value("port").toInt();
+}
+
 void BroadcastDevice::update(qint64 curMs, const QJsonObject &object)
 {
     mObject = object;

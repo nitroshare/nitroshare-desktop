@@ -35,6 +35,8 @@
 class MdnsDevice : public Device
 {
     Q_OBJECT
+    Q_PROPERTY(QStringList addresses READ addresses)
+    Q_PROPERTY(quint16 port READ port)
 
 public:
 
@@ -44,6 +46,9 @@ public:
 
     virtual QString uuid() const;
     virtual QString name() const;
+
+    QStringList addresses() const;
+    quint16 port() const;
 
     void update(const QMdnsEngine::Service &service);
 
