@@ -39,6 +39,11 @@ QString BroadcastDevice::name() const
     return mObject.value("name").toString();
 }
 
+QString BroadcastDevice::transportName() const
+{
+    return "lan";
+}
+
 QStringList BroadcastDevice::addresses() const
 {
     return { mObject.value("address").toString() };

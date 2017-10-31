@@ -52,6 +52,11 @@ public:
      */
     virtual QString name() const = 0;
 
+    /**
+     * @brief Retrieve the name of the transport that should be used
+     */
+    virtual QString transportName() const = 0;
+
 Q_SIGNALS:
 
     /**

@@ -44,6 +44,11 @@ QString MdnsDevice::name() const
     return mName;
 }
 
+QString MdnsDevice::transportName() const
+{
+    return "lan";
+}
+
 QStringList MdnsDevice::addresses() const
 {
     return mAddresses;

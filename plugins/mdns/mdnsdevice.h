@@ -46,6 +46,7 @@ public:
 
     virtual QString uuid() const;
     virtual QString name() const;
+    virtual QString transportName() const;
 
     QStringList addresses() const;
     quint16 port() const;

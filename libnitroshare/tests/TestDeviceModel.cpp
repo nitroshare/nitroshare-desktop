@@ -45,6 +45,7 @@ public:
 
     virtual QString uuid() const { return mUuid; }
     virtual QString name() const { return mName; }
+    virtual QString transportName() const { return "dummy"; }
 
 private:
 
