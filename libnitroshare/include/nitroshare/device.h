@@ -54,6 +54,7 @@ public:
 
     /**
      * @brief Retrieve the name of the transport that should be used
+     * @return transport name or null string for none
      */
     virtual QString transportName() const = 0;
 

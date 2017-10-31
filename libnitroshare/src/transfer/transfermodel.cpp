@@ -23,6 +23,7 @@
  */
 
 #include <nitroshare/application.h>
+#include <nitroshare/device.h>
 #include <nitroshare/transfer.h>
 #include <nitroshare/transfermodel.h>
 #include <nitroshare/transport.h>
@@ -77,11 +78,31 @@ TransferModel::TransferModel(Application *application, QObject *parent)
 void TransferModel::addTransportServer(TransportServer *server)
 {
     connect(server, &TransportServer::transportReceived, d, &TransferModelPrivate::processTransport);
+    d->transports.insert(server->name(), server);
 }
 
 void TransferModel::removeTransportServer(TransportServer *server)
 {
     disconnect(server, &TransportServer::transportReceived, d, &TransferModelPrivate::processTransport);
+    d->transports.remove(server->name());
+}
+
+void TransferModel::send(Device *device, Bundle *bundle)
+{
+    // Attempt to locate the appropriate transport server for the device
+    TransportServer *server = d->transports.value(device->transportName());
+    if (!server) {
+        return;
+    }
+
+    // Attempt to create a transport for the device
+    Transport *transport = server->createTransport(device);
+    if (!transport) {
+        return;
+    }
+
+    // Add the new transfer
+    d->addTransfer(new Transfer(d->application, transport, bundle));
 }
 
 void TransferModel::dismiss(int index)

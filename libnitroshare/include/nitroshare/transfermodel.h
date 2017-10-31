@@ -30,6 +30,8 @@
 #include <nitroshare/config.h>
 
 class Application;
+class Bundle;
+class Device;
 class TransportServer;
 
 class NITROSHARE_EXPORT TransferModelPrivate;
@@ -61,6 +63,13 @@ public:
      * @param server pointer to TransportServer
      */
     void removeTransportServer(TransportServer *server);
+
+    /**
+     * @brief Send a bundle to the specified device
+     * @param device pointer to Device
+     * @param bundle pointer to Bundle
+     */
+    void send(Device *device, Bundle *bundle);
 
     /**
      * @brief Dismiss the transfer at the specified index
