@@ -50,7 +50,7 @@ public:
 
     Application *application;
 
-    QHash<QString, TransportServer*> transports;
+    QHash<QString, TransportServer*> transportServers;
     QList<Transfer*> transfers;
 
 public Q_SLOTS:

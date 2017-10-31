@@ -78,31 +78,18 @@ TransferModel::TransferModel(Application *application, QObject *parent)
 void TransferModel::addTransportServer(TransportServer *server)
 {
     connect(server, &TransportServer::transportReceived, d, &TransferModelPrivate::processTransport);
-    d->transports.insert(server->name(), server);
+    d->transportServers.insert(server->name(), server);
 }
 
 void TransferModel::removeTransportServer(TransportServer *server)
 {
     disconnect(server, &TransportServer::transportReceived, d, &TransferModelPrivate::processTransport);
-    d->transports.remove(server->name());
+    d->transportServers.remove(server->name());
 }
 
-void TransferModel::send(Device *device, Bundle *bundle)
+TransportServer *TransferModel::findTransportServer(const QString &name) const
 {
-    // Attempt to locate the appropriate transport server for the device
-    TransportServer *server = d->transports.value(device->transportName());
-    if (!server) {
-        return;
-    }
-
-    // Attempt to create a transport for the device
-    Transport *transport = server->createTransport(device);
-    if (!transport) {
-        return;
-    }
-
-    // Add the new transfer
-    d->addTransfer(new Transfer(d->application, transport, bundle));
+    return d->transportServers.value(name);
 }
 
 void TransferModel::dismiss(int index)
