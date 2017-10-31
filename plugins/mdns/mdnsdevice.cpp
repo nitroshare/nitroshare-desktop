@@ -41,7 +41,7 @@ QString MdnsDevice::uuid() const
 
 QString MdnsDevice::name() const
 {
-    return mName;
+    return tr("%1 [mDNS]").arg(mName);
 }
 
 QString MdnsDevice::transportName() const

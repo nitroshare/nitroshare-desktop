@@ -36,7 +36,7 @@ QString BroadcastDevice::uuid() const
 
 QString BroadcastDevice::name() const
 {
-    return mObject.value("name").toString();
+    return tr("%1 [broadcast]").arg(mObject.value("name").toString());
 }
 
 QString BroadcastDevice::transportName() const

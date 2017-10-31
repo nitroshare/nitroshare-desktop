@@ -91,15 +91,10 @@ void DeviceModel::removeDeviceEnumerator(DeviceEnumerator *enumerator)
     }
 }
 
-DeviceEnumerator *DeviceModel::enumeratorForDevice(Device *device) const
-{
-    return d->enumerators.value(device);
-}
-
 Device *DeviceModel::findDevice(const QString &uuid, const QString &enumeratorName)
 {
     foreach (Device *device, d->devices) {
-        if (device->uuid() == uuid && enumeratorForDevice(device)->name() == enumeratorName) {
+        if (device->uuid() == uuid && d->enumerators.value(device)->name() == enumeratorName) {
             return device;
         }
     }
