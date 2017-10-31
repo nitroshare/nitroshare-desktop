@@ -29,6 +29,7 @@
 
 #include <nitroshare/config.h>
 
+class Device;
 class Transport;
 
 /**
@@ -47,18 +48,15 @@ public:
     virtual QString name() const = 0;
 
     /**
-     * @brief Create a transport for sending items
-     * @param properties remote device information
-     * @return Transport pointer
+     * @brief Create a transport for sending items to a device
+     * @param device pointer to Device
+     * @return pointer to Transport or nullptr
      *
-     * This method is invoked when a transfer is being initiated with a remote
-     * device. Information about the device (received through enumeration) is
-     * provided to facilitate connection.
-     *
-     * The transport should be allocated on the heap and will be properly
-     * deleted when no longer needed.
+     * This method is invoked to create a transport for sending a bundle to the
+     * specified device. The transport server should use the properties in the
+     * device to create the transport or return nullptr if it cannot.
      */
-    virtual Transport *createTransport(const QVariantMap &properties) = 0;
+    virtual Transport *createTransport(Device *device) = 0;
 
 Q_SIGNALS:
 

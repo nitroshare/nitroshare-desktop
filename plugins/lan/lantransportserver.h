@@ -44,7 +44,7 @@ public:
     virtual ~LanTransportServer();
 
     virtual QString name() const;
-    virtual Transport *createTransport(const QVariantMap &properties);
+    virtual Transport *createTransport(Device *device);
 
 private slots:
 

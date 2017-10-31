@@ -62,7 +62,7 @@ QString LanTransportServer::name() const
     return "lan";
 }
 
-Transport *LanTransportServer::createTransport(const QVariantMap &properties)
+Transport *LanTransportServer::createTransport(Device *device)
 {
     return nullptr;
 }
