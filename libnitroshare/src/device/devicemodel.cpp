@@ -34,16 +34,6 @@ DeviceModelPrivate::DeviceModelPrivate(DeviceModel *model)
 {
 }
 
-void DeviceModelPrivate::addDevice(Device *device, DeviceEnumerator *enumerator)
-{
-    q->beginInsertRows(QModelIndex(), devices.count(), devices.count());
-    devices.append(device);
-    enumerators.insert(device, enumerator);
-    q->endInsertRows();
-
-    connect(device, &Device::nameChanged, this, &DeviceModelPrivate::onDeviceUpdated);
-}
-
 void DeviceModelPrivate::removeDevice(Device *device)
 {
     int index = devices.indexOf(device);
@@ -59,7 +49,12 @@ void DeviceModelPrivate::removeDevice(Device *device)
 
 void DeviceModelPrivate::onDeviceAdded(Device *device)
 {
-    addDevice(device, qobject_cast<DeviceEnumerator*>(sender()));
+    q->beginInsertRows(QModelIndex(), devices.count(), devices.count());
+    devices.append(device);
+    enumerators.insert(device, qobject_cast<DeviceEnumerator*>(sender()));
+    q->endInsertRows();
+
+    connect(device, &Device::nameChanged, this, &DeviceModelPrivate::onDeviceUpdated);
 }
 
 void DeviceModelPrivate::onDeviceRemoved(Device *device)
@@ -83,11 +78,6 @@ void DeviceModel::addDeviceEnumerator(DeviceEnumerator *enumerator)
 {
     connect(enumerator, &DeviceEnumerator::deviceAdded, d, &DeviceModelPrivate::onDeviceAdded);
     connect(enumerator, &DeviceEnumerator::deviceRemoved, d, &DeviceModelPrivate::onDeviceRemoved);
-
-    // Add all existing devices
-    foreach (Device *device, enumerator->devices()) {
-        d->addDevice(device, enumerator);
-    }
 }
 
 void DeviceModel::removeDeviceEnumerator(DeviceEnumerator *enumerator)

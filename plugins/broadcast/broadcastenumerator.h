@@ -45,8 +45,6 @@ public:
     explicit BroadcastEnumerator(Application *application);
     virtual ~BroadcastEnumerator();
 
-    virtual QList<Device*> devices() const;
-
 private slots:
 
     void onBroadcastTimeout();

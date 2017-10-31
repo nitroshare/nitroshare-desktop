@@ -29,10 +29,8 @@
 #include <nitroshare/deviceenumerator.h>
 #include <nitroshare/devicemodel.h>
 
-const QString TestUuid1 = "uuid1";
-const QString TestUuid2 = "uuid2";
-const QString TestName1 = "name1";
-const QString TestName2 = "name2";
+const QString TestUuid = "uuid";
+const QString TestName = "name";
 
 class DummyDevice : public Device
 {
@@ -60,17 +58,8 @@ class DummyEnumerator : public DeviceEnumerator
 
 public:
 
-    virtual QList<Device*> devices() const { return mDevices; }
-
-    void addDevice(Device *device)
-    {
-        mDevices.append(device);
-        emit deviceAdded(device);
-    }
-
-private:
-
-    QList<Device*> mDevices;
+    void addDevice(Device *device) { emit deviceAdded(device); }
+    void removeDevice(Device *device) { emit deviceRemoved(device); }
 };
 
 class TestDeviceModel : public QObject
@@ -80,32 +69,39 @@ class TestDeviceModel : public QObject
 private slots:
 
     void testSignals();
+    void testEnumerator();
 };
 
 void TestDeviceModel::testSignals()
 {
     DeviceModel model;
-
     DummyEnumerator enumerator;
-
-    // Create a device and add it to the enumerator
-    DummyDevice device1(TestUuid1, TestName1);
-    enumerator.addDevice(&device1);
-
-    // Ensure that a signal is emitted when the enumerator is added
-    QSignalSpy rowsInsertedSpy(&model, &DeviceModel::rowsInserted);
     model.addDeviceEnumerator(&enumerator);
+
+    // Ensure that a signal is emitted when a device is added
+    QSignalSpy rowsInsertedSpy(&model, &DeviceModel::rowsInserted);
+    DummyDevice device(TestUuid, TestName);
+    enumerator.addDevice(&device);
     QCOMPARE(rowsInsertedSpy.count(), 1);
 
-    // Ensure that a signal is emitted when a second device is added
-    DummyDevice device2(TestUuid2, TestName2);
-    enumerator.addDevice(&device2);
-    QCOMPARE(rowsInsertedSpy.count(), 2);
-
-    // Ensure that a signal is emitted when the enumerator is removed
+    // Ensure that a signal is emitted when a device is removed
     QSignalSpy rowsRemovedSpy(&model, &DeviceModel::rowsRemoved);
+    enumerator.removeDevice(&device);
+    QCOMPARE(rowsRemovedSpy.count(), 1);
+}
+
+void TestDeviceModel::testEnumerator()
+{
+    DeviceModel model;
+    DummyEnumerator enumerator;
+    model.addDeviceEnumerator(&enumerator);
+    DummyDevice device(TestUuid, TestName);
+    enumerator.addDevice(&device);
+
+    // Ensure that removing the enumerator results in devices being removed
+    QCOMPARE(model.rowCount(), 1);
     model.removeDeviceEnumerator(&enumerator);
-    QCOMPARE(rowsRemovedSpy.count(), 2);
+    QCOMPARE(model.rowCount(), 0);
 }
 
 QTEST_MAIN(TestDeviceModel)

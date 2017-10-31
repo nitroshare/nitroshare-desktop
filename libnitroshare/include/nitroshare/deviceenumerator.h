@@ -40,13 +40,6 @@ class NITROSHARE_EXPORT DeviceEnumerator : public QObject
 {
     Q_OBJECT
 
-public:
-
-    /**
-     * @brief Retrieve current devices
-     */
-    virtual QList<Device*> devices() const = 0;
-
 Q_SIGNALS:
 
     /**

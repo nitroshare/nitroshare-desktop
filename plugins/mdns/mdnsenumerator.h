@@ -37,7 +37,8 @@
 #include <qmdnsengine/service.h>
 
 class Application;
-class Device;
+
+class MdnsDevice;
 
 /**
  * @brief Enumerator using QMdnsEngine to discover peers
@@ -55,8 +56,6 @@ public:
     explicit MdnsEnumerator(Application *application);
     virtual ~MdnsEnumerator();
 
-    virtual QList<Device*> devices() const;
-
 private slots:
 
     void onHostnameChanged(const QByteArray &hostname);
@@ -66,7 +65,7 @@ private slots:
 
 private:
 
-    Device *find(const QString &name) const;
+    MdnsDevice *find(const QString &name) const;
 
     Application *mApplication;
 
@@ -77,7 +76,7 @@ private:
     QMdnsEngine::Browser mBrowser;
     QMdnsEngine::Service mService;
 
-    QList<Device*> mDevices;
+    QList<MdnsDevice*> mDevices;
 };
 
 #endif // MDNSENUMERATOR_H

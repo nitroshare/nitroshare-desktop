@@ -62,8 +62,8 @@ public:
     void removeDeviceEnumerator(DeviceEnumerator *enumerator);
 
     // Reimplemented virtual methods
-    virtual int rowCount(const QModelIndex &parent) const;
-    virtual QVariant data(const QModelIndex &index, int role) const;
+    virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
+    virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
 
 private:
 

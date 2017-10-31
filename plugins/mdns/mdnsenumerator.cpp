@@ -61,11 +61,6 @@ MdnsEnumerator::~MdnsEnumerator()
     qDeleteAll(mDevices);
 }
 
-QList<Device*> MdnsEnumerator::devices() const
-{
-    return mDevices;
-}
-
 void MdnsEnumerator::onHostnameChanged(const QByteArray &hostname) {
     mApplication->logger()->log(new Message(
         Message::Info,
@@ -83,14 +78,14 @@ void MdnsEnumerator::onServiceUpdated(const QMdnsEngine::Service &service)
     ));
 
     // Attempt to find an existing device, creating one if it does not exist
-    Device *device = find(service.name());
+    MdnsDevice *device = find(service.name());
     bool deviceExisted = static_cast<bool>(device);
     if (!deviceExisted) {
         device = new MdnsDevice(&mServer, &mCache, service);
     }
 
     // Update the device
-    qobject_cast<MdnsDevice*>(device)->update(service);
+    device->update(service);
 
     // Indicate a new device was added if this is the case
     if (!deviceExisted) {
@@ -107,7 +102,7 @@ void MdnsEnumerator::onServiceRemoved(const QMdnsEngine::Service &service)
         QString("%1 removed").arg(QString(service.name()))
     ));
 
-    Device *device = find(service.name());
+    MdnsDevice *device = find(service.name());
     if (device) {
         mDevices.removeOne(device);
         emit deviceRemoved(device);
@@ -124,7 +119,7 @@ void MdnsEnumerator::onSettingsChanged(const QStringList &keys)
     }
 }
 
-Device *MdnsEnumerator::find(const QString &name) const
+MdnsDevice *MdnsEnumerator::find(const QString &name) const
 {
     for (auto i = mDevices.constBegin(); i != mDevices.constEnd(); ++i) {
         if ((*i)->name() == name) {

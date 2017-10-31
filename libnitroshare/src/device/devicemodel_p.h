@@ -41,7 +41,6 @@ public:
 
     explicit DeviceModelPrivate(DeviceModel *model);
 
-    void addDevice(Device *device, DeviceEnumerator *enumerator);
     void removeDevice(Device *device);
 
     DeviceModel *const q;
