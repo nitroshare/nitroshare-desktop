@@ -30,6 +30,7 @@
 #include <nitroshare/config.h>
 
 class Application;
+class Transfer;
 class TransportServer;
 
 class NITROSHARE_EXPORT TransferModelPrivate;
@@ -70,6 +71,14 @@ public:
     TransportServer *findTransportServer(const QString &name) const;
 
     /**
+     * @brief Add a transfer to the model
+     * @param transfer pointer to Transfer
+     *
+     * The model assumes ownership of the transfer.
+     */
+    void addTransfer(Transfer *transfer);
+
+    /**
      * @brief Dismiss the transfer at the specified index
      * @param index transfer index
      */
@@ -87,7 +96,6 @@ public:
 private:
 
     TransferModelPrivate *const d;
-    friend class TransferModelPrivate;
 };
 
 #endif // LIBNITROSHARE_TRANSFERMODEL_H

@@ -34,9 +34,12 @@ class Application;
  *
  * The action expects three parameters:
  *
- * - "device" (QString) - name of the device to send the bundle to
- * - "root" (QString) - directory to which all item paths will be relative
- * - "items" (QStringList) - list of items
+ * - "device"     (QString) - UUID of the device to send the bundle to
+ * - "enumerator" (QString) - name of enumerator that created the device
+ * - "items"      (QStringList) - list of absolute paths to files and directories
+ *
+ * The return value will be true if a transfer was successfully created and
+ * false if an error occured.
  */
 class SendAction : public Action
 {

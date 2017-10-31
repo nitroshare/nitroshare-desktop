@@ -45,18 +45,6 @@ TransferModelPrivate::~TransferModelPrivate()
     qDeleteAll(transfers);
 }
 
-void TransferModelPrivate::addTransfer(Transfer *transfer)
-{
-    connect(transfer, &Transfer::stateChanged, this, &TransferModelPrivate::sendDataChanged);
-    connect(transfer, &Transfer::progressChanged, this, &TransferModelPrivate::sendDataChanged);
-    connect(transfer, &Transfer::deviceNameChanged, this, &TransferModelPrivate::sendDataChanged);
-    connect(transfer, &Transfer::errorChanged, this, &TransferModelPrivate::sendDataChanged);
-
-    q->beginInsertRows(QModelIndex(), transfers.count(), transfers.count());
-    transfers.append(transfer);
-    q->endInsertRows();
-}
-
 void TransferModelPrivate::sendDataChanged()
 {
     int row = transfers.indexOf(qobject_cast<Transfer*>(sender()));
@@ -66,7 +54,7 @@ void TransferModelPrivate::sendDataChanged()
 void TransferModelPrivate::processTransport(Transport *transport)
 {
     // Create a new transfer from the transport
-    addTransfer(new Transfer(application, transport));
+    q->addTransfer(new Transfer(application, transport));
 }
 
 TransferModel::TransferModel(Application *application, QObject *parent)
@@ -90,6 +78,18 @@ void TransferModel::removeTransportServer(TransportServer *server)
 TransportServer *TransferModel::findTransportServer(const QString &name) const
 {
     return d->transportServers.value(name);
+}
+
+void TransferModel::addTransfer(Transfer *transfer)
+{
+    connect(transfer, &Transfer::stateChanged, d, &TransferModelPrivate::sendDataChanged);
+    connect(transfer, &Transfer::progressChanged, d, &TransferModelPrivate::sendDataChanged);
+    connect(transfer, &Transfer::deviceNameChanged, d, &TransferModelPrivate::sendDataChanged);
+    connect(transfer, &Transfer::errorChanged, d, &TransferModelPrivate::sendDataChanged);
+
+    beginInsertRows(QModelIndex(), d->transfers.count(), d->transfers.count());
+    d->transfers.append(transfer);
+    endInsertRows();
 }
 
 void TransferModel::dismiss(int index)

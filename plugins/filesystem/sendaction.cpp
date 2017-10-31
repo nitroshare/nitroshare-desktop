@@ -22,16 +22,15 @@
  * IN THE SOFTWARE.
  */
 
-#include <QDir>
-#include <QFileInfo>
-
 #include <nitroshare/application.h>
 #include <nitroshare/bundle.h>
+#include <nitroshare/device.h>
 #include <nitroshare/devicemodel.h>
-#include <nitroshare/handler.h>
-#include <nitroshare/handlerregistry.h>
+#include <nitroshare/transfer.h>
+#include <nitroshare/transfermodel.h>
+#include <nitroshare/transport.h>
+#include <nitroshare/transportserver.h>
 
-#include "file.h"
 #include "sendaction.h"
 
 SendAction::SendAction(Application *application)
@@ -46,23 +45,35 @@ QString SendAction::name() const
 
 QVariant SendAction::invoke(const QVariantMap &params)
 {
-    // Attempt to retrieve the device identified by the given name
-    QString deviceName = params.value("device").toString();
-
-    // TODO
-
-    // Retrieve the root and list of items to add
-    QDir root(params.value("root").toString());
-    QStringList items = params.value("items").toStringList();
-
-    // TODO: symlinks not handled correctly below
-
-    // Create a bundle with the items added
-    Bundle *bundle = new Bundle();
-    foreach (QString item, items) {
-        QFileInfo info(root.absoluteFilePath(item));
-        bundle->add(new File(root, info, 0));
+    // Attempt to find the device
+    Device *device = mApplication->deviceModel()->findDevice(
+        params.value("device").toString(),
+        params.value("enumerator").toString()
+    );
+    if (!device) {
+        return false;
     }
 
+    // Find the transport server
+    TransportServer *server = mApplication->transferModel()->findTransportServer(
+        device->transportName()
+    );
+    if (!server) {
+        return false;
+    }
+
+    // Create a transport
+    Transport *transport = server->createTransport(device);
+    if (!transport) {
+        return false;
+    }
+
+    // TODO
+    // Create a bundle from the list of items to send
+    Bundle *bundle = new Bundle;
+
+    // Create a new transfer and add it to the transfer model
+    Transfer *transfer = new Transfer(mApplication, transport, bundle);
+    mApplication->transferModel()->addTransfer(transfer);
     return true;
 }

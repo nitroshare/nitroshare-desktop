@@ -44,8 +44,6 @@ public:
     explicit TransferModelPrivate(TransferModel *model, Application *application);
     virtual ~TransferModelPrivate();
 
-    void addTransfer(Transfer *transfer);
-
     TransferModel *const q;
 
     Application *application;
