@@ -22,51 +22,31 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef BROADCASTENUMERATOR_H
-#define BROADCASTENUMERATOR_H
+#ifndef BROADCASTDEVICE_H
+#define BROADCASTDEVICE_H
 
-#include <QList>
-#include <QTimer>
-#include <QUdpSocket>
+#include <QJsonObject>
 
-#include <nitroshare/deviceenumerator.h>
-#include <nitroshare/setting.h>
+#include <nitroshare/device.h>
 
-class Application;
-
-class BroadcastDevice;
-
-class BroadcastEnumerator : public DeviceEnumerator
+class BroadcastDevice : public Device
 {
     Q_OBJECT
 
 public:
 
-    explicit BroadcastEnumerator(Application *application);
-    virtual ~BroadcastEnumerator();
+    BroadcastDevice();
 
-    virtual QList<Device*> devices() const;
+    virtual QString uuid() const;
+    virtual QString name() const;
 
-private slots:
-
-    void onBroadcastTimeout();
-    void onExpiryTimeout();
-    void onReadyRead();
-    void onSettingsChanged(const QStringList &keys);
+    void update(qint64 curMs, const QJsonObject &object);
+    bool isExpired(qint64 curMs, int timeoutMs) const;
 
 private:
 
-    Application *mApplication;
-
-    QTimer mBroadcastTimer;
-    QTimer mExpiryTimer;
-    QUdpSocket mSocket;
-
-    QList<BroadcastDevice*> mDevices;
-
-    Setting mBroadcastInterval;
-    Setting mBroadcastExpiry;
-    Setting mBroadcastPort;
+    QJsonObject mObject;
+    qint64 mLastUpdate;
 };
 
-#endif // BROADCASTENUMERATOR_H
+#endif // BROADCASTDEVICE_H

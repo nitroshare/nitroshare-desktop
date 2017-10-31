@@ -22,51 +22,30 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef BROADCASTENUMERATOR_H
-#define BROADCASTENUMERATOR_H
+#include "broadcastdevice.h"
 
-#include <QList>
-#include <QTimer>
-#include <QUdpSocket>
-
-#include <nitroshare/deviceenumerator.h>
-#include <nitroshare/setting.h>
-
-class Application;
-
-class BroadcastDevice;
-
-class BroadcastEnumerator : public DeviceEnumerator
+BroadcastDevice::BroadcastDevice()
+    : mLastUpdate(0)
 {
-    Q_OBJECT
+}
 
-public:
+QString BroadcastDevice::uuid() const
+{
+    return mObject.value("uuid").toString();
+}
 
-    explicit BroadcastEnumerator(Application *application);
-    virtual ~BroadcastEnumerator();
+QString BroadcastDevice::name() const
+{
+    return mObject.value("name").toString();
+}
 
-    virtual QList<Device*> devices() const;
+void BroadcastDevice::update(qint64 curMs, const QJsonObject &object)
+{
+    mObject = object;
+    mLastUpdate = curMs;
+}
 
-private slots:
-
-    void onBroadcastTimeout();
-    void onExpiryTimeout();
-    void onReadyRead();
-    void onSettingsChanged(const QStringList &keys);
-
-private:
-
-    Application *mApplication;
-
-    QTimer mBroadcastTimer;
-    QTimer mExpiryTimer;
-    QUdpSocket mSocket;
-
-    QList<BroadcastDevice*> mDevices;
-
-    Setting mBroadcastInterval;
-    Setting mBroadcastExpiry;
-    Setting mBroadcastPort;
-};
-
-#endif // BROADCASTENUMERATOR_H
+bool BroadcastDevice::isExpired(qint64 curMs, int timeoutMs) const
+{
+    return mLastUpdate + timeoutMs <= curMs;
+}

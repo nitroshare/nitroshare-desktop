@@ -29,14 +29,13 @@
 #include <QNetworkAddressEntry>
 #include <QNetworkInterface>
 #include <QSet>
-#include <QVariantMap>
 
 #include <nitroshare/application.h>
-#include <nitroshare/device.h>
 #include <nitroshare/logger.h>
 #include <nitroshare/message.h>
 #include <nitroshare/settingsregistry.h>
 
+#include "broadcastdevice.h"
 #include "broadcastenumerator.h"
 
 const QString MessageTag = "broadcast";
@@ -84,6 +83,13 @@ BroadcastEnumerator::~BroadcastEnumerator()
     mApplication->settingsRegistry()->remove(&mBroadcastInterval);
     mApplication->settingsRegistry()->remove(&mBroadcastExpiry);
     mApplication->settingsRegistry()->remove(&mBroadcastPort);
+
+    qDeleteAll(mDevices);
+}
+
+QList<Device*> BroadcastEnumerator::devices() const
+{
+    return QList<Device*>();
 }
 
 void BroadcastEnumerator::onBroadcastTimeout()
@@ -101,10 +107,10 @@ void BroadcastEnumerator::onBroadcastTimeout()
     }
 
     // Build the packet that will be broadcast
-    QJsonObject object({
-        { Device::UuidKey, mApplication->deviceUuid() },
-        //{ DeviceEnumerator::NameKey, mApplication->deviceName() }
-    });
+    QJsonObject object{
+        { "uuid", mApplication->deviceUuid() },
+        { "name", mApplication->deviceName() }
+    };
     QByteArray data = QJsonDocument(object).toJson(QJsonDocument::Compact);
 
     // Broadcast the packet
@@ -115,23 +121,26 @@ void BroadcastEnumerator::onBroadcastTimeout()
 
 void BroadcastEnumerator::onExpiryTimeout()
 {
-    // Grab the current time in MS and the timeout interval
-    qint64 ms = QDateTime::currentMSecsSinceEpoch();
-    int expiry = mApplication->settingsRegistry()->value(BroadcastExpiry).toInt();
+    qint64 curMs = QDateTime::currentMSecsSinceEpoch();
+    int timeoutMs = mApplication->settingsRegistry()->value(BroadcastExpiry).toInt();
 
     // Remove any devices that have expired
-    auto i = mDevices.begin();
-    while (i != mDevices.end()) {
-        if (ms - i.value() > expiry) {
+    for (auto i = mDevices.begin(); i != mDevices.end();) {
+        if ((*i)->isExpired(curMs, timeoutMs)) {
             mDevices.erase(i);
-            emit deviceRemoved(i.key());
+            emit deviceRemoved(*i);
+            delete *i;
+        } else {
+            ++i;
         }
-        ++i;
     }
 }
 
 void BroadcastEnumerator::onReadyRead()
 {
+    qint64 curMs = QDateTime::currentMSecsSinceEpoch();
+
+    // Read all of the packets
     while (mSocket.hasPendingDatagrams()) {
 
         // Capture both the data and the address
@@ -141,14 +150,36 @@ void BroadcastEnumerator::onReadyRead()
         // Receive the packet
         data.resize(mSocket.pendingDatagramSize());
         mSocket.readDatagram(data.data(), data.size(), &address);
+        QJsonObject object = QJsonDocument::fromJson(data).object();
 
-        // Extract the data from the packet
-        QVariantMap properties = QJsonDocument::fromJson(data).object().toVariantMap();
-        properties.insert("addresses", QStringList{ address.toString() });
+        // Ensure the packet includes UUID
+        QString uuid = object.value("uuid").toString();
+        if (uuid.isNull()) {
+            continue;
+        }
 
-        // Emit an update for the device
-        QString uuid = properties.take("uuid").toString();
-        emit deviceUpdated(uuid, properties);
+        // Attempt to find an existing device that matches
+        BroadcastDevice *device = nullptr;
+        for (auto i = mDevices.constBegin(); i != mDevices.constEnd(); ++i) {
+            if ((*i)->uuid() == uuid) {
+                device = *i;
+            }
+        }
+
+        // If no existing device was found, emit a new device
+        bool deviceExisted = static_cast<bool>(device);
+        if (!deviceExisted) {
+            device = new BroadcastDevice;
+        }
+
+        // Update the device
+        device->update(curMs, object);
+
+        // Indicate that a new device was discovered
+        if (!deviceExisted) {
+            mDevices.append(device);
+            emit deviceAdded(device);
+        }
     }
 }
 
