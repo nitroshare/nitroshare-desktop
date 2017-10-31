@@ -35,6 +35,7 @@
 
 #include "file.h"
 #include "sendaction.h"
+#include "util.h"
 
 SendAction::SendAction(Application *application)
     : mApplication(application)
@@ -71,17 +72,8 @@ QVariant SendAction::invoke(const QVariantMap &params)
         return false;
     }
 
-    //////////
-    // TODO //
-    //////////
-
     // Create a bundle from the list of items to send
-    Bundle *bundle = new Bundle;
-
-    foreach (const QVariant &item, params.value("items").toList()) {
-        QFileInfo info(item.toString());
-        bundle->add(new File(info.path(), info, 65536));
-    }
+    Bundle *bundle = Util::createBundle(params.value("items").toStringList());
 
     // Create a new transfer and add it to the transfer model
     Transfer *transfer = new Transfer(mApplication, transport, bundle);
