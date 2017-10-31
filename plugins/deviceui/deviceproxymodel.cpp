@@ -23,6 +23,8 @@
  */
 
 #include <nitroshare/device.h>
+#include <nitroshare/deviceenumerator.h>
+#include <nitroshare/devicemodel.h>
 
 #include "deviceproxymodel.h"
 
@@ -38,12 +40,15 @@ QVariant DeviceProxyModel::data(const QModelIndex &proxyIndex, int role) const
     }
 
     Device *device = sourceData(proxyIndex, Qt::UserRole).value<Device*>();
+    DeviceModel *model = qobject_cast<DeviceModel*>(sourceModel());
 
     switch (role) {
     case Qt::DisplayRole:
         switch (proxyIndex.column()) {
         case NameColumn:
-            return device->name();
+            return QString("%1 (%2)")
+                .arg(device->name())
+                .arg(model->enumeratorForDevice(device)->name());
         }
         break;
     }
