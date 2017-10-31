@@ -28,6 +28,8 @@
 #include <QVBoxLayout>
 
 #include <nitroshare/application.h>
+#include <nitroshare/device.h>
+#include <nitroshare/deviceenumerator.h>
 #include <nitroshare/devicemodel.h>
 
 #include "devicedialog.h"
@@ -43,13 +45,12 @@ DeviceDialog::DeviceDialog(Application *application)
 
     // Respond to the dialog buttons correctly
     connect(buttonBox, &QDialogButtonBox::rejected, this, &DeviceDialog::reject);
-
-    /*
-    connect(buttonBox, &QDialogButtonBox::accepted, [this, listView]() {
-        mDeviceUuid = listView->currentIndex().data(DeviceModel::UuidRole).toString();
+    connect(buttonBox, &QDialogButtonBox::accepted, [this, application, listView]() {
+        Device *device = listView->currentIndex().data(Qt::UserRole).value<Device*>();
+        mDeviceUuid = device->uuid();
+        mEnumeratorName = application->deviceModel()->enumeratorForDevice(device)->name();
         accept();
     });
-    */
 
     mModel.setSourceModel(application->deviceModel());
     listView->setModel(&mModel);
@@ -65,4 +66,9 @@ DeviceDialog::DeviceDialog(Application *application)
 QString DeviceDialog::deviceUuid() const
 {
     return mDeviceUuid;
+}
+
+QString DeviceDialog::enumeratorName() const
+{
+    return mEnumeratorName;
 }

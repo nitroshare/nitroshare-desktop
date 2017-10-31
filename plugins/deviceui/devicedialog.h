@@ -40,12 +40,14 @@ public:
     explicit DeviceDialog(Application *application);
 
     QString deviceUuid() const;
+    QString enumeratorName() const;
 
 private:
 
     DeviceProxyModel mModel;
 
     QString mDeviceUuid;
+    QString mEnumeratorName;
 };
 
 #endif // DEVICEDIALOG_H
