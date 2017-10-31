@@ -29,6 +29,10 @@
 
 #include <nitroshare/config.h>
 
+class DeviceEnumerator;
+
+class NITROSHARE_EXPORT DevicePrivate;
+
 /**
  * @brief Peer available for transfers
  *
@@ -41,6 +45,12 @@ class NITROSHARE_EXPORT Device : public QObject
     Q_PROPERTY(QString name READ name NOTIFY nameChanged)
 
 public:
+
+    /**
+     * @brief Create a new device object
+     * @param parent QObject
+     */
+    explicit Device(QObject *parent = nullptr);
 
     /**
      * @brief Retrieve the device's unique identifier
@@ -58,6 +68,11 @@ public:
      */
     virtual QString transportName() const = 0;
 
+    /**
+     * @brief Retrieve the device enumerator for the device
+     */
+    DeviceEnumerator *deviceEnumerator() const;
+
 Q_SIGNALS:
 
     /**
@@ -65,6 +80,11 @@ Q_SIGNALS:
      * @param name new name
      */
     void nameChanged(const QString &name);
+
+private:
+
+    DevicePrivate *const d;
+    friend class DeviceModelPrivate;
 };
 
 #endif // LIBNITROSHARE_DEVICE_H

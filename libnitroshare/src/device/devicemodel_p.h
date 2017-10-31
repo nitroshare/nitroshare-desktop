@@ -26,11 +26,9 @@
 #define LIBNITROSHARE_DEVICEMODEL_P_H
 
 #include <QList>
-#include <QMap>
 #include <QObject>
 
 class Device;
-class DeviceEnumerator;
 class DeviceModel;
 
 class DeviceModelPrivate : public QObject
@@ -46,7 +44,6 @@ public:
     DeviceModel *const q;
 
     QList<Device*> devices;
-    QMap<Device*, DeviceEnumerator*> enumerators;
 
 public Q_SLOTS:
 

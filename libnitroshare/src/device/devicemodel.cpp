@@ -26,6 +26,7 @@
 #include <nitroshare/deviceenumerator.h>
 #include <nitroshare/devicemodel.h>
 
+#include "device_p.h"
 #include "devicemodel_p.h"
 
 DeviceModelPrivate::DeviceModelPrivate(DeviceModel *model)
@@ -40,7 +41,6 @@ void DeviceModelPrivate::removeDevice(Device *device)
     if (index != -1) {
         q->beginRemoveRows(QModelIndex(), index, index);
         devices.removeAt(index);
-        enumerators.remove(device);
         q->endRemoveRows();
 
         disconnect(device, &Device::nameChanged, this, &DeviceModelPrivate::onDeviceUpdated);
@@ -49,9 +49,10 @@ void DeviceModelPrivate::removeDevice(Device *device)
 
 void DeviceModelPrivate::onDeviceAdded(Device *device)
 {
+    device->d->enumerator = qobject_cast<DeviceEnumerator*>(sender());
+
     q->beginInsertRows(QModelIndex(), devices.count(), devices.count());
     devices.append(device);
-    enumerators.insert(device, qobject_cast<DeviceEnumerator*>(sender()));
     q->endInsertRows();
 
     connect(device, &Device::nameChanged, this, &DeviceModelPrivate::onDeviceUpdated);
@@ -86,15 +87,17 @@ void DeviceModel::removeDeviceEnumerator(DeviceEnumerator *enumerator)
     disconnect(enumerator, &DeviceEnumerator::deviceRemoved, d, &DeviceModelPrivate::onDeviceRemoved);
 
     // Remove all items that belong to the enumerator
-    foreach (Device *device, d->enumerators.keys(enumerator)) {
-        d->removeDevice(device);
+    foreach (Device *device, d->devices) {
+        if (device->deviceEnumerator() == enumerator) {
+            d->removeDevice(device);
+        }
     }
 }
 
 Device *DeviceModel::findDevice(const QString &uuid, const QString &enumeratorName)
 {
     foreach (Device *device, d->devices) {
-        if (device->uuid() == uuid && d->enumerators.value(device)->name() == enumeratorName) {
+        if (device->uuid() == uuid && device->deviceEnumerator()->name() == enumeratorName) {
             return device;
         }
     }

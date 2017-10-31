@@ -22,22 +22,22 @@
  * IN THE SOFTWARE.
  */
 
-#include <nitroshare/device.h>
+#ifndef LIBNITROSHARE_DEVICE_P_H
+#define LIBNITROSHARE_DEVICE_P_H
 
-#include "device_p.h"
+#include <QObject>
 
-DevicePrivate::DevicePrivate(QObject *parent)
-    : QObject(parent)
+class DeviceEnumerator;
+
+class DevicePrivate : public QObject
 {
-}
+    Q_OBJECT
 
-Device::Device(QObject *parent)
-    : QObject(parent),
-      d(new DevicePrivate(this))
-{
-}
+public:
 
-DeviceEnumerator *Device::deviceEnumerator() const
-{
-    return d->enumerator;
-}
+    explicit DevicePrivate(QObject *parent);
+
+    DeviceEnumerator *enumerator;
+};
+
+#endif // LIBNITROSHARE_DEVICE_P_H
