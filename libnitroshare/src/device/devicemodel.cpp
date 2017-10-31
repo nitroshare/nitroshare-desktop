@@ -96,6 +96,16 @@ DeviceEnumerator *DeviceModel::enumeratorForDevice(Device *device) const
     return d->enumerators.value(device);
 }
 
+Device *DeviceModel::findDevice(const QString &uuid, const QString &enumeratorName)
+{
+    foreach (Device *device, d->devices) {
+        if (device->uuid() == uuid && enumeratorForDevice(device)->name() == enumeratorName) {
+            return device;
+        }
+    }
+    return nullptr;
+}
+
 int DeviceModel::rowCount(const QModelIndex &) const
 {
     return d->devices.count();

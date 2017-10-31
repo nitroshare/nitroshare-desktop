@@ -62,6 +62,14 @@ public:
     void removeDeviceEnumerator(DeviceEnumerator *enumerator);
 
     /**
+     * @brief Attempt to find a device
+     * @param uuid unique device identifier
+     * @param enumeratorName unique name of enumerator
+     * @return pointer to Device or nullptr
+     */
+    Device *findDevice(const QString &uuid, const QString &enumeratorName);
+
+    /**
      * @brief Retrieve the enumerator for the specified device
      * @param device pointer to Device
      * @return pointer to DeviceEnumerator or nullptr
