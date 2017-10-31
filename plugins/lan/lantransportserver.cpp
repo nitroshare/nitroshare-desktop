@@ -22,7 +22,10 @@
  * IN THE SOFTWARE.
  */
 
+#include <QHostAddress>
+
 #include <nitroshare/application.h>
+#include <nitroshare/device.h>
 #include <nitroshare/logger.h>
 #include <nitroshare/message.h>
 #include <nitroshare/settingsregistry.h>
@@ -64,7 +67,16 @@ QString LanTransportServer::name() const
 
 Transport *LanTransportServer::createTransport(Device *device)
 {
-    return nullptr;
+    QStringList addresses = device->property("addresses").toStringList();
+    quint16 port = device->property("port").toInt();
+
+    // Verify that valid data was passed
+    if (!addresses.count() || !port) {
+        return nullptr;
+    }
+
+    // Create the transport
+    return new LanTransport(QHostAddress(addresses.at(0)), port);
 }
 
 void LanTransportServer::onNewSocketDescriptor(qintptr socketDescriptor)
