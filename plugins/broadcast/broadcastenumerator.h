@@ -45,6 +45,8 @@ public:
     explicit BroadcastEnumerator(Application *application);
     virtual ~BroadcastEnumerator();
 
+    virtual QString name() const;
+
 private slots:
 
     void onBroadcastTimeout();

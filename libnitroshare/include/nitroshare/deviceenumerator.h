@@ -39,6 +39,14 @@ class Device;
 class NITROSHARE_EXPORT DeviceEnumerator : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(QString name READ name)
+
+public:
+
+    /**
+     * @brief Retrieve the unique identifier for the enumerator
+     */
+    virtual QString name() const = 0;
 
 Q_SIGNALS:
 

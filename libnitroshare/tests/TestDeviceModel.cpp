@@ -60,6 +60,8 @@ public:
 
     void addDevice(Device *device) { emit deviceAdded(device); }
     void removeDevice(Device *device) { emit deviceRemoved(device); }
+
+    virtual QString name() const { return "dummy"; }
 };
 
 class TestDeviceModel : public QObject

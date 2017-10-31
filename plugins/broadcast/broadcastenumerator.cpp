@@ -87,6 +87,11 @@ BroadcastEnumerator::~BroadcastEnumerator()
     qDeleteAll(mDevices);
 }
 
+QString BroadcastEnumerator::name() const
+{
+    return "broadcast";
+}
+
 void BroadcastEnumerator::onBroadcastTimeout()
 {
     // Build a list of all IPv4 broadcast addresses

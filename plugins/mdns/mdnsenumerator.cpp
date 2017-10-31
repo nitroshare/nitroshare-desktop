@@ -61,6 +61,11 @@ MdnsEnumerator::~MdnsEnumerator()
     qDeleteAll(mDevices);
 }
 
+QString MdnsEnumerator::name() const
+{
+    return "mdns";
+}
+
 void MdnsEnumerator::onHostnameChanged(const QByteArray &hostname) {
     mApplication->logger()->log(new Message(
         Message::Info,

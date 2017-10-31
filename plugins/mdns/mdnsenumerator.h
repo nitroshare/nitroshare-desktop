@@ -56,6 +56,8 @@ public:
     explicit MdnsEnumerator(Application *application);
     virtual ~MdnsEnumerator();
 
+    virtual QString name() const;
+
 private slots:
 
     void onHostnameChanged(const QByteArray &hostname);
