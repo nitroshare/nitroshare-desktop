@@ -39,7 +39,10 @@ QVariant BrowseAction::invoke(const QVariantMap &)
 {
     DeviceDialog dialog(mApplication);
     if (dialog.exec() == QDialog::Accepted) {
-        return dialog.deviceUuid();
+        return QVariantMap{
+            { "device", dialog.deviceUuid() },
+            { "enumerator", dialog.enumeratorName() }
+        };
     }
     return false;
 }

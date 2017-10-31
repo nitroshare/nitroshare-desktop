@@ -54,22 +54,23 @@ QString SendFilesAction::title() const
 QVariant SendFilesAction::invoke(const QVariantMap &)
 {
     // Obtain the list of files from the user
-    QStringList filenames(QFileDialog::getOpenFileName(nullptr, tr("Select Files")));
+    QStringList filenames = QFileDialog::getOpenFileNames(nullptr, tr("Select Files"));
     if (!filenames.count()) {
         return false;
     }
 
     // Find and invoke the browse action to obtain a device UUID
     Action *browseAction = mApplication->actionRegistry()->find("browse");
-    QVariant deviceUuid = browseAction->invoke();
-    if (deviceUuid.type() != QVariant::String) {
+    QVariant returnValue = browseAction->invoke();
+    if (returnValue.type() != QVariant::Map) {
         return false;
     }
 
     // Find & invoke the send action - it's a dependency, so must exist
     Action *sendAction = mApplication->actionRegistry()->find("send");
     return sendAction->invoke({
-        { "device", deviceUuid },
+        { "device", returnValue.toMap().value("device") },
+        { "enumerator", returnValue.toMap().value("enumerator") },
         { "items", filenames }
     });
 }

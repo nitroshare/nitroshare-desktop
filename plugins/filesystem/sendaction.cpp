@@ -22,6 +22,8 @@
  * IN THE SOFTWARE.
  */
 
+#include <QFileInfo>
+
 #include <nitroshare/application.h>
 #include <nitroshare/bundle.h>
 #include <nitroshare/device.h>
@@ -31,6 +33,7 @@
 #include <nitroshare/transport.h>
 #include <nitroshare/transportserver.h>
 
+#include "file.h"
 #include "sendaction.h"
 
 SendAction::SendAction(Application *application)
@@ -68,9 +71,17 @@ QVariant SendAction::invoke(const QVariantMap &params)
         return false;
     }
 
-    // TODO
+    //////////
+    // TODO //
+    //////////
+
     // Create a bundle from the list of items to send
     Bundle *bundle = new Bundle;
+
+    foreach (const QVariant &item, params.value("items").toList()) {
+        QFileInfo info(item.toString());
+        bundle->add(new File(info.path(), info, 65536));
+    }
 
     // Create a new transfer and add it to the transfer model
     Transfer *transfer = new Transfer(mApplication, transport, bundle);
