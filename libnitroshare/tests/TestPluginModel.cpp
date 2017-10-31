@@ -105,7 +105,9 @@ void TestPluginModel::testDependencies()
 
 Plugin *TestPluginModel::loadPlugin(const QString &name)
 {
-    QString filename = QDir::cleanPath(
+    // Calculate the relative path to the specified plugin based on the current
+    // working directory and the directory that contains the plugins
+    QString filename = QDir(QDir::currentPath()).relativeFilePath(
         QFileInfo(QCoreApplication::arguments().at(0)).absolutePath() +
         QDir::separator() + "plugins" + QDir::separator() + name
     );
