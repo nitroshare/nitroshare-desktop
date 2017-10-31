@@ -91,6 +91,11 @@ void DeviceModel::removeDeviceEnumerator(DeviceEnumerator *enumerator)
     }
 }
 
+DeviceEnumerator *DeviceModel::enumeratorForDevice(Device *device) const
+{
+    return d->enumerators.value(device);
+}
+
 int DeviceModel::rowCount(const QModelIndex &) const
 {
     return d->devices.count();

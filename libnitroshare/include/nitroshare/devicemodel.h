@@ -61,6 +61,13 @@ public:
      */
     void removeDeviceEnumerator(DeviceEnumerator *enumerator);
 
+    /**
+     * @brief Retrieve the enumerator for the specified device
+     * @param device pointer to Device
+     * @return pointer to DeviceEnumerator or nullptr
+     */
+    DeviceEnumerator *enumeratorForDevice(Device *device) const;
+
     // Reimplemented virtual methods
     virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
     virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
