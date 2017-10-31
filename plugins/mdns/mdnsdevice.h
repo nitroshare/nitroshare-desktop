@@ -25,16 +25,14 @@
 #ifndef MDNSDEVICE_H
 #define MDNSDEVICE_H
 
-#include <QHostAddress>
-#include <QObject>
-#include <QVariantMap>
+#include <nitroshare/device.h>
 
 #include <qmdnsengine/cache.h>
 #include <qmdnsengine/resolver.h>
 #include <qmdnsengine/server.h>
 #include <qmdnsengine/service.h>
 
-class MdnsDevice : public QObject
+class MdnsDevice : public Device
 {
     Q_OBJECT
 
@@ -44,14 +42,10 @@ public:
                         QMdnsEngine::Cache *cache,
                         const QMdnsEngine::Service &service);
 
-    QString uuid() const;
+    virtual QString uuid() const;
+    virtual QString name() const;
 
     void update(const QMdnsEngine::Service &service);
-    QVariantMap toVariantMap() const;
-
-signals:
-
-    void updated();
 
 private slots:
 

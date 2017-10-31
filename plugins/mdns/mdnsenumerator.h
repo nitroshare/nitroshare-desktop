@@ -25,7 +25,7 @@
 #ifndef MDNSENUMERATOR_H
 #define MDNSENUMERATOR_H
 
-#include <QMap>
+#include <QList>
 
 #include <nitroshare/deviceenumerator.h>
 
@@ -37,8 +37,7 @@
 #include <qmdnsengine/service.h>
 
 class Application;
-
-class MdnsDevice;
+class Device;
 
 /**
  * @brief Enumerator using QMdnsEngine to discover peers
@@ -56,15 +55,18 @@ public:
     explicit MdnsEnumerator(Application *application);
     virtual ~MdnsEnumerator();
 
+    virtual QList<Device*> devices() const;
+
 private slots:
 
     void onHostnameChanged(const QByteArray &hostname);
     void onServiceUpdated(const QMdnsEngine::Service &service);
     void onServiceRemoved(const QMdnsEngine::Service &service);
-    void onUpdated();
     void onSettingsChanged(const QStringList &keys);
 
 private:
+
+    Device *find(const QString &name) const;
 
     Application *mApplication;
 
@@ -75,7 +77,7 @@ private:
     QMdnsEngine::Browser mBrowser;
     QMdnsEngine::Service mService;
 
-    QMap<QString, MdnsDevice*> mDevices;
+    QList<Device*> mDevices;
 };
 
 #endif // MDNSENUMERATOR_H

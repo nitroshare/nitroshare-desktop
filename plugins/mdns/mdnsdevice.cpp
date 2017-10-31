@@ -22,12 +22,7 @@
  * IN THE SOFTWARE.
  */
 
-#include <nitroshare/device.h>
-
 #include "mdnsdevice.h"
-
-const QString AddressesKey = "addresses";
-const QString PortKey = "port";
 
 MdnsDevice::MdnsDevice(QMdnsEngine::Server *server,
                        QMdnsEngine::Cache *cache,
@@ -44,23 +39,17 @@ QString MdnsDevice::uuid() const
     return mUuid;
 }
 
+QString MdnsDevice::name() const
+{
+    return mName;
+}
+
 void MdnsDevice::update(const QMdnsEngine::Service &service)
 {
     mPort = service.port();
 }
 
-QVariantMap MdnsDevice::toVariantMap() const
-{
-    return {
-        { Device::UuidKey, mUuid },
-        { Device::NameKey, mName },
-        { AddressesKey, mAddresses },
-        { PortKey, mPort }
-    };
-}
-
 void MdnsDevice::onResolved(const QHostAddress &address)
 {
     mAddresses.append(address.toString());
-    emit updated();
 }

@@ -61,6 +61,11 @@ MdnsEnumerator::~MdnsEnumerator()
     qDeleteAll(mDevices);
 }
 
+QList<Device*> MdnsEnumerator::devices() const
+{
+    return mDevices;
+}
+
 void MdnsEnumerator::onHostnameChanged(const QByteArray &hostname) {
     mApplication->logger()->log(new Message(
         Message::Info,
@@ -77,17 +82,21 @@ void MdnsEnumerator::onServiceUpdated(const QMdnsEngine::Service &service)
         QString("%1 updated").arg(QString(service.name()))
     ));
 
-    // Attempt to find an existing service with the provided name, creating a
-    // new one if it does not exist
-    auto i = mDevices.find(service.name());
-    if (i == mDevices.end()) {
-        i = mDevices.insert(service.name(), new MdnsDevice(&mServer, &mCache, service));
-        connect(i.value(), &MdnsDevice::updated, this, &MdnsEnumerator::onUpdated);
+    // Attempt to find an existing device, creating one if it does not exist
+    Device *device = find(service.name());
+    bool deviceExisted = static_cast<bool>(device);
+    if (!deviceExisted) {
+        device = new MdnsDevice(&mServer, &mCache, service);
     }
 
-    // Update the service and emit the appropriate signal
-    i.value()->update(service);
-    emit deviceUpdated(i.value()->uuid() ,i.value()->toVariantMap());
+    // Update the device
+    qobject_cast<MdnsDevice*>(device)->update(service);
+
+    // Indicate a new device was added if this is the case
+    if (!deviceExisted) {
+        mDevices.append(device);
+        emit deviceAdded(device);
+    }
 }
 
 void MdnsEnumerator::onServiceRemoved(const QMdnsEngine::Service &service)
@@ -98,18 +107,12 @@ void MdnsEnumerator::onServiceRemoved(const QMdnsEngine::Service &service)
         QString("%1 removed").arg(QString(service.name()))
     ));
 
-    // Remove the device if it exists in the map
-    MdnsDevice *device = mDevices.take(service.name());
+    Device *device = find(service.name());
     if (device) {
-        emit deviceRemoved(device->uuid());
+        mDevices.removeOne(device);
+        emit deviceRemoved(device);
         delete device;
     }
-}
-
-void MdnsEnumerator::onUpdated()
-{
-    MdnsDevice *device = qobject_cast<MdnsDevice*>(sender());
-    emit deviceUpdated(device->uuid(), device->toVariantMap());
 }
 
 void MdnsEnumerator::onSettingsChanged(const QStringList &keys)
@@ -119,4 +122,14 @@ void MdnsEnumerator::onSettingsChanged(const QStringList &keys)
         mService.setPort(mApplication->settingsRegistry()->value(TransferPort).toInt());
         mProvider.update(mService);
     }
+}
+
+Device *MdnsEnumerator::find(const QString &name) const
+{
+    for (auto i = mDevices.constBegin(); i != mDevices.constEnd(); ++i) {
+        if ((*i)->name() == name) {
+            return *i;
+        }
+    }
+    return nullptr;
 }
