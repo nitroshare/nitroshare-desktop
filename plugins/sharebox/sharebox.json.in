@@ -1,0 +1,12 @@
+{
+    "Name": "sharebox",
+    "Title": "Sharebox",
+    "Vendor": "Nathan Osman",
+    "Version": "${PROJECT_VERSION}",
+    "Description": "Desktop widget for dragging-and-dropping items",
+    "Dependencies": [
+        "deviceui",
+        "filesystem",
+        "ui"
+    ]
+}
