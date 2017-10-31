@@ -78,7 +78,7 @@ TransferPrivate::TransferPrivate(Transfer *parent, Application *application, Tra
 void TransferPrivate::sendTransferHeader()
 {
     QJsonObject object{
-        { "name", "unknown" },
+        { "name", application->deviceName() },
         { "count", QString::number(bundle->rowCount(QModelIndex())) },
         { "size", QString::number(bundle->totalSize()) }
     };
