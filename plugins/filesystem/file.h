@@ -45,6 +45,10 @@ class File : public Item
     Q_PROPERTY(QDateTime lastRead READ lastRead)
     Q_PROPERTY(QDateTime lastModified READ lastModified)
 
+    // Properties provided for legacy support
+    Q_PROPERTY(qint64 last_read READ last_read)
+    Q_PROPERTY(qint64 last_modified READ last_modified)
+
 public:
 
     File(const QString &root, const QVariantMap &properties);
@@ -55,6 +59,9 @@ public:
     QDateTime created() const;
     QDateTime lastRead() const;
     QDateTime lastModified() const;
+
+    qint64 last_read() const;
+    qint64 last_modified() const;
 
     // Reimplemented virtual methods
     virtual QString type() const;

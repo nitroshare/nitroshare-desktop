@@ -81,6 +81,16 @@ QDateTime File::lastModified() const
     return mLastModified;
 }
 
+qint64 File::last_read() const
+{
+    return mLastRead.toSecsSinceEpoch();
+}
+
+qint64 File::last_modified() const
+{
+    return mLastModified.toSecsSinceEpoch();
+}
+
 QString File::type() const
 {
     return "file";

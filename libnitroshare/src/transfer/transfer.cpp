@@ -107,9 +107,15 @@ void TransferPrivate::sendItemHeader()
     const QMetaObject *metaObj = currentItem->metaObject();
     QJsonObject object;
 
-    for (int i = metaObj->propertyOffset(); i < metaObj->propertyCount(); ++i) {
-        const char *name = metaObj->property(i).name();
-        object.insert(name, QJsonValue::fromVariant(currentItem->property(name)));
+    // Skip the "name" QObject property and convert all longlongs to strings
+    for (int i = 1; i < metaObj->propertyCount(); ++i) {
+        auto property = metaObj->property(i);
+        auto name = property.name();
+        auto value = currentItem->property(name);
+        if (property.type() == QVariant::LongLong) {
+            value = QString::number(value.toLongLong());
+        }
+        object.insert(name, QJsonValue::fromVariant(value));
     }
 
     // Send the item header
