@@ -43,7 +43,7 @@ QVariant DeviceProxyModel::data(const QModelIndex &proxyIndex, int role) const
     case Qt::DisplayRole:
         switch (proxyIndex.column()) {
         case NameColumn:
-            return device->uuid();
+            return device->name();
         }
         break;
     }
