@@ -1,6 +1,7 @@
 add_subdirectory(broadcast)
 add_subdirectory(filesystem)
 add_subdirectory(lan)
+add_subdirectory(url)
 
 if(Qt5Widgets_FOUND)
     add_subdirectory(deviceui)

@@ -1,0 +1,8 @@
+{
+    "Name": "url",
+    "Title": "URL",
+    "Vendor": "Nathan Osman",
+    "Version": "${PROJECT_VERSION}",
+    "Description": "Send and receive URLs",
+    "Dependencies": []
+}
