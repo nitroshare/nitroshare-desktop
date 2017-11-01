@@ -25,6 +25,7 @@ find_package(Qt5Widgets 5.4)
 
 # CLI and client are always available, UI is available if Qt5Widgets is available
 option(BUILD_CLI "Build the NitroShare CLI app" ON)
+option(BUILD_NMH "Build native messaging host for Chrome" ON)
 option(BUILD_CLIENT "Build the NitroShare client app" ON)
 if(Qt5Widgets_FOUND)
     option(BUILD_UI "Build the NitroShare UI app" ON)
@@ -83,6 +84,10 @@ endif()
 
 if(BUILD_CLIENT)
     add_subdirectory(client)
+endif()
+
+if(BUILD_NMH)
+    add_subdirectory(nmh)
 endif()
 
 if(BUILD_UI)
