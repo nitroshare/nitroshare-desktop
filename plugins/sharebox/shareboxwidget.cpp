@@ -114,6 +114,9 @@ void ShareboxWidget::dropEvent(QDropEvent *event)
             { "items", items }
         });
     }
+
+    // dragLeaveEvent() is not invoked if the item is dropped
+    update();
 }
 
 void ShareboxWidget::paintEvent(QPaintEvent *)
