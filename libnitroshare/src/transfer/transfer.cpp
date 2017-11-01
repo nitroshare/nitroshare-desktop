@@ -27,8 +27,6 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonParseError>
-#include <QMetaObject>
-#include <QMetaProperty>
 #include <QtEndian>
 
 #include <nitroshare/application.h>
@@ -36,6 +34,7 @@
 #include <nitroshare/handler.h>
 #include <nitroshare/handlerregistry.h>
 #include <nitroshare/item.h>
+#include <nitroshare/jsonutil.h>
 #include <nitroshare/logger.h>
 #include <nitroshare/message.h>
 #include <nitroshare/packet.h>
@@ -104,19 +103,7 @@ void TransferPrivate::sendItemHeader()
     currentItemBytesTotal = currentItem->size();
 
     // Build a JSON object with all of the properties
-    const QMetaObject *metaObj = currentItem->metaObject();
-    QJsonObject object;
-
-    // Skip the "name" QObject property and convert all longlongs to strings
-    for (int i = 1; i < metaObj->propertyCount(); ++i) {
-        auto property = metaObj->property(i);
-        auto name = property.name();
-        auto value = currentItem->property(name);
-        if (property.type() == QVariant::LongLong) {
-            value = QString::number(value.toLongLong());
-        }
-        object.insert(name, QJsonValue::fromVariant(value));
-    }
+    QJsonObject object = JsonUtil::objectToJson(currentItem);
 
     // Send the item header
     Packet packet(Packet::Json, QJsonDocument(object).toJson());
