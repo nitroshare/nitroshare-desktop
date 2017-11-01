@@ -23,13 +23,14 @@
  */
 
 #include "shareboxplugin.h"
+#include "shareboxwidget.h"
 
 void ShareboxPlugin::initialize(Application *application)
 {
-    //...
+    mWidget = new ShareboxWidget(application);
 }
 
 void ShareboxPlugin::cleanup(Application *application)
 {
-    //...
+    delete mWidget;
 }

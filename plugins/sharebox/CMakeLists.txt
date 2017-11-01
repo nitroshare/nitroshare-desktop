@@ -3,6 +3,8 @@ configure_file(sharebox.json.in "${CMAKE_CURRENT_BINARY_DIR}/sharebox.json")
 set(SRC
     shareboxplugin.h
     shareboxplugin.cpp
+    shareboxwidget.h
+    shareboxwidget.cpp
 )
 
 add_library(sharebox MODULE ${SRC})

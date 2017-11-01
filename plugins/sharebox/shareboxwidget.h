@@ -22,26 +22,33 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef SHAREBOXPLUGIN_H
-#define SHAREBOXPLUGIN_H
+#ifndef SHAREBOXWIDGET_H
+#define SHAREBOXWIDGET_H
 
-#include <nitroshare/iplugin.h>
+#include <QWidget>
 
-class ShareboxWidget;
+class Application;
 
-class Q_DECL_EXPORT ShareboxPlugin : public IPlugin
+/**
+ * @brief Sharebox for dropping files
+ */
+class ShareboxWidget : public QWidget
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID Plugin_iid FILE "sharebox.json")
 
 public:
 
-    virtual void initialize(Application *application);
-    virtual void cleanup(Application *application);
+    explicit ShareboxWidget(Application *application);
+
+    virtual void dragEnterEvent(QDragEnterEvent *event);
+    virtual void dragLeaveEvent(QDragLeaveEvent *event);
+    virtual void paintEvent(QPaintEvent *event);
 
 private:
 
-    ShareboxWidget *mWidget;
+    Application *mApplication;
+
+    bool mDragActive;
 };
 
-#endif // SHAREBOXPLUGIN_H
+#endif // SHAREBOXWIDGET_H
