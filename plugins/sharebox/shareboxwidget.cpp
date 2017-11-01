@@ -26,15 +26,23 @@
 #include <QColor>
 #include <QDragEnterEvent>
 #include <QDragLeaveEvent>
+#include <QDropEvent>
 #include <QFont>
 #include <QLinearGradient>
 #include <QMimeData>
 #include <QPainter>
 #include <QPen>
+#include <QUrl>
 
+#include <nitroshare/action.h>
+#include <nitroshare/actionregistry.h>
 #include <nitroshare/application.h>
+#include <nitroshare/logger.h>
+#include <nitroshare/message.h>
 
 #include "shareboxwidget.h"
+
+const QString MessageTag = "sharebox";
 
 const QColor NormalColor = QColor::fromRgbF(0.5f, 0.5f, 0.5f);
 const QColor ActiveColor = QColor::fromRgbF(1.0f, 1.0f, 1.0f);
@@ -73,6 +81,39 @@ void ShareboxWidget::dragLeaveEvent(QDragLeaveEvent *event)
     update();
 
     event->accept();
+}
+
+void ShareboxWidget::dropEvent(QDropEvent *event)
+{
+    mApplication->logger()->log(new Message(
+        Message::Info,
+        MessageTag,
+        "objects dropped on sharebox"
+    ));
+
+    if (event->mimeData()->hasUrls()) {
+
+        // Build a list of items
+        QStringList items;
+        foreach (const QUrl &url, event->mimeData()->urls()) {
+            items.append(url.toLocalFile());
+        }
+
+        // Find & invoke the browse action
+        Action *browseAction = mApplication->actionRegistry()->find("browse");
+        QVariant returnValue = browseAction->invoke();
+        if (returnValue.type() != QVariant::Map) {
+            return;
+        }
+
+        // Find & invoke the send action
+        Action *sendAction = mApplication->actionRegistry()->find("send");
+        sendAction->invoke({
+            { "device", returnValue.toMap().value("device") },
+            { "enumerator", returnValue.toMap().value("enumerator") },
+            { "items", items }
+        });
+    }
 }
 
 void ShareboxWidget::paintEvent(QPaintEvent *)

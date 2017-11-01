@@ -42,6 +42,7 @@ public:
 
     virtual void dragEnterEvent(QDragEnterEvent *event);
     virtual void dragLeaveEvent(QDragLeaveEvent *event);
+    virtual void dropEvent(QDropEvent *event);
     virtual void paintEvent(QPaintEvent *event);
 
 private:
