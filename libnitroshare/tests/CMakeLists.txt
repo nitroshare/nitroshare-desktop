@@ -4,6 +4,7 @@ add_subdirectory(dummy2)
 
 set(TESTS
     TestDeviceModel
+    TestJsonUtil
     TestLogger
     TestPluginModel
     TestSettingsRegistry
