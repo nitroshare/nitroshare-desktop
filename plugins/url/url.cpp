@@ -22,42 +22,54 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef SENDURLACTION_H
-#define SENDURLACTION_H
+#include <QVariantMap>
 
-#include <nitroshare/action.h>
+#include "url.h"
 
-class Application;
-
-/**
- * @brief Send a URL to a peer
- *
- * The action expects three parameters:
- *
- * - "device"     (QString) - UUID of the device to send the URL to
- * - "enumerator" (QString) - name of enumerator that created the device
- * - "url"        (QString) - URL to send to the device
- *
- * The return value will be true if a transfer was prepared for the device and
- * false otherwise.
- */
-class SendUrlAction : public Action
+Url::Url(const QVariantMap &properties)
+    : mUrl(properties.value("url").toString())
 {
-    Q_OBJECT
+}
 
-public:
+Url::Url(const QString &url)
+    : mUrl(url)
+{
+}
 
-    explicit SendUrlAction(Application *application);
+QString Url::url() const
+{
+    return mUrl;
+}
 
-    virtual QString name() const;
+QString Url::type() const
+{
+    return "url";
+}
 
-public slots:
+QString Url::name() const
+{
+    return mUrl;
+}
 
-    virtual QVariant invoke(const QVariantMap &params = QVariantMap());
+qint64 Url::size() const
+{
+    return 0;
+}
 
-private:
+bool Url::open(OpenMode)
+{
+    return false;
+}
 
-    Application *mApplication;
-};
+QByteArray Url::read()
+{
+    return QByteArray();
+}
 
-#endif // SENDURLACTION_H
+void Url::write(const QByteArray &data)
+{
+}
+
+void Url::close()
+{
+}

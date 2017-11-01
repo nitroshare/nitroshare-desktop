@@ -3,6 +3,8 @@ configure_file(url.json.in "${CMAKE_CURRENT_BINARY_DIR}/url.json")
 set(SRC
     sendurlaction.h
     sendurlaction.cpp
+    url.h
+    url.cpp
     urlplugin.h
     urlplugin.cpp
 )

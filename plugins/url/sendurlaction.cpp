@@ -22,7 +22,17 @@
  * IN THE SOFTWARE.
  */
 
+#include <nitroshare/application.h>
+#include <nitroshare/bundle.h>
+#include <nitroshare/device.h>
+#include <nitroshare/devicemodel.h>
+#include <nitroshare/transfer.h>
+#include <nitroshare/transfermodel.h>
+#include <nitroshare/transport.h>
+#include <nitroshare/transportserver.h>
+
 #include "sendurlaction.h"
+#include "url.h"
 
 SendUrlAction::SendUrlAction(Application *application)
     : mApplication(application)
@@ -36,7 +46,36 @@ QString SendUrlAction::name() const
 
 QVariant SendUrlAction::invoke(const QVariantMap &params)
 {
-    //...
+    // Attempt to find the device
+    Device *device = mApplication->deviceModel()->findDevice(
+        params.value("device").toString(),
+        params.value("enumerator").toString()
+    );
+    if (!device) {
+        return false;
+    }
+
+    // Find the transport server
+    TransportServer *server = mApplication->transferModel()->findTransportServer(
+        device->transportName()
+    );
+    if (!server) {
+        return false;
+    }
+
+    // Create a transport
+    Transport *transport = server->createTransport(device);
+    if (!transport) {
+        return false;
+    }
+
+    // Create the bundle
+    Bundle *bundle = new Bundle;
+    bundle->add(new Url(params.value("url").toString()));
+
+    // Create the transfer
+    Transfer *transfer = new Transfer(mApplication, transport, bundle);
+    mApplication->transferModel()->addTransfer(transfer);
 
     return true;
 }

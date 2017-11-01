@@ -22,42 +22,35 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef SENDURLACTION_H
-#define SENDURLACTION_H
+#ifndef URL_H
+#define URL_H
 
-#include <nitroshare/action.h>
+#include <nitroshare/item.h>
 
-class Application;
-
-/**
- * @brief Send a URL to a peer
- *
- * The action expects three parameters:
- *
- * - "device"     (QString) - UUID of the device to send the URL to
- * - "enumerator" (QString) - name of enumerator that created the device
- * - "url"        (QString) - URL to send to the device
- *
- * The return value will be true if a transfer was prepared for the device and
- * false otherwise.
- */
-class SendUrlAction : public Action
+class Url : public Item
 {
     Q_OBJECT
+    Q_PROPERTY(QString url READ url)
 
 public:
 
-    explicit SendUrlAction(Application *application);
+    explicit Url(const QVariantMap &properties);
+    explicit Url(const QString &url);
 
+    QString url() const;
+
+    virtual QString type() const;
     virtual QString name() const;
+    virtual qint64 size() const;
 
-public slots:
-
-    virtual QVariant invoke(const QVariantMap &params = QVariantMap());
+    virtual bool open(OpenMode openMode);
+    virtual QByteArray read();
+    virtual void write(const QByteArray &data);
+    virtual void close();
 
 private:
 
-    Application *mApplication;
+    QString mUrl;
 };
 
-#endif // SENDURLACTION_H
+#endif // URL_H
