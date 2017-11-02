@@ -1,0 +1,8 @@
+{
+    "Name": "autostart",
+    "Title": "Autostart",
+    "Vendor": "Nathan Osman",
+    "Version": "${PROJECT_VERSION}",
+    "Description": "Options for starting the application after login",
+    "Dependencies": []
+}

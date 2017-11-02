@@ -1,3 +1,4 @@
+add_subdirectory(autostart)
 add_subdirectory(broadcast)
 add_subdirectory(device)
 add_subdirectory(filesystem)
