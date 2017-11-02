@@ -43,7 +43,7 @@
 
 #include "transfer_p.h"
 
-const QString MessageTag = "Transfer";
+const QString MessageTag = "transfer";
 
 TransferPrivate::TransferPrivate(Transfer *parent, Application *application, Transport *transport,
                                  Bundle *bundle, Transfer::Direction direction)
@@ -335,6 +335,8 @@ void TransferPrivate::onPacketReceived(Packet *packet)
         case ItemContent:
             processItemContent(packet);
             return;
+        case Finished:
+            return;
         }
     }
 
@@ -352,10 +354,15 @@ void TransferPrivate::onPacketSent()
     switch (protocolState) {
     case TransferHeader:
         sendTransferHeader();
+        break;
     case ItemHeader:
         sendItemHeader();
+        break;
     case ItemContent:
         sendItemContent();
+        break;
+    case Finished:
+        break;
     }
 }
 
