@@ -22,6 +22,7 @@
  * IN THE SOFTWARE.
  */
 
+#include <QDir>
 #include <QFile>
 #include <QTemporaryDir>
 #include <QTest>
@@ -38,6 +39,8 @@ private slots:
 
     void testCreateFile();
     void testUniqueFilename();
+    void testCopyFile();
+    void testCopyDirectory();
 };
 
 void TestFileUtil::testCreateFile()
@@ -66,6 +69,42 @@ void TestFileUtil::testUniqueFilename()
 
     // Confirm that a unique filename was chosen
     QCOMPARE(FileUtil::uniqueFilename(originalFilename), uniqueFilename);
+}
+
+void TestFileUtil::testCopyFile()
+{
+    QTemporaryDir dir;
+    QString srcFilename = dir.filePath("src");
+    QString destFilename = dir.filePath("dest");
+
+    // Create the source file with content
+    QVERIFY(FileUtil::createFile(srcFilename, TestContent));
+
+    // Copy the file
+    QVERIFY(FileUtil::copy(srcFilename, destFilename));
+
+    // Verify the content
+    QFile file(destFilename);
+    QVERIFY(file.open(QIODevice::ReadOnly));
+    QCOMPARE(file.readAll(), TestContent);
+}
+
+void TestFileUtil::testCopyDirectory()
+{
+    QTemporaryDir dir;
+
+    // Build the directory structure
+    QDir srcParent(dir.filePath("src"));
+    QVERIFY(srcParent.mkpath("."));
+    QString srcChild = srcParent.absoluteFilePath("child");
+    QVERIFY(FileUtil::createFile(srcChild));
+
+    // Perform the copy
+    QDir destParent(dir.filePath("dest"));
+    QVERIFY(FileUtil::copy(srcParent.absolutePath(), destParent.absolutePath()));
+
+    // Verify the file exists in the destination
+    QVERIFY(QFile::exists(destParent.absoluteFilePath("child")));
 }
 
 QTEST_MAIN(TestFileUtil)

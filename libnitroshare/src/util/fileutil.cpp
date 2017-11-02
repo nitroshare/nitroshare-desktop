@@ -22,9 +22,12 @@
  * IN THE SOFTWARE.
  */
 
+#include <QDir>
 #include <QFile>
+#include <QFileInfo>
 #include <QRegularExpression>
 #include <QRegularExpressionMatch>
+#include <QStack>
 
 #include <nitroshare/fileutil.h>
 
@@ -74,4 +77,70 @@ QString FileUtil::uniqueFilename(const QString &originalFilename)
 
     // One will eventually be found (right?)
     return name;
+}
+
+bool FileUtil::copy(const QString &src, const QString &dest, bool overwrite)
+{
+    QString destUnique = dest;
+
+    QFileInfo srcInfo(src);
+    QFileInfo destInfo(dest);
+
+    // If overwrite is set, remove the destination, otherwise the copy
+    // operation will fail; if overwrite is not set, come up with a unique
+    // name for the item (if necessary)
+    if (overwrite) {
+        if (destInfo.exists() &&
+                ((destInfo.isDir() && !QDir(dest).removeRecursively()) ||
+                 (destInfo.isFile() && !QFile::remove(dest)))) {
+            return false;
+        }
+    } else {
+        destUnique = uniqueFilename(dest);
+    }
+
+    // If the source is not a directory, simply use QFile::copy()
+    if (!srcInfo.isDir()) {
+        return QDir(QFileInfo(destUnique).absolutePath()).mkpath(".") &&
+                QFile::copy(src, destUnique);
+    }
+
+    // Begin by creating the destination directory
+    if (!QDir(destUnique).mkpath(".")) {
+        return false;
+    }
+
+    // Use a stack to traverse the directory
+    QDir srcDir(src);
+    QDir destDir(destUnique);
+    QStack<QString> stack;
+
+    // Push the source path on the stack
+    stack.push(srcDir.absolutePath());
+
+    // While items remain on the stack, pop an item off and traverse it
+    while (stack.count()) {
+        QString tos = stack.pop();
+        foreach (QFileInfo info, QDir(tos).entryInfoList(QDir::Dirs | QDir::Files | QDir::Hidden | QDir::NoDotAndDotDot)) {
+            QString destName = destDir.absoluteFilePath(srcDir.relativeFilePath(info.absoluteFilePath()));
+            if (info.isSymLink()) {
+                QString relativeTarget = destDir.relativeFilePath(info.symLinkTarget());
+                if (!QFile::link(relativeTarget, destName)) {
+                    return false;
+                }
+            } else if (info.isDir()) {
+                if (!QDir(destName).mkpath(".")) {
+                    return false;
+                }
+                stack.push(info.absoluteFilePath());
+            } else {
+                if (!QFile::copy(info.absoluteFilePath(), destName)) {
+                    return false;
+                }
+            }
+        }
+    }
+
+    // All operations succeeded
+    return true;
 }

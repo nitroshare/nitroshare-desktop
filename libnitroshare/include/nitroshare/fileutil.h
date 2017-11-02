@@ -48,6 +48,18 @@ public:
      * @return unique filename
      */
     static QString uniqueFilename(const QString &originalFilename);
+
+    /**
+     * @brief Copy a file or directory to a new location
+     * @param src absolute path to source
+     * @param dest absolute path to destination
+     * @param overwrite true to replace the destination if it exists
+     * @return true if the copy operation succeeds
+     *
+     * Due to the complex nature of this operation, it is not atomic. It is
+     * possible for some operations to fail
+     */
+    static bool copy(const QString &src, const QString &dest, bool overwrite = false);
 };
 
 #endif // LIBNITROSHARE_FILEUTIL_H
