@@ -28,6 +28,7 @@
 #include <nitroshare/iplugin.h>
 
 class SendUrlAction;
+class UrlHandler;
 
 class Q_DECL_EXPORT UrlPlugin : public IPlugin
 {
@@ -42,6 +43,7 @@ public:
 private:
 
     SendUrlAction *mAction;
+    UrlHandler *mHandler;
 };
 
 #endif // URLPLUGIN_H

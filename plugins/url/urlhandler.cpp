@@ -22,28 +22,15 @@
  * IN THE SOFTWARE.
  */
 
-#include <nitroshare/actionregistry.h>
-#include <nitroshare/application.h>
-#include <nitroshare/handlerregistry.h>
-
-#include "sendurlaction.h"
+#include "url.h"
 #include "urlhandler.h"
-#include "urlplugin.h"
 
-void UrlPlugin::initialize(Application *application)
+QString UrlHandler::name() const
 {
-    mAction = new SendUrlAction(application);
-    application->actionRegistry()->add(mAction);
-
-    mHandler = new UrlHandler;
-    application->handlerRegistry()->add(mHandler);
+    return "url";
 }
 
-void UrlPlugin::cleanup(Application *application)
+Item *UrlHandler::createItem(const QString &, const QVariantMap &properties)
 {
-    application->actionRegistry()->remove(mAction);
-    delete mAction;
-
-    application->handlerRegistry()->remove(mHandler);
-    delete mHandler;
+    return new Url(properties);
 }

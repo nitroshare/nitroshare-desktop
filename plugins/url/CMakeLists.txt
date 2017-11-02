@@ -5,6 +5,8 @@ set(SRC
     sendurlaction.cpp
     url.h
     url.cpp
+    urlhandler.h
+    urlhandler.cpp
     urlplugin.h
     urlplugin.cpp
 )
