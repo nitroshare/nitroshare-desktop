@@ -10,6 +10,7 @@ set(SRC
     src/action/actionregistry.cpp
     src/application/application.cpp
     src/bundle/bundle.cpp
+    src/bundle/item.cpp
     src/device/device.cpp
     src/device/deviceenumerator.cpp
     src/device/devicemodel.cpp

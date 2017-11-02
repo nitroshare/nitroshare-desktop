@@ -70,14 +70,14 @@ public:
      * @brief Retrieve the size of the item
      * @return item size
      */
-    virtual qint64 size() const = 0;
+    virtual qint64 size() const;
 
     /**
      * @brief Open the item for reading or writing
      * @param openMode mode used for opening the file
      * @return true if the item was opened
      */
-    virtual bool open(OpenMode openMode) = 0;
+    virtual bool open(OpenMode openMode);
 
     /**
      * @brief Read data from the item
@@ -89,7 +89,7 @@ public:
      *
      * Use the error() signal to indicate an error.
      */
-    virtual QByteArray read() = 0;
+    virtual QByteArray read();
 
     /**
      * @brief Write data to the item
@@ -97,14 +97,14 @@ public:
      *
      * Use the error() signal to indicate an error.
      */
-    virtual void write(const QByteArray &data) = 0;
+    virtual void write(const QByteArray &data);
 
     /**
      * @brief Close the item
      *
      * Use the error() signal to indicate an error.
      */
-    virtual void close() = 0;
+    virtual void close();
 
 Q_SIGNALS:
 

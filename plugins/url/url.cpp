@@ -50,26 +50,3 @@ QString Url::name() const
 {
     return mUrl;
 }
-
-qint64 Url::size() const
-{
-    return 0;
-}
-
-bool Url::open(OpenMode)
-{
-    return false;
-}
-
-QByteArray Url::read()
-{
-    return QByteArray();
-}
-
-void Url::write(const QByteArray &data)
-{
-}
-
-void Url::close()
-{
-}

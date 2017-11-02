@@ -22,29 +22,27 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef URL_H
-#define URL_H
-
 #include <nitroshare/item.h>
 
-class Url : public Item
+qint64 Item::size() const
 {
-    Q_OBJECT
-    Q_PROPERTY(QString url READ url)
+    return 0;
+}
 
-public:
+bool Item::open(OpenMode)
+{
+    return true;
+}
 
-    explicit Url(const QVariantMap &properties);
-    explicit Url(const QString &url);
+QByteArray Item::read()
+{
+    return QByteArray();
+}
 
-    QString url() const;
+void Item::write(const QByteArray &)
+{
+}
 
-    virtual QString type() const;
-    virtual QString name() const;
-
-private:
-
-    QString mUrl;
-};
-
-#endif // URL_H
+void Item::close()
+{
+}
