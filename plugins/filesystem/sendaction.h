@@ -47,7 +47,7 @@ class SendAction : public Action
 
 public:
 
-    SendAction(Application *application);
+    explicit SendAction(Application *application);
 
     virtual QString name() const;
 

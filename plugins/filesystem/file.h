@@ -67,6 +67,7 @@ public:
     virtual QString type() const;
     virtual QString name() const;
     virtual qint64 size() const;
+
     virtual bool open(OpenMode openMode);
     virtual QByteArray read();
     virtual void write(const QByteArray &data);
