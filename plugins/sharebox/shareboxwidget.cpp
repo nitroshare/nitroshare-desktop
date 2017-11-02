@@ -30,6 +30,7 @@
 #include <QFont>
 #include <QLinearGradient>
 #include <QMimeData>
+#include <QMouseEvent>
 #include <QPainter>
 #include <QPen>
 #include <QUrl>
@@ -49,7 +50,8 @@ const QColor ActiveColor = QColor::fromRgbF(1.0f, 1.0f, 1.0f);
 
 ShareboxWidget::ShareboxWidget(Application *application)
     : mApplication(application),
-      mDragActive(false)
+      mDragActive(false),
+      mMoveActive(false)
 {
     // Adjust the widget size
     resize(140, 140);
@@ -116,7 +118,34 @@ void ShareboxWidget::dropEvent(QDropEvent *event)
     }
 
     // dragLeaveEvent() is not invoked if the item is dropped
+    mDragActive = false;
     update();
+}
+
+void ShareboxWidget::mousePressEvent(QMouseEvent *event)
+{
+    if (event->button() == Qt::LeftButton) {
+        mMoveActive = true;
+        mOriginalPos = event->pos();
+    }
+}
+
+void ShareboxWidget::mouseMoveEvent(QMouseEvent *event)
+{
+    QPoint dest = event->globalPos() - mOriginalPos;
+
+    // Snap the box to a 10-pixel grid
+    dest /= 10;
+    dest *= 10;
+
+    move(dest);
+}
+
+void ShareboxWidget::mouseReleaseEvent(QMouseEvent *event)
+{
+    if (event->button() == Qt::LeftButton) {
+        mMoveActive = false;
+    }
 }
 
 void ShareboxWidget::paintEvent(QPaintEvent *)
