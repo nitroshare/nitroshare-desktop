@@ -1,0 +1,8 @@
+{
+    "Name": "device",
+    "Title": "Device Actions",
+    "Vendor": "Nathan Osman",
+    "Version": "${PROJECT_VERSION}",
+    "Description": "Provide actions for interacting with devices",
+    "Dependencies": []
+}

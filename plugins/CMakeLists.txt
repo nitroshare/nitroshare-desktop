@@ -1,4 +1,5 @@
 add_subdirectory(broadcast)
+add_subdirectory(device)
 add_subdirectory(filesystem)
 add_subdirectory(lan)
 add_subdirectory(url)
