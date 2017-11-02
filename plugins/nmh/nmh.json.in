@@ -1,0 +1,8 @@
+{
+    "Name": "nmh",
+    "Title": "Native Messaging Host",
+    "Vendor": "Nathan Osman",
+    "Version": "${PROJECT_VERSION}",
+    "Description": "Platform integration for the native messaging host",
+    "Dependencies": []
+}
