@@ -156,6 +156,34 @@ void Application::setUiEnabled(bool uiEnabled)
     d->uiEnabled = uiEnabled;
 }
 
+Application::OperatingSystem Application::operatingSystem() const
+{
+#if defined(Q_OS_WIN32)
+    return Windows;
+#elif defined(Q_OS_MACX)
+    return MacOS;
+#elif defined(Q_OS_LINUX)
+    return Linux;
+#else
+    return UnknownOperatingSystem;
+#endif
+}
+
+Application::Architecture Application::architecture() const
+{
+    // Note: Qt doesn't provide the definitions we need to accurately
+    // determine the CPU architecture - in order to do that, we'll need
+    // to check a few preprocessor definitions ourselves
+
+#if defined(__i386__) || defined(_M_IX86)
+    return X86;
+#elif defined(__x86_64__) || defined(_M_X64)
+    return X86_64;
+#else
+    return UnknownArchitecture;
+#endif
+}
+
 void Application::quit()
 {
     QCoreApplication::quit();

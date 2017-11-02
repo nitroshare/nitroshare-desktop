@@ -51,9 +51,36 @@ class NITROSHARE_EXPORT ApplicationPrivate;
 class NITROSHARE_EXPORT Application : public QObject
 {
     Q_OBJECT
+    Q_ENUMS(OperatingSystem)
+    Q_ENUMS(Architecture)
     Q_PROPERTY(bool uiEnabled READ isUiEnabled WRITE setUiEnabled)
+    Q_PROPERTY(OperatingSystem operatingSystem READ operatingSystem)
+    Q_PROPERTY(Architecture architecture READ architecture)
 
 public:
+
+    /**
+     * @brief Platform operating system
+     */
+    enum OperatingSystem {
+        UnknownOperatingSystem,
+        Windows,
+        MacOS,
+        Linux,
+        Android
+    };
+
+    /**
+     * @brief Platform architecture
+     *
+     * Note that this indicates the architecture of the application and not
+     * necessarily the architecture of the CPU itself or the operating system.
+     */
+    enum Architecture {
+        UnknownArchitecture,
+        X86,
+        X86_64
+    };
 
     /**
      * @brief Settings key for the device UUID
@@ -159,6 +186,16 @@ public:
      * @param uiEnabled true to enable UI
      */
     void setUiEnabled(bool uiEnabled);
+
+    /**
+     * @brief Retrieve the current operating system
+     */
+    OperatingSystem operatingSystem() const;
+
+    /**
+     * @brief Retrieve the current architecture
+     */
+    Architecture architecture() const;
 
 public Q_SLOTS:
 
