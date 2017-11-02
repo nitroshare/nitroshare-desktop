@@ -24,6 +24,7 @@
 
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QJsonValue>
 #include <QVariant>
 #include <QVariantMap>
 
@@ -67,6 +68,8 @@ void ActionHandler::process(QHttpEngine::Socket *socket, const QString &path)
         params = document.object().toVariantMap();
 
         // Invoke the action, convert the response to JSON, and write it out
-        socket->writeJson(QJsonDocument::fromVariant(action->invoke(params)));
+        socket->writeJson(QJsonDocument(QJsonObject{
+            { "return", QJsonValue::fromVariant(action->invoke(params)) }
+        }));
     });
 }
