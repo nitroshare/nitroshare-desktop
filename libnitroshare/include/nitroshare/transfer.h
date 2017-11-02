@@ -31,6 +31,7 @@
 
 class Application;
 class Bundle;
+class Device;
 class Settings;
 class Transport;
 
@@ -88,13 +89,13 @@ public:
     Transfer(Application *application, Transport *transport, QObject *parent = nullptr);
 
     /**
-     * @brief Create a transfer to send items
+     * @brief Create a transfer to send items to a device
      * @param application pointer to Application
-     * @param transport pointer to Transport
+     * @param device pointer to Device
      * @param bundle pointer to Bundle
      * @param parent QObject
      */
-    Transfer(Application *application, Transport *transport, Bundle *bundle, QObject *parent = nullptr);
+    Transfer(Application *application, Device *device, Bundle *bundle, QObject *parent = nullptr);
 
     /**
      * @brief Retrieve the direction of transfer

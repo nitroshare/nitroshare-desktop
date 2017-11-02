@@ -41,8 +41,12 @@ class TransferPrivate : public QObject
 
 public:
 
-    TransferPrivate(Transfer *parent, Application *application, Transport *transport,
-                    Bundle *bundle, Transfer::Direction direction);
+    TransferPrivate(Transfer *parent,
+                    Application *application,
+                    Bundle *bundle,
+                    Transfer::Direction direction);
+
+    void initTransport();
 
     void sendTransferHeader();
     void sendItemHeader();
