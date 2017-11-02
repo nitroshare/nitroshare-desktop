@@ -3,6 +3,8 @@ configure_file(nmh.json.in "${CMAKE_CURRENT_BINARY_DIR}/nmh.json")
 set(SRC
     nmhplugin.h
     nmhplugin.cpp
+    util.h
+    util.cpp
 )
 
 add_library(nmh MODULE ${SRC})

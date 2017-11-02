@@ -22,14 +22,14 @@
  * IN THE SOFTWARE.
  */
 
-#include "nmhplugin.h"
-#include "util.h"
+#ifndef UTIL_H
+#define UTIL_H
 
-void NmhPlugin::initialize(Application *)
+class Util
 {
-    Util::installJson();
-}
+public:
 
-void NmhPlugin::cleanup(Application *)
-{
-}
+    static bool installJson();
+};
+
+#endif // UTIL_H
