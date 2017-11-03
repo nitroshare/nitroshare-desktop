@@ -22,28 +22,33 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef WIZARDPLUGIN_H
-#define WIZARDPLUGIN_H
+#include <QLabel>
+#include <QLineEdit>
+#include <QVBoxLayout>
 
-#include <nitroshare/iplugin.h>
+#include <nitroshare/application.h>
 
-class Wizard;
+#include "devicepage.h"
 
-class Q_DECL_EXPORT WizardPlugin : public IPlugin
+DevicePage::DevicePage(Application *application)
 {
-    Q_OBJECT
-    Q_PLUGIN_METADATA(IID Plugin_iid FILE "wizard.json")
+    setTitle(tr("Device Setup"));
+    setSubTitle(tr("Configure settings for this device"));
 
-public:
+    QLabel *descriptionLabel = new QLabel(tr(
+        "In order to identify your device to others on the network, please "
+        "choose a unique name. The default name is shown as a suggestion."
+    ));
+    descriptionLabel->setWordWrap(true);
 
-    WizardPlugin();
+    QLabel *deviceNameLabel = new QLabel(tr("Device name:"));
 
-    virtual void initialize(Application *application);
-    virtual void cleanup(Application *application);
+    QLineEdit *deviceName = new QLineEdit;
+    deviceName->setText(application->deviceName());
 
-private:
-
-    Wizard *mWizard;
-};
-
-#endif // WIZARDPLUGIN_H
+    QVBoxLayout *vboxLayout = new QVBoxLayout;
+    vboxLayout->addWidget(descriptionLabel);
+    vboxLayout->addWidget(deviceNameLabel);
+    vboxLayout->addWidget(deviceName);
+    setLayout(vboxLayout);
+}

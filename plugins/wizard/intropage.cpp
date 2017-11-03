@@ -33,12 +33,15 @@ IntroPage::IntroPage()
     setSubTitle(tr("Welcome to NitroShare"));
 
     QLabel *label = new QLabel(tr(
-        "NitroShare is designed to make transferring information between "
-        "devices as simple as possible. Using NitroShare, you can:\n\n"
-        "- Transfer files to other devices\n"
-        "- Send URLs to other devices\n\n"
-        "This wizard will guide you through some simple options to customize "
-        "the application just for you."
+        "Thank you for installing NitroShare!\n\nThe application is designed "
+        "to make transferring information between devices as simple as "
+        "possible. Here are just some of the features included:\n\n"
+        "\u2022 Automatic peer discovery\n"
+        "\u2022 Extremely fast file transfers\n"
+        "\u2022 Compatibility with all major platforms\n\n"
+        "This wizard will guide you through the initial setup process to help "
+        "ensure NitroShare works exactly the way you want it to."
+
     ));
     label->setWordWrap(true);
 

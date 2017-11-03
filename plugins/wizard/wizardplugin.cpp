@@ -25,13 +25,24 @@
 #include "wizard.h"
 #include "wizardplugin.h"
 
-void WizardPlugin::initialize(Application *application)
+WizardPlugin::WizardPlugin()
+    : mWizard(nullptr)
 {
-    mWizard = new Wizard(application);
-    mWizard->show();
 }
 
-void WizardPlugin::cleanup(Application *application)
+void WizardPlugin::initialize(Application *application)
 {
-    delete mWizard;
+    // TODO: only show once
+
+    if (true) {
+        mWizard = new Wizard(application);
+        mWizard->show();
+    }
+}
+
+void WizardPlugin::cleanup(Application *)
+{
+    if (mWizard) {
+        delete mWizard;
+    }
 }

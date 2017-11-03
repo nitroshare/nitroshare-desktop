@@ -22,16 +22,22 @@
  * IN THE SOFTWARE.
  */
 
+#include <QPixmap>
+
+#include "devicepage.h"
 #include "intropage.h"
 #include "wizard.h"
 
 Wizard::Wizard(Application *application)
     : mApplication(application)
 {
+    setPixmap(QWizard::LogoPixmap, QPixmap(":/wizard/logo.png"));
+    setWizardStyle(QWizard::ModernStyle);
     setWindowTitle(tr("Setup Wizard"));
 
     // Adjust the wizard to a reasonable size
     resize(540, 400);
 
     addPage(new IntroPage);
+    addPage(new DevicePage(application));
 }

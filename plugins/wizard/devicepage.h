@@ -22,28 +22,20 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef WIZARDPLUGIN_H
-#define WIZARDPLUGIN_H
+#ifndef DEVICEPAGE_H
+#define DEVICEPAGE_H
 
-#include <nitroshare/iplugin.h>
+#include <QWizardPage>
 
-class Wizard;
+class Application;
 
-class Q_DECL_EXPORT WizardPlugin : public IPlugin
+class DevicePage : public QWizardPage
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID Plugin_iid FILE "wizard.json")
 
 public:
 
-    WizardPlugin();
-
-    virtual void initialize(Application *application);
-    virtual void cleanup(Application *application);
-
-private:
-
-    Wizard *mWizard;
+    explicit DevicePage(Application *application);
 };
 
-#endif // WIZARDPLUGIN_H
+#endif // DEVICEPAGE_H
