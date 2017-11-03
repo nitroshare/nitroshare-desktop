@@ -41,6 +41,8 @@ class NITROSHARE_EXPORT Device : public QObject
     Q_OBJECT
     Q_PROPERTY(QString uuid READ uuid)
     Q_PROPERTY(QString name READ name NOTIFY nameChanged)
+    Q_PROPERTY(QString transportName READ transportName)
+    Q_PROPERTY(QString deviceEnumeratorName READ deviceEnumeratorName)
 
 public:
 
