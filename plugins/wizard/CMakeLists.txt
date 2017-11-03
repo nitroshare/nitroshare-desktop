@@ -1,6 +1,10 @@
 configure_file(wizard.json.in "${CMAKE_CURRENT_BINARY_DIR}/wizard.json")
 
 set(SRC
+    intropage.h
+    intropage.cpp
+    wizard.h
+    wizard.cpp
     wizardplugin.h
     wizardplugin.cpp
 )

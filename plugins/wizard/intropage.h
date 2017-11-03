@@ -22,16 +22,18 @@
  * IN THE SOFTWARE.
  */
 
-#include "wizard.h"
-#include "wizardplugin.h"
+#ifndef INTROPAGE_H
+#define INTROPAGE_H
 
-void WizardPlugin::initialize(Application *application)
-{
-    mWizard = new Wizard(application);
-    mWizard->show();
-}
+#include <QWizardPage>
 
-void WizardPlugin::cleanup(Application *application)
+class IntroPage : public QWizardPage
 {
-    delete mWizard;
-}
+    Q_OBJECT
+
+public:
+
+    IntroPage();
+};
+
+#endif // INTROPAGE_H

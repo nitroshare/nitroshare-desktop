@@ -22,16 +22,27 @@
  * IN THE SOFTWARE.
  */
 
-#include "wizard.h"
-#include "wizardplugin.h"
+#include <QLabel>
+#include <QVBoxLayout>
 
-void WizardPlugin::initialize(Application *application)
-{
-    mWizard = new Wizard(application);
-    mWizard->show();
-}
+#include "intropage.h"
 
-void WizardPlugin::cleanup(Application *application)
+IntroPage::IntroPage()
 {
-    delete mWizard;
+    setTitle(tr("Introduction"));
+    setSubTitle(tr("Welcome to NitroShare"));
+
+    QLabel *label = new QLabel(tr(
+        "NitroShare is designed to make transferring information between "
+        "devices as simple as possible. Using NitroShare, you can:\n\n"
+        "- Transfer files to other devices\n"
+        "- Send URLs to other devices\n\n"
+        "This wizard will guide you through some simple options to customize "
+        "the application just for you."
+    ));
+    label->setWordWrap(true);
+
+    QVBoxLayout *vboxLayout = new QVBoxLayout;
+    vboxLayout->addWidget(label);
+    setLayout(vboxLayout);
 }

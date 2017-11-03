@@ -22,16 +22,16 @@
  * IN THE SOFTWARE.
  */
 
+#include "intropage.h"
 #include "wizard.h"
-#include "wizardplugin.h"
 
-void WizardPlugin::initialize(Application *application)
+Wizard::Wizard(Application *application)
+    : mApplication(application)
 {
-    mWizard = new Wizard(application);
-    mWizard->show();
-}
+    setWindowTitle(tr("Setup Wizard"));
 
-void WizardPlugin::cleanup(Application *application)
-{
-    delete mWizard;
+    // Adjust the wizard to a reasonable size
+    resize(540, 400);
+
+    addPage(new IntroPage);
 }

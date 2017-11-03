@@ -22,16 +22,24 @@
  * IN THE SOFTWARE.
  */
 
-#include "wizard.h"
-#include "wizardplugin.h"
+#ifndef WIZARD_H
+#define WIZARD_H
 
-void WizardPlugin::initialize(Application *application)
-{
-    mWizard = new Wizard(application);
-    mWizard->show();
-}
+#include <QWizard>
 
-void WizardPlugin::cleanup(Application *application)
+class Application;
+
+class Wizard : public QWizard
 {
-    delete mWizard;
-}
+    Q_OBJECT
+
+public:
+
+    explicit Wizard(Application *application);
+
+private:
+
+    Application *mApplication;
+};
+
+#endif // WIZARD_H

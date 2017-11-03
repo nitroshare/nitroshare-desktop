@@ -27,14 +27,21 @@
 
 #include <nitroshare/iplugin.h>
 
+class Wizard;
+
 class Q_DECL_EXPORT WizardPlugin : public IPlugin
 {
     Q_OBJECT
+    Q_PLUGIN_METADATA(IID Plugin_iid FILE "wizard.json")
 
 public:
 
     virtual void initialize(Application *application);
     virtual void cleanup(Application *application);
+
+private:
+
+    Wizard *mWizard;
 };
 
 #endif // WIZARDPLUGIN_H
