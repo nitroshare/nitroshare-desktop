@@ -22,17 +22,19 @@
  * IN THE SOFTWARE.
  */
 
+#include <QApplication>
 #include <QBrush>
 #include <QColor>
+#include <QDesktopWidget>
 #include <QDragEnterEvent>
 #include <QDragLeaveEvent>
 #include <QDropEvent>
-#include <QFont>
 #include <QLinearGradient>
 #include <QMimeData>
 #include <QMouseEvent>
 #include <QPainter>
 #include <QPen>
+#include <QRect>
 #include <QUrl>
 
 #include <nitroshare/action.h>
@@ -45,20 +47,28 @@
 
 const QString MessageTag = "sharebox";
 
-const QColor NormalColor = QColor::fromRgbF(0.5f, 0.5f, 0.5f);
-const QColor ActiveColor = QColor::fromRgbF(1.0f, 1.0f, 1.0f);
+const int WidgetSize = 100;
+const int WidgetMargin = 20;
+
+const QColor NormalColor = QColor::fromRgbF(1.0f, 1.0f, 1.0f, 0.4f);
+const QColor ActiveColor = QColor::fromRgbF(1.0f, 1.0f, 1.0f, 1.0f);
 
 ShareboxWidget::ShareboxWidget(Application *application)
     : mApplication(application),
+      mLogo(":/sharebox/logo.png"),
       mDragActive(false),
       mMoveActive(false)
 {
     // Adjust the widget size
-    resize(140, 140);
+    resize(WidgetSize, WidgetSize);
+
+    // Position it
+    const QRect screenRect = QApplication::desktop()->availableGeometry();
+    move(screenRect.right() - WidgetSize - WidgetMargin,
+         screenRect.bottom() - WidgetSize - WidgetMargin);
 
     // Remove the frame from the window and ensure it stays on the desktop
-    setWindowFlags(Qt::FramelessWindowHint | Qt::Tool | Qt::WindowStaysOnBottomHint);
-    setAttribute(Qt::WA_X11NetWmWindowTypeDock);
+    setWindowFlags(Qt::SplashScreen | Qt::WindowStaysOnBottomHint);
 
     // Allow things to be dropped
     setAcceptDrops(true);
@@ -93,28 +103,13 @@ void ShareboxWidget::dropEvent(QDropEvent *event)
         "objects dropped on sharebox"
     ));
 
+    // Build a list of paths to the items
     if (event->mimeData()->hasUrls()) {
-
-        // Build a list of items
         QStringList items;
         foreach (const QUrl &url, event->mimeData()->urls()) {
             items.append(url.toLocalFile());
         }
-
-        // Find & invoke the browse action
-        Action *browseAction = mApplication->actionRegistry()->find("browse");
-        QVariant returnValue = browseAction->invoke();
-        if (returnValue.type() != QVariant::Map) {
-            return;
-        }
-
-        // Find & invoke the send action
-        Action *sendAction = mApplication->actionRegistry()->find("send");
-        sendAction->invoke({
-            { "device", returnValue.toMap().value("device") },
-            { "enumerator", returnValue.toMap().value("enumerator") },
-            { "items", items }
-        });
+        sendItems(items);
     }
 
     // dragLeaveEvent() is not invoked if the item is dropped
@@ -165,13 +160,43 @@ void ShareboxWidget::paintEvent(QPaintEvent *)
     bottomGradient.setColorAt(1, QColor::fromRgbF(0.0f, 0.0f, 0.0f));
     painter.fillRect(0, height() / 2, width(), height(), QBrush(bottomGradient));
 
-    // Draw the outline
-    painter.setPen(QPen(mDragActive ? ActiveColor : NormalColor, 4.0f, Qt::DotLine, Qt::SquareCap));
-    painter.drawRect(rect().adjusted(10, 10, -10, -10));
+    // Determine the correct color
+    QColor color = mDragActive ? ActiveColor : NormalColor;
 
-    // Draw the text in the center
-    QFont font;
-    font.setPointSize(24);
-    painter.setFont(font);
-    painter.drawText(rect(), Qt::AlignHCenter | Qt::AlignVCenter, tr("send"));
+    // Draw the outline
+    painter.setPen(QPen(color, 4.0f, Qt::DotLine, Qt::SquareCap));
+    painter.drawRect(rect().adjusted(8, 8, -8, -8));
+
+    // Draw the logo onto a separate pixmap with the correct color
+    QPixmap logo = mLogo;
+    QPainter pixmapPainter(&logo);
+    pixmapPainter.setCompositionMode(QPainter::CompositionMode_SourceIn);
+    pixmapPainter.fillRect(logo.rect(), color);
+    pixmapPainter.end();
+
+    // Draw the NitroShare logo in the center
+    painter.drawPixmap(
+        (WidgetSize / 2) - 32,
+        (WidgetSize / 2) - 32,
+        64, 64,
+        logo
+    );
+}
+
+void ShareboxWidget::sendItems(QStringList items)
+{
+    // Find & invoke the browse action
+    Action *browseAction = mApplication->actionRegistry()->find("browse");
+    QVariant returnValue = browseAction->invoke();
+    if (returnValue.type() != QVariant::Map) {
+        return;
+    }
+
+    // Find & invoke the send action
+    Action *sendAction = mApplication->actionRegistry()->find("send");
+    sendAction->invoke({
+        { "device", returnValue.toMap().value("device") },
+        { "enumerator", returnValue.toMap().value("enumerator") },
+        { "items", items }
+    });
 }

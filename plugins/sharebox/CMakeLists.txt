@@ -1,6 +1,7 @@
 configure_file(sharebox.json.in "${CMAKE_CURRENT_BINARY_DIR}/sharebox.json")
 
 set(SRC
+    resource.qrc
     shareboxplugin.h
     shareboxplugin.cpp
     shareboxwidget.h

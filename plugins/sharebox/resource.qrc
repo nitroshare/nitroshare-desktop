@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>sharebox/logo.png</file>
+    </qresource>
+</RCC>

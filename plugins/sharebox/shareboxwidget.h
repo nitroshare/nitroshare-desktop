@@ -25,6 +25,7 @@
 #ifndef SHAREBOXWIDGET_H
 #define SHAREBOXWIDGET_H
 
+#include <QPixmap>
 #include <QPoint>
 #include <QWidget>
 
@@ -53,7 +54,11 @@ public:
 
 private:
 
+    void sendItems(QStringList items);
+
     Application *mApplication;
+
+    QPixmap mLogo;
 
     bool mDragActive;
     bool mMoveActive;
