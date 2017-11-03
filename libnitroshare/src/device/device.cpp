@@ -37,7 +37,7 @@ Device::Device(QObject *parent)
 {
 }
 
-DeviceEnumerator *Device::deviceEnumerator() const
+QString Device::deviceEnumeratorName() const
 {
-    return d->enumerator;
+    return d->deviceEnumeratorName;
 }

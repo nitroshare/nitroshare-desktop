@@ -29,8 +29,6 @@
 
 #include <nitroshare/config.h>
 
-class DeviceEnumerator;
-
 class NITROSHARE_EXPORT DevicePrivate;
 
 /**
@@ -69,9 +67,9 @@ public:
     virtual QString transportName() const = 0;
 
     /**
-     * @brief Retrieve the device enumerator for the device
+     * @brief Retrieve the name of the device enumerator
      */
-    DeviceEnumerator *deviceEnumerator() const;
+    QString deviceEnumeratorName() const;
 
 Q_SIGNALS:
 

@@ -49,7 +49,8 @@ void DeviceModelPrivate::removeDevice(Device *device)
 
 void DeviceModelPrivate::onDeviceAdded(Device *device)
 {
-    device->d->enumerator = qobject_cast<DeviceEnumerator*>(sender());
+    DeviceEnumerator *enumerator = qobject_cast<DeviceEnumerator*>(sender());
+    device->d->deviceEnumeratorName = enumerator->name();
 
     q->beginInsertRows(QModelIndex(), devices.count(), devices.count());
     devices.append(device);
@@ -88,7 +89,7 @@ void DeviceModel::removeDeviceEnumerator(DeviceEnumerator *enumerator)
 
     // Remove all items that belong to the enumerator
     foreach (Device *device, d->devices) {
-        if (device->deviceEnumerator() == enumerator) {
+        if (device->deviceEnumeratorName() == enumerator->name()) {
             d->removeDevice(device);
         }
     }
@@ -97,7 +98,7 @@ void DeviceModel::removeDeviceEnumerator(DeviceEnumerator *enumerator)
 Device *DeviceModel::findDevice(const QString &uuid, const QString &enumeratorName)
 {
     foreach (Device *device, d->devices) {
-        if (device->uuid() == uuid && device->deviceEnumerator()->name() == enumeratorName) {
+        if (device->uuid() == uuid && device->deviceEnumeratorName() == enumeratorName) {
             return device;
         }
     }

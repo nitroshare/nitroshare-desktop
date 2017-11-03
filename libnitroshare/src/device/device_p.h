@@ -27,8 +27,6 @@
 
 #include <QObject>
 
-class DeviceEnumerator;
-
 class DevicePrivate : public QObject
 {
     Q_OBJECT
@@ -37,7 +35,7 @@ public:
 
     explicit DevicePrivate(QObject *parent);
 
-    DeviceEnumerator *enumerator;
+    QString deviceEnumeratorName;
 };
 
 #endif // LIBNITROSHARE_DEVICE_P_H

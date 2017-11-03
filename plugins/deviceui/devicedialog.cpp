@@ -48,7 +48,7 @@ DeviceDialog::DeviceDialog(Application *application)
     connect(buttonBox, &QDialogButtonBox::accepted, [this, application, listView]() {
         Device *device = listView->currentIndex().data(Qt::UserRole).value<Device*>();
         mDeviceUuid = device->uuid();
-        mEnumeratorName = device->deviceEnumerator()->name();
+        mEnumeratorName = device->deviceEnumeratorName();
         accept();
     });
 
