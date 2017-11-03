@@ -24,7 +24,11 @@
 
 #include <QPixmap>
 
+#include <nitroshare/application.h>
+
+#include "conclusionpage.h"
 #include "devicepage.h"
+#include "discoverypage.h"
 #include "intropage.h"
 #include "wizard.h"
 
@@ -39,5 +43,14 @@ Wizard::Wizard(Application *application)
     resize(540, 400);
 
     addPage(new IntroPage);
-    addPage(new DevicePage(application));
+    addPage(new DevicePage(application->deviceName()));
+    addPage(new DiscoveryPage);
+    addPage(new ConclusionPage);
+}
+
+void Wizard::accept()
+{
+    // TODO
+
+    QWizard::accept();
 }

@@ -22,28 +22,24 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef WIZARD_H
-#define WIZARD_H
+#include <QLabel>
+#include <QVBoxLayout>
 
-#include <QWizard>
+#include "conclusionpage.h"
 
-class Application;
-
-class Wizard : public QWizard
+ConclusionPage::ConclusionPage()
 {
-    Q_OBJECT
+    setTitle(tr("Conclusion"));
+    setSubTitle(tr("Confirm settings and complete setup"));
 
-public:
+    QLabel *label = new QLabel(tr(
+        "The wizard has finished gathering the information it needs to setup "
+        "the application. Please click \"Finish\" below to begin using the "
+        "application."
+    ));
+    label->setWordWrap(true);
 
-    explicit Wizard(Application *application);
-
-public slots:
-
-    virtual void accept();
-
-private:
-
-    Application *mApplication;
-};
-
-#endif // WIZARD_H
+    QVBoxLayout *vboxLayout = new QVBoxLayout;
+    vboxLayout->addWidget(label);
+    setLayout(vboxLayout);
+}

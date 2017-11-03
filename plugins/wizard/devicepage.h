@@ -27,15 +27,13 @@
 
 #include <QWizardPage>
 
-class Application;
-
 class DevicePage : public QWizardPage
 {
     Q_OBJECT
 
 public:
 
-    explicit DevicePage(Application *application);
+    explicit DevicePage(const QString &deviceName);
 };
 
 #endif // DEVICEPAGE_H

@@ -22,32 +22,38 @@
  * IN THE SOFTWARE.
  */
 
+#include <QCheckBox>
 #include <QLabel>
-#include <QLineEdit>
 #include <QVBoxLayout>
 
-#include "devicepage.h"
+#include "discoverypage.h"
 
-DevicePage::DevicePage(const QString &deviceName)
+DiscoveryPage::DiscoveryPage()
 {
-    setTitle(tr("Device Setup"));
-    setSubTitle(tr("Configure settings for this device"));
+    setTitle(tr("Discovery Setup"));
+    setSubTitle(tr("Configure settings for device discovery"));
 
     QLabel *descriptionLabel = new QLabel(tr(
-        "In order to identify your device to others on the network, please "
-        "choose a unique name. The default name is shown as a suggestion."
+        "NitroShare uses two methods to discover other devices on the "
+        "network: IPv4 broadcast and mDNS (multicast DNS).\n\n"
+        "mDNS is used by NitroShare 0.3.4+ and is a requirement for using the "
+        "Android app. Enabling it is highly recommended.\n\n"
+        "IPv4 broadcast is used by older versions of NitroShare and is less "
+        "efficient at discovery. It only needs to be enabled if you are using "
+        "an older version of the application on the network."
     ));
     descriptionLabel->setWordWrap(true);
 
-    QLabel *deviceNameLabel = new QLabel(tr("Device name:"));
+    QCheckBox *mdnsEnabledCheckBox = new QCheckBox(tr("Enable mDNS discovery (recommended)"));
+    mdnsEnabledCheckBox->setChecked(true);
+    registerField("mdnsEnabled", mdnsEnabledCheckBox);
 
-    QLineEdit *deviceNameLineEdit = new QLineEdit;
-    deviceNameLineEdit->setText(deviceName);
-    registerField("deviceName", deviceNameLineEdit);
+    QCheckBox *broadcastEnabledCheckBox = new QCheckBox(tr("Enable broadcast discovery"));
+    registerField("broadcastEnabled", broadcastEnabledCheckBox);
 
     QVBoxLayout *vboxLayout = new QVBoxLayout;
     vboxLayout->addWidget(descriptionLabel);
-    vboxLayout->addWidget(deviceNameLabel);
-    vboxLayout->addWidget(deviceNameLineEdit);
+    vboxLayout->addWidget(mdnsEnabledCheckBox);
+    vboxLayout->addWidget(broadcastEnabledCheckBox);
     setLayout(vboxLayout);
 }

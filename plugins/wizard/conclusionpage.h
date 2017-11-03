@@ -22,28 +22,18 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef WIZARD_H
-#define WIZARD_H
+#ifndef CONCLUSIONPAGE_H
+#define CONCLUSIONPAGE_H
 
-#include <QWizard>
+#include <QWizardPage>
 
-class Application;
-
-class Wizard : public QWizard
+class ConclusionPage : public QWizardPage
 {
     Q_OBJECT
 
 public:
 
-    explicit Wizard(Application *application);
-
-public slots:
-
-    virtual void accept();
-
-private:
-
-    Application *mApplication;
+    ConclusionPage();
 };
 
-#endif // WIZARD_H
+#endif // CONCLUSIONPAGE_H

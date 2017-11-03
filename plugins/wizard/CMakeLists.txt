@@ -1,8 +1,12 @@
 configure_file(wizard.json.in "${CMAKE_CURRENT_BINARY_DIR}/wizard.json")
 
 set(SRC
+    conclusionpage.h
+    conclusionpage.cpp
     devicepage.h
     devicepage.cpp
+    discoverypage.h
+    discoverypage.cpp
     intropage.h
     intropage.cpp
     resource.qrc
