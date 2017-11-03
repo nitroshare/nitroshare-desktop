@@ -45,7 +45,8 @@ private slots:
 
 void TestFileUtil::testCreateFile()
 {
-    QTemporaryDir dir;
+    QTemporaryDir tempDir;
+    QDir dir(tempDir.path());
     QString filename = dir.filePath("test");
 
     // Create a file and confirm it exists
@@ -60,7 +61,8 @@ void TestFileUtil::testCreateFile()
 
 void TestFileUtil::testUniqueFilename()
 {
-    QTemporaryDir dir;
+    QTemporaryDir tempDir;
+    QDir dir(tempDir.path());
     QString originalFilename = dir.filePath("test.tar.gz");
     QString uniqueFilename = dir.filePath("test-2.tar.gz");
 
@@ -73,7 +75,8 @@ void TestFileUtil::testUniqueFilename()
 
 void TestFileUtil::testCopyFile()
 {
-    QTemporaryDir dir;
+    QTemporaryDir tempDir;
+    QDir dir(tempDir.path());
     QString srcFilename = dir.filePath("src");
     QString destFilename = dir.filePath("dest");
 
@@ -91,7 +94,8 @@ void TestFileUtil::testCopyFile()
 
 void TestFileUtil::testCopyDirectory()
 {
-    QTemporaryDir dir;
+    QTemporaryDir tempDir;
+    QDir dir(tempDir.path());
 
     // Build the directory structure
     QDir srcParent(dir.filePath("src"));
