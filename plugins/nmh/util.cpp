@@ -22,6 +22,8 @@
  * IN THE SOFTWARE.
  */
 
+#include <QtGlobal>
+
 #if defined(Q_OS_WIN32)
 #  include <Objbase.h>
 #  include <Shlobj.h>
