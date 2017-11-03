@@ -15,6 +15,7 @@ if(Qt5Widgets_FOUND)
     add_subdirectory(sharebox)
     add_subdirectory(transferui)
     add_subdirectory(tray)
+    add_subdirectory(wizard)
 endif()
 
 if(BUILD_API)

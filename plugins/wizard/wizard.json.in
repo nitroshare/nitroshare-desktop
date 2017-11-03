@@ -1,0 +1,10 @@
+{
+    "Name": "wizard",
+    "Title": "Setup Wizard",
+    "Vendor": "Nathan Osman",
+    "Version": "${PROJECT_VERSION}",
+    "Description": "Guide the user through initial configuration",
+    "Dependencies": [
+        "ui"
+    ]
+}
