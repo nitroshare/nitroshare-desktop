@@ -53,7 +53,7 @@ const QString JsonTemplate =
     "    \"path\": \"%1\",\n"
     "    \"type\": \"stdio\",\n"
     "    \"allowed_origins\": [\n"
-    "        \"chrome-extension://lncibbbmpieonnkgokhbkdjnbpfhimpd/\"\n"
+    "        \"chrome-extension://cljjpoinofmbdnbnpebolibochlfenag/\"\n"
     "    ]\n"
     "}\n";
 
