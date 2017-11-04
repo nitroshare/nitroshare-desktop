@@ -31,6 +31,8 @@ if(Qt5Widgets_FOUND)
     option(BUILD_UI "Build the NitroShare UI app" ON)
 endif()
 
+option(ENABLE_TLS "Enable support for TLS" ON)
+
 # Allow file installation directories to be customized
 set(INSTALL_BIN_PATH bin CACHE STRING "Application installation directory")
 set(INSTALL_LIB_PATH lib CACHE STRING "Shared library installation directory")

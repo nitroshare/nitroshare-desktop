@@ -22,52 +22,13 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef LANTRANSPORTSERVER_H
-#define LANTRANSPORTSERVER_H
+#ifndef CONFIG_H
+#define CONFIG_H
 
-#include <QStringList>
+#include <QtGlobal>
 
-#include <nitroshare/category.h>
-#include <nitroshare/setting.h>
-#include <nitroshare/transportserver.h>
-
-#include "config.h"
-#include "server.h"
-
-class Application;
-
-class LanTransportServer : public TransportServer
-{
-    Q_OBJECT
-
-public:
-
-    explicit LanTransportServer(Application *application);
-    virtual ~LanTransportServer();
-
-    virtual QString name() const;
-    virtual Transport *createTransport(Device *device);
-
-private slots:
-
-    void onNewSocketDescriptor(qintptr socketDescriptor);
-    void onSettingsChanged(const QStringList &keys);
-
-private:
-
-    Application *mApplication;
-
-    Server mServer;
-
-    Category mTransferCategory;
-    Setting mTransferPort;
-#ifdef ENABLE_TLS
-    Setting mTlsEnabled;
-    Setting mTlsCaCertificate;
-    Setting mTlsCertificate;
-    Setting mTlsPrivateKey;
-    Setting mTlsPrivateKeyPassphrase;
+#ifndef QT_NO_SSL
+#cmakedefine ENABLE_TLS
 #endif
-};
 
-#endif // LANTRANSPORTSERVER_H
+#endif // CONFIG_H

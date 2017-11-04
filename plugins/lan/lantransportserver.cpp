@@ -38,26 +38,72 @@ const QString MessageTag = "lantransportserver";
 
 const QString TransferCategory = "transfer";
 const QString TransferPort = "TransferPort";
+#ifdef ENABLE_TLS
+const QString TlsEnabled = "TlsEnabled";
+const QString TlsCaCertificate = "TlsCaCertificate";
+const QString TlsCertificate = "TlsCertificate";
+const QString TlsPrivateKey = "TlsPrivateKey";
+const QString TlsPrivateKeyPassphrase = "TlsPrivateKeyPassphrase";
+#endif
 
 LanTransportServer::LanTransportServer(Application *application)
-    : mApplication(application),
-      mTransferCategory({
+    : mApplication(application)
+    , mTransferCategory({
           { Category::NameKey, TransferCategory },
           { Category::TitleKey, tr("Transfer") }
-      }),
-      mTransferPort({
+      })
+    , mTransferPort({
           { Setting::TypeKey, Setting::Integer },
           { Setting::NameKey, TransferPort },
           { Setting::TitleKey, tr("Transfer Port") },
           { Setting::CategoryKey, TransferCategory },
           { Setting::DefaultValueKey, 40818 }
       })
+#ifdef ENABLE_TLS
+    , mTlsEnabled({
+          { Setting::TypeKey, Setting::Boolean },
+          { Setting::NameKey, TlsEnabled },
+          { Setting::TitleKey, tr("Enable TLS") },
+          { Setting::CategoryKey, TransferCategory }
+      })
+    , mTlsCaCertificate({
+          { Setting::TypeKey, Setting::FilePath },
+          { Setting::NameKey, TlsCaCertificate },
+          { Setting::TitleKey, tr("CA certificate") },
+          { Setting::CategoryKey, TransferCategory }
+      })
+    , mTlsCertificate({
+          { Setting::TypeKey, Setting::FilePath },
+          { Setting::NameKey, TlsCertificate },
+          { Setting::TitleKey, tr("Certificate") },
+          { Setting::CategoryKey, TransferCategory }
+      })
+    , mTlsPrivateKey({
+          { Setting::TypeKey, Setting::FilePath },
+          { Setting::NameKey, TlsPrivateKey },
+          { Setting::TitleKey, tr("Private key") },
+          { Setting::CategoryKey, TransferCategory }
+      })
+    , mTlsPrivateKeyPassphrase({
+          { Setting::TypeKey, Setting::String },
+          { Setting::NameKey, TlsPrivateKeyPassphrase },
+          { Setting::TitleKey, tr("Private key passphrase") },
+          { Setting::CategoryKey, TransferCategory }
+      })
+#endif
 {
     connect(&mServer, &Server::newSocketDescriptor, this, &LanTransportServer::onNewSocketDescriptor);
     connect(mApplication->settingsRegistry(), &SettingsRegistry::settingsChanged, this, &LanTransportServer::onSettingsChanged);
 
     mApplication->settingsRegistry()->addCategory(&mTransferCategory);
     mApplication->settingsRegistry()->addSetting(&mTransferPort);
+#ifdef ENABLE_TLS
+    mApplication->settingsRegistry()->addSetting(&mTlsEnabled);
+    mApplication->settingsRegistry()->addSetting(&mTlsCaCertificate);
+    mApplication->settingsRegistry()->addSetting(&mTlsCertificate);
+    mApplication->settingsRegistry()->addSetting(&mTlsPrivateKey);
+    mApplication->settingsRegistry()->addSetting(&mTlsPrivateKeyPassphrase);
+#endif
 
     // Trigger loading the initial settings
     onSettingsChanged({ TransferPort });
@@ -66,6 +112,13 @@ LanTransportServer::LanTransportServer(Application *application)
 LanTransportServer::~LanTransportServer()
 {
     mApplication->settingsRegistry()->removeSetting(&mTransferPort);
+#ifdef ENABLE_TLS
+    mApplication->settingsRegistry()->removeSetting(&mTlsEnabled);
+    mApplication->settingsRegistry()->removeSetting(&mTlsCaCertificate);
+    mApplication->settingsRegistry()->removeSetting(&mTlsCertificate);
+    mApplication->settingsRegistry()->removeSetting(&mTlsPrivateKey);
+    mApplication->settingsRegistry()->removeSetting(&mTlsPrivateKeyPassphrase);
+#endif
     mApplication->settingsRegistry()->removeCategory(&mTransferCategory);
 }
 
