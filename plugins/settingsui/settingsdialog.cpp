@@ -23,7 +23,6 @@
  */
 
 #include <QDialogButtonBox>
-#include <QVBoxLayout>
 
 #include <nitroshare/application.h>
 #include <nitroshare/category.h>
@@ -37,10 +36,10 @@
 
 SettingsDialog::SettingsDialog(Application *application)
     : mApplication(application),
-      mTabWidget(new QTabWidget),
-      mMiscWidget(nullptr)
+      mTabWidget(new QTabWidget)
 {
     setWindowTitle(tr("Settings"));
+    resize(400, 400);
 
     connect(mApplication->settingsRegistry(), &SettingsRegistry::settingAdded, this, &SettingsDialog::onSettingAdded);
     connect(mApplication->settingsRegistry(), &SettingsRegistry::settingRemoved, this, &SettingsDialog::onSettingRemoved);
@@ -62,15 +61,18 @@ SettingsDialog::SettingsDialog(Application *application)
 
 void SettingsDialog::accept()
 {
-    // Set the value for all settings by retrieving the value from the widget
     mApplication->settingsRegistry()->begin();
-    for (QHash<Setting*, SettingWidget*>::const_iterator i = mWidgets.constBegin();
-            i != mWidgets.constEnd(); ++i) {
-        mApplication->settingsRegistry()->setValue(
-            i.key()->name(),
-            i.value()->value()
-        );
+
+    // Set the value for each setting in each tab
+    for (auto i = mTabs.constBegin(); i != mTabs.constEnd(); ++i) {
+        for (auto j = (*i).items.constBegin(); j != (*i).items.constEnd(); ++j) {
+            mApplication->settingsRegistry()->setValue(
+                (*j).setting->name(),
+                (*j).widget->value()
+            );
+        }
     }
+
     mApplication->settingsRegistry()->end();
 
     // Close the dialog
@@ -84,67 +86,45 @@ void SettingsDialog::onSettingAdded(Setting *setting)
         return;
     }
 
-    // Attempt to create the setting's widget
-    SettingWidget *widget = createWidget(setting);
-    if (!widget) {
-        return;
-    }
-
-    // Load the default value into the widget
-    widget->setValue(mApplication->settingsRegistry()->value(setting->name()));
-
-    // Add the widget to the appropriate parent widget
-    QVBoxLayout *vboxLayout = qobject_cast<QVBoxLayout*>(getTab(setting)->layout());
-    vboxLayout->insertWidget(vboxLayout->count() - 1, widget);
+    // Create the item
+    createItem(setting);
 }
 
 void SettingsDialog::onSettingRemoved(Setting *setting)
 {
-    // Unregister and remove the widget from its parent
-    SettingWidget *widget = mWidgets.take(setting);
-    widget->layout()->removeWidget(widget);
+    for (int i = 0; i < mTabs.count(); ++i) {
+        Tab &tab = mTabs[i];
+        for (int j = 0; j < tab.items.count(); ++j) {
+            Item &item = tab.items[j];
+            if (item.setting == setting) {
 
-    // Use the parent widget to select the category name
-    QString categoryName = mCategories.key(widget->parentWidget());
+                // Remove the widget from the tab and destroy it
+                tab.layout->removeWidget(item.widget);
+                delete item.widget;
 
-    // Destroy the widget
-    delete widget;
+                // Remove the tab
+                tab.items.removeAt(j);
 
-    // Look for other settings in the same category
-    foreach (Setting *otherSetting, mWidgets.keys()) {
-        if (otherSetting->category() == categoryName) {
-            return;
+                // If no more items remain in the tab, remove it too
+                if (!tab.items.count()) {
+                    mTabWidget->removeTab(i);
+                    mTabs.removeAt(i);
+                }
+
+                return;
+            }
         }
     }
-
-    // If none exist, remove the tab and delete its widget
-    QWidget *tabWidget = mCategories.take(categoryName);
-    mTabWidget->removeTab(mTabWidget->indexOf(tabWidget));
-    delete tabWidget;
 }
 
-QWidget *SettingsDialog::getTab(Setting *setting)
+SettingsDialog::Tab &SettingsDialog::getTab(Setting *setting)
 {
-    // First check to see if the tab exists
-    QWidget *widget = mCategories.value(setting->category());
-    if (widget) {
-        return widget;
-    }
-
     QString name;
     QString title;
 
-    // Attempt to lookup the category to obtain the correct information; if one
-    // does not exist, try the miscellaneous category
+    // Check to see if the category exists in the settings registry; if not,
+    // the setting will be added to the "miscellaneous" tab
     Category *category = mApplication->settingsRegistry()->findCategory(setting->category());
-    if (!category) {
-        widget = mCategories.value("misc");
-        if (widget) {
-            return widget;
-        }
-    }
-
-    // If that failed, prepare to create a new tab
     if (category) {
         name = category->name();
         title = category->title();
@@ -153,20 +133,30 @@ QWidget *SettingsDialog::getTab(Setting *setting)
         title = tr("Miscellaneous");
     }
 
-    // Create the widget
-    QVBoxLayout *vboxLayout = new QVBoxLayout;
-    vboxLayout->addStretch(1);
-    widget = new QWidget;
-    widget->setLayout(vboxLayout);
+    // Attempt to find an existing tab with the name
+    for (auto i = mTabs.begin(); i != mTabs.end(); ++i) {
+        if ((*i).name == name) {
+            return *i;
+        }
+    }
 
-    // Add the widget to the tab widget and register it
+    // No such tab exists; create the layout and widget
+
+    QVBoxLayout *layout = new QVBoxLayout;
+    layout->addStretch(1);
+
+    QWidget *widget = new QWidget;
+    widget->setLayout(layout);
+
+    // Create the new tab and register it
     mTabWidget->addTab(widget, title);
-    mCategories.insert(name, widget);
+    mTabs.append({ name, widget, layout });
 
-    return widget;
+    // Return a reference to the new tab
+    return mTabs[mTabs.count() - 1];
 }
 
-SettingWidget *SettingsDialog::createWidget(Setting *setting)
+void SettingsDialog::createItem(Setting *setting)
 {
     SettingWidget *widget = nullptr;
 
@@ -186,11 +176,16 @@ SettingWidget *SettingsDialog::createWidget(Setting *setting)
         widget = new PathSettingWidget(setting);
         break;
     default:
-        return nullptr;
+        return;
     }
 
-    // Store the newly created widget in the appropriate location
-    mWidgets.insert(setting, widget);
+    // Load the default value
+    widget->setValue(
+        mApplication->settingsRegistry()->value(setting->name())
+    );
 
-    return widget;
+    // Add the widget to the tab and register the new item
+    Tab &tab = getTab(setting);
+    tab.layout->insertWidget(tab.layout->count() - 1, widget);
+    tab.items.append({setting, widget});
 }

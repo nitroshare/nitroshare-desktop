@@ -26,8 +26,9 @@
 #define SETTINGSDIALOG_H
 
 #include <QDialog>
-#include <QHash>
+#include <QList>
 #include <QTabWidget>
+#include <QVBoxLayout>
 #include <QWidget>
 
 class Application;
@@ -54,16 +55,28 @@ private slots:
 
 private:
 
-    QWidget *getTab(Setting *setting);
-    SettingWidget *createWidget(Setting *setting);
+    // Individual setting and associated widget
+    struct Item {
+        Setting *setting;
+        SettingWidget *widget;
+    };
+
+    // Individual tab and its associated settings
+    struct Tab {
+        QString name;
+        QWidget *widget;
+        QVBoxLayout *layout;
+        QList<Item> items;
+    };
+
+    Tab &getTab(Setting *setting);
+    void createItem(Setting *setting);
 
     Application *mApplication;
 
     QTabWidget *mTabWidget;
-    QWidget *mMiscWidget;
 
-    QHash<QString, QWidget*> mCategories;
-    QHash<Setting*, SettingWidget*> mWidgets;
+    QList<Tab> mTabs;
 };
 
 #endif // SETTINGSDIALOG_H
