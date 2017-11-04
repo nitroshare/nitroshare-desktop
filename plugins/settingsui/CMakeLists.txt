@@ -12,6 +12,8 @@ set(SRC
     settingsuiplugin.h
     settingsuiplugin.cpp
     settingwidget.h
+    stringlistsettingwidget.h
+    stringlistsettingwidget.cpp
     stringsettingwidget.h
     stringsettingwidget.cpp
 )

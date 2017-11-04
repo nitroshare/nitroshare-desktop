@@ -32,6 +32,7 @@
 #include "booleansettingwidget.h"
 #include "pathsettingwidget.h"
 #include "settingsdialog.h"
+#include "stringlistsettingwidget.h"
 #include "stringsettingwidget.h"
 
 SettingsDialog::SettingsDialog(Application *application)
@@ -167,6 +168,9 @@ void SettingsDialog::createItem(Setting *setting)
     case Setting::String:
     case Setting::Integer:
         widget = new StringSettingWidget(setting);
+        break;
+    case Setting::StringList:
+        widget = new StringListSettingWidget(setting);
         break;
     case Setting::Boolean:
         widget = new BooleanSettingWidget(setting);
