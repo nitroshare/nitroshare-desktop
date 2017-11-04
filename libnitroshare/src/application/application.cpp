@@ -35,22 +35,22 @@
 const QString PluginDir = "plugin-dir";
 const QString PluginBlacklist = "plugin-blacklist";
 
-const QString Application::DeviceUuid = "DeviceUuid";
-const QString Application::DeviceName = "DeviceName";
+const QString Application::DeviceUuidSettingName = "DeviceUuid";
+const QString Application::DeviceNameSettingName = "DeviceName";
 
 ApplicationPrivate::ApplicationPrivate(Application *application)
     : QObject(application),
       q(application),
       deviceUuid({
           { Setting::TypeKey, Setting::String },
-          { Setting::NameKey, Application::DeviceUuid },
+          { Setting::NameKey, Application::DeviceUuidSettingName },
           { Setting::TitleKey, tr("Device UUID") },
           { Setting::IsHiddenKey, true },
           { Setting::DefaultValueKey, QUuid::createUuid().toString() }
       }),
       deviceName({
           { Setting::TypeKey, Setting::String },
-          { Setting::NameKey, Application::DeviceName },
+          { Setting::NameKey, Application::DeviceNameSettingName },
           { Setting::TitleKey, tr("Device Name") },
           { Setting::DefaultValueKey, QHostInfo::localHostName() }
       }),
@@ -98,12 +98,12 @@ void Application::processCliOptions(QCommandLineParser *parser)
 
 QString Application::deviceUuid() const
 {
-    return d->settingsRegistry.value(DeviceUuid).toString();
+    return d->settingsRegistry.value(DeviceUuidSettingName).toString();
 }
 
 QString Application::deviceName() const
 {
-    return d->settingsRegistry.value(DeviceName).toString();
+    return d->settingsRegistry.value(DeviceNameSettingName).toString();
 }
 
 QString Application::version() const

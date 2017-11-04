@@ -83,14 +83,14 @@ public:
     };
 
     /**
-     * @brief Settings key for the device UUID
+     * @brief Setting name for the device UUID
      */
-    static const QString DeviceUuid;
+    static const QString DeviceUuidSettingName;
 
     /**
-     * @brief Settings key for the device name
+     * @brief Setting name for the device name
      */
-    static const QString DeviceName;
+    static const QString DeviceNameSettingName;
 
     /**
      * @brief Create a new application object

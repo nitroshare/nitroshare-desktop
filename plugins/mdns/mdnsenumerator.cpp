@@ -53,7 +53,7 @@ MdnsEnumerator::MdnsEnumerator(Application *application)
     mService.setAttributes({{ "uuid", mApplication->deviceUuid().toUtf8() }});
 
     // Trigger loading the initial settings
-    onSettingsChanged({ Application::DeviceName, TransferPort });
+    onSettingsChanged({ Application::DeviceNameSettingName, TransferPort });
 }
 
 MdnsEnumerator::~MdnsEnumerator()
@@ -117,7 +117,7 @@ void MdnsEnumerator::onServiceRemoved(const QMdnsEngine::Service &service)
 
 void MdnsEnumerator::onSettingsChanged(const QStringList &keys)
 {
-    if (keys.contains(Application::DeviceName) || keys.contains(TransferPort)) {
+    if (keys.contains(Application::DeviceNameSettingName) || keys.contains(TransferPort)) {
         mService.setName(mApplication->deviceName().toUtf8());
         mService.setPort(mApplication->settingsRegistry()->value(TransferPort).toInt());
         mProvider.update(mService);
