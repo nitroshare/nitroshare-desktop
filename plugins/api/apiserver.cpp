@@ -22,6 +22,8 @@
  * IN THE SOFTWARE.
  */
 
+#include <QRegExp>
+
 #include <nitroshare/application.h>
 #include <nitroshare/logger.h>
 #include <nitroshare/message.h>
@@ -36,8 +38,9 @@ const QString ApiEnabled = "ApiEnabled";
 
 ApiServer::ApiServer(Application *application)
     : mApplication(application),
-      mHandler(application),
-      mServer(&mHandler),
+      mFileHandler(":/api"),
+      mServer(&mFileHandler),
+      mActionHandler(application),
       mApiEnabled({
           { Setting::TypeKey, Setting::Boolean },
           { Setting::NameKey, ApiEnabled },
@@ -45,7 +48,9 @@ ApiServer::ApiServer(Application *application)
           { Setting::DefaultValueKey, true }
       })
 {
-    mHandler.addMiddleware(&mAuth);
+    mFileHandler.addRedirect(QRegExp("^$"), "index.html");
+    mFileHandler.addSubHandler(QRegExp("^api/"), &mActionHandler);
+    mActionHandler.addMiddleware(&mAuth);
 
     // Add the setting for enabling the API and watch for it changing
     mApplication->settingsRegistry()->addSetting(&mApiEnabled);

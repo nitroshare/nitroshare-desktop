@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>api/index.html</file>
+        <file>api/static/css/nitroshare.css</file>
+        <file>api/static/img/favicon.png</file>
+    </qresource>
+</RCC>

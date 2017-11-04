@@ -30,6 +30,7 @@
 
 #include <nitroshare/setting.h>
 
+#include <qhttpengine/filesystemhandler.h>
 #include <qhttpengine/localauthmiddleware.h>
 #include <qhttpengine/server.h>
 
@@ -57,9 +58,11 @@ private:
 
     Application *mApplication;
 
-    ActionHandler mHandler;
+    QHttpEngine::FilesystemHandler mFileHandler;
     QHttpEngine::Server mServer;
     QHttpEngine::LocalAuthMiddleware mAuth;
+
+    ActionHandler mActionHandler;
 
     Setting mApiEnabled;
 };

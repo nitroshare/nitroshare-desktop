@@ -1,0 +1,52 @@
+body {
+    color: #333;
+    font-family: sans-serif;
+    margin: 0;
+}
+
+code, pre {
+    background-color: #EEF5FB;
+}
+
+header, footer {
+    background-color: #406080;
+    color: #fff;
+}
+
+header {
+    border-bottom: 8px solid #669ACD;
+    padding: 20px 0;
+}
+
+header h1 {
+    font-weight: normal;
+    margin: 0;
+}
+
+footer {
+    border-top: 8px solid #669ACD;
+    font-size: 85%;
+    margin-top: 60px;
+    padding: 60px 0;
+}
+
+h2, h3{
+    color: #468;
+    font-weight: normal;
+}
+
+p {
+    text-align: justify;
+}
+
+pre {
+    border: 1px solid #669acd;
+    border-radius: 3px;
+    padding: 10px;
+}
+
+.container {
+    margin: 0 auto;
+    padding: 0 20px;
+    max-width: 800px;
+}

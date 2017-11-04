@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset='utf-8'>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <title>NitroShare API Documentation</title>
+
+        <link rel="shortcut icon" href="/static/img/favicon.png">
+        <link rel="stylesheet" href="/static/css/nitroshare.css">
+    </head>
+    <body>
+        <header>
+            <div class="container">
+                <h1>NitroShare API Documentation</h1>
+            </div>
+        </header>
+        <div class="container">
+            <h2>Introduction</h2>
+            <p>
+                The NitroShare client running on this device provides an HTTP API that local applications can use to interact with the client.
+            </p>
+            <h3>Authentication</h3>
+            <p>
+                In order to ensure that only local applications can interact with the client, the API requires a special HTTP header, <code>X-Auth-Token</code>, to be present.
+                The value for this header can be obtained from <code>~/.nitroshare</code>.
+                This JSON file contains both the port number and token value needed for authentication.
+                For example:
+            </p>
+            <pre>{
+    "port": 8000,
+    "token": "{1d38b8db-1fc7-4410-8205-2bb753e36f2d}"
+}</pre>
+            <h3>Requests</h3>
+            <p>
+                Actions are invoked by sending HTTP POST requests to the correct endpoint.
+                The <code>Content-Type</code> header should be set to <code>application/json</code>.
+                The parameters are provided in the request body as a JSON object.
+            </p>
+            <p>
+                The response will also contain a JSON payload &mdash; an object that contains a single member, <code>return</code>.
+                Its value is determined by the return value of the action.
+            </p>
+        </div>
+        <footer>
+            <div class="container">
+                Page rendered by the api plugin
+            </div>
+        </footer>
+    </body>
+</html>

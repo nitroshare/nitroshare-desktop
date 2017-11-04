@@ -7,6 +7,7 @@ set(SRC
     apiplugin.cpp
     apiserver.h
     apiserver.cpp
+    resource.qrc
 )
 
 add_library(api MODULE ${SRC})
