@@ -23,9 +23,10 @@
  */
 
 #include <QDialogButtonBox>
-#include <QFrame>
+#include <QVBoxLayout>
 
 #include <nitroshare/application.h>
+#include <nitroshare/category.h>
 #include <nitroshare/setting.h>
 #include <nitroshare/settingsregistry.h>
 
@@ -36,8 +37,8 @@
 
 SettingsDialog::SettingsDialog(Application *application)
     : mApplication(application),
-      mLayout(new QVBoxLayout),
-      mSpacer(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::Expanding))
+      mTabWidget(new QTabWidget),
+      mMiscWidget(nullptr)
 {
     setWindowTitle(tr("Settings"));
 
@@ -49,18 +50,14 @@ SettingsDialog::SettingsDialog(Application *application)
         onSettingAdded(setting);
     }
 
-    QFrame *frame = new QFrame;
-    frame->setFrameShape(QFrame::HLine);
-    frame->setFrameShadow(QFrame::Sunken);
-
     QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Save | QDialogButtonBox::Cancel);
     connect(buttonBox, &QDialogButtonBox::accepted, this, &SettingsDialog::accept);
     connect(buttonBox, &QDialogButtonBox::rejected, this, &SettingsDialog::reject);
 
-    mLayout->addItem(mSpacer);
-    mLayout->addWidget(frame);
-    mLayout->addWidget(buttonBox);
-    setLayout(mLayout);
+    QVBoxLayout *vboxLayout = new QVBoxLayout;
+    vboxLayout->addWidget(mTabWidget);
+    vboxLayout->addWidget(buttonBox);
+    setLayout(vboxLayout);
 }
 
 void SettingsDialog::accept()
@@ -87,9 +84,95 @@ void SettingsDialog::onSettingAdded(Setting *setting)
         return;
     }
 
+    // Attempt to create the setting's widget
+    SettingWidget *widget = createWidget(setting);
+    if (!widget) {
+        return;
+    }
+
+    // Load the default value into the widget
+    widget->setValue(mApplication->settingsRegistry()->value(setting->name()));
+
+    // Add the widget to the appropriate parent widget
+    QVBoxLayout *vboxLayout = qobject_cast<QVBoxLayout*>(getTab(setting)->layout());
+    vboxLayout->insertWidget(vboxLayout->count() - 1, widget);
+}
+
+void SettingsDialog::onSettingRemoved(Setting *setting)
+{
+    // Unregister and remove the widget from its parent
+    SettingWidget *widget = mWidgets.take(setting);
+    widget->layout()->removeWidget(widget);
+
+    // Use the parent widget to select the category name
+    QString categoryName = mCategories.key(widget->parentWidget());
+
+    // Destroy the widget
+    delete widget;
+
+    // Look for other settings in the same category
+    foreach (Setting *otherSetting, mWidgets.keys()) {
+        if (otherSetting->category() == categoryName) {
+            return;
+        }
+    }
+
+    // If none exist, remove the tab and delete its widget
+    QWidget *tabWidget = mCategories.take(categoryName);
+    mTabWidget->removeTab(mTabWidget->indexOf(tabWidget));
+    delete tabWidget;
+}
+
+QWidget *SettingsDialog::getTab(Setting *setting)
+{
+    // First check to see if the tab exists
+    QWidget *widget = mCategories.value(setting->category());
+    if (widget) {
+        return widget;
+    }
+
+    QString name;
+    QString title;
+
+    // Attempt to lookup the category to obtain the correct information; if one
+    // does not exist, try the miscellaneous category
+    Category *category = mApplication->settingsRegistry()->findCategory(setting->category());
+    if (!category) {
+        widget = mCategories.value("misc");
+        if (widget) {
+            return widget;
+        }
+    }
+
+    // If that failed, prepare to create a new tab
+    if (category) {
+        name = category->name();
+        title = category->title();
+    } else {
+        name = "misc";
+        title = tr("Miscellaneous");
+    }
+
+    // Create the widget
+    QVBoxLayout *vboxLayout = new QVBoxLayout;
+    vboxLayout->addStretch(1);
+    widget = new QWidget;
+    widget->setLayout(vboxLayout);
+
+    // Add the widget to the tab widget and register it
+    mTabWidget->addTab(widget, title);
+    mCategories.insert(name, widget);
+
+    return widget;
+}
+
+SettingWidget *SettingsDialog::createWidget(Setting *setting)
+{
     SettingWidget *widget = nullptr;
 
-    // Create the widget of the appropriate type
+    // TODO: handle integer settings differently
+
+    // Create a widget of the appropriate type
     switch (setting->type()) {
     case Setting::String:
     case Setting::Integer:
@@ -102,22 +185,12 @@ void SettingsDialog::onSettingAdded(Setting *setting)
     case Setting::DirectoryPath:
         widget = new PathSettingWidget(setting);
         break;
+    default:
+        return nullptr;
     }
 
-    if (widget) {
+    // Store the newly created widget in the appropriate location
+    mWidgets.insert(setting, widget);
 
-        // Set the initial value
-        widget->setValue(mApplication->settingsRegistry()->value(setting->name()));
-
-        // Add the widget
-        mLayout->insertWidget(mWidgets.count(), widget);
-        mWidgets.insert(setting, widget);
-    }
-}
-
-void SettingsDialog::onSettingRemoved(Setting *setting)
-{
-    SettingWidget *widget = mWidgets.take(setting);
-    mLayout->removeWidget(widget);
-    delete widget;
+    return widget;
 }

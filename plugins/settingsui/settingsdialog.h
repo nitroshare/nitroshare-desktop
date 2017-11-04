@@ -27,9 +27,8 @@
 
 #include <QDialog>
 #include <QHash>
-#include <QSpacerItem>
-#include <QStringList>
-#include <QVBoxLayout>
+#include <QTabWidget>
+#include <QWidget>
 
 class Application;
 class Setting;
@@ -55,10 +54,15 @@ private slots:
 
 private:
 
+    QWidget *getTab(Setting *setting);
+    SettingWidget *createWidget(Setting *setting);
+
     Application *mApplication;
 
-    QVBoxLayout *mLayout;
-    QSpacerItem *mSpacer;
+    QTabWidget *mTabWidget;
+    QWidget *mMiscWidget;
+
+    QHash<QString, QWidget*> mCategories;
     QHash<Setting*, SettingWidget*> mWidgets;
 };
 
