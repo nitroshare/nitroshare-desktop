@@ -22,7 +22,13 @@
  * IN THE SOFTWARE.
  */
 
+#include "config.h"
+
 #include <QHostAddress>
+
+#ifdef ENABLE_TLS
+#  include <QFile>
+#endif
 
 #include <nitroshare/application.h>
 #include <nitroshare/category.h>
@@ -106,7 +112,12 @@ LanTransportServer::LanTransportServer(Application *application)
 #endif
 
     // Trigger loading the initial settings
-    onSettingsChanged({ TransferPort });
+    onSettingsChanged({
+        TransferPort
+#ifdef ENABLE_TLS
+      , TlsEnabled
+#endif
+    });
 }
 
 LanTransportServer::~LanTransportServer()
@@ -165,4 +176,63 @@ void LanTransportServer::onSettingsChanged(const QStringList &keys)
             ));
         }
     }
+
+#ifdef ENABLE_TLS
+    if (keys.contains(TlsEnabled) ||
+            keys.contains(TlsCaCertificate) ||
+            keys.contains(TlsCertificate) ||
+            keys.contains(TlsPrivateKey) ||
+            keys.contains(TlsPrivateKeyPassphrase)) {
+        if (mApplication->settingsRegistry()->value(TlsEnabled).toBool()) {
+
+            // Ensure the peer is verified as well
+            mSslConf.setPeerVerifyMode(QSslSocket::VerifyPeer);
+
+            // Set the root (CA) certificate
+            mSslConf.setCaCertificates({
+                loadCert(mApplication->settingsRegistry()->value(TlsCaCertificate).toString())
+            });
+
+            // Specify the certificate to use for this device
+            mSslConf.setLocalCertificate(
+                loadCert(mApplication->settingsRegistry()->value(TlsCertificate).toString())
+            );
+
+            // Set the private key and passphrase
+            mSslConf.setPrivateKey(loadKey(
+                mApplication->settingsRegistry()->value(TlsPrivateKey).toString(),
+                mApplication->settingsRegistry()->value(TlsPrivateKeyPassphrase).toString()
+            ));
+
+        } else {
+            mSslConf = QSslConfiguration();
+        }
+    }
+#endif
 }
+
+#ifdef ENABLE_TLS
+
+QSslCertificate LanTransportServer::loadCert(const QString &filename) const
+{
+    QFile file(filename);
+    if (!file.open(QIODevice::ReadOnly)) {
+        return QSslCertificate();
+    }
+    QSslCertificate cert(&file);
+    file.close();
+    return cert;
+}
+
+QSslKey LanTransportServer::loadKey(const QString &filename, const QString &passphrase) const
+{
+    QFile file(filename);
+    if (!file.open(QIODevice::ReadOnly)) {
+        return QSslKey();
+    }
+    QSslKey key(&file, QSsl::Rsa, QSsl::Pem, QSsl::PrivateKey, passphrase.toUtf8());
+    file.close();
+    return key;
+}
+
+#endif

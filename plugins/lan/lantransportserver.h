@@ -25,13 +25,20 @@
 #ifndef LANTRANSPORTSERVER_H
 #define LANTRANSPORTSERVER_H
 
+#include "config.h"
+
 #include <QStringList>
+
+#ifdef ENABLE_TLS
+#  include <QSslCertificate>
+#  include <QSslConfiguration>
+#  include <QSslKey>
+#endif
 
 #include <nitroshare/category.h>
 #include <nitroshare/setting.h>
 #include <nitroshare/transportserver.h>
 
-#include "config.h"
 #include "server.h"
 
 class Application;
@@ -55,9 +62,18 @@ private slots:
 
 private:
 
+#ifdef ENABLE_TLS
+    QSslCertificate loadCert(const QString &filename) const;
+    QSslKey loadKey(const QString &filename, const QString &passphrase) const;
+#endif
+
     Application *mApplication;
 
     Server mServer;
+
+#ifdef ENABLE_TLS
+    QSslConfiguration mSslConf;
+#endif
 
     Category mTransferCategory;
     Setting mTransferPort;
