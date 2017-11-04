@@ -31,6 +31,7 @@
 #include <QSet>
 
 #include <nitroshare/application.h>
+#include <nitroshare/category.h>
 #include <nitroshare/logger.h>
 #include <nitroshare/message.h>
 #include <nitroshare/settingsregistry.h>
@@ -40,28 +41,36 @@
 
 const QString MessageTag = "broadcast";
 
+const QString BroadcastCategory = "broadcast";
 const QString BroadcastInterval = "BroadcastInterval";
 const QString BroadcastExpiry = "BroadcastExpiry";
 const QString BroadcastPort = "BroadcastPort";
 
 BroadcastEnumerator::BroadcastEnumerator(Application *application)
     : mApplication(application),
+      mBroadcastCategory({
+          { Category::NameKey, BroadcastCategory },
+          { Category::TitleKey, tr("Broadcast") },
+      }),
       mBroadcastInterval({
           { Setting::TypeKey, Setting::Integer },
           { Setting::NameKey, BroadcastInterval },
           { Setting::TitleKey, tr("Broadcast Interval") },
+          { Setting::CategoryKey, BroadcastCategory },
           { Setting::DefaultValueKey, 5000 }
       }),
       mBroadcastExpiry({
           { Setting::TypeKey, Setting::Integer },
           { Setting::NameKey, BroadcastExpiry },
           { Setting::TitleKey, tr("Broadcast Expiry") },
+          { Setting::CategoryKey, BroadcastCategory },
           { Setting::DefaultValueKey, 30000 }
       }),
       mBroadcastPort({
           { Setting::TypeKey, Setting::Integer },
           { Setting::NameKey, BroadcastPort },
           { Setting::TitleKey, tr("Broadcast Port") },
+          { Setting::CategoryKey, BroadcastCategory },
           { Setting::DefaultValueKey, 40816 }
       })
 {
@@ -70,6 +79,7 @@ BroadcastEnumerator::BroadcastEnumerator(Application *application)
     connect(&mSocket, &QUdpSocket::readyRead, this, &BroadcastEnumerator::onReadyRead);
     connect(mApplication->settingsRegistry(), &SettingsRegistry::settingsChanged, this, &BroadcastEnumerator::onSettingsChanged);
 
+    mApplication->settingsRegistry()->addCategory(&mBroadcastCategory);
     mApplication->settingsRegistry()->addSetting(&mBroadcastInterval);
     mApplication->settingsRegistry()->addSetting(&mBroadcastExpiry);
     mApplication->settingsRegistry()->addSetting(&mBroadcastPort);
@@ -83,6 +93,7 @@ BroadcastEnumerator::~BroadcastEnumerator()
     mApplication->settingsRegistry()->removeSetting(&mBroadcastInterval);
     mApplication->settingsRegistry()->removeSetting(&mBroadcastExpiry);
     mApplication->settingsRegistry()->removeSetting(&mBroadcastPort);
+    mApplication->settingsRegistry()->removeCategory(&mBroadcastCategory);
 
     qDeleteAll(mDevices);
 }

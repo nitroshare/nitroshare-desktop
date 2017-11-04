@@ -29,6 +29,7 @@
 #include <QTimer>
 #include <QUdpSocket>
 
+#include <nitroshare/category.h>
 #include <nitroshare/deviceenumerator.h>
 #include <nitroshare/setting.h>
 
@@ -64,6 +65,7 @@ private:
 
     QList<BroadcastDevice*> mDevices;
 
+    Category mBroadcastCategory;
     Setting mBroadcastInterval;
     Setting mBroadcastExpiry;
     Setting mBroadcastPort;
