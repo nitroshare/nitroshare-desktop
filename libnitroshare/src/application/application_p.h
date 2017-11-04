@@ -53,6 +53,9 @@ public:
     Setting deviceUuid;
     Setting deviceName;
 
+    Category pluginCategory;
+    Setting pluginDirectories;
+
     QSettings settings;
 
     ActionRegistry actionRegistry;

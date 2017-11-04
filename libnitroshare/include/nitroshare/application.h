@@ -83,7 +83,7 @@ public:
     };
 
     /**
-     * @brief Category name for the device category
+     * @brief Category name for device settings
      */
     static const QString DeviceCategoryName;
 
@@ -96,6 +96,16 @@ public:
      * @brief Setting name for the device name
      */
     static const QString DeviceNameSettingName;
+
+    /**
+     * @brief Category name for plugin settings
+     */
+    static const QString PluginCategoryName;
+
+    /**
+     * @brief Setting name for plugin directories
+     */
+    static const QString PluginDirectoriesSettingName;
 
     /**
      * @brief Create a new application object

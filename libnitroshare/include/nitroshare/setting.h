@@ -55,6 +55,7 @@ public:
     enum Type {
         Invalid,
         String,
+        StringList,
         Integer,
         Boolean,
         FilePath,

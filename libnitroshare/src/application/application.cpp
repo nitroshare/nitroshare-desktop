@@ -39,6 +39,9 @@ const QString Application::DeviceCategoryName = "device";
 const QString Application::DeviceUuidSettingName = "DeviceUuid";
 const QString Application::DeviceNameSettingName = "DeviceName";
 
+const QString Application::PluginCategoryName = "plugin";
+const QString Application::PluginDirectoriesSettingName = "PluginDirectories";
+
 ApplicationPrivate::ApplicationPrivate(Application *application)
     : QObject(application),
       q(application),
@@ -56,9 +59,20 @@ ApplicationPrivate::ApplicationPrivate(Application *application)
       deviceName({
           { Setting::TypeKey, Setting::String },
           { Setting::NameKey, Application::DeviceNameSettingName },
-          { Setting::TitleKey, tr("Device Name") },
+          { Setting::TitleKey, tr("Device name") },
           { Setting::CategoryKey, Application::DeviceCategoryName },
           { Setting::DefaultValueKey, QHostInfo::localHostName() }
+      }),
+      pluginCategory({
+          { Category::NameKey, Application::PluginCategoryName },
+          { Category::TitleKey, tr("Plugins") }
+      }),
+      pluginDirectories({
+          { Setting::TypeKey, Setting::StringList },
+          { Setting::NameKey, Application::PluginDirectoriesSettingName },
+          { Setting::TitleKey, tr("Plugin directories") },
+          { Setting::CategoryKey, Application::PluginCategoryName },
+          { Setting::DefaultValueKey, QStringList() }
       }),
       pluginModel(application),
       settingsRegistry(&settings),
@@ -68,6 +82,9 @@ ApplicationPrivate::ApplicationPrivate(Application *application)
     settingsRegistry.addCategory(&deviceCategory);
     settingsRegistry.addSetting(&deviceUuid);
     settingsRegistry.addSetting(&deviceName);
+
+    settingsRegistry.addCategory(&pluginCategory);
+    settingsRegistry.addSetting(&pluginDirectories);
 }
 
 ApplicationPrivate::~ApplicationPrivate()
@@ -75,6 +92,9 @@ ApplicationPrivate::~ApplicationPrivate()
     settingsRegistry.removeSetting(&deviceUuid);
     settingsRegistry.removeSetting(&deviceName);
     settingsRegistry.removeCategory(&deviceCategory);
+
+    settingsRegistry.removeSetting(&pluginDirectories);
+    settingsRegistry.removeCategory(&pluginCategory);
 }
 
 Application::Application(QObject *parent)
