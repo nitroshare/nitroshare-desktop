@@ -83,6 +83,11 @@ public:
     };
 
     /**
+     * @brief Category name for the device category
+     */
+    static const QString DeviceCategoryName;
+
+    /**
      * @brief Setting name for the device UUID
      */
     static const QString DeviceUuidSettingName;

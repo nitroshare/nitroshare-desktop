@@ -35,12 +35,17 @@
 const QString PluginDir = "plugin-dir";
 const QString PluginBlacklist = "plugin-blacklist";
 
+const QString Application::DeviceCategoryName = "device";
 const QString Application::DeviceUuidSettingName = "DeviceUuid";
 const QString Application::DeviceNameSettingName = "DeviceName";
 
 ApplicationPrivate::ApplicationPrivate(Application *application)
     : QObject(application),
       q(application),
+      deviceCategory({
+          { Category::NameKey, Application::DeviceCategoryName },
+          { Category::TitleKey, tr("Device") }
+      }),
       deviceUuid({
           { Setting::TypeKey, Setting::String },
           { Setting::NameKey, Application::DeviceUuidSettingName },
@@ -52,6 +57,7 @@ ApplicationPrivate::ApplicationPrivate(Application *application)
           { Setting::TypeKey, Setting::String },
           { Setting::NameKey, Application::DeviceNameSettingName },
           { Setting::TitleKey, tr("Device Name") },
+          { Setting::CategoryKey, Application::DeviceCategoryName },
           { Setting::DefaultValueKey, QHostInfo::localHostName() }
       }),
       pluginModel(application),
@@ -59,6 +65,7 @@ ApplicationPrivate::ApplicationPrivate(Application *application)
       transferModel(application),
       uiEnabled(false)
 {
+    settingsRegistry.addCategory(&deviceCategory);
     settingsRegistry.addSetting(&deviceUuid);
     settingsRegistry.addSetting(&deviceName);
 }
@@ -67,6 +74,7 @@ ApplicationPrivate::~ApplicationPrivate()
 {
     settingsRegistry.removeSetting(&deviceUuid);
     settingsRegistry.removeSetting(&deviceName);
+    settingsRegistry.removeCategory(&deviceCategory);
 }
 
 Application::Application(QObject *parent)

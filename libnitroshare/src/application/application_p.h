@@ -29,6 +29,7 @@
 
 #include <nitroshare/actionregistry.h>
 #include <nitroshare/application.h>
+#include <nitroshare/category.h>
 #include <nitroshare/devicemodel.h>
 #include <nitroshare/handlerregistry.h>
 #include <nitroshare/logger.h>
@@ -48,6 +49,7 @@ public:
 
     Application *const q;
 
+    Category deviceCategory;
     Setting deviceUuid;
     Setting deviceName;
 
