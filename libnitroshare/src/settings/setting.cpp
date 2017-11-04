@@ -30,6 +30,7 @@ const QString Setting::TypeKey = "type";
 const QString Setting::NameKey = "name";
 const QString Setting::TitleKey = "title";
 const QString Setting::IsHiddenKey = "isHidden";
+const QString Setting::CategoryKey = "category";
 const QString Setting::DefaultValueKey = "defaultValue";
 
 SettingPrivate::SettingPrivate(QObject *parent, const QVariantMap &properties)
@@ -62,6 +63,11 @@ QString Setting::title() const
 bool Setting::isHidden() const
 {
     return d->properties.value(IsHiddenKey).toBool();
+}
+
+QString Setting::category() const
+{
+    return d->properties.value(CategoryKey).toString();
 }
 
 QVariant Setting::defaultValue() const
