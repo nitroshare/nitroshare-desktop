@@ -149,7 +149,13 @@ Transport *LanTransportServer::createTransport(Device *device)
     }
 
     // Create the transport
-    return new LanTransport(QHostAddress(addresses.at(0)), port);
+    return new LanTransport(
+        QHostAddress(addresses.at(0))
+      , port
+#ifdef ENABLE_TLS
+      , mSslConf
+#endif
+    );
 }
 
 void LanTransportServer::onNewSocketDescriptor(qintptr socketDescriptor)
@@ -160,7 +166,12 @@ void LanTransportServer::onNewSocketDescriptor(qintptr socketDescriptor)
         "socket descriptor for incoming connection received"
     ));
 
-    emit transportReceived(new LanTransport(socketDescriptor));
+    emit transportReceived(new LanTransport(
+        socketDescriptor
+#ifdef ENABLE_TLS
+      , mSslConf
+#endif
+    ));
 }
 
 void LanTransportServer::onSettingsChanged(const QStringList &keys)

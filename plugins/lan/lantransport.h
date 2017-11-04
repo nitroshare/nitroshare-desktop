@@ -25,8 +25,15 @@
 #ifndef LANTRANSPORT_H
 #define LANTRANSPORT_H
 
+#include "config.h"
+
 #include <QHostAddress>
 #include <QTcpSocket>
+
+#ifdef ENABLE_TLS
+#  include <QSslConfiguration>
+#  include <QSslSocket>
+#endif
 
 #include <nitroshare/transport.h>
 
@@ -44,8 +51,20 @@ class LanTransport : public Transport
 
 public:
 
-    LanTransport(const QHostAddress &address, quint16 port);
-    LanTransport(qintptr socketDescriptor);
+    LanTransport(
+        const QHostAddress &address
+      , quint16 port
+#ifdef ENABLE_TLS
+      , const QSslConfiguration &sslConf
+#endif
+    );
+
+    LanTransport(
+        qintptr socketDescriptor
+#ifdef ENABLE_TLS
+      , const QSslConfiguration &sslConf
+#endif
+    );
 
     virtual void sendPacket(Packet *packet);
     virtual void close();
@@ -55,13 +74,26 @@ private slots:
     void onConnected();
     void onReadyRead();
     void onBytesWritten();
-    void onError(QAbstractSocket::SocketError socketError);
+    void onError();
+
+#ifdef ENABLE_TLS
+    void onEncrypted();
+    void onSslErrors();
+#endif
 
 private:
 
-    LanTransport();
+    LanTransport(
+#ifdef ENABLE_TLS
+        const QSslConfiguration &sslConf
+#endif
+    );
 
-    QTcpSocket mSocket;
+    QTcpSocket *mSocket;
+#ifdef ENABLE_TLS
+    QSslSocket *mSslSocket;
+#endif
+
     QByteArray mBuffer;
     qint32 mBufferSize;
 };

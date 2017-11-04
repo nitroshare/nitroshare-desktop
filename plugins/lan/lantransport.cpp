@@ -30,18 +30,41 @@
 
 #include "lantransport.h"
 
-LanTransport::LanTransport(const QHostAddress &address, quint16 port)
-    : LanTransport()
+LanTransport::LanTransport(
+    const QHostAddress &address
+  , quint16 port
+#ifdef ENABLE_TLS
+  , const QSslConfiguration &sslConf
+#endif
+)
+    : LanTransport(
+#ifdef ENABLE_TLS
+          sslConf
+#endif
+      )
 {
-    connect(&mSocket, &QTcpSocket::connected, this, &LanTransport::onConnected);
-
-    mSocket.connectToHost(address, port);
+    mSocket->connectToHost(address, port);
 }
 
-LanTransport::LanTransport(qintptr socketDescriptor)
-    : LanTransport()
+LanTransport::LanTransport(
+    qintptr socketDescriptor
+#ifdef ENABLE_TLS
+  , const QSslConfiguration &sslConf
+#endif
+)
+    : LanTransport(
+#ifdef ENABLE_TLS
+          sslConf
+#endif
+      )
 {
-    mSocket.setSocketDescriptor(socketDescriptor);
+    mSocket->setSocketDescriptor(socketDescriptor);
+
+#ifdef ENABLE_TLS
+    if (mSslSocket) {
+        mSslSocket->startServerEncryption();
+    }
+#endif
 }
 
 void LanTransport::sendPacket(Packet *packet)
@@ -52,28 +75,36 @@ void LanTransport::sendPacket(Packet *packet)
     qint8 packetType = packet->type();
 
     // Send the length and type of the packet
-    mSocket.write(reinterpret_cast<const char*>(&packetSize), sizeof(packetSize));
-    mSocket.write(reinterpret_cast<const char*>(&packetType), sizeof(packetType));
+    mSocket->write(reinterpret_cast<const char*>(&packetSize), sizeof(packetSize));
+    mSocket->write(reinterpret_cast<const char*>(&packetType), sizeof(packetType));
 
     // If the packet includes content, send it too
     if (content.length()) {
-        mSocket.write(content);
+        mSocket->write(content);
     }
 }
 
 void LanTransport::close()
 {
-    mSocket.close();
+    mSocket->close();
 }
 
 void LanTransport::onConnected()
 {
-    emit connected();
+#ifdef ENABLE_TLS
+    if (mSslSocket) {
+        mSslSocket->startClientEncryption();
+    } else {
+#endif
+        emit connected();
+#ifdef ENABLE_TLS
+    }
+#endif
 }
 
 void LanTransport::onReadyRead()
 {
-    mBuffer.append(mSocket.readAll());
+    mBuffer.append(mSocket->readAll());
 
     // Continue to emit packets as they are read
     while (mBuffer.size()) {
@@ -122,15 +153,58 @@ void LanTransport::onBytesWritten()
     emit packetSent();
 }
 
-void LanTransport::onError(QAbstractSocket::SocketError)
+void LanTransport::onError()
 {
-    emit error(mSocket.errorString());
+    emit error(mSocket->errorString());
 }
 
-LanTransport::LanTransport()
-    : mBufferSize(0)
+#ifdef ENABLE_TLS
+
+void LanTransport::onEncrypted()
 {
-    connect(&mSocket, &QTcpSocket::readyRead, this, &LanTransport::onReadyRead);
-    connect(&mSocket, &QTcpSocket::bytesWritten, this, &LanTransport::onBytesWritten);
-    connect(&mSocket, static_cast<void (QTcpSocket::*)(QAbstractSocket::SocketError)>(&QTcpSocket::error), this, &LanTransport::onError);
+    emit connected();
+}
+
+void LanTransport::onSslErrors()
+{
+    // No need to emit more than one error
+    emit error(mSslSocket->sslErrors().at(0).errorString());
+}
+
+#endif
+
+LanTransport::LanTransport(
+#ifdef ENABLE_TLS
+    const QSslConfiguration &sslConf
+#endif
+)
+    : mSocket(nullptr)
+#ifdef ENABLE_TLS
+    , mSslSocket(nullptr)
+#endif
+    , mBufferSize(0)
+{
+#ifdef ENABLE_TLS
+    if (!sslConf.isNull()) {
+        mSslSocket = new QSslSocket(this);
+        mSslSocket->ignoreSslErrors({ QSslError::HostNameMismatch });
+        mSslSocket->setSslConfiguration(sslConf);
+
+        connect(mSslSocket, &QSslSocket::encrypted, this, &LanTransport::onEncrypted);
+        connect(mSslSocket, &QSslSocket::encryptedBytesWritten, this, &LanTransport::onBytesWritten);
+        connect(mSslSocket, static_cast<void(QSslSocket::*)(const QList<QSslError> &)>(&QSslSocket::sslErrors), this, &LanTransport::onSslErrors);
+
+        mSocket = mSslSocket;
+    } else {
+#endif
+        mSocket = new QTcpSocket(this);
+
+        connect(mSocket, &QTcpSocket::connected, this, &LanTransport::onConnected);
+        connect(mSocket, &QTcpSocket::bytesWritten, this, &LanTransport::onBytesWritten);
+#ifdef ENABLE_TLS
+    }
+#endif
+
+    connect(mSocket, &QTcpSocket::readyRead, this, &LanTransport::onReadyRead);
+    connect(mSocket, static_cast<void (QTcpSocket::*)(QAbstractSocket::SocketError)>(&QTcpSocket::error), this, &LanTransport::onError);
 }
