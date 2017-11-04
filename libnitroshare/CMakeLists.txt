@@ -20,6 +20,7 @@ set(SRC
     src/log/stderrwriter.cpp
     src/plugin/plugin.cpp
     src/plugin/pluginmodel.cpp
+    src/settings/category.cpp
     src/settings/setting.cpp
     src/settings/settingsregistry.cpp
     src/transfer/packet.cpp
