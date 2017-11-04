@@ -22,6 +22,7 @@
  * IN THE SOFTWARE.
  */
 
+#include <nitroshare/category.h>
 #include <nitroshare/setting.h>
 #include <nitroshare/settingsregistry.h>
 
@@ -40,12 +41,39 @@ SettingsRegistry::SettingsRegistry(QSettings *settings, QObject *parent)
 {
 }
 
+QList<Category*> SettingsRegistry::categories() const
+{
+    return d->categoryList;
+}
+
 QList<Setting*> SettingsRegistry::settings() const
 {
     return d->settingsList;
 }
 
-Setting *SettingsRegistry::find(const QString &name) const
+Category *SettingsRegistry::findCategory(const QString &name) const
+{
+    foreach (Category *category, d->categoryList) {
+        if (category->name() == name) {
+            return category;
+        }
+    }
+    return nullptr;
+}
+
+void SettingsRegistry::addCategory(Category *category)
+{
+    d->categoryList.append(category);
+    emit categoryAdded(category);
+}
+
+void SettingsRegistry::removeCategory(Category *category)
+{
+    d->categoryList.removeOne(category);
+    emit categoryRemoved(category);
+}
+
+Setting *SettingsRegistry::findSetting(const QString &name) const
 {
     foreach (Setting *setting, d->settingsList) {
         if (setting->name() == name) {
@@ -69,7 +97,7 @@ void SettingsRegistry::removeSetting(Setting *setting)
 
 QVariant SettingsRegistry::value(const QString &name) const
 {
-    Setting *setting = find(name);
+    Setting *setting = findSetting(name);
     if (setting) {
         if (d->settings->contains(name)) {
             return d->settings->value(name);

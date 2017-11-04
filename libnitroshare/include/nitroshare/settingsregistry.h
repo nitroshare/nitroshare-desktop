@@ -33,6 +33,7 @@
 
 #include <nitroshare/config.h>
 
+class Category;
 class Setting;
 
 class NITROSHARE_EXPORT SettingsRegistryPrivate;
@@ -57,16 +58,40 @@ public:
     explicit SettingsRegistry(QSettings *settings, QObject *parent = nullptr);
 
     /**
+     * @brief Retrieve a list of all categories
+     */
+    QList<Category*> categories() const;
+
+    /**
      * @brief Retrieve a list of all settings
      */
     QList<Setting*> settings() const;
+
+    /**
+     * @brief Attempt to find a category by name
+     * @param name unique category name
+     * @return pointer to Category or nullptr
+     */
+    Category *findCategory(const QString &name) const;
+
+    /**
+     * @brief Add a category to the registry
+     * @param category pointer to Category
+     */
+    void addCategory(Category *category);
+
+    /**
+     * @brief Remove a category from the registry
+     * @param category pointer to Category
+     */
+    void removeCategory(Category *category);
 
     /**
      * @brief Attempt to find a setting by name
      * @param name setting name
      * @return pointer to Setting or nullptr
      */
-    Setting *find(const QString &name) const;
+    Setting *findSetting(const QString &name) const;
 
     /**
      * @brief Add a setting to the registry
@@ -104,6 +129,18 @@ public:
     void end();
 
 Q_SIGNALS:
+
+    /**
+     * @brief Indicate that a category has been added
+     * @param category pointer to Category
+     */
+    void categoryAdded(Category *category);
+
+    /**
+     * @brief Indicate that a category has been removed
+     * @param category pointer to Category
+     */
+    void categoryRemoved(Category *category);
 
     /**
      * @brief Indicate that a setting has been added

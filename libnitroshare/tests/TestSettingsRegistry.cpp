@@ -76,12 +76,12 @@ void TestSettingsRegistry::testAddRemove()
 
     // Add the setting and confirm it exists
     registry.addSetting(&TestSetting);
-    QVERIFY(registry.find(Name));
+    QVERIFY(registry.findSetting(Name));
     QCOMPARE(settingAddedSpy.count(), 1);
 
     // Remove the setting and confirm it does not exist
     registry.removeSetting(&TestSetting);
-    QVERIFY(!registry.find(Name));
+    QVERIFY(!registry.findSetting(Name));
     QCOMPARE(settingRemovedSpy.count(), 1);
 }
 

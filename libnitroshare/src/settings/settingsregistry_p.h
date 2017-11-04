@@ -30,6 +30,7 @@
 #include <QSet>
 #include <QSettings>
 
+class Category;
 class Setting;
 
 class SettingsRegistryPrivate : public QObject
@@ -41,6 +42,7 @@ public:
     explicit SettingsRegistryPrivate(QObject *parent, QSettings *settings);
 
     QSettings *settings;
+    QList<Category*> categoryList;
     QList<Setting*> settingsList;
 
     bool isInGroup;
