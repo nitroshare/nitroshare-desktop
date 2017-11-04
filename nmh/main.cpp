@@ -107,7 +107,7 @@ bool findNitroShare(quint16 &port, QString &token, QString &error)
  */
 QNetworkRequest createRequest(quint16 port, const QString &name, const QString &token)
 {
-    QUrl url(QString("http://localhost:%1/%2").arg(port).arg(name));
+    QUrl url(QString("http://localhost:%1/api/%2").arg(port).arg(name));
     QNetworkRequest request(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
     request.setRawHeader("X-Auth-Token", token.toUtf8());
