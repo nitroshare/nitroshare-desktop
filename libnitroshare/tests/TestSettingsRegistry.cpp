@@ -75,12 +75,12 @@ void TestSettingsRegistry::testAddRemove()
     QSignalSpy settingRemovedSpy(&registry, &SettingsRegistry::settingRemoved);
 
     // Add the setting and confirm it exists
-    registry.add(&TestSetting);
+    registry.addSetting(&TestSetting);
     QVERIFY(registry.find(Name));
     QCOMPARE(settingAddedSpy.count(), 1);
 
     // Remove the setting and confirm it does not exist
-    registry.remove(&TestSetting);
+    registry.removeSetting(&TestSetting);
     QVERIFY(!registry.find(Name));
     QCOMPARE(settingRemovedSpy.count(), 1);
 }
@@ -92,7 +92,7 @@ void TestSettingsRegistry::testChange()
     QSignalSpy settingsChanged(&registry, &SettingsRegistry::settingsChanged);
 
     // Add the setting and ensure the default value is set
-    registry.add(&TestSetting);
+    registry.addSetting(&TestSetting);
     QCOMPARE(registry.value(Name), QVariant(DefaultValue));
     QCOMPARE(settingsChanged.count(), 0);
 
@@ -111,7 +111,7 @@ void TestSettingsRegistry::testBeginEnd()
     QSignalSpy settingsChanged(&registry, &SettingsRegistry::settingsChanged);
 
     // Add the setting and start modifying a group
-    registry.add(&TestSetting);
+    registry.addSetting(&TestSetting);
     registry.begin();
 
     // Change the value and ensure no signals are emitted

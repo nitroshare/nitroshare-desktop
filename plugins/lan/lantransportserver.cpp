@@ -49,7 +49,7 @@ LanTransportServer::LanTransportServer(Application *application)
     connect(&mServer, &Server::newSocketDescriptor, this, &LanTransportServer::onNewSocketDescriptor);
     connect(mApplication->settingsRegistry(), &SettingsRegistry::settingsChanged, this, &LanTransportServer::onSettingsChanged);
 
-    mApplication->settingsRegistry()->add(&mTransferPort);
+    mApplication->settingsRegistry()->addSetting(&mTransferPort);
 
     // Trigger loading the initial settings
     onSettingsChanged({ TransferPort });
@@ -57,7 +57,7 @@ LanTransportServer::LanTransportServer(Application *application)
 
 LanTransportServer::~LanTransportServer()
 {
-    mApplication->settingsRegistry()->remove(&mTransferPort);
+    mApplication->settingsRegistry()->removeSetting(&mTransferPort);
 }
 
 QString LanTransportServer::name() const

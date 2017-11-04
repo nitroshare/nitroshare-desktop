@@ -72,13 +72,13 @@ public:
      * @brief Add a setting to the registry
      * @param setting pointer to Setting
      */
-    void add(Setting *setting);
+    void addSetting(Setting *setting);
 
     /**
      * @brief Remove a setting from the registry
      * @param setting pointer to Setting
      */
-    void remove(Setting *setting);
+    void removeSetting(Setting *setting);
 
     /**
      * @brief Retrieve the value for a setting

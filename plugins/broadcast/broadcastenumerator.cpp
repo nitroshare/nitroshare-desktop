@@ -70,9 +70,9 @@ BroadcastEnumerator::BroadcastEnumerator(Application *application)
     connect(&mSocket, &QUdpSocket::readyRead, this, &BroadcastEnumerator::onReadyRead);
     connect(mApplication->settingsRegistry(), &SettingsRegistry::settingsChanged, this, &BroadcastEnumerator::onSettingsChanged);
 
-    mApplication->settingsRegistry()->add(&mBroadcastInterval);
-    mApplication->settingsRegistry()->add(&mBroadcastExpiry);
-    mApplication->settingsRegistry()->add(&mBroadcastPort);
+    mApplication->settingsRegistry()->addSetting(&mBroadcastInterval);
+    mApplication->settingsRegistry()->addSetting(&mBroadcastExpiry);
+    mApplication->settingsRegistry()->addSetting(&mBroadcastPort);
 
     // Trigger loading the initial settings
     onSettingsChanged({ BroadcastInterval, BroadcastExpiry, BroadcastPort });
@@ -80,9 +80,9 @@ BroadcastEnumerator::BroadcastEnumerator(Application *application)
 
 BroadcastEnumerator::~BroadcastEnumerator()
 {
-    mApplication->settingsRegistry()->remove(&mBroadcastInterval);
-    mApplication->settingsRegistry()->remove(&mBroadcastExpiry);
-    mApplication->settingsRegistry()->remove(&mBroadcastPort);
+    mApplication->settingsRegistry()->removeSetting(&mBroadcastInterval);
+    mApplication->settingsRegistry()->removeSetting(&mBroadcastExpiry);
+    mApplication->settingsRegistry()->removeSetting(&mBroadcastPort);
 
     qDeleteAll(mDevices);
 }

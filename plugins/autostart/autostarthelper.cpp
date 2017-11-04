@@ -85,12 +85,12 @@ AutostartHelper::AutostartHelper(Application *application)
 {
     connect(mApplication->settingsRegistry(), &SettingsRegistry::settingsChanged, this, &AutostartHelper::onSettingsChanged);
 
-    mApplication->settingsRegistry()->add(&mAutostart);
+    mApplication->settingsRegistry()->addSetting(&mAutostart);
 }
 
 AutostartHelper::~AutostartHelper()
 {
-    mApplication->settingsRegistry()->remove(&mAutostart);
+    mApplication->settingsRegistry()->removeSetting(&mAutostart);
 }
 
 void AutostartHelper::onSettingsChanged(const QStringList &keys)

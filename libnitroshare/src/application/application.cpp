@@ -59,14 +59,14 @@ ApplicationPrivate::ApplicationPrivate(Application *application)
       transferModel(application),
       uiEnabled(false)
 {
-    settingsRegistry.add(&deviceUuid);
-    settingsRegistry.add(&deviceName);
+    settingsRegistry.addSetting(&deviceUuid);
+    settingsRegistry.addSetting(&deviceName);
 }
 
 ApplicationPrivate::~ApplicationPrivate()
 {
-    settingsRegistry.remove(&deviceUuid);
-    settingsRegistry.remove(&deviceName);
+    settingsRegistry.removeSetting(&deviceUuid);
+    settingsRegistry.removeSetting(&deviceName);
 }
 
 Application::Application(QObject *parent)

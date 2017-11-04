@@ -41,12 +41,12 @@ FileHandler::FileHandler(Application *application)
           { Setting::DefaultValueKey, QStandardPaths::writableLocation(QStandardPaths::DownloadLocation) }
       })
 {
-    mApplication->settingsRegistry()->add(&mTransferDirectory);
+    mApplication->settingsRegistry()->addSetting(&mTransferDirectory);
 }
 
 FileHandler::~FileHandler()
 {
-    mApplication->settingsRegistry()->remove(&mTransferDirectory);
+    mApplication->settingsRegistry()->removeSetting(&mTransferDirectory);
 }
 
 QString FileHandler::name() const

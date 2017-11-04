@@ -48,7 +48,7 @@ ApiServer::ApiServer(Application *application)
     mHandler.addMiddleware(&mAuth);
 
     // Add the setting for enabling the API and watch for it changing
-    mApplication->settingsRegistry()->add(&mApiEnabled);
+    mApplication->settingsRegistry()->addSetting(&mApiEnabled);
     connect(mApplication->settingsRegistry(), &SettingsRegistry::settingsChanged, this, &ApiServer::onSettingsChanged);
 
     // Trigger the initial settings
@@ -57,7 +57,7 @@ ApiServer::ApiServer(Application *application)
 
 ApiServer::~ApiServer()
 {
-    mApplication->settingsRegistry()->remove(&mApiEnabled);
+    mApplication->settingsRegistry()->removeSetting(&mApiEnabled);
 }
 
 void ApiServer::start()

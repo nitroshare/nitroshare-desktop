@@ -55,13 +55,13 @@ Setting *SettingsRegistry::find(const QString &name) const
     return nullptr;
 }
 
-void SettingsRegistry::add(Setting *setting)
+void SettingsRegistry::addSetting(Setting *setting)
 {
     d->settingsList.append(setting);
     emit settingAdded(setting);
 }
 
-void SettingsRegistry::remove(Setting *setting)
+void SettingsRegistry::removeSetting(Setting *setting)
 {
     d->settingsList.removeOne(setting);
     emit settingRemoved(setting);
