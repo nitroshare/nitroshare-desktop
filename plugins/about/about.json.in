@@ -1,0 +1,10 @@
+{
+    "Name": "about",
+    "Title": "About Dialog",
+    "Vendor": "Nathan Osman",
+    "Version": "${PROJECT_VERSION}",
+    "Description": "Show information about NitroShare",
+    "Dependencies": [
+        "ui"
+    ]
+}

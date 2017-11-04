@@ -7,6 +7,7 @@ add_subdirectory(nmh)
 add_subdirectory(url)
 
 if(Qt5Widgets_FOUND)
+    add_subdirectory(about)
     add_subdirectory(deviceui)
     add_subdirectory(filesystemui)
     add_subdirectory(loggerui)
