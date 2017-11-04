@@ -25,6 +25,7 @@
 #include <QHostAddress>
 
 #include <nitroshare/application.h>
+#include <nitroshare/category.h>
 #include <nitroshare/device.h>
 #include <nitroshare/logger.h>
 #include <nitroshare/message.h>
@@ -35,20 +36,27 @@
 
 const QString MessageTag = "lantransportserver";
 
+const QString TransferCategory = "transfer";
 const QString TransferPort = "TransferPort";
 
 LanTransportServer::LanTransportServer(Application *application)
     : mApplication(application),
+      mTransferCategory({
+          { Category::NameKey, TransferCategory },
+          { Category::TitleKey, tr("Transfer") }
+      }),
       mTransferPort({
           { Setting::TypeKey, Setting::Integer },
           { Setting::NameKey, TransferPort },
           { Setting::TitleKey, tr("Transfer Port") },
+          { Setting::CategoryKey, TransferCategory },
           { Setting::DefaultValueKey, 40818 }
       })
 {
     connect(&mServer, &Server::newSocketDescriptor, this, &LanTransportServer::onNewSocketDescriptor);
     connect(mApplication->settingsRegistry(), &SettingsRegistry::settingsChanged, this, &LanTransportServer::onSettingsChanged);
 
+    mApplication->settingsRegistry()->addCategory(&mTransferCategory);
     mApplication->settingsRegistry()->addSetting(&mTransferPort);
 
     // Trigger loading the initial settings
@@ -58,6 +66,7 @@ LanTransportServer::LanTransportServer(Application *application)
 LanTransportServer::~LanTransportServer()
 {
     mApplication->settingsRegistry()->removeSetting(&mTransferPort);
+    mApplication->settingsRegistry()->removeCategory(&mTransferCategory);
 }
 
 QString LanTransportServer::name() const

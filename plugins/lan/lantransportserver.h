@@ -27,6 +27,7 @@
 
 #include <QStringList>
 
+#include <nitroshare/category.h>
 #include <nitroshare/setting.h>
 #include <nitroshare/transportserver.h>
 
@@ -57,6 +58,7 @@ private:
 
     Server mServer;
 
+    Category mTransferCategory;
     Setting mTransferPort;
 };
 
