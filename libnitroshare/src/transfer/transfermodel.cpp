@@ -94,7 +94,7 @@ void TransferModel::addTransfer(Transfer *transfer)
 
 void TransferModel::dismiss(int index)
 {
-    if (0 <= index < d->transfers.count()) {
+    if (index >= 0 && index < d->transfers.count()) {
         Transfer *transfer = d->transfers.at(index);
         if (transfer->isFinished()) {
             beginRemoveRows(QModelIndex(), index, index);
