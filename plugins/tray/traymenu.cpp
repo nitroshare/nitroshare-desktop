@@ -57,7 +57,7 @@ TrayMenu::TrayMenu(Application *application)
     }
 
     mIcon.setContextMenu(&mMenu);
-    mIcon.setIcon(QIcon(":/icon/icon.png"));
+    mIcon.setIcon(QIcon(":/tray/icon.png"));
     mIcon.show();
 }
 
