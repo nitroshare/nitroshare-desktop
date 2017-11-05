@@ -83,7 +83,7 @@ bool parseData(const QByteArray &data, QString &name, QByteArray &parameters, QS
  */
 bool findNitroShare(quint16 &port, QString &token, QString &error)
 {
-    QFile file(QDir::home().absoluteFilePath(".nitroshare-ui"));
+    QFile file(QDir::home().absoluteFilePath(".NitroShare"));
     if (!file.open(QIODevice::ReadOnly)) {
         error = QObject::tr("NitroShare does not appear to be running");
         return false;
