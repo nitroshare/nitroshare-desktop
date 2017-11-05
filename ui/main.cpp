@@ -30,6 +30,8 @@
 int main(int argc, char **argv)
 {
     QApplication app(argc, argv);
+    app.setApplicationName("NitroShare");
+    app.setOrganizationName("NitroShare");
     app.setQuitOnLastWindowClosed(false);
 
     QCommandLineParser parser;

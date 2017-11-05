@@ -34,6 +34,9 @@
 int main(int argc, char **argv)
 {
     QCoreApplication app(argc, argv);
+    app.setApplicationName("NitroShare");
+    app.setOrganizationName("NitroShare");
+
     QCommandLineParser parser;
 
     // Create the application
