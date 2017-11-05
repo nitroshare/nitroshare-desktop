@@ -40,7 +40,7 @@ SettingsDialog::SettingsDialog(Application *application)
       mTabWidget(new QTabWidget)
 {
     setWindowTitle(tr("Settings"));
-    resize(400, 400);
+    resize(500, 400);
 
     connect(mApplication->settingsRegistry(), &SettingsRegistry::settingAdded, this, &SettingsDialog::onSettingAdded);
     connect(mApplication->settingsRegistry(), &SettingsRegistry::settingRemoved, this, &SettingsDialog::onSettingRemoved);
