@@ -47,6 +47,8 @@ public:
     explicit ApplicationPrivate(Application *application);
     virtual ~ApplicationPrivate();
 
+    QString defaultPluginDirectory() const;
+
     Application *const q;
 
     Category deviceCategory;

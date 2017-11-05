@@ -25,6 +25,8 @@
 #include <QCommandLineOption>
 #include <QCommandLineParser>
 #include <QCoreApplication>
+#include <QDir>
+#include <QFileInfo>
 #include <QHostInfo>
 #include <QUuid>
 
@@ -97,6 +99,14 @@ ApplicationPrivate::~ApplicationPrivate()
     settingsRegistry.removeCategory(&pluginCategory);
 }
 
+QString ApplicationPrivate::defaultPluginDirectory() const
+{
+    return QDir::cleanPath(
+        QFileInfo(QCoreApplication::arguments().at(0)).absolutePath() +
+        QDir::separator() + NITROSHARE_PLUGIN_PATH
+    );
+}
+
 Application::Application(QObject *parent)
     : QObject(parent),
       d(new ApplicationPrivate(this))
@@ -111,8 +121,17 @@ Application::~Application()
 
 void Application::addCliOptions(QCommandLineParser *parser)
 {
-    parser->addOption(QCommandLineOption(PluginDir, tr("load plugins in directory"), tr("directory"), NITROSHARE_PLUGIN_PATH));
-    parser->addOption(QCommandLineOption(PluginBlacklist, tr("do not load plugin"), tr("plugin")));
+    parser->addOption(QCommandLineOption(
+        PluginDir,
+        tr("additional directory to load plugins from"),
+        tr("directory")
+    ));
+
+    parser->addOption(QCommandLineOption(
+        PluginBlacklist,
+        tr("additional plugin name to blacklist"),
+        tr("plugin")
+    ));
 }
 
 void Application::processCliOptions(QCommandLineParser *parser)
@@ -120,8 +139,15 @@ void Application::processCliOptions(QCommandLineParser *parser)
     // Blacklist the plugins that were specified
     pluginModel()->addToBlacklist(parser->values(PluginBlacklist));
 
-    // Load all plugins in the directories
-    pluginModel()->loadPluginsFromDirectories(parser->values(PluginDir));
+    // Load plugins from the following directories:
+    //  - the default plugin directory relative to the executable
+    //  - all directories listed in the appropriate setting
+    //  - any additional directories from the command line
+    pluginModel()->loadPluginsFromDirectories(
+        QStringList{ d->defaultPluginDirectory() } +
+        settingsRegistry()->value(PluginDirectoriesSettingName).toStringList() +
+        parser->values(PluginDir)
+    );
 }
 
 QString Application::deviceUuid() const
