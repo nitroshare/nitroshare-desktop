@@ -22,14 +22,20 @@
  * IN THE SOFTWARE.
  */
 
+#include <nitroshare/actionregistry.h>
+#include <nitroshare/application.h>
+
+#include "aboutaction.h"
 #include "aboutplugin.h"
 
 void AboutPlugin::initialize(Application *application)
 {
-    //...
+    mAction = new AboutAction(application);
+    application->actionRegistry()->add(mAction);
 }
 
 void AboutPlugin::cleanup(Application *application)
 {
-    //...
+    application->actionRegistry()->remove(mAction);
+    delete mAction;
 }

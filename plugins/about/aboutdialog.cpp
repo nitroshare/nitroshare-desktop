@@ -22,26 +22,9 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef ABOUTPLUGIN_H
-#define ABOUTPLUGIN_H
+#include "aboutdialog.h"
 
-#include <nitroshare/iplugin.h>
-
-class AboutAction;
-
-class Q_DECL_EXPORT AboutPlugin : public IPlugin
+AboutDialog::AboutDialog(Application *application)
 {
-    Q_OBJECT
-    Q_PLUGIN_METADATA(IID Plugin_iid FILE "about.json")
-
-public:
-
-    virtual void initialize(Application *application);
-    virtual void cleanup(Application *application);
-
-private:
-
-    AboutAction *mAction;
-};
-
-#endif // ABOUTPLUGIN_H
+    setWindowTitle(tr("About NitroShare"));
+}

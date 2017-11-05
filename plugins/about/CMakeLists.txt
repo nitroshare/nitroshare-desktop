@@ -1,6 +1,10 @@
 configure_file(about.json.in "${CMAKE_CURRENT_BINARY_DIR}/about.json")
 
 set(SRC
+    aboutaction.h
+    aboutaction.cpp
+    aboutdialog.h
+    aboutdialog.cpp
     aboutplugin.h
     aboutplugin.cpp
 )

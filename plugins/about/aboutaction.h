@@ -22,26 +22,37 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef ABOUTPLUGIN_H
-#define ABOUTPLUGIN_H
+#ifndef ABOUTACTION_H
+#define ABOUTACTION_H
 
-#include <nitroshare/iplugin.h>
+#include <nitroshare/action.h>
 
-class AboutAction;
+#include "aboutdialog.h"
 
-class Q_DECL_EXPORT AboutPlugin : public IPlugin
+class Application;
+
+class AboutAction : public Action
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID Plugin_iid FILE "about.json")
+    Q_PROPERTY(bool ui READ ui)
+    Q_PROPERTY(QString title READ title)
 
 public:
 
-    virtual void initialize(Application *application);
-    virtual void cleanup(Application *application);
+    explicit AboutAction(Application *application);
+
+    virtual QString name() const;
+
+    bool ui() const;
+    QString title() const;
+
+public slots:
+
+    virtual QVariant invoke(const QVariantMap &params = QVariantMap());
 
 private:
 
-    AboutAction *mAction;
+    AboutDialog mDialog;
 };
 
-#endif // ABOUTPLUGIN_H
+#endif // ABOUTACTION_H

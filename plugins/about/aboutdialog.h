@@ -22,26 +22,20 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef ABOUTPLUGIN_H
-#define ABOUTPLUGIN_H
+#ifndef ABOUTDIALOG_H
+#define ABOUTDIALOG_H
 
-#include <nitroshare/iplugin.h>
+#include <QDialog>
 
-class AboutAction;
+class Application;
 
-class Q_DECL_EXPORT AboutPlugin : public IPlugin
+class AboutDialog : public QDialog
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID Plugin_iid FILE "about.json")
 
 public:
 
-    virtual void initialize(Application *application);
-    virtual void cleanup(Application *application);
-
-private:
-
-    AboutAction *mAction;
+    explicit AboutDialog(Application *application);
 };
 
-#endif // ABOUTPLUGIN_H
+#endif // ABOUTDIALOG_H
