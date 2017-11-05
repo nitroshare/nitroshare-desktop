@@ -48,9 +48,6 @@ private slots:
     void onActionAdded(Action *action);
     void onActionRemoved(Action *action);
 
-    void onAbout();
-    void onAboutQt();
-
 private:
 
     Application *mApplication;

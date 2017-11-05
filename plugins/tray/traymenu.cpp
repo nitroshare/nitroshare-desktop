@@ -22,9 +22,7 @@
  * IN THE SOFTWARE.
  */
 
-#include <QDate>
 #include <QIcon>
-#include <QMessageBox>
 
 #include <nitroshare/action.h>
 #include <nitroshare/actionregistry.h>
@@ -42,13 +40,10 @@ TrayMenu::TrayMenu(Application *application)
     mSeparator.setSeparator(true);
     mSeparator.setVisible(false);
 
-    // TODO: these can be converted to the new connection syntax after support
+    // TODO: this can be converted to the new connection syntax after support
     // for Qt 5.6 becomes a build requirement
 
     mMenu.addAction(&mSeparator);
-    mMenu.addAction(tr("About..."), this, SLOT(onAbout()));
-    mMenu.addAction(tr("About Qt..."), this, SLOT(onAboutQt()));
-    mMenu.addSeparator();
     mMenu.addAction(tr("Quit"), mApplication, SLOT(quit()));
 
     // Add existing actions to the menu
@@ -109,20 +104,4 @@ void TrayMenu::onActionRemoved(Action *action)
 
     // Free the action
     delete menuAction;
-}
-
-void TrayMenu::onAbout()
-{
-    QMessageBox::information(
-        nullptr,
-        tr("About NitroShare"),
-        tr("NitroShare - version %1\nCopyright %2 Nathan Osman")
-            .arg(mApplication->version())
-            .arg(QDate::currentDate().year())
-    );
-}
-
-void TrayMenu::onAboutQt()
-{
-    QMessageBox::aboutQt(nullptr);
 }
