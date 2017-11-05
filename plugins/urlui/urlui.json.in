@@ -1,0 +1,10 @@
+{
+    "Name": "urlui",
+    "Title": "URL UI Actions",
+    "Vendor": "Nathan Osman",
+    "Version": "${PROJECT_VERSION}",
+    "Description": "Actions for working with URLs",
+    "Dependencies": [
+        "ui"
+    ]
+}
