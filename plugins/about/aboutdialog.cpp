@@ -22,9 +22,59 @@
  * IN THE SOFTWARE.
  */
 
+#include <QDialogButtonBox>
+#include <QFont>
+#include <QFrame>
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QPixmap>
+#include <QVBoxLayout>
+
+#include <nitroshare/application.h>
+
 #include "aboutdialog.h"
 
 AboutDialog::AboutDialog(Application *application)
 {
     setWindowTitle(tr("About NitroShare"));
+
+    QLabel *logoLabel = new QLabel;
+    logoLabel->setPixmap(QPixmap(":/about/logo.png").scaled(128, 128));
+
+    QVBoxLayout *logoLayout = new QVBoxLayout;
+    logoLayout->addWidget(logoLabel);
+    logoLayout->addStretch(1);
+
+    QLabel *titleLabel = new QLabel(tr("NitroShare"));
+    QFont titleFont;
+    titleFont.setPointSize(16);
+    titleLabel->setFont(titleFont);
+
+    QLabel *subtitleLabel = new QLabel(tr("Cross-platform network file transfer application"));
+    QLabel *versionLabel = new QLabel(tr("Version: %1").arg(application->version()));
+    QLabel *copyrightLabel = new QLabel(tr("Copyright (c) 2017 Nathan Osman"));
+
+    QVBoxLayout *infoLayout = new QVBoxLayout;
+    infoLayout->addWidget(titleLabel);
+    infoLayout->addWidget(subtitleLabel);
+    infoLayout->addWidget(versionLabel);
+    infoLayout->addStretch(1);
+    infoLayout->addWidget(copyrightLabel);
+
+    QHBoxLayout *mainLayout = new QHBoxLayout;
+    mainLayout->addLayout(logoLayout);
+    mainLayout->addLayout(infoLayout);
+
+    QFrame *frame = new QFrame;
+    frame->setFrameShape(QFrame::HLine);
+    frame->setFrameShadow(QFrame::Sunken);
+
+    QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok);
+    connect(buttonBox, &QDialogButtonBox::accepted, this, &AboutDialog::accept);
+
+    QVBoxLayout *vboxLayout = new QVBoxLayout;
+    vboxLayout->addLayout(mainLayout);
+    vboxLayout->addWidget(frame);
+    vboxLayout->addWidget(buttonBox);
+    setLayout(vboxLayout);
 }

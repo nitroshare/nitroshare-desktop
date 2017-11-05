@@ -7,6 +7,7 @@ set(SRC
     aboutdialog.cpp
     aboutplugin.h
     aboutplugin.cpp
+    resource.qrc
 )
 
 add_library(about MODULE ${SRC})
