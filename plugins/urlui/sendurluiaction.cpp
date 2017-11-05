@@ -22,6 +22,12 @@
  * IN THE SOFTWARE.
  */
 
+#include <QInputDialog>
+
+#include <nitroshare/action.h>
+#include <nitroshare/actionregistry.h>
+#include <nitroshare/application.h>
+
 #include "sendurluiaction.h"
 
 SendUrlUiAction::SendUrlUiAction(Application *application)
@@ -46,5 +52,28 @@ QString SendUrlUiAction::title() const
 
 QVariant SendUrlUiAction::invoke(const QVariantMap &)
 {
-    return true;
+    // First obtain the URL to send
+    QString url = QInputDialog::getText(
+        nullptr,
+        tr("Send URL"),
+        tr("Enter the URL to send")
+    );
+    if (url.isNull()) {
+        return false;
+    }
+
+    // Browse for a device
+    Action *browseAction = mApplication->actionRegistry()->find("browse");
+    QVariant returnValue = browseAction->invoke();
+    if (returnValue.type() != QVariant::Map) {
+        return false;
+    }
+
+    // Find & invoke the sendurl action
+    Action *sendUrlAction = mApplication->actionRegistry()->find("sendurl");
+    return sendUrlAction->invoke({
+        { "device", returnValue.toMap().value("device") },
+        { "enumerator", returnValue.toMap().value("enumerator") },
+        { "url", url }
+    });
 }
