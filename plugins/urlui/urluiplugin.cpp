@@ -26,16 +26,23 @@
 #include <nitroshare/application.h>
 
 #include "openurlaction.h"
+#include "sendurluiaction.h"
 #include "urluiplugin.h"
 
 void UrlUiPlugin::initialize(Application *application)
 {
-    mAction = new OpenUrlAction;
-    application->actionRegistry()->add(mAction);
+    mOpenUrlAction = new OpenUrlAction;
+    mSendUrlUiAction = new SendUrlUiAction(application);
+
+    application->actionRegistry()->add(mOpenUrlAction);
+    application->actionRegistry()->add(mSendUrlUiAction);
 }
 
 void UrlUiPlugin::cleanup(Application *application)
 {
-    application->actionRegistry()->remove(mAction);
-    delete mAction;
+    application->actionRegistry()->remove(mOpenUrlAction);
+    application->actionRegistry()->remove(mSendUrlUiAction);
+
+    delete mOpenUrlAction;
+    delete mSendUrlUiAction;
 }

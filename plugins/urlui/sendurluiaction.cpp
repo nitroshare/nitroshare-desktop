@@ -22,28 +22,29 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef URLUIPLUGIN_H
-#define URLUIPLUGIN_H
+#include "sendurluiaction.h"
 
-#include <nitroshare/iplugin.h>
-
-class OpenUrlAction;
-class SendUrlUiAction;
-
-class Q_DECL_EXPORT UrlUiPlugin : public IPlugin
+SendUrlUiAction::SendUrlUiAction(Application *application)
+    : mApplication(application)
 {
-    Q_OBJECT
-    Q_PLUGIN_METADATA(IID Plugin_iid FILE "urlui.json")
+}
 
-public:
+QString SendUrlUiAction::name() const
+{
+    return "sendurlui";
+}
 
-    virtual void initialize(Application *application);
-    virtual void cleanup(Application *application);
+bool SendUrlUiAction::ui() const
+{
+    return true;
+}
 
-private:
+QString SendUrlUiAction::title() const
+{
+    return tr("Send URL...");
+}
 
-    OpenUrlAction *mOpenUrlAction;
-    SendUrlUiAction *mSendUrlUiAction;
-};
-
-#endif // URLUIPLUGIN_H
+QVariant SendUrlUiAction::invoke(const QVariantMap &)
+{
+    return true;
+}
