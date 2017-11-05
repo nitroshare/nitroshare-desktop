@@ -22,8 +22,12 @@
  * IN THE SOFTWARE.
  */
 
+#include <QSettings>
+
 #include "wizard.h"
 #include "wizardplugin.h"
+
+const QString WizardShown = "WizardShown";
 
 WizardPlugin::WizardPlugin()
     : mWizard(nullptr)
@@ -32,11 +36,16 @@ WizardPlugin::WizardPlugin()
 
 void WizardPlugin::initialize(Application *application)
 {
-    // TODO: only show once
+    QSettings settings;
 
-    if (true) {
+    if (!settings.value(WizardShown).toBool()) {
+
+        // Show the wizard
         mWizard = new Wizard(application);
         mWizard->show();
+
+        // Remember that it was shown
+        settings.setValue(WizardShown, true);
     }
 }
 
