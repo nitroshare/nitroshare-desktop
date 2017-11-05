@@ -50,3 +50,8 @@ QString Url::name() const
 {
     return mUrl;
 }
+
+void Url::close()
+{
+    emit openUrl(mUrl);
+}

@@ -22,35 +22,17 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef URL_H
-#define URL_H
+#include <QDesktopServices>
+#include <QUrl>
 
-#include <nitroshare/item.h>
+#include "openurlaction.h"
 
-class Url : public Item
+QString OpenUrlAction::name() const
 {
-    Q_OBJECT
-    Q_PROPERTY(QString url READ url)
+    return "openurl";
+}
 
-public:
-
-    explicit Url(const QVariantMap &properties);
-    explicit Url(const QString &url);
-
-    QString url() const;
-
-    virtual QString type() const;
-    virtual QString name() const;
-
-    virtual void close();
-
-signals:
-
-    void openUrl(const QString &url);
-
-private:
-
-    QString mUrl;
-};
-
-#endif // URL_H
+QVariant OpenUrlAction::invoke(const QVariantMap &params)
+{
+    return QDesktopServices::openUrl(QUrl(params.value("url").toString()));
+}

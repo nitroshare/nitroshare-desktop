@@ -22,8 +22,21 @@
  * IN THE SOFTWARE.
  */
 
+#include <nitroshare/action.h>
+#include <nitroshare/actionregistry.h>
+#include <nitroshare/application.h>
+#include <nitroshare/logger.h>
+#include <nitroshare/message.h>
+
 #include "url.h"
 #include "urlhandler.h"
+
+const QString MessageTag = "url";
+
+UrlHandler::UrlHandler(Application *application)
+    : mApplication(application)
+{
+}
 
 QString UrlHandler::name() const
 {
@@ -32,5 +45,30 @@ QString UrlHandler::name() const
 
 Item *UrlHandler::createItem(const QString &, const QVariantMap &properties)
 {
-    return new Url(properties);
+    Url *url = new Url(properties);
+    connect(url, &Url::openUrl, this, &UrlHandler::onOpenUrl);
+    return url;
+}
+
+void UrlHandler::onOpenUrl(const QString &url)
+{
+    // Attempt to find the openurl action
+    Action *action = mApplication->actionRegistry()->find("openurl");
+    if (!action) {
+        mApplication->logger()->log(new Message(
+            Message::Error,
+            MessageTag,
+            "unable to find the \"openurl\" action"
+        ));
+        return;
+    }
+
+    // Invoke the action with the URL
+    if (!action->invoke({ { "url", url } }).toBool()) {
+        mApplication->logger()->log(new Message(
+            Message::Error,
+            MessageTag,
+            QString("unable to open the URL \"%1\"").arg(url)
+        ));
+    }
 }

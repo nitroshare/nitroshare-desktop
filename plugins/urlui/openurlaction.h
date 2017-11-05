@@ -22,35 +22,31 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef URL_H
-#define URL_H
+#ifndef OPENURLACTION_H
+#define OPENURLACTION_H
 
-#include <nitroshare/item.h>
+#include <nitroshare/action.h>
 
-class Url : public Item
+/**
+ * @brief Launch the default browser with the provided URL
+ *
+ * The action expects a single parameter:
+ *
+ * - "url" (QString) - the URL to open
+ *
+ * The return value will be true if the URL was opened.
+ */
+class OpenUrlAction : public Action
 {
     Q_OBJECT
-    Q_PROPERTY(QString url READ url)
 
 public:
 
-    explicit Url(const QVariantMap &properties);
-    explicit Url(const QString &url);
-
-    QString url() const;
-
-    virtual QString type() const;
     virtual QString name() const;
 
-    virtual void close();
+public slots:
 
-signals:
-
-    void openUrl(const QString &url);
-
-private:
-
-    QString mUrl;
+    virtual QVariant invoke(const QVariantMap &params);
 };
 
-#endif // URL_H
+#endif // OPENURLACTION_H

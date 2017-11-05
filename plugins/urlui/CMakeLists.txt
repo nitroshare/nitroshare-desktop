@@ -1,6 +1,8 @@
 configure_file(urlui.json.in "${CMAKE_CURRENT_BINARY_DIR}/urlui.json")
 
 set(SRC
+    openurlaction.h
+    openurlaction.cpp
     urluiplugin.h
     urluiplugin.cpp
 )

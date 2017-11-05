@@ -22,14 +22,20 @@
  * IN THE SOFTWARE.
  */
 
+#include <nitroshare/actionregistry.h>
+#include <nitroshare/application.h>
+
+#include "openurlaction.h"
 #include "urluiplugin.h"
 
 void UrlUiPlugin::initialize(Application *application)
 {
-    //...
+    mAction = new OpenUrlAction;
+    application->actionRegistry()->add(mAction);
 }
 
 void UrlUiPlugin::cleanup(Application *application)
 {
-    //...
+    application->actionRegistry()->remove(mAction);
+    delete mAction;
 }

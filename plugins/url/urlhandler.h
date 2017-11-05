@@ -27,14 +27,26 @@
 
 #include <nitroshare/handler.h>
 
+class Application;
+
 class UrlHandler : public Handler
 {
     Q_OBJECT
 
 public:
 
+    explicit UrlHandler(Application *application);
+
     virtual QString name() const;
     virtual Item *createItem(const QString &type, const QVariantMap &properties);
+
+private slots:
+
+    void onOpenUrl(const QString &url);
+
+private:
+
+    Application *mApplication;
 };
 
 #endif // URLHANDLER_H

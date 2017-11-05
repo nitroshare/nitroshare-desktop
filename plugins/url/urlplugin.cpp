@@ -35,7 +35,7 @@ void UrlPlugin::initialize(Application *application)
     mAction = new SendUrlAction(application);
     application->actionRegistry()->add(mAction);
 
-    mHandler = new UrlHandler;
+    mHandler = new UrlHandler(application);
     application->handlerRegistry()->add(mHandler);
 }
 
