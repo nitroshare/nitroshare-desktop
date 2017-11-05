@@ -72,7 +72,7 @@ ApplicationPrivate::ApplicationPrivate(Application *application)
       pluginDirectories({
           { Setting::TypeKey, Setting::StringList },
           { Setting::NameKey, Application::PluginDirectoriesSettingName },
-          { Setting::TitleKey, tr("Plugin directories") },
+          { Setting::TitleKey, tr("Additional plugin directories") },
           { Setting::CategoryKey, Application::PluginCategoryName },
           { Setting::DefaultValueKey, QStringList() }
       }),
