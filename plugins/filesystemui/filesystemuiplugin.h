@@ -27,8 +27,7 @@
 
 #include <nitroshare/iplugin.h>
 
-class SendDirectoryAction;
-class SendFilesAction;
+class SendItemsUiAction;
 
 class Q_DECL_EXPORT FilesystemUiPlugin  : public IPlugin
 {
@@ -42,8 +41,8 @@ public:
 
 private:
 
-    SendDirectoryAction *mSendDirectoryAction;
-    SendFilesAction *mSendFilesAction;
+    SendItemsUiAction *mSendFilesUiAction;
+    SendItemsUiAction *mSendDirectoryUiAction;
 };
 
 #endif // FILESYSTEMUIPLUGIN_H

@@ -3,10 +3,8 @@ configure_file(filesystemui.json.in "${CMAKE_CURRENT_BINARY_DIR}/filesystemui.js
 set(SRC
     filesystemuiplugin.h
     filesystemuiplugin.cpp
-    senddirectoryaction.h
-    senddirectoryaction.cpp
-    sendfilesuiaction.h
-    sendfilesuiaction.cpp
+    senditemsuiaction.h
+    senditemsuiaction.cpp
 )
 
 add_library(filesystemui MODULE ${SRC})

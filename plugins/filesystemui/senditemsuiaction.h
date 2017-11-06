@@ -22,30 +22,52 @@
  * IN THE SOFTWARE.
  */
 
-#include "senddirectoryaction.h"
+#ifndef SENDITEMSUIACTION_H
+#define SENDITEMSUIACTION_H
 
-SendDirectoryAction::SendDirectoryAction(Application *application)
+#include <nitroshare/action.h>
+
+class Application;
+
+/**
+ * @brief Select files or folders and send them to a device
+ */
+class SendItemsUiAction : public Action
 {
-}
+    Q_OBJECT
+    Q_PROPERTY(bool api READ api)
+    Q_PROPERTY(QString title READ title)
+    Q_PROPERTY(QString description READ description)
+    Q_PROPERTY(bool menu READ menu)
+    Q_PROPERTY(QString label READ label)
 
-QString SendDirectoryAction::name() const
-{
-    return "senddirectory";
-}
+public:
 
-bool SendDirectoryAction::ui() const
-{
-    return true;
-}
+    enum Type {
+        SendFiles,
+        SendDirectory
+    };
 
-QString SendDirectoryAction::title() const
-{
-    return tr("Send Directory...");
-}
+    explicit SendItemsUiAction(Application *application, Type type);
 
-QVariant SendDirectoryAction::invoke(const QVariantMap &params)
-{
-    //...
+    virtual QString name() const;
 
-    return true;
-}
+    bool api() const;
+    QString title() const;
+    QString description() const;
+
+    bool menu() const;
+    QString label() const;
+
+public slots:
+
+    virtual QVariant invoke(const QVariantMap &params = QVariantMap());
+
+private:
+
+    Application *mApplication;
+
+    Type mType;
+};
+
+#endif // SENDFILESUIACTION_H

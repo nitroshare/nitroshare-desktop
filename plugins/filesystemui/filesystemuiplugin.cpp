@@ -26,23 +26,22 @@
 #include <nitroshare/application.h>
 
 #include "filesystemuiplugin.h"
-#include "senddirectoryaction.h"
-#include "sendfilesaction.h"
+#include "senditemsuiaction.h"
 
 void FilesystemUiPlugin::initialize(Application *application)
 {
-    mSendDirectoryAction = new SendDirectoryAction(application);
-    mSendFilesAction = new SendFilesAction(application);
+    mSendFilesUiAction = new SendItemsUiAction(application, SendItemsUiAction::SendFiles);
+    mSendDirectoryUiAction = new SendItemsUiAction(application, SendItemsUiAction::SendDirectory);
 
-    application->actionRegistry()->add(mSendDirectoryAction);
-    application->actionRegistry()->add(mSendFilesAction);
+    application->actionRegistry()->add(mSendFilesUiAction);
+    application->actionRegistry()->add(mSendDirectoryUiAction);
 }
 
 void FilesystemUiPlugin::cleanup(Application *application)
 {
-    application->actionRegistry()->remove(mSendDirectoryAction);
-    application->actionRegistry()->remove(mSendFilesAction);
+    application->actionRegistry()->remove(mSendFilesUiAction);
+    application->actionRegistry()->remove(mSendDirectoryUiAction);
 
-    delete mSendDirectoryAction;
-    delete mSendFilesAction;
+    delete mSendFilesUiAction;
+    delete mSendDirectoryUiAction;
 }
