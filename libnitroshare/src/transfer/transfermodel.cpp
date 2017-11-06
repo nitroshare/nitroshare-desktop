@@ -107,7 +107,7 @@ void TransferModel::dismiss(int index)
 
 void TransferModel::dismissAll()
 {
-    for (int i = 0; i < d->transfers.count(); ++i) {
+    for (int i = d->transfers.count() - 1; i >= 0; --i) {
         dismiss(i);
     }
 }
