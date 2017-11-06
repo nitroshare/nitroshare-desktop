@@ -22,11 +22,11 @@
  * IN THE SOFTWARE.
  */
 
+#include <QFrame>
 #include <QHBoxLayout>
 #include <QHeaderView>
 #include <QItemSelectionModel>
 #include <QModelIndexList>
-#include <QSpacerItem>
 #include <QVBoxLayout>
 
 #include <nitroshare/application.h>
@@ -39,8 +39,7 @@ TransferDialog::TransferDialog(Application *application)
     : mApplication(application),
       mTableView(new QTableView),
       mStopButton(new QPushButton(tr("Stop"))),
-      mDismissButton(new QPushButton(tr("Dismiss"))),
-      mDismissAllButton(new QPushButton(tr("Dismiss All")))
+      mDismissButton(new QPushButton(tr("Dismiss")))
 {
     setWindowTitle(tr("Transfers"));
     resize(800, 300);
@@ -58,23 +57,34 @@ TransferDialog::TransferDialog(Application *application)
     connect(&mModel, &TransferProxyModel::rowsRemoved, this, &TransferDialog::updateButtons);
     connect(mTableView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &TransferDialog::updateButtons);
 
-    mStopButton->setEnabled(false);
     connect(mStopButton, &QPushButton::clicked, this, &TransferDialog::onStop);
-
-    mDismissButton->setEnabled(false);
     connect(mDismissButton, &QPushButton::clicked, this, &TransferDialog::onDismiss);
-    connect(mDismissAllButton, &QPushButton::clicked, this, &TransferDialog::onDismissAll);
+
+    QPushButton *dismissAllButton = new QPushButton(tr("Dismiss All"));
+    connect(dismissAllButton, &QPushButton::clicked, this, &TransferDialog::onDismissAll);
+
+    QFrame *frame = new QFrame;
+    frame->setFrameShape(QFrame::HLine);
+    frame->setFrameShadow(QFrame::Sunken);
+
+    QPushButton *openReceivedButton = new QPushButton(tr("Show Received Files"));
+    connect(openReceivedButton, &QPushButton::clicked, this, &TransferDialog::onOpenReceivedFiles);
 
     QVBoxLayout *vboxLayout = new QVBoxLayout;
     vboxLayout->addWidget(mStopButton);
     vboxLayout->addWidget(mDismissButton);
-    vboxLayout->addWidget(mDismissAllButton);
-    vboxLayout->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::Expanding));
+    vboxLayout->addWidget(dismissAllButton);
+    vboxLayout->addWidget(frame);
+    vboxLayout->addWidget(openReceivedButton);
+    vboxLayout->addStretch(1);
 
     QHBoxLayout *hboxLayout = new QHBoxLayout;
     hboxLayout->addWidget(mTableView);
     hboxLayout->addLayout(vboxLayout);
     setLayout(hboxLayout);
+
+    // Update the initial state of the buttons
+    updateButtons();
 }
 
 void TransferDialog::updateButtons()
@@ -110,6 +120,11 @@ void TransferDialog::onDismiss()
 void TransferDialog::onDismissAll()
 {
     mApplication->transferModel()->dismissAll();
+}
+
+void TransferDialog::onOpenReceivedFiles()
+{
+    //...
 }
 
 QModelIndex TransferDialog::currentIndex() const

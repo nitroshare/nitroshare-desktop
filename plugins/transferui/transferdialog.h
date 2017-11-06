@@ -48,6 +48,7 @@ private slots:
     void onStop();
     void onDismiss();
     void onDismissAll();
+    void onOpenReceivedFiles();
 
 private:
 
@@ -59,9 +60,7 @@ private:
     TransferProxyModel mModel;
 
     QPushButton *mStopButton;
-
     QPushButton *mDismissButton;
-    QPushButton *mDismissAllButton;
 };
 
 #endif // TRANSFERDIALOG_H
