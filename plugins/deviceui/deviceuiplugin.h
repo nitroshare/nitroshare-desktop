@@ -27,7 +27,7 @@
 
 #include <nitroshare/iplugin.h>
 
-class BrowseAction;
+class SelectDeviceUiAction;
 
 class Q_DECL_EXPORT DeviceUiPlugin : public IPlugin
 {
@@ -41,7 +41,7 @@ public:
 
 private:
 
-    BrowseAction *mBrowseAction;
+    SelectDeviceUiAction *mSelectDeviceUiAction;
 };
 
 #endif // DEVICEUIPLUGIN_H

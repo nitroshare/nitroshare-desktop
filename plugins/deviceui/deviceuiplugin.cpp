@@ -25,17 +25,17 @@
 #include <nitroshare/actionregistry.h>
 #include <nitroshare/application.h>
 
-#include "browseaction.h"
 #include "deviceuiplugin.h"
+#include "selectdeviceuiaction.h"
 
 void DeviceUiPlugin::initialize(Application *application)
 {
-    mBrowseAction = new BrowseAction(application);
-    application->actionRegistry()->add(mBrowseAction);
+    mSelectDeviceUiAction = new SelectDeviceUiAction(application);
+    application->actionRegistry()->add(mSelectDeviceUiAction);
 }
 
 void DeviceUiPlugin::cleanup(Application *application)
 {
-    application->actionRegistry()->remove(mBrowseAction);
-    delete mBrowseAction;
+    application->actionRegistry()->remove(mSelectDeviceUiAction);
+    delete mSelectDeviceUiAction;
 }

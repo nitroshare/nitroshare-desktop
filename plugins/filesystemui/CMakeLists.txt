@@ -5,8 +5,8 @@ set(SRC
     filesystemuiplugin.cpp
     senddirectoryaction.h
     senddirectoryaction.cpp
-    sendfilesaction.h
-    sendfilesaction.cpp
+    sendfilesuiaction.h
+    sendfilesuiaction.cpp
 )
 
 add_library(filesystemui MODULE ${SRC})

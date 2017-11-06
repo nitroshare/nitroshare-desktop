@@ -22,30 +22,49 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef BROWSEACTION_H
-#define BROWSEACTION_H
+#include "devicedialog.h"
+#include "selectdeviceuiaction.h"
 
-#include <nitroshare/action.h>
-
-class Application;
-
-class BrowseAction : public Action
+SelectDeviceUiAction::SelectDeviceUiAction(Application *application)
+    : mApplication(application)
 {
-    Q_OBJECT
+}
 
-public:
+QString SelectDeviceUiAction::name() const
+{
+    return "selectdeviceui";
+}
 
-    explicit BrowseAction(Application *application);
+bool SelectDeviceUiAction::api() const
+{
+    return true;
+}
 
-    virtual QString name() const;
+QString SelectDeviceUiAction::title() const
+{
+    return tr("show device selection dialog");
+}
 
-public slots:
+QString SelectDeviceUiAction::description() const
+{
+    return tr(
+        "Show a dialog for selecting a device. "
+        "This action takes no parameters and returns either boolean false if "
+        "no device was selected or an object with two properties:\n\n"
+        "\n"
+        "- \"device\" (string) UUID of the selected device\n"
+        "- \"enumerator\" (string) name of the enumerator for the selected device"
+    );
+}
 
-    virtual QVariant invoke(const QVariantMap &params = QVariantMap());
-
-private:
-
-    Application *mApplication;
-};
-
-#endif // BROWSEACTION_H
+QVariant SelectDeviceUiAction::invoke(const QVariantMap &)
+{
+    DeviceDialog dialog(mApplication);
+    if (dialog.exec() == QDialog::Accepted) {
+        return QVariantMap{
+            { "device", dialog.deviceUuid() },
+            { "enumerator", dialog.enumeratorName() }
+        };
+    }
+    return false;
+}

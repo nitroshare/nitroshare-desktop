@@ -22,27 +22,40 @@
  * IN THE SOFTWARE.
  */
 
-#include "browseaction.h"
-#include "devicedialog.h"
+#ifndef SELECTDEVICEUIACTION_H
+#define SELECTDEVICEUIACTION_H
 
-BrowseAction::BrowseAction(Application *application)
-    : mApplication(application)
-{
-}
+#include <nitroshare/action.h>
 
-QString BrowseAction::name() const
-{
-    return "browse";
-}
+class Application;
 
-QVariant BrowseAction::invoke(const QVariantMap &)
+/**
+ * @brief Show a dialog that allows a device to be selected
+ */
+class SelectDeviceUiAction : public Action
 {
-    DeviceDialog dialog(mApplication);
-    if (dialog.exec() == QDialog::Accepted) {
-        return QVariantMap{
-            { "device", dialog.deviceUuid() },
-            { "enumerator", dialog.enumeratorName() }
-        };
-    }
-    return false;
-}
+    Q_OBJECT
+    Q_PROPERTY(bool api READ api)
+    Q_PROPERTY(QString title READ title)
+    Q_PROPERTY(QString description READ description)
+
+public:
+
+    explicit SelectDeviceUiAction(Application *application);
+
+    virtual QString name() const;
+
+    bool api() const;
+    QString title() const;
+    QString description() const;
+
+public slots:
+
+    virtual QVariant invoke(const QVariantMap &params = QVariantMap());
+
+private:
+
+    Application *mApplication;
+};
+
+#endif // SELECTDEVICEUIACTION_H
