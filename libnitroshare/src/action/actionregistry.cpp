@@ -24,24 +24,38 @@
 
 #include <nitroshare/action.h>
 #include <nitroshare/actionregistry.h>
+#include <nitroshare/application.h>
+#include <nitroshare/logger.h>
+#include <nitroshare/message.h>
 
 #include "actionregistry_p.h"
 
-ActionRegistryPrivate::ActionRegistryPrivate(QObject *parent)
-    : QObject(parent)
-{
-}
+const QString MessageTag = "actionregistry";
 
-ActionRegistry::ActionRegistry(QObject *parent)
+ActionRegistryPrivate::ActionRegistryPrivate(QObject *parent, Application *application)
     : QObject(parent),
-      d(new ActionRegistryPrivate(this))
+      application(application)
 {
 }
 
-// TODO: warn if duplicate action is inserted
+ActionRegistry::ActionRegistry(Application *application, QObject *parent)
+    : QObject(parent),
+      d(new ActionRegistryPrivate(this, application))
+{
+}
 
 void ActionRegistry::add(Action *action)
 {
+    // Ensure that the action does not already exist
+    if (find(action->name())) {
+        d->application->logger()->log(new Message(
+            Message::Warning,
+            MessageTag,
+            QString("action \"%1\" already registered").arg(action->name())
+        ));
+        return;
+    }
+
     d->actions.append(action);
     emit actionAdded(action);
 }

@@ -29,6 +29,7 @@
 #include <QObject>
 
 class Action;
+class Application;
 
 class ActionRegistryPrivate : public QObject
 {
@@ -36,7 +37,9 @@ class ActionRegistryPrivate : public QObject
 
 public:
 
-    explicit ActionRegistryPrivate(QObject *parent);
+    explicit ActionRegistryPrivate(QObject *parent, Application *application);
+
+    Application *application;
 
     QList<Action*> actions;
 };

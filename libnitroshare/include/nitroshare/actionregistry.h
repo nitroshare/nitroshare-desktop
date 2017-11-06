@@ -31,6 +31,7 @@
 #include <nitroshare/config.h>
 
 class Action;
+class Application;
 
 class NITROSHARE_EXPORT ActionRegistryPrivate;
 
@@ -45,9 +46,10 @@ public:
 
     /**
      * @brief Create a new action registry
+     * @param application pointer to Application
      * @param parent QObject
      */
-    explicit ActionRegistry(QObject *parent = nullptr);
+    explicit ActionRegistry(Application *application, QObject *parent = nullptr);
 
     /**
      * @brief Add the specified action to the registry

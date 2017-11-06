@@ -76,6 +76,7 @@ ApplicationPrivate::ApplicationPrivate(Application *application)
           { Setting::CategoryKey, Application::PluginCategoryName },
           { Setting::DefaultValueKey, QStringList() }
       }),
+      actionRegistry(application),
       pluginModel(application),
       settingsRegistry(&settings),
       transferModel(application),
