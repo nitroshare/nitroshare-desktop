@@ -22,7 +22,7 @@
  * IN THE SOFTWARE.
  */
 
-#include "devicedialog.h"
+#include "selectdevicedialog.h"
 #include "selectdeviceuiaction.h"
 
 SelectDeviceUiAction::SelectDeviceUiAction(Application *application)
@@ -59,7 +59,7 @@ QString SelectDeviceUiAction::description() const
 
 QVariant SelectDeviceUiAction::invoke(const QVariantMap &)
 {
-    DeviceDialog dialog(mApplication);
+    SelectDeviceDialog dialog(mApplication);
     if (dialog.exec() == QDialog::Accepted) {
         return QVariantMap{
             { "device", dialog.deviceUuid() },

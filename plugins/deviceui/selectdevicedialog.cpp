@@ -32,10 +32,10 @@
 #include <nitroshare/deviceenumerator.h>
 #include <nitroshare/devicemodel.h>
 
-#include "devicedialog.h"
 #include "deviceproxymodel.h"
+#include "selectdevicedialog.h"
 
-DeviceDialog::DeviceDialog(Application *application)
+SelectDeviceDialog::SelectDeviceDialog(Application *application)
 {
     setWindowTitle(tr("Select Device"));
 
@@ -44,7 +44,7 @@ DeviceDialog::DeviceDialog(Application *application)
     QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
 
     // Respond to the dialog buttons correctly
-    connect(buttonBox, &QDialogButtonBox::rejected, this, &DeviceDialog::reject);
+    connect(buttonBox, &QDialogButtonBox::rejected, this, &SelectDeviceDialog::reject);
     connect(buttonBox, &QDialogButtonBox::accepted, [this, application, listView]() {
         Device *device = listView->currentIndex().data(Qt::UserRole).value<Device*>();
         mDeviceUuid = device->uuid();
@@ -63,12 +63,12 @@ DeviceDialog::DeviceDialog(Application *application)
     setLayout(vboxLayout);
 }
 
-QString DeviceDialog::deviceUuid() const
+QString SelectDeviceDialog::deviceUuid() const
 {
     return mDeviceUuid;
 }
 
-QString DeviceDialog::enumeratorName() const
+QString SelectDeviceDialog::enumeratorName() const
 {
     return mEnumeratorName;
 }

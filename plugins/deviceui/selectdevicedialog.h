@@ -22,8 +22,8 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef DEVICEDIALOG_H
-#define DEVICEDIALOG_H
+#ifndef SELECTDEVICEDIALOG_H
+#define SELECTDEVICEDIALOG_H
 
 #include <QDialog>
 
@@ -31,13 +31,13 @@
 
 class Application;
 
-class DeviceDialog : public QDialog
+class SelectDeviceDialog : public QDialog
 {
     Q_OBJECT
 
 public:
 
-    explicit DeviceDialog(Application *application);
+    explicit SelectDeviceDialog(Application *application);
 
     QString deviceUuid() const;
     QString enumeratorName() const;
@@ -50,4 +50,4 @@ private:
     QString mEnumeratorName;
 };
 
-#endif // DEVICEDIALOG_H
+#endif // SELECTDEVICEDIALOG_H
