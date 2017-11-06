@@ -35,12 +35,12 @@ QString ManagePluginsAction::name() const
     return "manageplugins";
 }
 
-bool ManagePluginsAction::ui() const
+bool ManagePluginsAction::menu() const
 {
     return true;
 }
 
-QString ManagePluginsAction::title() const
+QString ManagePluginsAction::label() const
 {
     return tr("Manage Plugins...");
 }

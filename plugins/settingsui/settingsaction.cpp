@@ -43,12 +43,12 @@ QString SettingsAction::name() const
     return "settingsui";
 }
 
-bool SettingsAction::ui() const
+bool SettingsAction::menu() const
 {
     return true;
 }
 
-QString SettingsAction::title() const
+QString SettingsAction::label() const
 {
     return tr("Settings...");
 }

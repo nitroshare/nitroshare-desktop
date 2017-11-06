@@ -34,12 +34,12 @@ QString LogAction::name() const
     return "log";
 }
 
-bool LogAction::ui() const
+bool LogAction::menu() const
 {
     return true;
 }
 
-QString LogAction::title() const
+QString LogAction::label() const
 {
     return tr("View Log");
 }

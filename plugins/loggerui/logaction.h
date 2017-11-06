@@ -34,8 +34,8 @@ class Application;
 class LogAction : public Action
 {
     Q_OBJECT
-    Q_PROPERTY(bool ui READ ui)
-    Q_PROPERTY(QString title READ title)
+    Q_PROPERTY(bool menu READ menu)
+    Q_PROPERTY(QString label READ label)
 
 public:
 
@@ -43,8 +43,8 @@ public:
 
     virtual QString name() const;
 
-    bool ui() const;
-    QString title() const;
+    bool menu() const;
+    QString label() const;
 
 public slots:
 

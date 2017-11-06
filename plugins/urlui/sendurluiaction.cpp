@@ -40,12 +40,12 @@ QString SendUrlUiAction::name() const
     return "sendurlui";
 }
 
-bool SendUrlUiAction::ui() const
+bool SendUrlUiAction::menu() const
 {
     return true;
 }
 
-QString SendUrlUiAction::title() const
+QString SendUrlUiAction::label() const
 {
     return tr("Send URL...");
 }

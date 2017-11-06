@@ -34,12 +34,12 @@ QString AboutAction::name() const
     return "about";
 }
 
-bool AboutAction::ui() const
+bool AboutAction::menu() const
 {
     return true;
 }
 
-QString AboutAction::title() const
+QString AboutAction::label() const
 {
     return tr("About...");
 }

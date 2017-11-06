@@ -34,12 +34,12 @@ QString TransfersAction::name() const
     return "transfers";
 }
 
-bool TransfersAction::ui() const
+bool TransfersAction::menu() const
 {
     return true;
 }
 
-QString TransfersAction::title() const
+QString TransfersAction::label() const
 {
     return tr("View Transfers...");
 }

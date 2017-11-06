@@ -63,13 +63,13 @@ TrayMenu::~TrayMenu()
 
 void TrayMenu::onActionAdded(Action *action)
 {
-    // Only add actions with the "ui" property set to true
-    if (!action->property("ui").toBool()) {
+    // Only add actions with the "menu" property set to true
+    if (!action->property("menu").toBool()) {
         return;
     }
 
-    // Use the "title" property if present or fallback to the name
-    QString title = action->property("title").toString();
+    // Use the "label" property if present or fallback to the name
+    QString title = action->property("label").toString();
     if (title.isNull()) {
         title = action->name();
     }
