@@ -7,10 +7,8 @@ set(SRC
     filehandler.cpp
     filesystemplugin.h
     filesystemplugin.cpp
-    sendaction.h
-    sendaction.cpp
-    util.h
-    util.cpp
+    sendfilesaction.h
+    sendfilesaction.cpp
 )
 
 add_library(filesystem MODULE ${SRC})

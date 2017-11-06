@@ -22,28 +22,43 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef UTIL_H
-#define UTIL_H
+#ifndef SENDFILESACTION_H
+#define SENDFILESACTION_H
 
-#include <QStringList>
+#include <nitroshare/action.h>
 
+class Application;
 class Bundle;
 
-class Util
+/**
+ * @brief Send a list of files or directories to another device
+ */
+class SendFilesAction : public Action
 {
+    Q_OBJECT
+    Q_PROPERTY(bool api READ api)
+    Q_PROPERTY(QString title READ title)
+    Q_PROPERTY(QString description READ description)
+
 public:
 
-    /**
-     * @brief Create a bundle from a list of items
-     * @param items absolute paths to files or directories
-     * @return pointer to Bundle
-     */
-    static Bundle *createBundle(const QStringList &items);
+    explicit SendFilesAction(Application *application);
+
+    virtual QString name() const;
+
+    bool api() const;
+    QString title() const;
+    QString description() const;
+
+public slots:
+
+    virtual QVariant invoke(const QVariantMap &params = QVariantMap());
 
 private:
 
-    static void addFile(Bundle *bundle, const QString &path);
-    static void addDirectory(Bundle *bundle, const QString &path);
+    Bundle *createBundle(const QStringList &items);
+
+    Application *mApplication;
 };
 
-#endif // UTIL_H
+#endif // SENDFILESACTION_H

@@ -29,22 +29,22 @@
 #include "file.h"
 #include "filehandler.h"
 #include "filesystemplugin.h"
-#include "sendaction.h"
+#include "sendfilesaction.h"
 
 void FilesystemPlugin::initialize(Application *application)
 {
     mFileHandler = new FileHandler(application);
-    mSendAction = new SendAction(application);
+    mSendFilesAction = new SendFilesAction(application);
 
     application->handlerRegistry()->add(mFileHandler);
-    application->actionRegistry()->add(mSendAction);
+    application->actionRegistry()->add(mSendFilesAction);
 }
 
 void FilesystemPlugin::cleanup(Application *application)
 {
     application->handlerRegistry()->remove(mFileHandler);
-    application->actionRegistry()->remove(mSendAction);
+    application->actionRegistry()->remove(mSendFilesAction);
 
     delete mFileHandler;
-    delete mSendAction;
+    delete mSendFilesAction;
 }
