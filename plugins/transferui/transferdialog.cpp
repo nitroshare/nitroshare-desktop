@@ -22,18 +22,23 @@
  * IN THE SOFTWARE.
  */
 
+#include <QDesktopServices>
 #include <QFrame>
 #include <QHBoxLayout>
 #include <QHeaderView>
 #include <QItemSelectionModel>
 #include <QModelIndexList>
+#include <QUrl>
 #include <QVBoxLayout>
 
 #include <nitroshare/application.h>
+#include <nitroshare/settingsregistry.h>
 #include <nitroshare/transfer.h>
 #include <nitroshare/transfermodel.h>
 
 #include "transferdialog.h"
+
+const QString TransferDirectory = "TransferDirectory";
 
 TransferDialog::TransferDialog(Application *application)
     : mApplication(application),
@@ -124,7 +129,9 @@ void TransferDialog::onDismissAll()
 
 void TransferDialog::onOpenReceivedFiles()
 {
-    //...
+    QDesktopServices::openUrl(QUrl::fromLocalFile(
+        mApplication->settingsRegistry()->value(TransferDirectory).toString()
+    ));
 }
 
 QModelIndex TransferDialog::currentIndex() const
