@@ -26,6 +26,7 @@ set(SRC
     src/transfer/packet.cpp
     src/transfer/transfer.cpp
     src/transfer/transfermodel.cpp
+    src/util/apiutil.cpp
     src/util/fileutil.cpp
     src/util/jsonutil.cpp
     src/util/proxymodel.cpp
