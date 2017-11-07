@@ -36,8 +36,6 @@
 
 #include <nitroshare/apiutil.h>
 
-QNetworkAccessManager gNetworkAccessManager;
-
 bool findNitroShare(quint16 &port, QString &token, QString *error)
 {
     // Open the file that contains the information
@@ -87,6 +85,7 @@ bool ApiUtil::sendRequest(const QString &action,
                           QVariant &returnVal,
                           QString *error)
 {
+    QNetworkAccessManager networkAccessManager;
     quint16 port;
     QString token;
 
@@ -104,7 +103,7 @@ bool ApiUtil::sendRequest(const QString &action,
 
     // Send the request
     QByteArray data = QJsonDocument::fromVariant(params).toJson(QJsonDocument::Compact);
-    QNetworkReply *reply = gNetworkAccessManager.post(request, data);
+    QNetworkReply *reply = networkAccessManager.post(request, data);
 
     QEventLoop eventLoop;
     bool succeeded = false;
