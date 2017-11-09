@@ -53,6 +53,8 @@ const int WidgetMargin = 20;
 const QColor NormalColor = QColor::fromRgbF(1.0f, 1.0f, 1.0f, 0.4f);
 const QColor ActiveColor = QColor::fromRgbF(1.0f, 1.0f, 1.0f, 1.0f);
 
+const qreal WidgetOpacity = 0.5f;
+
 ShareboxWidget::ShareboxWidget(Application *application)
     : mApplication(application),
       mLogo(":/sharebox/logo.png"),
@@ -67,8 +69,22 @@ ShareboxWidget::ShareboxWidget(Application *application)
     move(screenRect.right() - WidgetSize - WidgetMargin,
          screenRect.bottom() - WidgetSize - WidgetMargin);
 
-    // Remove the frame from the window and ensure it stays on the desktop
-    setWindowFlags(Qt::SplashScreen | Qt::WindowStaysOnBottomHint);
+    // Special attributes for various platforms
+    setAttribute(Qt::WA_MacAlwaysShowToolWindow);
+    setAttribute(Qt::WA_TranslucentBackground);
+
+    // The flags used below have been found through careful experimentation
+    setWindowFlags(
+#ifdef Q_OS_WIN32
+        Qt::Tool |
+#else
+        Qt::ToolTip |
+#endif
+        Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint
+    );
+
+    // Make the widget transparent
+    setWindowOpacity(WidgetOpacity);
 
     // Allow things to be dropped
     setAcceptDrops(true);
@@ -81,6 +97,7 @@ void ShareboxWidget::dragEnterEvent(QDragEnterEvent *event)
 {
     if (event->mimeData()->hasUrls()) {
         mDragActive = true;
+        setWindowOpacity(1.0f);
         update();
 
         event->accept();
@@ -90,6 +107,7 @@ void ShareboxWidget::dragEnterEvent(QDragEnterEvent *event)
 void ShareboxWidget::dragLeaveEvent(QDragLeaveEvent *event)
 {
     mDragActive = false;
+    setWindowOpacity(WidgetOpacity);
     update();
 
     event->accept();
@@ -114,6 +132,7 @@ void ShareboxWidget::dropEvent(QDropEvent *event)
 
     // dragLeaveEvent() is not invoked if the item is dropped
     mDragActive = false;
+    setWindowOpacity(WidgetOpacity);
     update();
 }
 
