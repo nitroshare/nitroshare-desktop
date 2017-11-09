@@ -204,18 +204,16 @@ void ShareboxWidget::paintEvent(QPaintEvent *)
 
 void ShareboxWidget::sendItems(QStringList items)
 {
-    // Find & invoke the browse action
-    Action *browseAction = mApplication->actionRegistry()->find("browse");
-    QVariant returnValue = browseAction->invoke();
-    if (returnValue.type() != QVariant::Map) {
+    // Invoke the device selection dialog to select a device
+    QVariant deviceRet = mApplication->actionRegistry()->find("selectdeviceui")->invoke();
+    if (deviceRet.type() != QVariant::Map) {
         return;
     }
 
-    // Find & invoke the send action
-    Action *sendAction = mApplication->actionRegistry()->find("send");
-    sendAction->invoke({
-        { "device", returnValue.toMap().value("device") },
-        { "enumerator", returnValue.toMap().value("enumerator") },
+    // Invoke the send files action to initiate the transfer
+    mApplication->actionRegistry()->find("sendfiles")->invoke({
+        { "device", deviceRet.toMap().value("device") },
+        { "enumerator", deviceRet.toMap().value("enumerator") },
         { "items", items }
     });
 }
