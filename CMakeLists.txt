@@ -43,6 +43,12 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/out/${INSTALL_BIN_PATH}"
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/out/${INSTALL_LIB_PATH}")
 set(PLUGIN_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/out/${INSTALL_PLUGIN_PATH}")
 
+# Documentation is disabled by default
+option(BUILD_DOC "Build Doxygen documentation" OFF)
+if(BUILD_DOC)
+    find_package(Doxygen REQUIRED)
+endif()
+
 # Test suite is always disabled by default
 option(BUILD_TESTS "Build test suite" OFF)
 if(BUILD_TESTS)
