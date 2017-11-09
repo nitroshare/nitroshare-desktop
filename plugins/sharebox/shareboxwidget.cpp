@@ -22,6 +22,12 @@
  * IN THE SOFTWARE.
  */
 
+#include <QtGlobal>
+
+#ifdef Q_OS_WIN32
+#  include <windows.h>
+#endif
+
 #include <QApplication>
 #include <QBrush>
 #include <QColor>
@@ -73,15 +79,33 @@ ShareboxWidget::ShareboxWidget(Application *application)
     setAttribute(Qt::WA_MacAlwaysShowToolWindow);
     setAttribute(Qt::WA_TranslucentBackground);
 
-    // The flags used below have been found through careful experimentation
-    setWindowFlags(
 #ifdef Q_OS_WIN32
-        Qt::Tool |
-#else
-        Qt::ToolTip |
-#endif
-        Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint
+
+    // Finding a combination of flags that would produce the correct behavior
+    // on Windows proved impossible; therefore, the Windows API must be used
+    // to ensure (1) the widget remains on top and (2) isn't in the taskbar
+
+    // Remove the frame
+    setWindowFlags(Qt::FramelessWindowHint);
+
+    HWND hWnd = reinterpret_cast<HWND>(winId());
+
+    // Position the window at the top
+    SetWindowPos(hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+
+    // Set WS_EX_TOOLWINDOW to ensure that it does not appear in the taskbar
+    SetWindowLong(
+        hWnd,
+        GWL_EXSTYLE,
+        GetWindowLong(hWnd, GWL_EXSTYLE) | WS_EX_TOOLWINDOW
     );
+
+#else
+
+    // All other platforms can use this combination of flags
+    setWindowFlags(Qt::ToolTip | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
+
+#endif
 
     // Make the widget transparent
     setWindowOpacity(WidgetOpacity);
