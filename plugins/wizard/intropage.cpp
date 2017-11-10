@@ -36,9 +36,9 @@ IntroPage::IntroPage()
         "Thank you for installing NitroShare!\n\nThe application is designed "
         "to make transferring information between devices as simple as "
         "possible. Here are just some of the features included:\n\n"
-        "\u2022 Automatic peer discovery\n"
-        "\u2022 Extremely fast file transfers\n"
-        "\u2022 Compatibility with all major platforms\n\n"
+        "- Automatic peer discovery\n"
+        "- Extremely fast file transfers\n"
+        "- Compatibility with all major platforms\n\n"
         "This wizard will guide you through the initial setup process to help "
         "ensure NitroShare works exactly the way you want it to."
 
