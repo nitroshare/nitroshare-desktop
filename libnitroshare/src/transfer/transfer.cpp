@@ -388,6 +388,9 @@ Transfer::Transfer(Application *application, Transport *transport, QObject *pare
 {
     d->transport = transport;
     d->initTransport();
+
+    // Transfers that receive data are already "in progress"
+    d->state = InProgress;
 }
 
 Transfer::Transfer(Application *application, Device *device, Bundle *bundle, QObject *parent)
