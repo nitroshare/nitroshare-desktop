@@ -1,4 +1,6 @@
-# Some tests need a couple dummy plugins available for testing
+# Due to the large amount of classes that need to be mocked, a separate library
+# is used for convenience; two "dummy" plugins are provided as well
+add_subdirectory(mock)
 add_subdirectory(dummy)
 add_subdirectory(dummy2)
 
@@ -20,7 +22,7 @@ foreach(_test ${TESTS})
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
     )
     target_include_directories(${_test} PUBLIC "${CMAKE_CURRENT_BINARY_DIR}")
-    target_link_libraries(${_test} nitroshare Qt5::Test)
+    target_link_libraries(${_test} nitroshare mock Qt5::Test)
     add_test(NAME ${_test}
         COMMAND ${_test}
     )
