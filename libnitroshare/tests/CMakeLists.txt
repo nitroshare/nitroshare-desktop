@@ -9,6 +9,7 @@ set(TESTS
     TestLogger
     TestPluginModel
     TestSettingsRegistry
+    TestTransfer
 )
 
 # Set up targets for each of the tests
