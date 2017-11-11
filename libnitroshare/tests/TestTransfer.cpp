@@ -28,102 +28,27 @@
 #include <QTest>
 
 #include <nitroshare/application.h>
-#include <nitroshare/handler.h>
 #include <nitroshare/handlerregistry.h>
-#include <nitroshare/item.h>
-#include <nitroshare/packet.h>
 #include <nitroshare/transfer.h>
-#include <nitroshare/transport.h>
 
-const QString TestDeviceName = "Test";
-const QString TestItemName = "test.txt";
-const QString TestItemType = "dummy";
-const QByteArray TestItemData = "test";
+#include "mock/mockhandler.h"
+#include "mock/mocktransport.h"
 
-const QJsonObject TestTransferHeader{
-    { "name", TestDeviceName },
-    { "size", QString::number(TestItemData.size()) },
+const QString MockDeviceName = "Test";
+const QString MockItemName = "test.txt";
+const QByteArray MockItemData = "test";
+
+const QJsonObject MockTransferHeader{
+    { "name", MockDeviceName },
+    { "size", QString::number(MockItemData.size()) },
     { "count", QString::number(1) }
 };
 
-const QJsonObject TestItemHeader{
-    { "name", TestItemName },
-    { "type", TestItemType },
-    { "size", QString::number(TestItemData.size()) }
+const QJsonObject MockItemHeader{
+    { "name", MockItemName },
+    { "type", MockHandler::Name },
+    { "size", QString::number(MockItemData.size()) }
 };
-
-class DummyItem : public Item
-{
-    Q_OBJECT
-
-public:
-
-    explicit DummyItem(const QString &name, qint64 size) : mName(name), mSize(size) {}
-
-    virtual QString type() const { return TestItemType; }
-    virtual QString name() const { return mName; }
-    virtual qint64 size() const { return mSize; }
-    virtual void write(const QByteArray &data) { mData.append(data); }
-
-    QByteArray data() const { return mData; }
-
-private:
-
-    QString mName;
-    qint64 mSize;
-    QByteArray mData;
-};
-
-class DummyHandler : public Handler
-{
-    Q_OBJECT
-
-public:
-
-    virtual QString name() const { return TestItemType; }
-    virtual Item *createItem(const QString &type, const QVariantMap &params);
-};
-
-Item *DummyHandler::createItem(const QString &, const QVariantMap &params)
-{
-    return new DummyItem(
-        params.value("name").toString(),
-        params.value("size").toString().toLongLong()
-    );
-}
-
-class DummyTransport : public Transport
-{
-    Q_OBJECT
-
-public:
-
-    DummyTransport() : transportClosed(false) {}
-
-    virtual void sendPacket(Packet *packet);
-    virtual void close();
-
-    void writeData(Packet::Type type, const QByteArray &data);
-
-    QList<QByteArray> sentPackets;
-    bool transportClosed;
-};
-
-void DummyTransport::sendPacket(Packet *packet)
-{
-    sentPackets.append(packet->content());
-}
-
-void DummyTransport::close()
-{
-    transportClosed = true;
-}
-
-void DummyTransport::writeData(Packet::Type type, const QByteArray &data)
-{
-    Packet packet(type, data);
-    emit packetReceived(&packet);
-}
 
 class TestTransfer : public QObject
 {
@@ -137,22 +62,22 @@ private slots:
 void TestTransfer::testReceiving()
 {
     Application application;
-    DummyHandler dummyHandler;
-    application.handlerRegistry()->add(&dummyHandler);
+    MockTransport transport;
+    Transfer *transfer = new Transfer(&application, &transport);
 
-    DummyTransport *transport = new DummyTransport;
-    Transfer *transfer = new Transfer(&application, transport);
+    MockHandler handler;
+    application.handlerRegistry()->add(&handler);
 
     QCOMPARE(transfer->state(), Transfer::InProgress);
 
     // Send the transfer header to the transport
-    transport->writeData(Packet::Json, QJsonDocument(TestTransferHeader).toJson());
+    transport.writeData(Packet::Json, QJsonDocument(MockTransferHeader).toJson());
 
-    QCOMPARE(transfer->deviceName(), TestDeviceName);
+    QCOMPARE(transfer->deviceName(), MockDeviceName);
 
     // Send the item header to the transport followed by the data for the item
-    transport->writeData(Packet::Json, QJsonDocument(TestItemHeader).toJson());
-    transport->writeData(Packet::Binary, TestItemData);
+    transport.writeData(Packet::Json, QJsonDocument(MockItemHeader).toJson());
+    transport.writeData(Packet::Binary, MockItemData);
 
     QTRY_COMPARE(transfer->state(), Transfer::Succeeded);
 }
