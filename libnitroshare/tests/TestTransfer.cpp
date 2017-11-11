@@ -30,16 +30,19 @@
 #include <nitroshare/application.h>
 #include <nitroshare/handlerregistry.h>
 #include <nitroshare/transfer.h>
+#include <nitroshare/transfermodel.h>
 
+#include "mock/mockdevice.h"
 #include "mock/mockhandler.h"
+#include "mock/mockitem.h"
 #include "mock/mocktransport.h"
+#include "mock/mocktransportserver.h"
 
-const QString MockDeviceName = "Test";
 const QString MockItemName = "test.txt";
 const QByteArray MockItemData = "test";
 
 const QJsonObject MockTransferHeader{
-    { "name", MockDeviceName },
+    { "name", MockDevice::Name },
     { "size", QString::number(MockItemData.size()) },
     { "count", QString::number(1) }
 };
@@ -56,24 +59,34 @@ class TestTransfer : public QObject
 
 private slots:
 
+    void initTestCase();
+
     void testReceiving();
+
+private:
+
+    Application mApplication;
+    MockHandler mHandler;
+    MockTransportServer mTransportServer;
 };
+
+void TestTransfer::initTestCase()
+{
+    mApplication.handlerRegistry()->add(&mHandler);
+    mApplication.transferModel()->addTransportServer(&mTransportServer);
+}
 
 void TestTransfer::testReceiving()
 {
-    Application application;
     MockTransport transport;
-    Transfer *transfer = new Transfer(&application, &transport);
-
-    MockHandler handler;
-    application.handlerRegistry()->add(&handler);
+    Transfer *transfer = new Transfer(&mApplication, &transport);
 
     QCOMPARE(transfer->state(), Transfer::InProgress);
 
     // Send the transfer header to the transport
     transport.writeData(Packet::Json, QJsonDocument(MockTransferHeader).toJson());
 
-    QCOMPARE(transfer->deviceName(), MockDeviceName);
+    QCOMPARE(transfer->deviceName(), MockDevice::Name);
 
     // Send the item header to the transport followed by the data for the item
     transport.writeData(Packet::Json, QJsonDocument(MockItemHeader).toJson());

@@ -1,10 +1,14 @@
 set(SRC
+    mockdevice.h
+    mockdevice.cpp
     mockhandler.h
     mockhandler.cpp
     mockitem.h
     mockitem.cpp
     mocktransport.h
     mocktransport.cpp
+    mocktransportserver.h
+    mocktransportserver.cpp
 )
 
 add_library(mock SHARED ${SRC})
