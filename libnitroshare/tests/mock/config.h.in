@@ -22,25 +22,15 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef MOCKDEVICE_H
-#define MOCKDEVICE_H
+#ifndef CONFIG_H
+#define CONFIG_H
 
-#include <nitroshare/device.h>
+#include <QtCore/qglobal.h>
 
-#include "config.h"
+#if defined(MOCK_LIBRARY)
+#  define MOCK_EXPORT Q_DECL_EXPORT
+#else
+#  define MOCK_EXPORT Q_DECL_IMPORT
+#endif
 
-class MOCK_EXPORT MockDevice : public Device
-{
-    Q_OBJECT
-
-public:
-
-    static const QString Uuid;
-    static const QString Name;
-
-    virtual QString uuid() const;
-    virtual QString name() const;
-    virtual QString transportName() const;
-};
-
-#endif // MOCKDEVICE_H
+#endif // CONFIG_H

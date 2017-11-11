@@ -27,7 +27,9 @@
 
 #include <nitroshare/transportserver.h>
 
-class Q_DECL_EXPORT MockTransportServer : public TransportServer
+#include "config.h"
+
+class MOCK_EXPORT MockTransportServer : public TransportServer
 {
     Q_OBJECT
 

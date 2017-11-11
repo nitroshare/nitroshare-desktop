@@ -29,7 +29,9 @@
 
 #include <nitroshare/item.h>
 
-class Q_DECL_EXPORT MockItem : public Item
+#include "config.h"
+
+class MOCK_EXPORT MockItem : public Item
 {
     Q_OBJECT
 

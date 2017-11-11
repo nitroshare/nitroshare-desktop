@@ -31,7 +31,9 @@
 #include <nitroshare/packet.h>
 #include <nitroshare/transport.h>
 
-class Q_DECL_EXPORT MockTransport : public Transport
+#include "config.h"
+
+class MOCK_EXPORT MockTransport : public Transport
 {
     Q_OBJECT
 

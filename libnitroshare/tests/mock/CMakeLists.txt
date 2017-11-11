@@ -1,3 +1,5 @@
+configure_file(config.h.in "${CMAKE_CURRENT_BINARY_DIR}/config.h")
+
 set(SRC
     mockdevice.h
     mockdevice.cpp
@@ -17,4 +19,5 @@ set_target_properties(mock PROPERTIES
     CXX_STANDARD 11
 )
 
+target_include_directories(mock PUBLIC "${CMAKE_CURRENT_BINARY_DIR}")
 target_link_libraries(mock nitroshare)
