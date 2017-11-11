@@ -31,12 +31,17 @@ MockTransport::MockTransport()
 
 void MockTransport::sendPacket(Packet *packet)
 {
-    //...
+    mPackets.append({ packet->type(), packet->content() });
 }
 
 void MockTransport::close()
 {
     mClosed = true;
+}
+
+const MockTransport::PacketList &MockTransport::packets() const
+{
+    return mPackets;
 }
 
 bool MockTransport::isClosed() const

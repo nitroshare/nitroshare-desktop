@@ -25,26 +25,33 @@
 #ifndef MOCKTRANSPORT_H
 #define MOCKTRANSPORT_H
 
+#include <QList>
+#include <QPair>
+
 #include <nitroshare/packet.h>
 #include <nitroshare/transport.h>
 
-class MockTransport : public Transport
+class Q_DECL_EXPORT MockTransport : public Transport
 {
     Q_OBJECT
 
 public:
+
+    typedef QList<QPair<Packet::Type, QByteArray>> PacketList;
 
     MockTransport();
 
     virtual void sendPacket(Packet *packet);
     virtual void close();
 
+    const PacketList &packets() const;
     bool isClosed() const;
 
     void writeData(Packet::Type type, const QByteArray &data);
 
 private:
 
+    PacketList mPackets;
     bool mClosed;
 };
 

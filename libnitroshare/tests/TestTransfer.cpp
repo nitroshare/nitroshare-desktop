@@ -80,6 +80,11 @@ void TestTransfer::testReceiving()
     transport.writeData(Packet::Binary, MockItemData);
 
     QTRY_COMPARE(transfer->state(), Transfer::Succeeded);
+
+    // Ensure a success packet was sent and the transport closed
+    QCOMPARE(transport.packets().count(), 1);
+    QCOMPARE(transport.packets().at(0).first, Packet::Success);
+    QVERIFY(transport.isClosed());
 }
 
 QTEST_MAIN(TestTransfer)

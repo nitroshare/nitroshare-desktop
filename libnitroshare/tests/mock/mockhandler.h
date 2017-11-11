@@ -27,7 +27,7 @@
 
 #include <nitroshare/handler.h>
 
-class MockHandler : public Handler
+class Q_DECL_EXPORT MockHandler : public Handler
 {
     Q_OBJECT
 
