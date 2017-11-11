@@ -59,7 +59,7 @@ QVariant SettingsAction::invoke(const QVariantMap &)
     if (!mDialog) {
         mDialog = new SettingsDialog(mApplication);
         connect(mDialog, &SettingsDialog::finished, [this]() {
-            delete mDialog;
+            mDialog->deleteLater();
             mDialog = nullptr;
         });
     }
