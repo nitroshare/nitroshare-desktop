@@ -25,11 +25,9 @@
 #include "mockhandler.h"
 #include "mockitem.h"
 
-const QString MockHandler::Name = "handler";
-
 QString MockHandler::name() const
 {
-    return Name;
+    return MockItem::Type;
 }
 
 Item *MockHandler::createItem(const QString &, const QVariantMap &params)

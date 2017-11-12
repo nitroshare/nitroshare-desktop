@@ -50,7 +50,7 @@ const QJsonObject MockTransferHeader{
 
 const QJsonObject MockItemHeader{
     { "name", MockItemName },
-    { "type", MockHandler::Name },
+    { "type", MockItem::Type },
     { "size", QString::number(MockItemData.size()) }
 };
 
@@ -83,7 +83,7 @@ void TestTransfer::testSending()
     MockTransport transport;
     Bundle bundle;
     bundle.add(new MockItem(MockItemName, MockItemData));
-    Transfer *transfer = new Transfer(&mApplication, &transport, &bundle);
+    Transfer *transfer = new Transfer(&mApplication, &transport, &bundle, MockDevice::Name);
 
     QCOMPARE(transfer->state(), Transfer::Connecting);
 
@@ -116,6 +116,7 @@ void TestTransfer::testSending()
     transport.sendData(Packet::Success);
 
     QCOMPARE(transfer->state(), Transfer::Succeeded);
+    QVERIFY(transport.isClosed());
 }
 
 void TestTransfer::testReceiving()

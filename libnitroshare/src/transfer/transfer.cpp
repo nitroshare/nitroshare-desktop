@@ -48,7 +48,8 @@ const QString MessageTag = "transfer";
 TransferPrivate::TransferPrivate(Transfer *parent,
                                  Application *application,
                                  Transport *transport,
-                                 Bundle *bundle)
+                                 Bundle *bundle,
+                                 const QString &deviceName)
     : QObject(parent),
       q(parent),
       application(application),
@@ -57,6 +58,7 @@ TransferPrivate::TransferPrivate(Transfer *parent,
       protocolState(TransferHeader),
       direction(bundle ? Transfer::Send : Transfer::Receive),
       state(bundle ? Transfer::Connecting : Transfer::InProgress),
+      deviceName(deviceName),
       progress(0),
       itemIndex(0),
       itemCount(bundle ? bundle->rowCount(QModelIndex()) : 0),
@@ -82,7 +84,7 @@ TransferPrivate::TransferPrivate(Transfer *parent,
 void TransferPrivate::sendTransferHeader()
 {
     QJsonObject object{
-        { "name", application->deviceName() },
+        { "name", deviceName },
         { "count", QString::number(bundle->rowCount(QModelIndex())) },
         { "size", QString::number(bundle->totalSize()) }
     };
@@ -376,9 +378,13 @@ void TransferPrivate::onError(const QString &message)
     setError(message, true);
 }
 
-Transfer::Transfer(Application *application, Transport *transport, Bundle *bundle, QObject *parent)
+Transfer::Transfer(Application *application,
+                   Transport *transport,
+                   Bundle *bundle,
+                   const QString &deviceName,
+                   QObject *parent)
     : QObject(parent),
-      d(new TransferPrivate(this, application, transport, bundle))
+      d(new TransferPrivate(this, application, transport, bundle, deviceName))
 {
 }
 

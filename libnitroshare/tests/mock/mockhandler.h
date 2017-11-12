@@ -35,8 +35,6 @@ class MOCK_EXPORT MockHandler : public Handler
 
 public:
 
-    static const QString Name;
-
     virtual QString name() const;
     virtual Item *createItem(const QString &type, const QVariantMap &params);
 };

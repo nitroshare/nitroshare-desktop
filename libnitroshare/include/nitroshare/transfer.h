@@ -84,6 +84,7 @@ public:
      * @param application pointer to Application
      * @param transport pointer to Transport
      * @param bundle pointer to Bundle
+     * @param deviceName name of this device
      * @param parent QObject
      *
      * If bundle is NULL, the transfer will receive items. If bundle is
@@ -93,6 +94,7 @@ public:
     Transfer(Application *application,
              Transport *transport,
              Bundle *bundle = nullptr,
+             const QString &deviceName = QString(),
              QObject *parent = nullptr);
 
     /**

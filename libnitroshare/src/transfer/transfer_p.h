@@ -44,7 +44,8 @@ public:
     TransferPrivate(Transfer *parent,
                     Application *application,
                     Transport *transport,
-                    Bundle *bundle);
+                    Bundle *bundle,
+                    const QString &deviceName);
 
     void sendTransferHeader();
     void sendItemHeader();
