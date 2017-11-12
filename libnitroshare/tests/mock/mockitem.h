@@ -45,6 +45,7 @@ public:
     virtual QString type() const;
     virtual QString name() const;
     virtual qint64 size() const;
+    virtual QByteArray read();
 
 private:
 

@@ -22,6 +22,8 @@
  * IN THE SOFTWARE.
  */
 
+#include <QMetaObject>
+
 #include "mocktransport.h"
 
 MockTransport::MockTransport()
@@ -32,6 +34,7 @@ MockTransport::MockTransport()
 void MockTransport::sendPacket(Packet *packet)
 {
     mPackets.append({ packet->type(), packet->content() });
+    QMetaObject::invokeMethod(this, "packetSent", Qt::QueuedConnection);
 }
 
 void MockTransport::close()
@@ -54,7 +57,7 @@ void MockTransport::emitConnected()
     emit connected();
 }
 
-void MockTransport::writeData(Packet::Type type, const QByteArray &data)
+void MockTransport::sendData(Packet::Type type, const QByteArray &data)
 {
     Packet packet(type, data);
     emit packetReceived(&packet);

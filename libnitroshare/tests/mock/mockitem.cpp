@@ -53,3 +53,8 @@ qint64 MockItem::size() const
 {
     return mSize;
 }
+
+QByteArray MockItem::read()
+{
+    return mData;
+}

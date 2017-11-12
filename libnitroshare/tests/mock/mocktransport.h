@@ -50,7 +50,7 @@ public:
     bool isClosed() const;
 
     void emitConnected();
-    void writeData(Packet::Type type, const QByteArray &data);
+    void sendData(Packet::Type type, const QByteArray &data = QByteArray());
 
 private:
 

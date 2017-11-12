@@ -68,7 +68,10 @@ TransferPrivate::TransferPrivate(Transfer *parent,
 {
     // If sending data, trigger the first packet after connection
     if (direction == Transfer::Send) {
-        connect(transport, &Transport::connected, this, &TransferPrivate::onPacketSent);
+        connect(transport, &Transport::connected, this, [&]() {
+            emit q->stateChanged(state = Transfer::InProgress);
+            onPacketSent();
+        });
     }
 
     connect(transport, &Transport::packetReceived, this, &TransferPrivate::onPacketReceived);
