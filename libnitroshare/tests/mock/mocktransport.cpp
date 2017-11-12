@@ -49,6 +49,11 @@ bool MockTransport::isClosed() const
     return mClosed;
 }
 
+void MockTransport::emitConnected()
+{
+    emit connected();
+}
+
 void MockTransport::writeData(Packet::Type type, const QByteArray &data)
 {
     Packet packet(type, data);

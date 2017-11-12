@@ -39,6 +39,7 @@ public:
 
     static const QString Type;
 
+    MockItem(const QString &name, const QByteArray &data);
     explicit MockItem(const QVariantMap &params);
 
     virtual QString type() const;
@@ -49,6 +50,8 @@ private:
 
     QString mName;
     qint64 mSize;
+
+    QByteArray mData;
 };
 
 #endif // MOCKITEM_H

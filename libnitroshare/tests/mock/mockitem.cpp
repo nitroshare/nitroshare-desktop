@@ -26,6 +26,13 @@
 
 const QString MockItem::Type = "item";
 
+MockItem::MockItem(const QString &name, const QByteArray &data)
+    : mName(name),
+      mSize(data.size()),
+      mData(data)
+{
+}
+
 MockItem::MockItem(const QVariantMap &params)
     : mName(params.value("name").toString()),
       mSize(params.value("size").toString().toLongLong())

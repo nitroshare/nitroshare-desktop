@@ -49,6 +49,7 @@ public:
     const PacketList &packets() const;
     bool isClosed() const;
 
+    void emitConnected();
     void writeData(Packet::Type type, const QByteArray &data);
 
 private:
