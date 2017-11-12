@@ -43,10 +43,8 @@ public:
 
     TransferPrivate(Transfer *parent,
                     Application *application,
-                    Bundle *bundle,
-                    Transfer::Direction direction);
-
-    void initTransport();
+                    Transport *transport,
+                    Bundle *bundle);
 
     void sendTransferHeader();
     void sendItemHeader();

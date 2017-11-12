@@ -31,7 +31,6 @@
 
 #include <nitroshare/application.h>
 #include <nitroshare/bundle.h>
-#include <nitroshare/device.h>
 #include <nitroshare/handler.h>
 #include <nitroshare/handlerregistry.h>
 #include <nitroshare/item.h>
@@ -40,9 +39,7 @@
 #include <nitroshare/message.h>
 #include <nitroshare/packet.h>
 #include <nitroshare/transfer.h>
-#include <nitroshare/transfermodel.h>
 #include <nitroshare/transport.h>
-#include <nitroshare/transportserver.h>
 
 #include "transfer_p.h"
 
@@ -50,16 +47,16 @@ const QString MessageTag = "transfer";
 
 TransferPrivate::TransferPrivate(Transfer *parent,
                                  Application *application,
-                                 Bundle *bundle,
-                                 Transfer::Direction direction)
+                                 Transport *transport,
+                                 Bundle *bundle)
     : QObject(parent),
       q(parent),
       application(application),
-      transport(nullptr),
+      transport(transport),
       bundle(bundle),
       protocolState(TransferHeader),
-      direction(direction),
-      state(Transfer::Connecting),
+      direction(bundle ? Transfer::Send : Transfer::Receive),
+      state(bundle ? Transfer::Connecting : Transfer::InProgress),
       progress(0),
       itemIndex(0),
       itemCount(bundle ? bundle->rowCount(QModelIndex()) : 0),
@@ -68,10 +65,6 @@ TransferPrivate::TransferPrivate(Transfer *parent,
       currentItem(nullptr),
       currentItemBytesTransferred(0),
       currentItemBytesTotal(0)
-{
-}
-
-void TransferPrivate::initTransport()
 {
     // If sending data, trigger the first packet after connection
     if (direction == Transfer::Send) {
@@ -308,9 +301,7 @@ void TransferPrivate::setError(const QString &message, bool send)
     emit q->stateChanged(state = Transfer::Failed);
 
     // An error on either end necessitates the transport be closed
-    if (transport) {
-        transport->close();
-    }
+    transport->close();
 
     // The protocol dictates that the transfer is now "finished"
     protocolState = Finished;
@@ -382,40 +373,10 @@ void TransferPrivate::onError(const QString &message)
     setError(message, true);
 }
 
-Transfer::Transfer(Application *application, Transport *transport, QObject *parent)
+Transfer::Transfer(Application *application, Transport *transport, Bundle *bundle, QObject *parent)
     : QObject(parent),
-      d(new TransferPrivate(this, application, nullptr, Transfer::Receive))
+      d(new TransferPrivate(this, application, transport, bundle))
 {
-    d->transport = transport;
-    d->initTransport();
-
-    // Transfers that receive data are already "in progress"
-    d->state = InProgress;
-}
-
-Transfer::Transfer(Application *application, Device *device, Bundle *bundle, QObject *parent)
-    : QObject(parent),
-      d(new TransferPrivate(this, application, bundle, Transfer::Send))
-{
-    // Find the transport server
-    TransportServer *server =  d->application->transferModel()->findTransportServer(
-        device->transportName()
-    );
-    if (!server) {
-        d->setError(tr("unable to find transport \"%1\"").arg(device->transportName()));
-        return;
-    }
-
-    // Create the transport
-    Transport *transport = server->createTransport(device);
-    if (!transport) {
-        d->setError(tr("unable to create transport \"%1\"").arg(device->transportName()));
-        return;
-    }
-
-    d->transport = transport;
-    d->deviceName = device->name();
-    d->initTransport();
 }
 
 Transfer::Direction Transfer::direction() const
