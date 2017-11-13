@@ -26,6 +26,7 @@
 #define LIBNITROSHARE_APPLICATION_H
 
 #include <QObject>
+#include <QSettings>
 
 #include <nitroshare/config.h>
 
@@ -109,9 +110,10 @@ public:
 
     /**
      * @brief Create a new application object
+     * @param settings pointer to QSettings
      * @param parent QObject
      */
-    explicit Application(QObject *parent = nullptr);
+    explicit Application(QSettings *settings = nullptr, QObject *parent = nullptr);
 
     /**
      * @brief Clean up the application

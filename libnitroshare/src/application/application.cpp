@@ -44,7 +44,7 @@ const QString Application::DeviceNameSettingName = "DeviceName";
 const QString Application::PluginCategoryName = "plugin";
 const QString Application::PluginDirectoriesSettingName = "PluginDirectories";
 
-ApplicationPrivate::ApplicationPrivate(Application *application)
+ApplicationPrivate::ApplicationPrivate(Application *application, QSettings *existingSettings)
     : QObject(application),
       q(application),
       deviceCategory({
@@ -76,9 +76,10 @@ ApplicationPrivate::ApplicationPrivate(Application *application)
           { Setting::CategoryKey, Application::PluginCategoryName },
           { Setting::DefaultValueKey, QStringList() }
       }),
+      settings(existingSettings ? existingSettings : new QSettings(this)),
       actionRegistry(application),
       pluginModel(application),
-      settingsRegistry(&settings),
+      settingsRegistry(settings),
       transferModel(application),
       uiEnabled(false)
 {
@@ -108,9 +109,9 @@ QString ApplicationPrivate::defaultPluginDirectory() const
     );
 }
 
-Application::Application(QObject *parent)
+Application::Application(QSettings *settings, QObject *parent)
     : QObject(parent),
-      d(new ApplicationPrivate(this))
+      d(new ApplicationPrivate(this, settings))
 {
 }
 

@@ -44,7 +44,7 @@ class ApplicationPrivate : public QObject
 
 public:
 
-    explicit ApplicationPrivate(Application *application);
+    ApplicationPrivate(Application *application, QSettings *existingSettings);
     virtual ~ApplicationPrivate();
 
     QString defaultPluginDirectory() const;
@@ -58,7 +58,7 @@ public:
     Category pluginCategory;
     Setting pluginDirectories;
 
-    QSettings settings;
+    QSettings *settings;
 
     ActionRegistry actionRegistry;
     DeviceModel deviceModel;
