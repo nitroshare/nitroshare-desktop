@@ -31,6 +31,7 @@
 
 class Application;
 class Bundle;
+class Device;
 class Settings;
 class Transport;
 
@@ -80,22 +81,21 @@ public:
     };
 
     /**
-     * @brief Create a new transfer
+     * @brief Create a new transfer for sending items
+     * @param application pointer to Application
+     * @param device pointer to Device
+     * @param bundle pointer to Bundle
+     * @param parent QObject
+     */
+    Transfer(Application *application, Device *device, Bundle *bundle, QObject *parent = nullptr);
+
+    /**
+     * @brief Create a new transfer for receiving items
      * @param application pointer to Application
      * @param transport pointer to Transport
-     * @param bundle pointer to Bundle
-     * @param deviceName name of this device
      * @param parent QObject
-     *
-     * If bundle is NULL, the transfer will receive items. If bundle is
-     * provided, the transfer will send its items after the transport emits the
-     * connected() signal.
      */
-    Transfer(Application *application,
-             Transport *transport,
-             Bundle *bundle = nullptr,
-             const QString &deviceName = QString(),
-             QObject *parent = nullptr);
+    Transfer(Application *application, Transport *transport, QObject *parent = nullptr);
 
     /**
      * @brief Retrieve the direction of transfer

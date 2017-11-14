@@ -29,6 +29,8 @@
 
 #include "config.h"
 
+class MockTransport;
+
 class MOCK_EXPORT MockDevice : public Device
 {
     Q_OBJECT
@@ -38,9 +40,18 @@ public:
     static const QString Uuid;
     static const QString Name;
 
+    MockDevice();
+
     virtual QString uuid() const;
     virtual QString name() const;
     virtual QString transportName() const;
+
+    MockTransport *transport();
+    void setTransport(MockTransport *transport);
+
+private:
+
+    MockTransport *mTransport;
 };
 
 #endif // MOCKDEVICE_H

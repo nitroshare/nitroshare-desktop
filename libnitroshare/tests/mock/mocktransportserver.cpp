@@ -22,6 +22,7 @@
  * IN THE SOFTWARE.
  */
 
+#include "mockdevice.h"
 #include "mocktransport.h"
 #include "mocktransportserver.h"
 
@@ -32,7 +33,9 @@ QString MockTransportServer::name() const
     return Name;
 }
 
-Transport *MockTransportServer::createTransport(Device *)
+Transport *MockTransportServer::createTransport(Device *device)
 {
-    return new MockTransport;
+    auto transport = new MockTransport;
+    qobject_cast<MockDevice*>(device)->setTransport(transport);
+    return transport;
 }

@@ -28,6 +28,11 @@
 const QString MockDevice::Uuid = "device-uuid";
 const QString MockDevice::Name = "device-name";
 
+MockDevice::MockDevice()
+    : mTransport(nullptr)
+{
+}
+
 QString MockDevice::uuid() const
 {
     return Uuid;
@@ -42,3 +47,14 @@ QString MockDevice::transportName() const
 {
     return MockTransportServer::Name;
 }
+
+MockTransport *MockDevice::transport()
+{
+    return mTransport;
+}
+
+void MockDevice::setTransport(MockTransport *transport)
+{
+    mTransport = transport;
+}
+

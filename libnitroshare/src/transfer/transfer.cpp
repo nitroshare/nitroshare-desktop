@@ -31,6 +31,7 @@
 
 #include <nitroshare/application.h>
 #include <nitroshare/bundle.h>
+#include <nitroshare/device.h>
 #include <nitroshare/handler.h>
 #include <nitroshare/handlerregistry.h>
 #include <nitroshare/item.h>
@@ -39,43 +40,52 @@
 #include <nitroshare/message.h>
 #include <nitroshare/packet.h>
 #include <nitroshare/transfer.h>
+#include <nitroshare/transfermodel.h>
 #include <nitroshare/transport.h>
+#include <nitroshare/transportserver.h>
 
 #include "transfer_p.h"
 
 const QString MessageTag = "transfer";
 
-TransferPrivate::TransferPrivate(Transfer *parent,
+TransferPrivate::TransferPrivate(Transfer *transfer,
                                  Application *application,
+                                 Device *device,
                                  Transport *transport,
-                                 Bundle *bundle,
-                                 const QString &deviceName)
-    : QObject(parent),
-      q(parent),
+                                 Bundle *bundle)
+    : QObject(transfer),
+      q(transfer),
       application(application),
       transport(transport),
       bundle(bundle),
       protocolState(TransferHeader),
-      direction(bundle ? Transfer::Send : Transfer::Receive),
-      state(bundle ? Transfer::Connecting : Transfer::InProgress),
-      deviceName(deviceName),
+      direction(device ? Transfer::Send : Transfer::Receive),
+      state(device ? Transfer::Connecting : Transfer::InProgress),
       progress(0),
+      deviceName(device ? device->name() : tr("[unknown]")),
       itemIndex(0),
-      itemCount(bundle ? bundle->rowCount(QModelIndex()) : 0),
+      itemCount(bundle ? bundle->rowCount() : 0),
       bytesTransferred(0),
       bytesTotal(bundle ? bundle->totalSize() : 0),
       currentItem(nullptr),
       currentItemBytesTransferred(0),
       currentItemBytesTotal(0)
 {
-    // If sending data, trigger the first packet after connection
     if (direction == Transfer::Send) {
-        connect(transport, &Transport::connected, this, [&]() {
-            emit q->stateChanged(state = Transfer::InProgress);
-            onPacketSent();
-        });
+        TransportServer *transportServer = application->transferModel()->findTransportServer(
+            device->transportName()
+        );
+        if (!transportServer) {
+            setError(tr("unable to find \"%1\" transport").arg(device->transportName()));
+            return;
+        }
+        transport = transportServer->createTransport(device);
+        if (!transport) {
+            setError(tr("unable to create \"%1\" transport").arg(device->transportName()));
+            return;
+        }
+        connect(transport, &Transport::connected, this, &TransferPrivate::onConnected);
     }
-
     connect(transport, &Transport::packetReceived, this, &TransferPrivate::onPacketReceived);
     connect(transport, &Transport::packetSent, this, &TransferPrivate::onPacketSent);
     connect(transport, &Transport::error, this, &TransferPrivate::onError);
@@ -84,7 +94,7 @@ TransferPrivate::TransferPrivate(Transfer *parent,
 void TransferPrivate::sendTransferHeader()
 {
     QJsonObject object{
-        { "name", deviceName },
+        { "name", application->deviceName() },
         { "count", QString::number(bundle->rowCount(QModelIndex())) },
         { "size", QString::number(bundle->totalSize()) }
     };
@@ -312,6 +322,12 @@ void TransferPrivate::setError(const QString &message, bool send)
     protocolState = Finished;
 }
 
+void TransferPrivate::onConnected()
+{
+    emit q->stateChanged(state = Transfer::InProgress);
+    sendNext();
+}
+
 void TransferPrivate::onPacketReceived(Packet *packet)
 {
     // If an error packet is received, set the error and quit
@@ -378,13 +394,15 @@ void TransferPrivate::onError(const QString &message)
     setError(message, true);
 }
 
-Transfer::Transfer(Application *application,
-                   Transport *transport,
-                   Bundle *bundle,
-                   const QString &deviceName,
-                   QObject *parent)
+Transfer::Transfer(Application *application, Device *device, Bundle *bundle, QObject *parent)
     : QObject(parent),
-      d(new TransferPrivate(this, application, transport, bundle, deviceName))
+      d(new TransferPrivate(this, application, device, nullptr, bundle))
+{
+}
+
+Transfer::Transfer(Application *application, Transport *transport, QObject *parent)
+    : QObject(parent),
+      d(new TransferPrivate(this, application, nullptr, transport, nullptr))
 {
 }
 

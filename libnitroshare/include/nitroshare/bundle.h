@@ -64,7 +64,7 @@ public:
     qint64 totalSize() const;
 
     // Reimplemented virtual methods
-    virtual int rowCount(const QModelIndex &parent) const;
+    virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
     virtual QVariant data(const QModelIndex &index, int role) const;
 
 private:

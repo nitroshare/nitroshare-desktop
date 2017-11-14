@@ -31,6 +31,7 @@
 
 class Application;
 class Bundle;
+class Device;
 class Item;
 class Packet;
 class Transport;
@@ -41,11 +42,11 @@ class TransferPrivate : public QObject
 
 public:
 
-    TransferPrivate(Transfer *parent,
+    TransferPrivate(Transfer *transfer,
                     Application *application,
+                    Device *device,
                     Transport *transport,
-                    Bundle *bundle,
-                    const QString &deviceName);
+                    Bundle *bundle);
 
     void sendTransferHeader();
     void sendItemHeader();
@@ -92,6 +93,7 @@ public:
 
 public Q_SLOTS:
 
+    void onConnected();
     void onPacketReceived(Packet *packet);
     void onPacketSent();
     void onError(const QString &message);

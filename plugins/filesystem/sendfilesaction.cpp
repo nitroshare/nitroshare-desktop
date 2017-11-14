@@ -32,7 +32,6 @@
 #include <nitroshare/devicemodel.h>
 #include <nitroshare/transfer.h>
 #include <nitroshare/transfermodel.h>
-#include <nitroshare/transportserver.h>
 
 #include "file.h"
 #include "sendfilesaction.h"
@@ -86,26 +85,12 @@ QVariant SendFilesAction::invoke(const QVariantMap &params)
         return false;
     }
 
-    // Find the transport server
-    TransportServer *server = mApplication->transferModel()->findTransportServer(
-        device->transportName()
-    );
-    if (!server) {
-        return false;
-    }
-
-    // Create a transport
-    Transport *transport = server->createTransport(device);
-    if (!transport) {
-        return false;
-    }
-
     // Create a new bundle with the items that were provided
     Bundle *bundle = createBundle(params.value("items").toStringList());
 
     // Create the transfer
     mApplication->transferModel()->addTransfer(
-        new Transfer(mApplication, transport, bundle)
+        new Transfer(mApplication, device, bundle)
     );
 
     return true;

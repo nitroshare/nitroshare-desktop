@@ -80,23 +80,25 @@ void TestTransfer::initTestCase()
 
 void TestTransfer::testSending()
 {
-    MockTransport transport;
+    MockDevice device;
     Bundle bundle;
     bundle.add(new MockItem(MockItemName, MockItemData));
-    Transfer *transfer = new Transfer(&mApplication, &transport, &bundle, MockDevice::Name);
+    Transfer *transfer = new Transfer(&mApplication, &device, &bundle);
+
+    MockTransport *transport = device.transport();
 
     QCOMPARE(transfer->state(), Transfer::Connecting);
 
     // Have the transport complete the connection
-    transport.emitConnected();
+    transport->emitConnected();
 
     QCOMPARE(transfer->state(), Transfer::InProgress);
 
     // The first two packets should be JSON data (the transfer & item headers)
     // and the third will be the payload
-    QTRY_COMPARE(transport.packets().count(), 3);
+    QTRY_COMPARE(transport->packets().count(), 3);
 
-    const MockTransport::PacketList &packets = transport.packets();
+    const MockTransport::PacketList &packets = transport->packets();
 
     // Ensure the transfer header was sent correctly
     QCOMPARE(packets.at(0).first, Packet::Json);
@@ -113,10 +115,10 @@ void TestTransfer::testSending()
     QCOMPARE(transfer->state(), Transfer::InProgress);
 
     // Send the success packet
-    transport.sendData(Packet::Success);
+    transport->sendData(Packet::Success);
 
     QCOMPARE(transfer->state(), Transfer::Succeeded);
-    QVERIFY(transport.isClosed());
+    QVERIFY(transport->isClosed());
 }
 
 void TestTransfer::testReceiving()
