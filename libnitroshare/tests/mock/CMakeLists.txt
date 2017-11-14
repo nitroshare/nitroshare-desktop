@@ -1,6 +1,8 @@
 configure_file(config.h.in "${CMAKE_CURRENT_BINARY_DIR}/config.h")
 
 set(SRC
+    mockapplication.h
+    mockapplication.cpp
     mockdevice.h
     mockdevice.cpp
     mockhandler.h
