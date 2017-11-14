@@ -92,7 +92,7 @@ ApplicationPrivate::ApplicationPrivate(Application *application, QSettings *exis
     settingsRegistry.addSetting(&pluginDirectories);
 
     connect(&transportServerRegistry, &TransportServerRegistry::transportReceived, [&](Transport *transport) {
-        transferModel.addTransfer(new Transfer(q, transport));
+        transferModel.add(new Transfer(q, transport));
     });
 }
 

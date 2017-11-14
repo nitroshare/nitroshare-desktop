@@ -52,7 +52,7 @@ TransferModel::TransferModel(QObject *parent)
 {
 }
 
-void TransferModel::addTransfer(Transfer *transfer)
+void TransferModel::add(Transfer *transfer)
 {
     connect(transfer, &Transfer::stateChanged, d, &TransferModelPrivate::sendDataChanged);
     connect(transfer, &Transfer::progressChanged, d, &TransferModelPrivate::sendDataChanged);

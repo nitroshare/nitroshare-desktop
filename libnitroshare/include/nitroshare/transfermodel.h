@@ -54,7 +54,7 @@ public:
      *
      * The model assumes ownership of the transfer.
      */
-    void addTransfer(Transfer *transfer);
+    void add(Transfer *transfer);
 
     /**
      * @brief Dismiss the transfer at the specified index

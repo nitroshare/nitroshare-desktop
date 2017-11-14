@@ -89,7 +89,7 @@ QVariant SendFilesAction::invoke(const QVariantMap &params)
     Bundle *bundle = createBundle(params.value("items").toStringList());
 
     // Create the transfer
-    mApplication->transferModel()->addTransfer(
+    mApplication->transferModel()->add(
         new Transfer(mApplication, device, bundle)
     );
 

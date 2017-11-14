@@ -58,7 +58,7 @@ QVariant SendUrlAction::invoke(const QVariantMap &params)
     bundle->add(new Url(params.value("url").toString()));
 
     // Create the transfer
-    mApplication->transferModel()->addTransfer(
+    mApplication->transferModel()->add(
         new Transfer(mApplication, device, bundle)
     );
 
