@@ -145,6 +145,13 @@ Transport *LanTransportServer::createTransport(Device *device)
 
     // Verify that valid data was passed
     if (!addresses.count() || !port) {
+        mApplication->logger()->log(new Message(
+            Message::Error,
+            MessageTag,
+            QString("invalid addresses or port: %1, %2")
+                .arg(addresses.join(", "))
+                .arg(port)
+        ));
         return nullptr;
     }
 

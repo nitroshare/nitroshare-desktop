@@ -46,7 +46,7 @@ QString BroadcastDevice::transportName() const
 
 QStringList BroadcastDevice::addresses() const
 {
-    return { mObject.value("address").toString() };
+    return mAddresses.toList();
 }
 
 quint16 BroadcastDevice::port() const
@@ -54,8 +54,9 @@ quint16 BroadcastDevice::port() const
     return mObject.value("port").toInt();
 }
 
-void BroadcastDevice::update(qint64 curMs, const QJsonObject &object)
+void BroadcastDevice::update(qint64 curMs, const QHostAddress &address, const QJsonObject &object)
 {
+    mAddresses.insert(address.toString());
     mObject = object;
     mLastUpdate = curMs;
 }

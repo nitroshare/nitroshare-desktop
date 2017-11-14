@@ -25,7 +25,9 @@
 #ifndef BROADCASTDEVICE_H
 #define BROADCASTDEVICE_H
 
+#include <QHostAddress>
 #include <QJsonObject>
+#include <QSet>
 
 #include <nitroshare/device.h>
 
@@ -46,11 +48,12 @@ public:
     QStringList addresses() const;
     quint16 port() const;
 
-    void update(qint64 curMs, const QJsonObject &object);
+    void update(qint64 curMs, const QHostAddress &address, const QJsonObject &object);
     bool isExpired(qint64 curMs, int timeoutMs) const;
 
 private:
 
+    QSet<QString> mAddresses;
     QJsonObject mObject;
     qint64 mLastUpdate;
 };

@@ -120,7 +120,8 @@ void BroadcastEnumerator::onBroadcastTimeout()
     // Build the packet that will be broadcast
     QJsonObject object{
         { "uuid", mApplication->deviceUuid() },
-        { "name", mApplication->deviceName() }
+        { "name", mApplication->deviceName() },
+        { "port", mApplication->settingsRegistry()->value(BroadcastPort).toInt() }
     };
     QByteArray data = QJsonDocument(object).toJson(QJsonDocument::Compact);
 
@@ -184,7 +185,7 @@ void BroadcastEnumerator::onReadyRead()
         }
 
         // Update the device
-        device->update(curMs, object);
+        device->update(curMs, address, object);
 
         // Indicate that a new device was discovered
         if (!deviceExisted) {
