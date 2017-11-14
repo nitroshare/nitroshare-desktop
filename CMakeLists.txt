@@ -43,6 +43,15 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/out/${INSTALL_BIN_PATH}"
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/out/${INSTALL_LIB_PATH}")
 set(PLUGIN_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/out/${INSTALL_PLUGIN_PATH}")
 
+# Set appropriate compiler flags, etc.
+if(MSVC)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Weverything")
+elseif(CMAKE_COMPILER_IS_GNUCXX)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
+endif()
+
 # Documentation is disabled by default
 option(BUILD_DOC "Build Doxygen documentation" OFF)
 if(BUILD_DOC)
