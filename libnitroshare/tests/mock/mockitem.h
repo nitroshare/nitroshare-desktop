@@ -38,8 +38,10 @@ class MOCK_EXPORT MockItem : public Item
 public:
 
     static const QString Type;
+    static const QString Name;
+    static const QByteArray Data;
 
-    MockItem(const QString &name, const QByteArray &data);
+    MockItem();
     explicit MockItem(const QVariantMap &params);
 
     virtual QString type() const;
@@ -51,7 +53,6 @@ private:
 
     QString mName;
     qint64 mSize;
-
     QByteArray mData;
 };
 

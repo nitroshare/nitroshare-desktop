@@ -24,7 +24,6 @@
 
 #include <QJsonDocument>
 #include <QJsonObject>
-#include <QList>
 #include <QTest>
 
 #include <nitroshare/application.h>
@@ -33,26 +32,12 @@
 #include <nitroshare/transfer.h>
 #include <nitroshare/transportserverregistry.h>
 
+#include "mock/mockapplication.h"
 #include "mock/mockdevice.h"
 #include "mock/mockhandler.h"
 #include "mock/mockitem.h"
 #include "mock/mocktransport.h"
 #include "mock/mocktransportserver.h"
-
-const QString MockItemName = "test.txt";
-const QByteArray MockItemData = "test";
-
-const QJsonObject MockTransferHeader{
-    { "name", MockDevice::Name },
-    { "size", QString::number(MockItemData.size()) },
-    { "count", QString::number(1) }
-};
-
-const QJsonObject MockItemHeader{
-    { "name", MockItemName },
-    { "type", MockItem::Type },
-    { "size", QString::number(MockItemData.size()) }
-};
 
 class TestTransfer : public QObject
 {
@@ -67,26 +52,28 @@ private slots:
 
 private:
 
-    Application mApplication;
+    MockApplication mApplication;
     MockHandler mHandler;
     MockTransportServer mTransportServer;
 };
 
 void TestTransfer::initTestCase()
 {
-    mApplication.handlerRegistry()->add(&mHandler);
-    mApplication.transportServerRegistry()->add(&mTransportServer);
+    mApplication.application()->handlerRegistry()->add(&mHandler);
+    mApplication.application()->transportServerRegistry()->add(&mTransportServer);
 }
 
 void TestTransfer::testSending()
 {
     MockDevice device;
     Bundle bundle;
-    bundle.add(new MockItem(MockItemName, MockItemData));
-    Transfer *transfer = new Transfer(&mApplication, &device, &bundle);
+    bundle.add(new MockItem);
+    Transfer *transfer = new Transfer(mApplication.application(), &device, &bundle);
 
+    // The device saves a copy of the transport so that it can be retrieved
     MockTransport *transport = device.transport();
 
+    QCOMPARE(transfer->direction(), Transfer::Send);
     QCOMPARE(transfer->state(), Transfer::Connecting);
 
     // Have the transport complete the connection
@@ -102,15 +89,25 @@ void TestTransfer::testSending()
 
     // Ensure the transfer header was sent correctly
     QCOMPARE(packets.at(0).first, Packet::Json);
-    QCOMPARE(QJsonDocument::fromJson(packets.at(0).second).object(), MockTransferHeader);
+    QJsonObject transferHeader{
+        { "name", MockApplication::DeviceName },
+        { "size", QString::number(MockItem::Data.size()) },
+        { "count", QString::number(1) }
+    };
+    QCOMPARE(QJsonDocument::fromJson(packets.at(0).second).object(), transferHeader);
 
     // Ensure the item header was sent correctly
     QCOMPARE(packets.at(1).first, Packet::Json);
-    QCOMPARE(QJsonDocument::fromJson(packets.at(1).second).object(), MockItemHeader);
+    QJsonObject itemHeader{
+        { "name", MockItem::Name },
+        { "type", MockItem::Type },
+        { "size", QString::number(MockItem::Data.size()) }
+    };
+    QCOMPARE(QJsonDocument::fromJson(packets.at(1).second).object(), itemHeader);
 
     // Ensure the item was sent correctly
     QCOMPARE(packets.at(2).first, Packet::Binary);
-    QCOMPARE(packets.at(2).second, MockItemData);
+    QCOMPARE(packets.at(2).second, MockItem::Data);
 
     QCOMPARE(transfer->state(), Transfer::InProgress);
 
@@ -124,18 +121,29 @@ void TestTransfer::testSending()
 void TestTransfer::testReceiving()
 {
     MockTransport transport;
-    Transfer *transfer = new Transfer(&mApplication, &transport);
+    Transfer *transfer = new Transfer(mApplication.application(), &transport);
 
+    QCOMPARE(transfer->direction(), Transfer::Receive);
     QCOMPARE(transfer->state(), Transfer::InProgress);
 
     // Send the transfer header to the transport
-    transport.sendData(Packet::Json, QJsonDocument(MockTransferHeader).toJson());
+    QJsonObject transferHeader{
+        { "name", MockDevice::Name },
+        { "size", QString::number(MockItem::Data.size()) },
+        { "count", QString::number(1) }
+    };
+    transport.sendData(Packet::Json, QJsonDocument(transferHeader).toJson());
 
     QCOMPARE(transfer->deviceName(), MockDevice::Name);
 
     // Send the item header to the transport followed by the data for the item
-    transport.sendData(Packet::Json, QJsonDocument(MockItemHeader).toJson());
-    transport.sendData(Packet::Binary, MockItemData);
+    QJsonObject itemHeader{
+        { "name", MockItem::Name },
+        { "type", MockItem::Type },
+        { "size", QString::number(MockItem::Data.size()) }
+    };
+    transport.sendData(Packet::Json, QJsonDocument(itemHeader).toJson());
+    transport.sendData(Packet::Binary, MockItem::Data);
 
     QTRY_COMPARE(transfer->state(), Transfer::Succeeded);
 

@@ -25,11 +25,13 @@
 #include "mockitem.h"
 
 const QString MockItem::Type = "item";
+const QString MockItem::Name = "name";
+const QByteArray MockItem::Data = "data";
 
-MockItem::MockItem(const QString &name, const QByteArray &data)
-    : mName(name),
-      mSize(data.size()),
-      mData(data)
+MockItem::MockItem()
+    : mName(Name),
+      mSize(Data.size()),
+      mData(Data)
 {
 }
 
