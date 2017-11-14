@@ -31,7 +31,7 @@
 #include <nitroshare/bundle.h>
 #include <nitroshare/handlerregistry.h>
 #include <nitroshare/transfer.h>
-#include <nitroshare/transfermodel.h>
+#include <nitroshare/transportserverregistry.h>
 
 #include "mock/mockdevice.h"
 #include "mock/mockhandler.h"
@@ -75,7 +75,7 @@ private:
 void TestTransfer::initTestCase()
 {
     mApplication.handlerRegistry()->add(&mHandler);
-    mApplication.transferModel()->addTransportServer(&mTransportServer);
+    mApplication.transportServerRegistry()->add(&mTransportServer);
 }
 
 void TestTransfer::testSending()

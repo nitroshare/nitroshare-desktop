@@ -25,15 +25,11 @@
 #ifndef LIBNITROSHARE_TRANSFERMODEL_P_H
 #define LIBNITROSHARE_TRANSFERMODEL_P_H
 
-#include <QHash>
 #include <QList>
 #include <QObject>
 
-class Application;
 class Transfer;
 class TransferModel;
-class Transport;
-class TransportServer;
 
 class TransferModelPrivate : public QObject
 {
@@ -41,20 +37,16 @@ class TransferModelPrivate : public QObject
 
 public:
 
-    explicit TransferModelPrivate(TransferModel *model, Application *application);
+    explicit TransferModelPrivate(TransferModel *model);
     virtual ~TransferModelPrivate();
 
     TransferModel *const q;
 
-    Application *application;
-
-    QHash<QString, TransportServer*> transportServers;
     QList<Transfer*> transfers;
 
 public Q_SLOTS:
 
     void sendDataChanged();
-    void processTransport(Transport *transport);
 };
 
 #endif // LIBNITROSHARE_TRANSFERMODEL_P_H

@@ -42,7 +42,7 @@
 #include <nitroshare/transfer.h>
 #include <nitroshare/transfermodel.h>
 #include <nitroshare/transport.h>
-#include <nitroshare/transportserver.h>
+#include <nitroshare/transportserverregistry.h>
 
 #include "transfer_p.h"
 
@@ -72,14 +72,7 @@ TransferPrivate::TransferPrivate(Transfer *transfer,
       currentItemBytesTotal(0)
 {
     if (direction == Transfer::Send) {
-        TransportServer *transportServer = application->transferModel()->findTransportServer(
-            device->transportName()
-        );
-        if (!transportServer) {
-            setError(tr("unable to find \"%1\" transport").arg(device->transportName()));
-            return;
-        }
-        transport = transportServer->createTransport(device);
+        transport = application->transportServerRegistry()->createTransport(device);
         if (!transport) {
             setError(tr("unable to create \"%1\" transport").arg(device->transportName()));
             return;

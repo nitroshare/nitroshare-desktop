@@ -23,7 +23,7 @@
  */
 
 #include <nitroshare/application.h>
-#include <nitroshare/transfermodel.h>
+#include <nitroshare/transportserverregistry.h>
 
 #include "lanplugin.h"
 #include "lantransportserver.h"
@@ -31,11 +31,11 @@
 void LanPlugin::initialize(Application *application)
 {
     mServer = new LanTransportServer(application);
-    application->transferModel()->addTransportServer(mServer);
+    application->transportServerRegistry()->add(mServer);
 }
 
 void LanPlugin::cleanup(Application *application)
 {
-    application->transferModel()->removeTransportServer(mServer);
+    application->transportServerRegistry()->remove(mServer);
     delete mServer;
 }

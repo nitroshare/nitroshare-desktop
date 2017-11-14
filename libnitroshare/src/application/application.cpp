@@ -31,6 +31,8 @@
 #include <QUuid>
 
 #include <nitroshare/application.h>
+#include <nitroshare/transfer.h>
+#include <nitroshare/transport.h>
 
 #include "application_p.h"
 
@@ -80,7 +82,6 @@ ApplicationPrivate::ApplicationPrivate(Application *application, QSettings *exis
       actionRegistry(application),
       pluginModel(application),
       settingsRegistry(settings),
-      transferModel(application),
       uiEnabled(false)
 {
     settingsRegistry.addCategory(&deviceCategory);
@@ -89,6 +90,10 @@ ApplicationPrivate::ApplicationPrivate(Application *application, QSettings *exis
 
     settingsRegistry.addCategory(&pluginCategory);
     settingsRegistry.addSetting(&pluginDirectories);
+
+    connect(&transportServerRegistry, &TransportServerRegistry::transportReceived, [&](Transport *transport) {
+        transferModel.addTransfer(new Transfer(q, transport));
+    });
 }
 
 ApplicationPrivate::~ApplicationPrivate()

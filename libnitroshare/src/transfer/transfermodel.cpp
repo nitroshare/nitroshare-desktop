@@ -22,19 +22,14 @@
  * IN THE SOFTWARE.
  */
 
-#include <nitroshare/application.h>
-#include <nitroshare/device.h>
 #include <nitroshare/transfer.h>
 #include <nitroshare/transfermodel.h>
-#include <nitroshare/transport.h>
-#include <nitroshare/transportserver.h>
 
 #include "transfermodel_p.h"
 
-TransferModelPrivate::TransferModelPrivate(TransferModel *model, Application *application)
+TransferModelPrivate::TransferModelPrivate(TransferModel *model)
     : QObject(model),
-      q(model),
-      application(application)
+      q(model)
 {
 }
 
@@ -51,33 +46,10 @@ void TransferModelPrivate::sendDataChanged()
     emit q->dataChanged(q->index(row, 0), q->index(row, 0));
 }
 
-void TransferModelPrivate::processTransport(Transport *transport)
-{
-    // Create a new transfer from the transport
-    q->addTransfer(new Transfer(application, transport));
-}
-
-TransferModel::TransferModel(Application *application, QObject *parent)
+TransferModel::TransferModel(QObject *parent)
     : QAbstractListModel(parent),
-      d(new TransferModelPrivate(this, application))
+      d(new TransferModelPrivate(this))
 {
-}
-
-void TransferModel::addTransportServer(TransportServer *server)
-{
-    connect(server, &TransportServer::transportReceived, d, &TransferModelPrivate::processTransport);
-    d->transportServers.insert(server->name(), server);
-}
-
-void TransferModel::removeTransportServer(TransportServer *server)
-{
-    disconnect(server, &TransportServer::transportReceived, d, &TransferModelPrivate::processTransport);
-    d->transportServers.remove(server->name());
-}
-
-TransportServer *TransferModel::findTransportServer(const QString &name) const
-{
-    return d->transportServers.value(name);
 }
 
 void TransferModel::addTransfer(Transfer *transfer)
