@@ -62,18 +62,16 @@ QVariant SendUrlUiAction::invoke(const QVariantMap &)
         return false;
     }
 
-    // Browse for a device
-    Action *browseAction = mApplication->actionRegistry()->find("browse");
-    QVariant returnValue = browseAction->invoke();
-    if (returnValue.type() != QVariant::Map) {
+    // Invoke the device selection dialog to select a device
+    QVariant deviceRet = mApplication->actionRegistry()->find("selectdeviceui")->invoke();
+    if (deviceRet.type() != QVariant::Map) {
         return false;
     }
 
-    // Find & invoke the sendurl action
-    Action *sendUrlAction = mApplication->actionRegistry()->find("sendurl");
-    return sendUrlAction->invoke({
-        { "device", returnValue.toMap().value("device") },
-        { "enumerator", returnValue.toMap().value("enumerator") },
+    // Invoke the send URL action to initiate the transfer
+    mApplication->actionRegistry()->find("sendurl")->invoke({
+        { "device", deviceRet.toMap().value("device") },
+        { "enumerator", deviceRet.toMap().value("enumerator") },
         { "url", url }
     });
 }
