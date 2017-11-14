@@ -37,6 +37,7 @@
 #include <nitroshare/setting.h>
 #include <nitroshare/settingsregistry.h>
 #include <nitroshare/transfermodel.h>
+#include <nitroshare/transportserverregistry.h>
 
 class ApplicationPrivate : public QObject
 {
@@ -67,6 +68,7 @@ public:
     PluginModel pluginModel;
     SettingsRegistry settingsRegistry;
     TransferModel transferModel;
+    TransportServerRegistry transportServerRegistry;
 
     bool uiEnabled;
 };

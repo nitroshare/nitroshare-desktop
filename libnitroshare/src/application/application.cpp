@@ -202,6 +202,11 @@ TransferModel *Application::transferModel() const
     return &d->transferModel;
 }
 
+TransportServerRegistry *Application::transportServerRegistry() const
+{
+    return &d->transportServerRegistry;
+}
+
 bool Application::isUiEnabled() const
 {
     return d->uiEnabled;

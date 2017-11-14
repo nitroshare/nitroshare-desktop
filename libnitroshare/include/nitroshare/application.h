@@ -39,6 +39,7 @@ class Logger;
 class PluginModel;
 class SettingsRegistry;
 class TransferModel;
+class TransportServerRegistry;
 
 class NITROSHARE_EXPORT ApplicationPrivate;
 
@@ -191,6 +192,12 @@ public:
      * @return pointer to TransferModel
      */
     TransferModel *transferModel() const;
+
+    /**
+     * @brief Retrieve the global TransportServerRegistry instance
+     * @return pointer to TransportServerRegistry
+     */
+    TransportServerRegistry *transportServerRegistry() const;
 
     /**
      * @brief Determine if UI is enabled
