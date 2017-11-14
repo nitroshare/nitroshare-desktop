@@ -55,73 +55,73 @@ TransferPrivate::TransferPrivate(Transfer *transfer,
                                  Bundle *bundle)
     : QObject(transfer),
       q(transfer),
-      application(application),
-      transport(transport),
-      bundle(bundle),
-      protocolState(TransferHeader),
-      direction(device ? Transfer::Send : Transfer::Receive),
-      state(device ? Transfer::Connecting : Transfer::InProgress),
-      progress(0),
-      deviceName(device ? device->name() : tr("[unknown]")),
-      itemIndex(0),
-      itemCount(bundle ? bundle->rowCount() : 0),
-      bytesTransferred(0),
-      bytesTotal(bundle ? bundle->totalSize() : 0),
-      currentItem(nullptr),
-      currentItemBytesTransferred(0),
-      currentItemBytesTotal(0)
+      mApplication(application),
+      mTransport(transport),
+      mBundle(bundle),
+      mProtocolState(TransferHeader),
+      mDirection(device ? Transfer::Send : Transfer::Receive),
+      mState(device ? Transfer::Connecting : Transfer::InProgress),
+      mProgress(0),
+      mDeviceName(device ? device->name() : tr("[unknown]")),
+      mItemIndex(0),
+      mItemCount(bundle ? bundle->rowCount() : 0),
+      mBytesTransferred(0),
+      mBytesTotal(bundle ? bundle->totalSize() : 0),
+      mCurrentItem(nullptr),
+      mCurrentItemBytesTransferred(0),
+      mCurrentItemBytesTotal(0)
 {
-    if (direction == Transfer::Send) {
-        transport = application->transportServerRegistry()->createTransport(device);
-        if (!transport) {
+    if (mDirection == Transfer::Send) {
+        mTransport = application->transportServerRegistry()->createTransport(device);
+        if (!mTransport) {
             setError(tr("unable to create \"%1\" transport").arg(device->transportName()));
             return;
         }
-        connect(transport, &Transport::connected, this, &TransferPrivate::onConnected);
+        connect(mTransport, &Transport::connected, this, &TransferPrivate::onConnected);
     }
-    connect(transport, &Transport::packetReceived, this, &TransferPrivate::onPacketReceived);
-    connect(transport, &Transport::packetSent, this, &TransferPrivate::onPacketSent);
-    connect(transport, &Transport::error, this, &TransferPrivate::onError);
+    connect(mTransport, &Transport::packetReceived, this, &TransferPrivate::onPacketReceived);
+    connect(mTransport, &Transport::packetSent, this, &TransferPrivate::onPacketSent);
+    connect(mTransport, &Transport::error, this, &TransferPrivate::onError);
 }
 
 void TransferPrivate::sendTransferHeader()
 {
     QJsonObject object{
-        { "name", application->deviceName() },
-        { "count", QString::number(bundle->rowCount(QModelIndex())) },
-        { "size", QString::number(bundle->totalSize()) }
+        { "name", mApplication->deviceName() },
+        { "count", QString::number(mBundle->rowCount(QModelIndex())) },
+        { "size", QString::number(mBundle->totalSize()) }
     };
 
     Packet packet(Packet::Json, QJsonDocument(object).toJson());
-    transport->sendPacket(&packet);
+    mTransport->sendPacket(&packet);
 
     // The next packet will be an item header
-    protocolState = ItemHeader;
+    mProtocolState = ItemHeader;
 }
 
 void TransferPrivate::sendItemHeader()
 {
     // Grab the next item and attempt to open it
-    currentItem = bundle->index(itemIndex, 0).data(Qt::UserRole).value<Item*>();
-    if (!currentItem->open(Item::Read)) {
-        setError(tr("unable to open \"%1\" for reading").arg(currentItem->name()), true);
+    mCurrentItem = mBundle->index(mItemIndex, 0).data(Qt::UserRole).value<Item*>();
+    if (!mCurrentItem->open(Item::Read)) {
+        setError(tr("unable to open \"%1\" for reading").arg(mCurrentItem->name()), true);
         return;
     }
 
     // Reset transfer stats
-    currentItemBytesTransferred = 0;
-    currentItemBytesTotal = currentItem->size();
+    mCurrentItemBytesTransferred = 0;
+    mCurrentItemBytesTotal = mCurrentItem->size();
 
     // Build a JSON object with all of the properties
-    QJsonObject object = JsonUtil::objectToJson(currentItem);
+    QJsonObject object = JsonUtil::objectToJson(mCurrentItem);
 
     // Send the item header
     Packet packet(Packet::Json, QJsonDocument(object).toJson());
-    transport->sendPacket(&packet);
+    mTransport->sendPacket(&packet);
 
     // If the item has a size, switch states; otherwise send the next item
-    if (currentItemBytesTotal) {
-        protocolState = ItemContent;
+    if (mCurrentItemBytesTotal) {
+        mProtocolState = ItemContent;
     } else {
         sendNext();
     }
@@ -129,18 +129,18 @@ void TransferPrivate::sendItemHeader()
 
 void TransferPrivate::sendItemContent()
 {
-    QByteArray data = currentItem->read();
+    QByteArray data = mCurrentItem->read();
     Packet packet(Packet::Binary, data);
-    transport->sendPacket(&packet);
+    mTransport->sendPacket(&packet);
 
     // Increment the number of bytes written to the socket
-    bytesTransferred += data.length();
-    currentItemBytesTransferred += data.length();
+    mBytesTransferred += data.length();
+    mCurrentItemBytesTransferred += data.length();
 
     updateProgress();
 
     // If the item completed, send the next one
-    if (currentItemBytesTransferred >= currentItemBytesTotal) {
+    if (mCurrentItemBytesTransferred >= mCurrentItemBytesTotal) {
         sendNext();
     }
 }
@@ -148,15 +148,15 @@ void TransferPrivate::sendItemContent()
 void TransferPrivate::sendNext()
 {
     // Close the current item and increment the index
-    currentItem->close();
-    ++itemIndex;
+    mCurrentItem->close();
+    ++mItemIndex;
 
     // If all items have been sent, move to the finished state and wait for
     // the success packet; otherwise, prepare to send the next item
-    if (itemIndex == itemCount) {
-        protocolState = Finished;
+    if (mItemIndex == mItemCount) {
+        mProtocolState = Finished;
     } else {
-        protocolState = ItemHeader;
+        mProtocolState = ItemHeader;
     }
 }
 
@@ -170,17 +170,17 @@ void TransferPrivate::processTransferHeader(Packet *packet)
     }
 
     // If the device name was provided, use it
-    deviceName = object.value("name").toString();
-    if (!deviceName.isEmpty()) {
-        emit q->deviceNameChanged(deviceName);
+    mDeviceName = object.value("name").toString();
+    if (!mDeviceName.isEmpty()) {
+        emit q->deviceNameChanged(mDeviceName);
     }
 
     // Strings must be used for 64-bit numbers
-    itemCount = object.value("count").toString().toInt();
-    bytesTotal = object.value("size").toString().toLongLong();
+    mItemCount = object.value("count").toString().toInt();
+    mBytesTotal = object.value("size").toString().toLongLong();
 
     // Prepare to receive the first item
-    protocolState = ItemHeader;
+    mProtocolState = ItemHeader;
 }
 
 void TransferPrivate::processItemHeader(Packet *packet)
@@ -207,27 +207,27 @@ void TransferPrivate::processItemHeader(Packet *packet)
     }
 
     // Attempt to locate a handler for the type
-    Handler *handler = application->handlerRegistry()->find(type);
+    Handler *handler = mApplication->handlerRegistry()->find(type);
     if (!handler) {
         setError(tr("unrecognized item type \"%1\"").arg(type), true);
         return;
     }
 
     // Use the handler to create an item and open it
-    currentItem = handler->createItem(type, object.toVariantMap());
-    currentItem->setParent(this);
-    if (!currentItem->open(Item::Write)) {
-        setError(tr("unable to open \"%1\" for writing").arg(currentItem->name()), true);
+    mCurrentItem = handler->createItem(type, object.toVariantMap());
+    mCurrentItem->setParent(this);
+    if (!mCurrentItem->open(Item::Write)) {
+        setError(tr("unable to open \"%1\" for writing").arg(mCurrentItem->name()), true);
         return;
     }
 
     // Reset transfer stats
-    currentItemBytesTransferred = 0;
-    currentItemBytesTotal = currentItem->size();
+    mCurrentItemBytesTransferred = 0;
+    mCurrentItemBytesTotal = mCurrentItem->size();
 
     // If the item has a size, switch states; otherwise receive the next item
-    if (currentItemBytesTotal) {
-        protocolState = ItemContent;
+    if (mCurrentItemBytesTotal) {
+        mProtocolState = ItemContent;
     } else {
         processNext();
     }
@@ -235,16 +235,16 @@ void TransferPrivate::processItemHeader(Packet *packet)
 
 void TransferPrivate::processItemContent(Packet *packet)
 {
-    currentItem->write(packet->content());
+    mCurrentItem->write(packet->content());
 
     // Add the number of bytes to the global & current item totals
-    bytesTransferred += packet->content().size();
-    currentItemBytesTransferred += packet->content().size();
+    mBytesTransferred += packet->content().size();
+    mCurrentItemBytesTransferred += packet->content().size();
 
     updateProgress();
 
     // If the current item is complete, advance to the next item or finish
-    if (currentItemBytesTransferred >= currentItemBytesTotal) {
+    if (mCurrentItemBytesTransferred >= mCurrentItemBytesTotal) {
         processNext();
     }
 }
@@ -252,30 +252,30 @@ void TransferPrivate::processItemContent(Packet *packet)
 void TransferPrivate::processNext()
 {
     // Close & free the current item and increment the index
-    currentItem->close();
-    delete currentItem;
-    ++itemIndex;
+    mCurrentItem->close();
+    delete mCurrentItem;
+    ++mItemIndex;
 
     // If there are no more items, send the success packet
-    if (itemIndex == itemCount) {
+    if (mItemIndex == mItemCount) {
         setSuccess(true);
     } else {
-        protocolState = ItemHeader;
+        mProtocolState = ItemHeader;
     }
 }
 
 void TransferPrivate::updateProgress()
 {
     int newProgress = 0;
-    if (bytesTotal) {
+    if (mBytesTotal) {
         newProgress = static_cast<int>(100.0 *
-            static_cast<double>(bytesTransferred) /
-            static_cast<double>(bytesTotal));
+            static_cast<double>(mBytesTransferred) /
+            static_cast<double>(mBytesTotal));
     }
 
     // Only update progress if it has actually changed
-    if (newProgress != progress) {
-        emit q->progressChanged(progress = newProgress);
+    if (newProgress != mProgress) {
+        emit q->progressChanged(mProgress = newProgress);
     }
 }
 
@@ -283,18 +283,18 @@ void TransferPrivate::setSuccess(bool send)
 {
     if (send) {
         Packet packet(Packet::Success);
-        transport->sendPacket(&packet);
+        mTransport->sendPacket(&packet);
     }
 
-    emit q->stateChanged(state = Transfer::Succeeded);
+    emit q->stateChanged(mState = Transfer::Succeeded);
 
     // Both peers should be aware that the transfer succeeded at this point
-    transport->close();
+    mTransport->close();
 }
 
 void TransferPrivate::setError(const QString &message, bool send)
 {
-    application->logger()->log(new Message(
+    mApplication->logger()->log(new Message(
         Message::Error,
         MessageTag,
         message
@@ -302,23 +302,23 @@ void TransferPrivate::setError(const QString &message, bool send)
 
     if (send) {
         Packet packet(Packet::Error, message.toUtf8());
-        transport->sendPacket(&packet);
+        mTransport->sendPacket(&packet);
     }
 
-    emit q->errorChanged(error = message);
-    emit q->stateChanged(state = Transfer::Failed);
+    emit q->errorChanged(mError = message);
+    emit q->stateChanged(mState = Transfer::Failed);
 
     // An error on either end necessitates the transport be closed
-    transport->close();
+    mTransport->close();
 
     // The protocol dictates that the transfer is now "finished"
-    protocolState = Finished;
+    mProtocolState = Finished;
 }
 
 void TransferPrivate::onConnected()
 {
-    emit q->stateChanged(state = Transfer::InProgress);
-    sendNext();
+    emit q->stateChanged(mState = Transfer::InProgress);
+    sendTransferHeader();
 }
 
 void TransferPrivate::onPacketReceived(Packet *packet)
@@ -329,11 +329,11 @@ void TransferPrivate::onPacketReceived(Packet *packet)
         return;
     }
 
-    if (direction == Transfer::Send) {
+    if (mDirection == Transfer::Send) {
 
         // The only packet expected when sending items is the success packet
         // which indicates the receiver got all of the files
-        if (protocolState == Finished && packet->type() == Packet::Success) {
+        if (mProtocolState == Finished && packet->type() == Packet::Success) {
             setSuccess();
             return;
         }
@@ -341,7 +341,7 @@ void TransferPrivate::onPacketReceived(Packet *packet)
     } else {
 
         // Dispatch the packet to the appropriate method based on state
-        switch (protocolState) {
+        switch (mProtocolState) {
         case TransferHeader:
             processTransferHeader(packet);
             return;
@@ -363,11 +363,11 @@ void TransferPrivate::onPacketReceived(Packet *packet)
 void TransferPrivate::onPacketSent()
 {
     // We don't care about sent packets when receiving data
-    if (direction == Transfer::Receive) {
+    if (mDirection == Transfer::Receive) {
         return;
     }
 
-    switch (protocolState) {
+    switch (mProtocolState) {
     case TransferHeader:
         sendTransferHeader();
         break;
@@ -401,32 +401,32 @@ Transfer::Transfer(Application *application, Transport *transport, QObject *pare
 
 Transfer::Direction Transfer::direction() const
 {
-    return d->direction;
+    return d->mDirection;
 }
 
 Transfer::State Transfer::state() const
 {
-    return d->state;
+    return d->mState;
 }
 
 int Transfer::progress() const
 {
-    return d->progress;
+    return d->mProgress;
 }
 
 QString Transfer::deviceName() const
 {
-    return d->deviceName;
+    return d->mDeviceName;
 }
 
 QString Transfer::error() const
 {
-    return d->error;
+    return d->mError;
 }
 
 bool Transfer::isFinished() const
 {
-    return d->state == Failed || d->state == Succeeded;
+    return d->mState == Failed || d->mState == Succeeded;
 }
 
 void Transfer::cancel()

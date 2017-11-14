@@ -43,10 +43,10 @@ class TransferPrivate : public QObject
 public:
 
     TransferPrivate(Transfer *transfer,
-                    Application *application,
+                    Application *mApplication,
                     Device *device,
-                    Transport *transport,
-                    Bundle *bundle);
+                    Transport *mTransport,
+                    Bundle *mBundle);
 
     void sendTransferHeader();
     void sendItemHeader();
@@ -65,31 +65,31 @@ public:
 
     Transfer *const q;
 
-    Application *application;
-    Transport *transport;
-    Bundle *bundle;
+    Application *mApplication;
+    Transport *mTransport;
+    Bundle *mBundle;
 
     enum {
         TransferHeader,
         ItemHeader,
         ItemContent,
         Finished
-    } protocolState;
+    } mProtocolState;
 
-    Transfer::Direction direction;
-    Transfer::State state;
-    int progress;
-    QString deviceName;
-    QString error;
+    Transfer::Direction mDirection;
+    Transfer::State mState;
+    int mProgress;
+    QString mDeviceName;
+    QString mError;
 
-    qint32 itemIndex;
-    qint32 itemCount;
-    qint64 bytesTransferred;
-    qint64 bytesTotal;
+    qint32 mItemIndex;
+    qint32 mItemCount;
+    qint64 mBytesTransferred;
+    qint64 mBytesTotal;
 
-    Item *currentItem;
-    qint64 currentItemBytesTransferred;
-    qint64 currentItemBytesTotal;
+    Item *mCurrentItem;
+    qint64 mCurrentItemBytesTransferred;
+    qint64 mCurrentItemBytesTotal;
 
 public Q_SLOTS:
 
