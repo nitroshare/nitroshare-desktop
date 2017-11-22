@@ -25,7 +25,6 @@
 #ifndef FILE_H
 #define FILE_H
 
-#include <QDateTime>
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
@@ -41,9 +40,9 @@ class File : public Item
     Q_OBJECT
     Q_PROPERTY(bool readOnly READ readOnly)
     Q_PROPERTY(bool executable READ executable)
-    Q_PROPERTY(QDateTime created READ created)
-    Q_PROPERTY(QDateTime lastRead READ lastRead)
-    Q_PROPERTY(QDateTime lastModified READ lastModified)
+    Q_PROPERTY(qint64 created READ created)
+    Q_PROPERTY(qint64 lastRead READ lastRead)
+    Q_PROPERTY(qint64 lastModified READ lastModified)
 
     // Properties provided for legacy support
     Q_PROPERTY(qint64 last_read READ last_read)
@@ -56,9 +55,9 @@ public:
 
     bool readOnly() const;
     bool executable() const;
-    QDateTime created() const;
-    QDateTime lastRead() const;
-    QDateTime lastModified() const;
+    qint64 created() const;
+    qint64 lastRead() const;
+    qint64 lastModified() const;
 
     qint64 last_read() const;
     qint64 last_modified() const;
@@ -84,9 +83,9 @@ private:
     bool mReadOnly;
     bool mExecutable;
 
-    QDateTime mCreated;
-    QDateTime mLastRead;
-    QDateTime mLastModified;
+    qint64 mCreated;
+    qint64 mLastRead;
+    qint64 mLastModified;
 };
 
 #endif // FILE_H

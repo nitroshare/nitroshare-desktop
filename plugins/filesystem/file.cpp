@@ -22,6 +22,8 @@
  * IN THE SOFTWARE.
  */
 
+#include <QDateTime>
+
 #include "file.h"
 
 File::File(const QString &root, const QVariantMap &properties)
@@ -35,9 +37,9 @@ File::File(const QString &root, const QVariantMap &properties)
     mReadOnly = properties.value("read_only").toBool();
     mExecutable = properties.value("executable").toBool();
 
-    mCreated = QDateTime::fromMSecsSinceEpoch(properties.value("created").toInt());
-    mLastRead = QDateTime::fromMSecsSinceEpoch(properties.value("last_read").toInt());
-    mLastModified = QDateTime::fromMSecsSinceEpoch(properties.value("last_modified").toInt());
+    mCreated = properties.value("created").toInt();
+    mLastRead = properties.value("last_read").toInt();
+    mLastModified = properties.value("last_modified").toInt();
 }
 
 File::File(const QDir &root, const QFileInfo &info, int blockSize)
@@ -51,9 +53,9 @@ File::File(const QDir &root, const QFileInfo &info, int blockSize)
     mReadOnly = !info.isWritable();
     mExecutable = info.isExecutable();
 
-    mCreated = info.created();
-    mLastRead = info.lastRead();
-    mLastModified = info.lastModified();
+    mCreated = info.created().toMSecsSinceEpoch();
+    mLastRead = info.lastRead().toMSecsSinceEpoch();
+    mLastModified = info.lastModified().toMSecsSinceEpoch();
 }
 
 bool File::readOnly() const
@@ -66,29 +68,29 @@ bool File::executable() const
     return mExecutable;
 }
 
-QDateTime File::created() const
+qint64 File::created() const
 {
     return mCreated;
 }
 
-QDateTime File::lastRead() const
+qint64 File::lastRead() const
 {
     return mLastRead;
 }
 
-QDateTime File::lastModified() const
+qint64 File::lastModified() const
 {
     return mLastModified;
 }
 
 qint64 File::last_read() const
 {
-    return mLastRead.toMSecsSinceEpoch();
+    return mLastRead;
 }
 
 qint64 File::last_modified() const
 {
-    return mLastModified.toMSecsSinceEpoch();
+    return mLastModified;
 }
 
 QString File::type() const
