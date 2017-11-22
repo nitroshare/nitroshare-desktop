@@ -22,6 +22,12 @@
  * IN THE SOFTWARE.
  */
 
+#include <QtGlobal>
+
+#ifdef Q_OS_WIN32
+#  include <windows.h>
+#endif
+
 #include <QDateTime>
 
 #include "file.h"
@@ -138,9 +144,64 @@ void File::write(const QByteArray &data)
     }
 }
 
+#ifdef Q_OS_WIN32
+
+// Adapted from https://support.microsoft.com/en-us/help/167296
+void unixTimestampMsToFiletime(qint64 timestampMs, LPFILETIME pft)
+{
+    // Convert from MS to 100-nanosecond intervals
+    quint64 ll = timestampMs * 10000;
+
+    // Assign to members of FILETIME struct
+    pft->dwLowDateTime = (DWORD)ll;
+    pft->dwHighDateTime = ll >> 32;
+}
+
+#endif
+
 void File::close()
 {
     mFile.close();
 
-    // TODO: set attributes
+#ifdef Q_OS_WIN32
+
+    FILETIME createdFiletime;
+    FILETIME lastReadFiletime;
+    FILETIME lastModifiedFiletime;
+
+    // Perform the conversions
+    unixTimestampMsToFiletime(mCreated, &createdFiletime);
+    unixTimestampMsToFiletime(mLastRead, &lastReadFiletime);
+    unixTimestampMsToFiletime(mLastModified, &lastModifiedFiletime);
+
+    // Open the file
+    HANDLE hFile = CreateFileW(
+        reinterpret_cast<LPCWSTR>(mFile.fileName().utf16()),
+        GENERIC_WRITE,
+        0,
+        NULL,
+        OPEN_EXISTING,
+        FILE_ATTRIBUTE_NORMAL,
+        NULL
+    );
+    if (hFile == INVALID_HANDLE_VALUE) {
+        // TODO: throw an error
+        return;
+    }
+
+    // Set the attributes
+    BOOL succeeded = SetFileTime(
+        hFile,
+        mCreated ? &createdFiletime : NULL,
+        mLastRead ? &lastReadFiletime : NULL,
+        mLastModified ? &lastModifiedFiletime : NULL
+    );
+    if (succeeded == FALSE) {
+        // TODO: throw an error
+    }
+
+    CloseHandle(hFile);
+
+#else
+#endif
 }
