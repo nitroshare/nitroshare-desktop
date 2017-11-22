@@ -180,11 +180,11 @@ void File::close()
     // Open the file
     HANDLE hFile = CreateFileW(
         reinterpret_cast<LPCWSTR>(mFile.fileName().utf16()),
-        GENERIC_WRITE,
+        GENERIC_READ | FILE_WRITE_ATTRIBUTES,
         0,
         NULL,
         OPEN_EXISTING,
-        FILE_ATTRIBUTE_NORMAL,
+        0,
         NULL
     );
     if (hFile == INVALID_HANDLE_VALUE) {
