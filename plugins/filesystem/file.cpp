@@ -24,8 +24,11 @@
 
 #include <QtGlobal>
 
-#ifdef Q_OS_WIN32
+#if defined(Q_OS_WIN32)
 #  include <windows.h>
+#elif defined(Q_OS_UNIX)
+#  include <sys/stat.h>
+#  include <utime.h>
 #endif
 
 #include <QDateTime>
@@ -163,7 +166,7 @@ void File::close()
 {
     mFile.close();
 
-#ifdef Q_OS_WIN32
+#if defined(Q_OS_WIN32)
 
     FILETIME createdFiletime;
     FILETIME lastReadFiletime;
@@ -202,6 +205,24 @@ void File::close()
 
     CloseHandle(hFile);
 
-#else
+#elif defined(Q_OS_UNIX)
+
+    // Retrieve existing statistics
+    struct stat oldStats;
+    if (stat(mFile.fileName().toUtf8(), &oldStats)) {
+        // TODO: throw error
+        return;
+    }
+
+    // Create the struct with the new values
+    struct utimbuf newTimes;
+    newTimes.actime = mLastRead ? mLastRead / 1000 : oldStats.st_atim.tv_sec;
+    newTimes.modtime = mLastModified ? mLastModified / 1000 : oldStats.st_mtim.tv_sec;
+
+    // Set the new values
+    if (utime(mFile.fileName().toUtf8(), &newTimes)) {
+        // TODO: throw error
+    }
+
 #endif
 }
