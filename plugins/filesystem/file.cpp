@@ -168,6 +168,19 @@ void File::close()
 
 #if defined(Q_OS_WIN32)
 
+    if (mReadOnly) {
+        BOOL succeeded = SetFileAttributesW(
+            reinterpret_cast<LPCWSTR>(mFile.fileName().utf16()),
+            FILE_ATTRIBUTE_READONLY
+        );
+        if (succeeded == FALSE) {
+            // TODO: throw an error
+            return;
+        }
+    }
+
+    // Windows doesn't have a concept of "executable" files
+
     FILETIME createdFiletime;
     FILETIME lastReadFiletime;
     FILETIME lastModifiedFiletime;
