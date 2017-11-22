@@ -69,7 +69,7 @@ QVariant SendUrlUiAction::invoke(const QVariantMap &)
     }
 
     // Invoke the send URL action to initiate the transfer
-    mApplication->actionRegistry()->find("sendurl")->invoke({
+    return mApplication->actionRegistry()->find("sendurl")->invoke({
         { "device", deviceRet.toMap().value("device") },
         { "enumerator", deviceRet.toMap().value("enumerator") },
         { "url", url }
