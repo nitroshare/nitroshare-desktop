@@ -209,7 +209,27 @@ void File::close()
 
     // Retrieve existing statistics
     struct stat oldStats;
-    if (stat(mFile.fileName().toUtf8(), &oldStats)) {
+    if (stat(mFile.fileName().toUtf8().constData(), &oldStats)) {
+        // TODO: throw error
+        return;
+    }
+
+    // Load the existing file mode
+    mode_t fileMode = oldStats.st_mode;
+
+    // If the file is marked as read-only, remove the write bits
+    if (mReadOnly) {
+        fileMode &= ~(S_IWUSR | S_IWGRP | S_IWOTH);
+    }
+
+    // If the file is marked as executable, add the executable bits
+    if (mExecutable) {
+        fileMode |= (S_IXUSR | S_IXGRP | S_IXOTH);
+    }
+
+    // If the value has changed, update the file
+    if (oldStats.st_mode != fileMode &&
+            chmod(mFile.fileName().toUtf8().constData(), fileMode)) {
         // TODO: throw error
         return;
     }
