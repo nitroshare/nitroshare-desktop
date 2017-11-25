@@ -174,7 +174,7 @@ void File::close()
             FILE_ATTRIBUTE_READONLY
         );
         if (succeeded == FALSE) {
-            // TODO: throw an error
+            emit error("unable to set readonly attribute");
             return;
         }
     }
@@ -201,7 +201,7 @@ void File::close()
         NULL
     );
     if (hFile == INVALID_HANDLE_VALUE) {
-        // TODO: throw an error
+        emit error(QString("unable to open %1").arg(mFile.fileName()));
         return;
     }
 
@@ -213,7 +213,7 @@ void File::close()
         mLastModified ? &lastModifiedFiletime : NULL
     );
     if (succeeded == FALSE) {
-        // TODO: throw an error
+        emit error("unable to set file times");
     }
 
     CloseHandle(hFile);
@@ -223,7 +223,7 @@ void File::close()
     // Retrieve existing statistics
     struct stat oldStats;
     if (stat(mFile.fileName().toUtf8().constData(), &oldStats)) {
-        // TODO: throw error
+        emit error("unable to read file stats");
         return;
     }
 
@@ -243,7 +243,7 @@ void File::close()
     // If the value has changed, update the file
     if (oldStats.st_mode != fileMode &&
             chmod(mFile.fileName().toUtf8().constData(), fileMode)) {
-        // TODO: throw error
+        emit error("unable to execute chmod");
         return;
     }
 
@@ -254,7 +254,7 @@ void File::close()
 
     // Set the new values
     if (utime(mFile.fileName().toUtf8(), &newTimes)) {
-        // TODO: throw error
+        emit error("unable to set file times");
     }
 
 #endif
