@@ -155,6 +155,15 @@ Transport *LanTransportServer::createTransport(Device *device)
         return nullptr;
     }
 
+    // Log the connection parameters
+    mApplication->logger()->log(new Message(
+        Message::Info,
+        MessageTag,
+        QString("creating transport for %1:%2")
+            .arg(addresses.at(0))
+            .arg(port)
+    ));
+
     // Create the transport
     return new LanTransport(
         QHostAddress(addresses.at(0))
