@@ -59,6 +59,7 @@ TransferDialog::TransferDialog(Application *application)
     mTableView->verticalHeader()->setVisible(false);
 
     connect(&mModel, &TransferProxyModel::dataChanged, this, &TransferDialog::updateButtons);
+    connect(&mModel, &TransferProxyModel::rowsInserted, this, &TransferDialog::updateButtons);
     connect(&mModel, &TransferProxyModel::rowsRemoved, this, &TransferDialog::updateButtons);
     connect(mTableView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &TransferDialog::updateButtons);
 
