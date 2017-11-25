@@ -43,12 +43,18 @@ File::File(const QString &root, const QVariantMap &properties)
     mFile.setFileName(QDir::cleanPath(root + QDir::separator() + mRelativeFilename));
 
     mSize = properties.value("size").toLongLong();
-    mReadOnly = properties.value("read_only").toBool();
+
+    mReadOnly = properties.value("readOnly").toBool();
     mExecutable = properties.value("executable").toBool();
 
-    mCreated = properties.value("created").toInt();
-    mLastRead = properties.value("last_read").toInt();
-    mLastModified = properties.value("last_modified").toInt();
+    // Suppport older versions of NitroShare that send the last modification
+    // and last read properties with different names
+
+    mCreated = properties.value("created").toLongLong();
+    mLastRead = properties.value("lastRead",
+        properties.value("last_read").toLongLong()).toLongLong();
+    mLastModified = properties.value("lastModified",
+        properties.value("last_modified").toLongLong()).toLongLong();
 }
 
 File::File(const QDir &root, const QFileInfo &info, int blockSize)
