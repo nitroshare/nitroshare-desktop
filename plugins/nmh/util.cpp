@@ -25,6 +25,7 @@
 #include <QtGlobal>
 
 #if defined(Q_OS_WIN32)
+#  define NTDDI_VERSION NTDDI_VISTA
 #  include <Objbase.h>
 #  include <Shlobj.h>
 #endif
