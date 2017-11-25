@@ -249,8 +249,17 @@ void File::close()
 
     // Create the struct with the new values
     struct utimbuf newTimes;
-    newTimes.actime = mLastRead ? mLastRead / 1000 : oldStats.st_atim.tv_sec;
-    newTimes.modtime = mLastModified ? mLastModified / 1000 : oldStats.st_mtim.tv_sec;
+
+#ifdef Q_OS_DARWIN
+    time_t st_atim = oldStats.st_atimespec.tv_sec;
+    time_t st_mtim = oldStats.st_mtimespec.tv_sec;
+#else
+    time_t st_atim = oldStats.st_atim.tv_sec;
+    time_t st_mtim = oldStats.st_mtim.tv_sec;
+#endif
+
+    newTimes.actime = mLastRead ? mLastRead / 1000 : st_atim;
+    newTimes.modtime = mLastModified ? mLastModified / 1000 : st_mtim;
 
     // Set the new values
     if (utime(mFile.fileName().toUtf8(), &newTimes)) {
