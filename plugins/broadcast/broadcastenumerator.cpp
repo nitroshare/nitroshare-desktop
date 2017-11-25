@@ -46,6 +46,8 @@ const QString BroadcastInterval = "BroadcastInterval";
 const QString BroadcastExpiry = "BroadcastExpiry";
 const QString BroadcastPort = "BroadcastPort";
 
+const QString TransferPort = "TransferPort";
+
 BroadcastEnumerator::BroadcastEnumerator(Application *application)
     : mApplication(application),
       mBroadcastCategory({
@@ -121,7 +123,7 @@ void BroadcastEnumerator::onBroadcastTimeout()
     QJsonObject object{
         { "uuid", mApplication->deviceUuid() },
         { "name", mApplication->deviceName() },
-        { "port", mApplication->settingsRegistry()->value(BroadcastPort).toInt() }
+        { "port", mApplication->settingsRegistry()->value(TransferPort).toInt() }
     };
     QByteArray data = QJsonDocument(object).toJson(QJsonDocument::Compact);
 
@@ -217,7 +219,7 @@ void BroadcastEnumerator::onSettingsChanged(const QStringList &keys)
 
     if (keys.contains(BroadcastPort)) {
         mSocket.close();
-        if (!mSocket.bind(QHostAddress::Any,
+        if (!mSocket.bind(QHostAddress::AnyIPv4,
                 mApplication->settingsRegistry()->value(BroadcastPort).toInt())) {
             mApplication->logger()->log(new Message(
                 Message::Error,
