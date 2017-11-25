@@ -39,9 +39,14 @@ set(INSTALL_LIB_PATH lib CACHE STRING "Shared library installation directory")
 set(INSTALL_PLUGIN_PATH "${INSTALL_LIB_PATH}/nitroshare/plugins" CACHE STRING "Plugin installation directory")
 
 # Output paths mirror the installation paths
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/out/${INSTALL_BIN_PATH}")
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/out/${INSTALL_LIB_PATH}")
-set(PLUGIN_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/out/${INSTALL_PLUGIN_PATH}")
+if(CMAKE_CONFIGURATION_TYPES)
+    set(OUTPUT_PREFIX "${CMAKE_BINARY_DIR}/out/$<CONFIG>")
+else()
+    set(OUTPUT_PREFIX "${CMAKE_BINARY_DIR}/out")
+endif()
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${OUTPUT_PREFIX}/${INSTALL_BIN_PATH}")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${OUTPUT_PREFIX}/${INSTALL_LIB_PATH}")
+set(PLUGIN_OUTPUT_DIRECTORY "${OUTPUT_PREFIX}/${INSTALL_PLUGIN_PATH}")
 
 # Set appropriate compiler flags, etc. (MSVC is already set to W3 and Clang
 # issues enough warnings as it is)
