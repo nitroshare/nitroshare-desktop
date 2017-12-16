@@ -15,6 +15,6 @@ install(TARGETS nitroshare-client
     DESTINATION "${INSTALL_BIN_PATH}"
 )
 
-# Ensure the Qt runtime libraries are installed
-include(DeployQt)
-deployqt(nitroshare-client)
+if(WIN32)
+    add_dependencies(exe nitroshare-client)
+endif()

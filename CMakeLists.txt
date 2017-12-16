@@ -79,6 +79,33 @@ if(qmdnsengine_FOUND)
     option(BUILD_MDNS "Build mDNS discovery plugin" ON)
 endif()
 
+# Add a target for building an EXE on Windows
+if(WIN32)
+    # Run windeployqt to ensure the Qt files are in place
+    include(DeployQt)
+    windeployqt(nitroshare)
+
+    # Add a target for building the EXE installer
+    find_package(InnoSetup QUIET)
+    if(INNOSETUP_EXECUTABLE)
+        configure_file(dist/setup.iss.in "${CMAKE_CURRENT_BINARY_DIR}/setup.iss")
+        add_custom_target(exe
+            COMMAND "${INNOSETUP_EXECUTABLE}"
+                /Q
+                /DTARGET_FILE_NAME="$<TARGET_FILE_NAME:nitroshare-ui>"
+                \"${CMAKE_CURRENT_BINARY_DIR}/setup.iss\"
+            COMMENT "Building installer..."
+        )
+    else()
+        message(WARNING "InnoSetup not found - exe target disabled")
+    endif()
+endif()
+
+# Add a target for building a DMG on macOS
+if(APPLE)
+    #...
+endif()
+
 # Enable indicator if GTK, appindicator, and libnotify are present
 if(LINUX)
     find_package(PkgConfig)
@@ -111,24 +138,4 @@ endif()
 
 if(BUILD_UI)
     add_subdirectory(ui)
-endif()
-
-# Add a target for building an EXE on Windows
-if(WIN32)
-    find_package(InnoSetup)
-    if(INNOSETUP_EXECUTABLE)
-        configure_file(dist/setup.iss.in "${CMAKE_CURRENT_BINARY_DIR}/setup.iss")
-        add_custom_target(exe
-            COMMAND "${INNOSETUP_EXECUTABLE}"
-                /Q
-                /DTARGET_FILE_NAME="$<TARGET_FILE_NAME:nitroshare-ui>"
-                \"${CMAKE_CURRENT_BINARY_DIR}/setup.iss\"
-            COMMENT "Building installer..."
-        )
-    endif()
-endif()
-
-# Add a target for building a DMG on macOS
-if(APPLE)
-    #...
 endif()

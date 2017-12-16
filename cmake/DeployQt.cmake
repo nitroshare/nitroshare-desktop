@@ -89,13 +89,4 @@ function(macdeployqt target)
     )
 endfunction()
 
-# Use one of windeployqt or macdeployqt depending on the current platform.
-function(deployqt target)
-    if(WIN32)
-        windeployqt(${target})
-    elseif(APPLE)
-        macdeployqt(${target})
-    endif()
-endfunction()
-
 mark_as_advanced(WINDEPLOYQT_EXECUTABLE MACDEPLOYQT_EXECUTABLE)

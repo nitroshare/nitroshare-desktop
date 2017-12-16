@@ -14,6 +14,6 @@ install(TARGETS nitroshare-nmh
     DESTINATION "${INSTALL_BIN_PATH}"
 )
 
-# Ensure the Qt runtime libraries are installed
-include(DeployQt)
-deployqt(nitroshare-nmh)
+if(WIN32)
+    add_dependencies(exe nitroshare-nmh)
+endif()
