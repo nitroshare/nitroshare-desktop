@@ -84,7 +84,3 @@ endif()
 if(BUILD_TESTS)
     add_subdirectory(tests)
 endif()
-
-# Ensure the Qt runtime libraries are installed
-include(DeployQt)
-deployqt(nitroshare)
