@@ -86,6 +86,8 @@ public:
      * @param device pointer to Device
      * @param bundle pointer to Bundle
      * @param parent QObject
+     *
+     * The transfer assumes ownership of the bundle.
      */
     Transfer(Application *application, Device *device, Bundle *bundle, QObject *parent = nullptr);
 
@@ -94,6 +96,8 @@ public:
      * @param application pointer to Application
      * @param transport pointer to Transport
      * @param parent QObject
+     *
+     * The transfer assumes ownership of the transport.
      */
     Transfer(Application *application, Transport *transport, QObject *parent = nullptr);
 

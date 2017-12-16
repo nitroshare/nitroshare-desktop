@@ -72,13 +72,22 @@ TransferPrivate::TransferPrivate(Transfer *transfer,
       mCurrentItemBytesTotal(0)
 {
     if (mDirection == Transfer::Send) {
+
+        // Use the device to attempt to create a transport
         mTransport = application->transportServerRegistry()->createTransport(device);
         if (!mTransport) {
             setError(tr("unable to create \"%1\" transport").arg(device->transportName()));
             return;
         }
         connect(mTransport, &Transport::connected, this, &TransferPrivate::onConnected);
+
+        // Ensure the bundle is freed when the transfer is destroyed
+        mBundle->setParent(this);
     }
+
+    // Transport should always be valid at this point - ensure it is freed
+    mTransport->setParent(this);
+
     connect(mTransport, &Transport::packetReceived, this, &TransferPrivate::onPacketReceived);
     connect(mTransport, &Transport::packetSent, this, &TransferPrivate::onPacketSent);
     connect(mTransport, &Transport::error, this, &TransferPrivate::onError);
