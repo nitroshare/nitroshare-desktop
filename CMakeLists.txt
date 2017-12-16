@@ -79,13 +79,11 @@ if(qmdnsengine_FOUND)
     option(BUILD_MDNS "Build mDNS discovery plugin" ON)
 endif()
 
-# Add a target for building an EXE on Windows
 if(WIN32)
-    # Run windeployqt to ensure the Qt files are in place
+    # windeployqt will be needed for all binary targets
     include(DeployQt)
-    windeployqt(nitroshare)
 
-    # Add a target for building the EXE installer
+    # Add a target for building an EXE on Windows
     find_package(InnoSetup QUIET)
     if(INNOSETUP_EXECUTABLE)
         configure_file(dist/setup.iss.in "${CMAKE_CURRENT_BINARY_DIR}/setup.iss")

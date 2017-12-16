@@ -15,5 +15,8 @@ install(TARGETS nitroshare-nmh
 )
 
 if(WIN32)
-    add_dependencies(exe nitroshare-nmh)
+    windeployqt(nitroshare-nmh)
+    if(INNOSETUP_EXECUTABLE)
+        add_dependencies(exe nitroshare-nmh)
+    endif()
 endif()

@@ -77,7 +77,7 @@ install(FILES "${CMAKE_CURRENT_BINARY_DIR}/nitroshareConfigVersion.cmake"
     DESTINATION "${INSTALL_LIB_PATH}/cmake/nitroshare"
 )
 
-if(WIN32)
+if(WIN32 AND INNOSETUP_EXECUTABLE)
     add_dependencies(exe nitroshare)
 endif()
 

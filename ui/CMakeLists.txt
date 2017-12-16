@@ -26,5 +26,8 @@ install(TARGETS nitroshare-ui
 )
 
 if(WIN32)
-    add_dependencies(exe nitroshare-ui)
+    windeployqt(nitroshare-ui)
+    if(INNOSETUP_EXECUTABLE)
+        add_dependencies(exe nitroshare-ui)
+    endif()
 endif()

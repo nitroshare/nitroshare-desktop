@@ -16,5 +16,8 @@ install(TARGETS nitroshare-client
 )
 
 if(WIN32)
-    add_dependencies(exe nitroshare-client)
+    windeployqt(nitroshare-client)
+    if(INNOSETUP_EXECUTABLE)
+        add_dependencies(exe nitroshare-client)
+    endif()
 endif()

@@ -19,5 +19,8 @@ install(TARGETS nitroshare-cli
 )
 
 if(WIN32)
-    add_dependencies(exe nitroshare-cli)
+    windeployqt(nitroshare-cli)
+    if(INNOSETUP_EXECUTABLE)
+        add_dependencies(exe nitroshare-cli)
+    endif()
 endif()
