@@ -20,23 +20,17 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-find_package(Qt5Core REQUIRED)
+include(FindPackageHandleStandardArgs)
 
-# Retrieve the absolute path to qmake and then use that path to find
-# the macdeployqt binary
-get_target_property(_qmake_executable Qt5::qmake IMPORTED_LOCATION)
-get_filename_component(_qt_bin_dir "${_qmake_executable}" DIRECTORY)
-find_program(MACDEPLOYQT_EXECUTABLE macdeployqt HINTS "${_qt_bin_dir}")
+# Find the Inno Setup CLI compiler
+find_program(INNOSETUP_EXECUTABLE
+    NAMES iscc
+    PATHS "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Inno Setup 5_is1;InstallLocation]"
+)
 
-# Add commands that copy the required Qt files to the application bundle
-# represented by the target
-function(macdeployqt target)
-    add_custom_command(TARGET ${target} POST_BUILD
-        COMMAND "${MACDEPLOYQT_EXECUTABLE}"
-            \"$<TARGET_FILE_DIR:${target}>/../..\"
-            -always-overwrite
-        COMMENT "Deploying Qt..."
-    )
-endfunction()
+# Process the arguments passed to find_package
+find_package_handle_standard_args(InnoSetup
+    REQUIRED_VARS INNOSETUP_EXECUTABLE
+)
 
-mark_as_advanced(MACDEPLOYQT_EXECUTABLE)
+mark_as_advanced(INNOSETUP_EXECUTABLE)

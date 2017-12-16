@@ -85,8 +85,6 @@ if(BUILD_TESTS)
     add_subdirectory(tests)
 endif()
 
-if(WIN32)
-    # Ensure the Qt runtime libraries are installed
-    include(Windeployqt)
-    windeployqt(nitroshare ${INSTALL_BIN_PATH})
-endif()
+# Ensure the Qt runtime libraries are installed
+include(DeployQt)
+deployqt(nitroshare)

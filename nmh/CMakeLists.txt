@@ -13,3 +13,7 @@ target_link_libraries(nitroshare-nmh nitroshare Qt5::Core)
 install(TARGETS nitroshare-nmh
     DESTINATION "${INSTALL_BIN_PATH}"
 )
+
+# Ensure the Qt runtime libraries are installed
+include(DeployQt)
+deployqt(nitroshare-nmh)

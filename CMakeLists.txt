@@ -113,12 +113,22 @@ if(BUILD_UI)
     add_subdirectory(ui)
 endif()
 
-set(CPACK_PACKAGE_NAME "${PROJECT_NAME}")
-set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
-set(CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})
-set(CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH})
-set(CPACK_PACKAGE_INSTALL_DIRECTORY "${PROJECT_NAME}")
-set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.txt")
-set(CPACK_PACKAGE_EXECUTABLES nitroshare-ui;NitroShare)
+# Add a target for building an EXE on Windows
+if(WIN32)
+    find_package(InnoSetup)
+    if(INNOSETUP_EXECUTABLE)
+        configure_file(dist/setup.iss.in "${CMAKE_CURRENT_BINARY_DIR}/setup.iss")
+        add_custom_target(exe
+            COMMAND "${INNOSETUP_EXECUTABLE}"
+                /Q
+                /DTARGET_FILE_NAME="$<TARGET_FILE_NAME:nitroshare-ui>"
+                \"${CMAKE_CURRENT_BINARY_DIR}/setup.iss\"
+            COMMENT "Building installer..."
+        )
+    endif()
+endif()
 
-include(CPack)
+# Add a target for building a DMG on macOS
+if(APPLE)
+    #...
+endif()
