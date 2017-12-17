@@ -25,7 +25,7 @@
 function(copy_lib_win src dest)
     add_custom_command(TARGET ${dest} POST_BUILD
         COMMAND "${CMAKE_COMMAND}" -E
-            copy_if_different \"$<TARGET_FILE:${src}>\" \"$<TARGET_FILE_DIR:${dest}>\"
+            copy_if_different \"$<TARGET_FILE:${src}>\" \"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}\"
         COMMENT "Copying ${src} to ${dest}..."
     )
 endfunction()
