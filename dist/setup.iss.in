@@ -36,15 +36,15 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "${CMAKE_BINARY_DIR}\out\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "${CMAKE_BINARY_DIR}\${OUTPUT_PREFIX}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
-Name: "{group}\${PROJECT_NAME}"; Filename: "{app}\{#TARGET_FILE_NAME}"
+Name: "{group}\${PROJECT_NAME}"; Filename: "{app}\${INSTALL_BIN_PATH}\{#TARGET_FILE_NAME}"
 Name: "{group}\{cm:UninstallProgram,${PROJECT_NAME}}"; Filename: "{uninstallexe}"
-Name: "{commondesktop}\${PROJECT_NAME}"; Filename: "{app}\{#TARGET_FILE_NAME}"; Tasks: desktopicon
+Name: "{commondesktop}\${PROJECT_NAME}"; Filename: "{app}\${INSTALL_BIN_PATH}\{#TARGET_FILE_NAME}"; Tasks: desktopicon
 
 [Run]
-Filename: "{app}\{#TARGET_FILE_NAME}"; Description: "{cm:LaunchProgram,${PROJECT_NAME}}"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\${INSTALL_BIN_PATH}\{#TARGET_FILE_NAME}"; Description: "{cm:LaunchProgram,${PROJECT_NAME}}"; Flags: nowait postinstall skipifsilent
 
 [Code]
 
@@ -59,14 +59,14 @@ var
   FirewallObject: Variant;
 begin
   if CurStep = ssPostInstall then
-    if not Exec('regsvr32', ExpandConstant('/s "{app}\nitroshell.dll"'), '', 0, ewWaitUntilTerminated, ResultCode) then
+    if not Exec('regsvr32', ExpandConstant('/s "{app}\${INSTALL_BIN_PATH}\nitroshell.dll"'), '', 0, ewWaitUntilTerminated, ResultCode) then
       SuppressibleMsgBox('Unable to register shell extension.', mbError, MB_OK, MB_OK);
     try
       FirewallManager := CreateOleObject('HNetCfg.FwMgr');
       FirewallProfile := FirewallManager.LocalPolicy.CurrentProfile;
       FirewallObject := CreateOleObject('HNetCfg.FwAuthorizedApplication');
       FirewallObject.Name := '${PROJECT_NAME}';
-      FirewallObject.ProcessImageFileName := ExpandConstant('{app}\{#TARGET_FILE_NAME}');
+      FirewallObject.ProcessImageFileName := ExpandConstant('{app}\${INSTALL_BIN_PATH}\{#TARGET_FILE_NAME}');
       FirewallProfile.AuthorizedApplications.Add(FirewallObject);
     except
     end;
@@ -80,11 +80,11 @@ var
 begin
   if CurUninstallStep = usUninstall then
     try
-      if not Exec('regsvr32', ExpandConstant('/u /s "{app}\nitroshell.dll"'), '', 0, ewWaitUntilTerminated, ResultCode) then
+      if not Exec('regsvr32', ExpandConstant('/u /s "{app}\${INSTALL_BIN_PATH}\nitroshell.dll"'), '', 0, ewWaitUntilTerminated, ResultCode) then
         SuppressibleMsgBox('Unable to unregister shell extension.', mbError, MB_OK, MB_OK);
       FirewallManager := CreateOleObject('HNetCfg.FwMgr');
       FirewallProfile := FirewallManager.LocalPolicy.CurrentProfile;
-      FireWallProfile.AuthorizedApplications.Remove(ExpandConstant('{app}\{#TARGET_FILE_NAME}'));
+      FireWallProfile.AuthorizedApplications.Remove(ExpandConstant('{app}\${INSTALL_BIN_PATH}\{#TARGET_FILE_NAME}'));
     except
     end;
 end;
