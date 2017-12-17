@@ -28,13 +28,13 @@ get_target_property(_qmake_executable Qt5::qmake IMPORTED_LOCATION)
 get_filename_component(_qt_bin_dir "${_qmake_executable}" DIRECTORY)
 
 find_program(WINDEPLOYQT_EXECUTABLE windeployqt HINTS "${_qt_bin_dir}")
-if(WINDEPLOYQT_EXECUTABLE)
-    message(STATUS "Found ${WINDEPLOYQT_EXECUTABLE}")
+if(WIN32 AND NOT WINDEPLOYQT_EXECUTABLE)
+    message(FATAL_ERROR "windeployqt not found")
 endif()
 
 find_program(MACDEPLOYQT_EXECUTABLE macdeployqt HINTS "${_qt_bin_dir}")
-if(MACDEPLOYQT_EXECUTABLE)
-    message(STATUS "Found ${MACDEPLOYQT_EXECUTABLE}")
+if(APPLE AND NOT MACDEPLOYQT_EXECUTABLE)
+    message(FATAL_ERROR "macdeployqt not found")
 endif()
 
 # Add commands that copy the required Qt files to the same directory as the
