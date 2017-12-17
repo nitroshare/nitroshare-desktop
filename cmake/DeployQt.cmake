@@ -53,10 +53,6 @@ function(windeployqt target)
         COMMENT "Deploying Qt..."
     )
 
-    # Install the files found in the destination directory
-    install(FILES "$<TARGET_FILE_DIR:${target}>/*"
-        DESTINATION "$<TARGET_PROPERTY:RUNTIME_OUTPUT_DIRECTORY>")
-
     # windeployqt doesn't work correctly with the system runtime libraries,
     # so we fall back to one of CMake's own modules for copying them over
 
