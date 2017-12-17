@@ -80,7 +80,7 @@ find_package(qmdnsengine QUIET)
 if(qmdnsengine_FOUND)
     option(BUILD_MDNS "Build mDNS discovery plugin" ON)
 else()
-    message(WARNING "QMdnsEngine not found - local API disabled")
+    message(WARNING "QMdnsEngine not found - mDNS support disabled")
 endif()
 
 if(WIN32)
