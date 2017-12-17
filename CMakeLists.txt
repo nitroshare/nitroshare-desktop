@@ -68,15 +68,19 @@ if(BUILD_TESTS)
 endif()
 
 # Enable local API if QHttpEngine is available
-find_package(qhttpengine 1.0.0)
+find_package(qhttpengine 1.0.0 QUIET)
 if(qhttpengine_FOUND)
     option(BUILD_API "Build local API plugin" ON)
+else()
+    message(WARNING "QHttpEngine not found - local API disabled")
 endif()
 
 # Enable mDNS discovery if QMdnsEngine is available
-find_package(qmdnsengine)
+find_package(qmdnsengine QUIET)
 if(qmdnsengine_FOUND)
     option(BUILD_MDNS "Build mDNS discovery plugin" ON)
+else()
+    message(WARNING "QMdnsEngine not found - local API disabled")
 endif()
 
 if(WIN32)
