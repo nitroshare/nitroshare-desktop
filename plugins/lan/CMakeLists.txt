@@ -28,3 +28,21 @@ target_link_libraries(lan nitroshare Qt5::Network)
 install(TARGETS lan
     DESTINATION "${INSTALL_PLUGIN_PATH}"
 )
+
+# If the OpenSSL DLLs live in Qt's bin dir, copy them to the runtime outout
+# directory after building the plugin
+if(WIN32)
+    get_target_property(_qmake_executable Qt5::qmake IMPORTED_LOCATION)
+    get_filename_component(_qt_bin_dir "${_qmake_executable}" DIRECTORY)
+    find_program(LIBEAY32 NAME libeay32.dll HINTS "${_qt_bin_dir}")
+    find_program(SSLEAY32 NAME ssleay32.dll HINTS "${_qt_bin_dir}")
+    if(LIBEAY32 AND SSLEAY32)
+        add_custom_command(TARGET nitroshare POST_BUILD
+            COMMAND "${CMAKE_COMMAND}" -E
+                copy_if_different "${LIBEAY32}" \"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}\"
+            COMMAND "${CMAKE_COMMAND}" -E
+                copy_if_different "${SSLEAY32}" \"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}\"
+            COMMENT "Copying OpenSSL libraries..."
+        )
+    endif()
+endif()
