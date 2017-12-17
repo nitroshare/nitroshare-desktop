@@ -78,7 +78,11 @@ install(FILES "${CMAKE_CURRENT_BINARY_DIR}/nitroshareConfigVersion.cmake"
 )
 
 if(WIN32)
+    # Run windeployqt on the library
+    include(DeployQt)
     windeployqt(nitroshare)
+
+    # If the exe target exists, add the library as a dependency
     if(INNOSETUP_EXECUTABLE)
         add_dependencies(exe nitroshare)
     endif()

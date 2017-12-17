@@ -26,7 +26,11 @@ install(TARGETS nitroshare-ui
 )
 
 if(WIN32)
+    # Run windeployqt on the binary
+    include(DeployQt)
     windeployqt(nitroshare-ui)
+
+    # If the exe target exists, add the binary as a dependency
     if(INNOSETUP_EXECUTABLE)
         add_dependencies(exe nitroshare-ui)
     endif()

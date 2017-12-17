@@ -83,11 +83,8 @@ else()
     message(WARNING "QMdnsEngine not found - mDNS support disabled")
 endif()
 
+# Add a target for building an EXE on Windows
 if(WIN32)
-    # windeployqt will be needed for all binary targets
-    include(DeployQt)
-
-    # Add a target for building an EXE on Windows
     find_package(InnoSetup QUIET)
     if(INNOSETUP_EXECUTABLE)
         configure_file(dist/setup.iss.in "${CMAKE_CURRENT_BINARY_DIR}/setup.iss")

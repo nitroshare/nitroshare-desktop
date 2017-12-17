@@ -15,7 +15,11 @@ install(TARGETS nitroshare-nmh
 )
 
 if(WIN32)
+    # Run windeployqt on the binary
+    include(DeployQt)
     windeployqt(nitroshare-nmh)
+
+    # If the exe target exists, add the binary as a dependency
     if(INNOSETUP_EXECUTABLE)
         add_dependencies(exe nitroshare-nmh)
     endif()
