@@ -37,7 +37,7 @@ if(WIN32)
     find_program(LIBEAY32 NAME libeay32.dll HINTS "${_qt_bin_dir}")
     find_program(SSLEAY32 NAME ssleay32.dll HINTS "${_qt_bin_dir}")
     if(LIBEAY32 AND SSLEAY32)
-        add_custom_command(TARGET nitroshare POST_BUILD
+        add_custom_command(TARGET lan POST_BUILD
             COMMAND "${CMAKE_COMMAND}" -E
                 copy_if_different "${LIBEAY32}" \"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}\"
             COMMAND "${CMAKE_COMMAND}" -E
