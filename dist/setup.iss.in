@@ -14,14 +14,14 @@ AppVersion           = "${PROJECT_VERSION}"
 AppPublisher         = "${PROJECT_AUTHOR}"
 DefaultDirName       = "{pf}\${PROJECT_NAME}"
 DefaultGroupName     = "${PROJECT_NAME}"
-LicenseFile          = "${CMAKE_CURRENT_SOURCE_DIR}\LICENSE.txt"
+LicenseFile          = "${CMAKE_SOURCE_DIR}\LICENSE.txt"
 MinVersion           = 6.0
 OutputDir            = "${CMAKE_BINARY_DIR}"
 OutputBaseFilename   = "nitroshare-${PROJECT_VERSION}-windows-{#ARCH}"
 Compression          = lzma
 SolidCompression     = yes
-WizardImageFile      = "${CMAKE_CURRENT_SOURCE_DIR}\dist\wizard-image.bmp"
-WizardSmallImageFile = "${CMAKE_CURRENT_SOURCE_DIR}\dist\wizard-small-image.bmp"
+WizardImageFile      = "wizard-image.bmp"
+WizardSmallImageFile = "wizard-small-image.bmp"
 
 ; Set two additional directives if we are building a 64-bit installer
 #if ARCH == "x86_64"
@@ -36,7 +36,7 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "${CMAKE_BINARY_DIR}\${OUTPUT_PREFIX}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "${OUTPUT_PREFIX}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
 Name: "{group}\${PROJECT_NAME}"; Filename: "{app}\${INSTALL_BIN_PATH}\{#TARGET_FILE_NAME}"
