@@ -48,7 +48,7 @@ endif()
 # For macOS, the output directories form the app bundle; for all other
 # platforms, the output paths mirror the installation paths
 if(APPLE)
-    set(CONTENTS_DIRECTORY "${OUTPUT_DIRECTORY}/NitroShare.app/Contents")
+    set(CONTENTS_DIRECTORY "${OUTPUT_PREFIX}/NitroShare.app/Contents")
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CONTENTS_DIRECTORY}/MacOS")
     set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CONTENTS_DIRECTORY}/Frameworks")
     set(PLUGIN_OUTPUT_DIRECTORY "${CONTENTS_DIRECTORY}/PlugIns")
