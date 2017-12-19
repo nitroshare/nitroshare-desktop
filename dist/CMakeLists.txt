@@ -14,7 +14,7 @@ endif()
 
 if(APPLE)
     # Prepare the plist file for the app bundle
-    configure_file(Info.plist.in "${OUTPUT_PREFIX}/Info.plist")
+    configure_file(Info.plist.in "${CONTENTS_DIRECTORY}/Info.plist")
 
     # Add a target for building the DMG
     set(sym "${CONTENTS_DIRECTORY}/Applications")
@@ -23,7 +23,7 @@ if(APPLE)
         COMMAND rm -f \"${sym}\" \"${dmg}\"
         COMMAND ln -s /Applications \"${sym}\"
         COMMAND hdiutil create
-            -srcfolder \"${OUTPUT_DIRECTORY}\"
+            -srcfolder \"${OUTPUT_PREFIX}\"
             -volname "${PROJECT_NAME}"
             -fs HFS+
             -size 30m
