@@ -38,15 +38,25 @@ set(INSTALL_BIN_PATH bin CACHE STRING "Application installation directory")
 set(INSTALL_LIB_PATH lib CACHE STRING "Shared library installation directory")
 set(INSTALL_PLUGIN_PATH "${INSTALL_LIB_PATH}/nitroshare/plugins" CACHE STRING "Plugin installation directory")
 
-# Output paths mirror the installation paths
+set(OUTPUT_PREFIX "${CMAKE_BINARY_DIR}/out")
+
+# Ensure the output prefix supports multiple build configurations
 if(CMAKE_CONFIGURATION_TYPES)
-    set(OUTPUT_PREFIX "out/$<CONFIG>")
-else()
-    set(OUTPUT_PREFIX "out")
+    set(OUTPUT_PREFIX "${OUTPUT_PREFIX}/$<CONFIG>")
 endif()
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${OUTPUT_PREFIX}/${INSTALL_BIN_PATH}")
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${OUTPUT_PREFIX}/${INSTALL_LIB_PATH}")
-set(PLUGIN_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${OUTPUT_PREFIX}/${INSTALL_PLUGIN_PATH}")
+
+# For macOS, the output directories form the app bundle; for all other
+# platforms, the output paths mirror the installation paths
+if(APPLE)
+    set(CONTENTS_DIRECTORY "${OUTPUT_DIRECTORY}/NitroShare.app/Contents")
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CONTENTS_DIRECTORY}/MacOS")
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CONTENTS_DIRECTORY}/Frameworks")
+    set(PLUGIN_OUTPUT_DIRECTORY "${CONTENTS_DIRECTORY}/PlugIns")
+else()
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${OUTPUT_PREFIX}/${INSTALL_BIN_PATH}")
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${OUTPUT_PREFIX}/${INSTALL_LIB_PATH}")
+    set(PLUGIN_OUTPUT_DIRECTORY "${OUTPUT_PREFIX}/${INSTALL_PLUGIN_PATH}")
+endif()
 
 # Set appropriate compiler flags, etc. (MSVC is already set to W3 and Clang
 # issues enough warnings as it is)
@@ -83,26 +93,11 @@ else()
     message(WARNING "QMdnsEngine not found - mDNS support disabled")
 endif()
 
-# Add a target for building an EXE on Windows
 if(WIN32)
     find_package(InnoSetup QUIET)
-    if(INNOSETUP_EXECUTABLE)
-        configure_file(dist/setup.iss.in "${CMAKE_CURRENT_BINARY_DIR}/setup.iss")
-        add_custom_target(exe
-            COMMAND "${INNOSETUP_EXECUTABLE}"
-                /Q
-                /DTARGET_FILE_NAME="$<TARGET_FILE_NAME:nitroshare-ui>"
-                \"${CMAKE_CURRENT_BINARY_DIR}/setup.iss\"
-            COMMENT "Building installer..."
-        )
-    else()
+    if(NOT INNOSETUP_EXECUTABLE)
         message(WARNING "InnoSetup not found - exe target disabled")
     endif()
-endif()
-
-# Add a target for building a DMG on macOS
-if(APPLE)
-    #...
 endif()
 
 # Enable indicator if GTK, appindicator, and libnotify are present
@@ -120,6 +115,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
 # The library and plugins are always built
+add_subdirectory(dist)
 add_subdirectory(libnitroshare)
 add_subdirectory(plugins)
 
