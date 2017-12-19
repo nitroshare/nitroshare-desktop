@@ -20,8 +20,8 @@ OutputDir            = "${CMAKE_BINARY_DIR}"
 OutputBaseFilename   = "nitroshare-${PROJECT_VERSION}-windows-{#ARCH}"
 Compression          = lzma
 SolidCompression     = yes
-WizardImageFile      = "wizard-image.bmp"
-WizardSmallImageFile = "wizard-small-image.bmp"
+WizardImageFile      = "${CMAKE_CURRENT_SOURCE_DIR}\wizard-image.bmp"
+WizardSmallImageFile = "${CMAKE_CURRENT_SOURCE_DIR}\wizard-small-image.bmp"
 
 ; Set two additional directives if we are building a 64-bit installer
 #if ARCH == "x86_64"
