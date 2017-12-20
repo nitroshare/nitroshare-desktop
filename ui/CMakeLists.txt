@@ -35,3 +35,8 @@ if(WIN32)
         add_dependencies(exe nitroshare-ui)
     endif()
 endif()
+
+if(APPLE)
+    include(DeployQt)
+    macdeployqt(nitroshare-ui)
+endif()

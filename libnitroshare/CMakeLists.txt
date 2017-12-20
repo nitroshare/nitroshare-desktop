@@ -88,6 +88,11 @@ if(WIN32)
     endif()
 endif()
 
+if(APPLE)
+    include(DeployQt)
+    macdeployqt(nitroshare)
+endif()
+
 if(BUILD_DOC)
     add_subdirectory(doc)
 endif()
