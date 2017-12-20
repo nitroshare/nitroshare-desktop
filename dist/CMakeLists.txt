@@ -16,6 +16,9 @@ if(APPLE)
     # Prepare the plist file for the app bundle
     configure_file(Info.plist.in "${CONTENTS_DIRECTORY}/Info.plist")
 
+    # Copy the icon to the Resources directory
+    file(COPY nitroshare.icns DESTINATION "${CONTENTS_DIRECTORY}/Resources")
+
     # Add a target for building the DMG
     set(sym "${CONTENTS_DIRECTORY}/Applications")
     set(dmg "${CMAKE_BINARY_DIR}/nitroshare-${PROJECT_VERSION}-osx.dmg")
