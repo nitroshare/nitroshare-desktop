@@ -112,7 +112,7 @@ if(LINUX)
 endif()
 
 # Ensure that binaries are built with the RPATH set correctly
-set(CMAKE_BUILD_WITH_INSTALL_RPATH ON)
+set(CMAKE_MACOSX_RPATH ON)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
