@@ -31,3 +31,8 @@ if(WIN32)
     include(SharedLibrary)
     copy_lib_win(qmdnsengine mdns)
 endif()
+
+if(APPLE)
+    include(SharedLibrary)
+    copy_lib_mac(qmdnsengine mdns)
+endif()

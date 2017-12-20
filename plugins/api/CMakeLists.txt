@@ -32,3 +32,8 @@ if(WIN32)
     include(SharedLibrary)
     copy_lib_win(qhttpengine api)
 endif()
+
+if(APPLE)
+    include(SharedLibrary)
+    copy_lib_mac(qhttpengine api)
+endif()
