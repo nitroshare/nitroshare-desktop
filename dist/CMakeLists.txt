@@ -20,7 +20,7 @@ if(APPLE)
     file(COPY nitroshare.icns DESTINATION "${CONTENTS_DIRECTORY}/Resources")
 
     # Add a target for building the DMG
-    set(sym "${CONTENTS_DIRECTORY}/Applications")
+    set(sym "${OUTPUT_PREFIX}/Applications")
     set(dmg "${CMAKE_BINARY_DIR}/nitroshare-${PROJECT_VERSION}-osx.dmg")
     add_custom_target(dmg
         COMMAND rm -f \"${sym}\" \"${dmg}\"
