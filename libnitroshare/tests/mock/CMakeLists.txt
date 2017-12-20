@@ -21,6 +21,7 @@ set_target_properties(mock PROPERTIES
     CXX_STANDARD             11
     DEFINE_SYMBOL            MOCK_LIBRARY
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/.."
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/.."
 )
 
 target_include_directories(mock PUBLIC "${CMAKE_CURRENT_BINARY_DIR}")
