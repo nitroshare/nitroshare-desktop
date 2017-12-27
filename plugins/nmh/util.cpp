@@ -24,7 +24,7 @@
 
 #include <QtGlobal>
 
-#if defined(Q_OS_WIN32)
+#ifdef Q_OS_WIN32
 #  define NTDDI_VERSION NTDDI_VISTA
 #  define _WIN32_WINNT _WIN32_WINNT_VISTA
 #  include <Objbase.h>
@@ -34,9 +34,9 @@
 #include <QCoreApplication>
 #include <QDir>
 #include <QFileInfo>
-#include <QString>
+#include <QJsonDocument>
 
-#if defined(Q_OS_WIN32)
+#ifdef Q_OS_WIN32
 #  include <QSettings>
 #endif
 
@@ -44,27 +44,65 @@
 
 #include "util.h"
 
-#if defined(Q_OS_WIN32)
-const QString RegistryKey = "HKEY_CURRENT_USER\\Software\\Google\\Chrome\\NativeMessagingHosts\\net.nitroshare.chrome";
+bool Util::install(Browser browser)
+{
+    // It is assumed that the nitroshare-nmh executable is located in the same
+    // directory as the host for this plugin
+    QString nmhPath = QDir::cleanPath(
+        QFileInfo(QCoreApplication::arguments().at(0)).absolutePath() +
+        QDir::separator() + "nitroshare-nmh"
+#ifdef Q_OS_WIN32
+        ".exe"
+#endif
+    );
+
+    // Generate the JSON for the manifest file
+    QJsonObject object = extraJson(browser);
+    object.insert("name", extensionId(browser));
+    object.insert("description", "NitroShare");
+    object.insert("path", nmhPath);
+    object.insert("type", "stdio");
+
+    // Ensure the path for the manifest file exists
+    QString parentPath = manifestPath(browser);
+    if (parentPath.isNull()) {
+        return false;
+    }
+    if (!QDir(parentPath).mkpath(".")) {
+        return false;
+    }
+
+    // Create the manifest file and write its contents
+    QString manifestFilename = QDir(parentPath).absoluteFilePath(
+        QString("%1.json").arg(extensionId(browser))
+    );
+    if (!FileUtil::createFile(manifestFilename, QJsonDocument(object).toJson())) {
+        return false;
+    }
+
+#ifdef Q_OS_WIN32
+
+    // Windows requires one additional step - the creation of a registry key
+    QSettings settings(registryKey(browser), QSettings::NativeFormat);
+    settings.setValue("Default", manifestFilename);
+
 #endif
 
-const QString JsonTemplate =
-    "{\n"
-    "    \"name\": \"net.nitroshare.chrome\",\n"
-    "    \"description\": \"NitroShare\",\n"
-    "    \"path\": \"%1\",\n"
-    "    \"type\": \"stdio\",\n"
-    "    \"allowed_origins\": [\n"
-    "        \"chrome-extension://cljjpoinofmbdnbnpebolibochlfenag/\"\n"
-    "    ]\n"
-    "}\n";
+    return true;
+}
 
-// TODO: add support for Chromium
-
-bool Util::installJson()
+QString Util::extensionId(Browser browser)
 {
-    QString parentPath;
+    switch (browser) {
+    case Chrome:
+        return "net.nitroshare.chrome";
+    case Firefox:
+        return "net.nitroshare.firefox";
+    }
+}
 
+QString Util::manifestPath(Browser browser)
+{
 #if defined(Q_OS_WIN32)
 
     // Obtain the path to the AppData\Local directory
@@ -76,52 +114,62 @@ bool Util::installJson()
         &pszPath
     );
     if (FAILED(hr)) {
-        return false;
+        return QString();
     }
     QDir appData(QString::fromUtf16(reinterpret_cast<const ushort*>(pszPath)));
     CoTaskMemFree(pszPath);
 
     // Use the folder for storing the JSON file
-    parentPath = appData.absoluteFilePath("NitroShare");
+    return appData.absoluteFilePath("NitroShare");
 
 #elif defined(Q_OS_MACX)
-    parentPath = QDir::home().absoluteFilePath("Library/Application Support/Google/Chrome/NativeMessagingHosts");
+
+    switch (browser) {
+    case Chrome:
+        return "Library/Application Support/Google/Chrome/NativeMessagingHosts";
+    case Firefox:
+        return "Library/Application Support/Mozilla/NativeMessagingHosts";
+    }
+
 #elif defined(Q_OS_LINUX)
-    parentPath = QDir::home().absoluteFilePath(".config/google-chrome/NativeMessagingHosts");
+
+    switch (browser) {
+    case Chrome:
+        return ".config/google-chrome/NativeMessagingHosts";
+    case Firefox:
+        return ".mozilla/native-messaging-hosts";
+    }
+
 #else
-    // Unknown platform; fail automatically
-    return false;
+    // Other platforms are not currently supported by the plugin
+    return QString();
 #endif
-
-    // Ensure that the parent path exists
-    if (!QDir(parentPath).mkpath(".")) {
-        return false;
-    }
-
-    // It is assumed that the nitroshare-nmh executable is located in the same
-    // directory as the host for this plugin
-    QString nmhPath = QDir::cleanPath(
-        QFileInfo(QCoreApplication::arguments().at(0)).absolutePath() +
-        QDir::separator() + "nitroshare-nmh"
-#if defined(Q_OS_WIN32)
-        + ".exe"
-#endif
-    );
-
-    // Create the JSON file
-    QString jsonFilename = QDir(parentPath).absoluteFilePath("net.nitroshare.chrome.json");
-    if (!FileUtil::createFile(jsonFilename, JsonTemplate.arg(nmhPath).toUtf8())) {
-        return false;
-    }
-
-#if defined(Q_OS_WIN32)
-
-    // Windows requires one additional step - a registry entry must be created
-    QSettings settings(RegistryKey, QSettings::NativeFormat);
-    settings.setValue("Default", jsonFilename);
-
-#endif
-
-    // Everything succeeded
-    return true;
 }
+
+QJsonObject Util::extraJson(Browser browser)
+{
+    switch (browser) {
+    case Chrome:
+        return QJsonObject{
+            { "allowed_origins", "chrome-extension://cljjpoinofmbdnbnpebolibochlfenag/" }
+        };
+    case Firefox:
+        return QJsonObject{
+            { "allowed_extensions", "nitroshare-firefox@nitroshare.net" }
+        };
+    }
+}
+
+#ifdef Q_OS_WIN32
+
+QString Util::registryKey(Browser browser)
+{
+    switch (browser) {
+    case Chrome:
+        return "HKEY_CURRENT_USER\\Software\\Google\\Chrome\\NativeMessagingHosts\\net.nitroshare.chrome";
+    case Firefox:
+        return "HKEY_CURRENT_USER\\Software\\Mozilla\\NativeMessagingHosts\\net.nitroshare.firefox";
+    }
+}
+
+#endif

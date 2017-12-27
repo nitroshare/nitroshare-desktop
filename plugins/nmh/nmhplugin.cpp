@@ -27,7 +27,11 @@
 
 void NmhPlugin::initialize(Application *)
 {
-    Util::installJson();
+    // TODO: detect browsers currently installed
+    // TODO: handle errors that occur
+
+    Util::install(Util::Chrome);
+    Util::install(Util::Firefox);
 }
 
 void NmhPlugin::cleanup(Application *)

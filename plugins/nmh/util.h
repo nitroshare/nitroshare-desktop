@@ -25,11 +25,29 @@
 #ifndef UTIL_H
 #define UTIL_H
 
+#include <QJsonObject>
+#include <QString>
+
 class Util
 {
 public:
 
-    static bool installJson();
+    enum Browser {
+        Chrome,
+        Firefox
+    };
+
+    static bool install(Browser browser);
+
+private:
+
+    static QString extensionId(Browser browser);
+    static QString manifestPath(Browser browser);
+    static QJsonObject extraJson(Browser browser);
+
+#ifdef Q_OS_WIN32
+    static QString registryKey(Browser browser);
+#endif
 };
 
 #endif // UTIL_H
