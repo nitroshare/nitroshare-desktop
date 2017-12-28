@@ -1,0 +1,10 @@
+{
+    "Name": "notify",
+    "Title": "Notifications",
+    "Vendor": "Nathan Osman",
+    "Version": "${PROJECT_VERSION}",
+    "Description": "Show notifications for application activity",
+    "Dependencies": [
+        "ui"
+    ]
+}
