@@ -25,8 +25,11 @@
 #ifndef TRAYPLUGIN_H
 #define TRAYPLUGIN_H
 
+#include <QSystemTrayIcon>
+
 #include <nitroshare/iplugin.h>
 
+class ShowTrayNotificationAction;
 class TrayMenu;
 
 /**
@@ -44,7 +47,10 @@ public:
 
 private:
 
+    QSystemTrayIcon *mIcon;
+
     TrayMenu *mTrayMenu;
+    ShowTrayNotificationAction *mAction;
 };
 
 #endif // TRAYPLUGIN_H

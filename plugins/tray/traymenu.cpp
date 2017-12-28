@@ -30,8 +30,9 @@
 
 #include "traymenu.h"
 
-TrayMenu::TrayMenu(Application *application)
+TrayMenu::TrayMenu(Application *application, QSystemTrayIcon *icon)
     : mApplication(application),
+      mIcon(icon),
       mSeparator(nullptr)
 {
     connect(application->actionRegistry(), &ActionRegistry::actionAdded, this, &TrayMenu::onActionAdded);
@@ -51,9 +52,9 @@ TrayMenu::TrayMenu(Application *application)
         onActionAdded(action);
     }
 
-    mIcon.setContextMenu(&mMenu);
-    mIcon.setIcon(QIcon(":/tray/icon.png"));
-    mIcon.show();
+    mIcon->setContextMenu(&mMenu);
+    mIcon->setIcon(QIcon(":/tray/icon.png"));
+    mIcon->show();
 }
 
 TrayMenu::~TrayMenu()

@@ -40,7 +40,7 @@ class TrayMenu : public QObject
 
 public:
 
-    explicit TrayMenu(Application *application);
+    TrayMenu(Application *application, QSystemTrayIcon *icon);
     virtual ~TrayMenu();
 
 private slots:
@@ -52,7 +52,8 @@ private:
 
     Application *mApplication;
 
-    QSystemTrayIcon mIcon;
+    QSystemTrayIcon *mIcon;
+
     QMenu mMenu;
     QAction mSeparator;
     QHash<QString, QAction*> mActions;

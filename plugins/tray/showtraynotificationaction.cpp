@@ -22,29 +22,29 @@
  * IN THE SOFTWARE.
  */
 
-#include <nitroshare/application.h>
-#include <nitroshare/actionregistry.h>
-
 #include "showtraynotificationaction.h"
-#include "trayplugin.h"
-#include "traymenu.h"
 
-void TrayPlugin::initialize(Application *application)
+ShowTrayNotificationAction::ShowTrayNotificationAction(QSystemTrayIcon *icon)
+    : mIcon(icon)
 {
-    mIcon = new QSystemTrayIcon;
-
-    mTrayMenu = new TrayMenu(application, mIcon);
-    mAction = new ShowTrayNotificationAction(mIcon);
-
-    application->actionRegistry()->add(mAction);
 }
 
-void TrayPlugin::cleanup(Application *application)
+QString ShowTrayNotificationAction::name() const
 {
-    application->actionRegistry()->remove(mAction);
+    return "showtraynotification";
+}
 
-    delete mAction;
-    delete mTrayMenu;
+QVariant ShowTrayNotificationAction::invoke(const QVariantMap &params)
+{
+    // Ensure the required parameters are present
+    if (!params.contains("title") || !params.contains("message")) {
+        return false;
+    }
 
-    delete mIcon;
+    // Show the message
+    mIcon->showMessage(
+        params.value("title").toString(),
+        params.value("message").toString()
+    );
+    return true;
 }

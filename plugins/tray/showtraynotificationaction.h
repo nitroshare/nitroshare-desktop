@@ -22,29 +22,33 @@
  * IN THE SOFTWARE.
  */
 
-#include <nitroshare/application.h>
-#include <nitroshare/actionregistry.h>
+#ifndef SHOWTRAYNOTIFICATIONACTION_H
+#define SHOWTRAYNOTIFICATIONACTION_H
 
-#include "showtraynotificationaction.h"
-#include "trayplugin.h"
-#include "traymenu.h"
+#include <QSystemTrayIcon>
 
-void TrayPlugin::initialize(Application *application)
+#include <nitroshare/action.h>
+
+/**
+ * @brief Show a notification from the system tray
+ */
+class ShowTrayNotificationAction : public Action
 {
-    mIcon = new QSystemTrayIcon;
+    Q_OBJECT
 
-    mTrayMenu = new TrayMenu(application, mIcon);
-    mAction = new ShowTrayNotificationAction(mIcon);
+public:
 
-    application->actionRegistry()->add(mAction);
-}
+    explicit ShowTrayNotificationAction(QSystemTrayIcon *icon);
 
-void TrayPlugin::cleanup(Application *application)
-{
-    application->actionRegistry()->remove(mAction);
+    virtual QString name() const;
 
-    delete mAction;
-    delete mTrayMenu;
+public slots:
 
-    delete mIcon;
-}
+    virtual QVariant invoke(const QVariantMap &params = QVariantMap());
+
+private:
+
+    QSystemTrayIcon *mIcon;
+};
+
+#endif // SHOWTRAYNOTIFICATIONACTION_H
