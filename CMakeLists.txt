@@ -68,6 +68,7 @@ endif()
 option(BUILD_DOC "Build Doxygen documentation" OFF)
 if(BUILD_DOC)
     find_package(Doxygen REQUIRED)
+    option(DOWNLOAD_TAGFILES "Download tagfiles for documentation" ON)
 endif()
 
 # Test suite is always disabled by default
