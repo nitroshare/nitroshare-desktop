@@ -1,5 +1,5 @@
 {
-    "Name": "notify",
+    "Name": "notifications",
     "Title": "Notifications",
     "Vendor": "Nathan Osman",
     "Version": "${PROJECT_VERSION}",

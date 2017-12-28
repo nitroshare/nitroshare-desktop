@@ -22,15 +22,26 @@
  * IN THE SOFTWARE.
  */
 
-#include "notifier.h"
-#include "notifyplugin.h"
+#ifndef NOTIFICATIONSPLUGIN_H
+#define NOTIFICATIONSPLUGIN_H
 
-void NotifyPlugin::initialize(Application *application)
-{
-    mNotifier = new Notifier(application);
-}
+#include <nitroshare/iplugin.h>
 
-void NotifyPlugin::cleanup(Application *application)
+class Notifier;
+
+class NotificationsPlugin : public IPlugin
 {
-    delete mNotifier;
-}
+    Q_OBJECT
+    Q_PLUGIN_METADATA(IID Plugin_iid FILE "notifications.json")
+
+public:
+
+    virtual void initialize(Application *application);
+    virtual void cleanup(Application *application);
+
+private:
+
+    Notifier *mNotifier;
+};
+
+#endif // NOTIFICATIONSPLUGIN_H

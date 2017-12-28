@@ -22,12 +22,15 @@
  * IN THE SOFTWARE.
  */
 
-#include "indicatorplugin.h"
+#include "notificationsplugin.h"
+#include "notifier.h"
 
-void IndicatorPlugin::initialize(Application *application)
+void NotificationsPlugin::initialize(Application *application)
 {
+    mNotifier = new Notifier(application);
 }
 
-void IndicatorPlugin::cleanup(Application *application)
+void NotificationsPlugin::cleanup(Application *)
 {
+    delete mNotifier;
 }
