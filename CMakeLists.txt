@@ -101,14 +101,11 @@ if(WIN32)
     endif()
 endif()
 
-# Enable indicator if GTK, appindicator, and libnotify are present
+# Enable libnotify support if GTK and libnotify are present
 if(LINUX)
     find_package(PkgConfig)
     if(PKG_CONFIG_FOUND)
-        pkg_check_modules(appindicator gtk+-2.0 appindicator-0.1 libnotify)
-        if(appindicator_FOUND)
-            option(BUILD_INDICATOR "Build application indicator" ON)
-        endif()
+        pkg_check_modules(libnotify gtk+-2.0 libnotify)
     endif()
 endif()
 

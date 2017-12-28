@@ -22,15 +22,26 @@
  * IN THE SOFTWARE.
  */
 
-#include "notifier.h"
-#include "notifyplugin.h"
+#ifndef NOTIFIER_H
+#define NOTIFIER_H
 
-void NotifyPlugin::initialize(Application *application)
-{
-    mNotifier = new Notifier(application);
-}
+#include <QObject>
 
-void NotifyPlugin::cleanup(Application *application)
+class Application;
+
+class Notifier : public QObject
 {
-    delete mNotifier;
-}
+    Q_OBJECT
+
+public:
+
+    explicit Notifier(Application *application);
+
+private:
+
+    void showNotification(const QString &actionName, const QString &title, const QString &message);
+
+    Application *mApplication;
+};
+
+#endif // NOTIFIER_H

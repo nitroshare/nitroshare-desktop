@@ -22,15 +22,39 @@
  * IN THE SOFTWARE.
  */
 
-#include "notifier.h"
-#include "notifyplugin.h"
+#include <nitroshare/action.h>
+#include <nitroshare/actionregistry.h>
+#include <nitroshare/application.h>
+#include <nitroshare/logger.h>
+#include <nitroshare/message.h>
 
-void NotifyPlugin::initialize(Application *application)
+#include "notifier.h"
+
+const QString MessageTag = "mdns";
+
+const QString ShowTrayNotificationAction = "showtraynotification";
+
+Notifier::Notifier(Application *application)
+    : mApplication(application)
 {
-    mNotifier = new Notifier(application);
 }
 
-void NotifyPlugin::cleanup(Application *application)
+void Notifier::showNotification(const QString &actionName, const QString &title, const QString &message)
 {
-    delete mNotifier;
+    // Find the action for showing the tray notification
+    Action *action = mApplication->actionRegistry()->find(actionName);
+    if (!action) {
+        mApplication->logger()->log(new Message(
+            Message::Warning,
+            MessageTag,
+            QString("\"%1\" action was not found").arg(actionName)
+        ));
+        return;
+    }
+
+    // Invoke the action to show the notification
+    action->invoke(QVariantMap{
+        { "title", title },
+        { "message", message }
+    });
 }

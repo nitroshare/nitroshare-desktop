@@ -27,6 +27,8 @@
 
 #include <nitroshare/iplugin.h>
 
+class Notifier;
+
 class NotifyPlugin : public IPlugin
 {
     Q_OBJECT
@@ -36,6 +38,10 @@ public:
 
     virtual void initialize(Application *application);
     virtual void cleanup(Application *application);
+
+private:
+
+    Notifier *mNotifier;
 };
 
 #endif // NOTIFYPLUGIN_H

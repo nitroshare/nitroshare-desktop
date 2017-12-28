@@ -1,6 +1,8 @@
 configure_file(notify.json.in "${CMAKE_CURRENT_BINARY_DIR}/notify.json")
 
 set(SRC
+    notifier.h
+    notifier.cpp
     notifyplugin.h
     notifyplugin.cpp
 )
