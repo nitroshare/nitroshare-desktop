@@ -34,6 +34,7 @@
 #include <QCoreApplication>
 #include <QDir>
 #include <QFileInfo>
+#include <QJsonArray>
 #include <QJsonDocument>
 
 #ifdef Q_OS_WIN32
@@ -43,6 +44,8 @@
 #include <nitroshare/fileutil.h>
 
 #include "util.h"
+
+const QString ExtensionId = "net.nitroshare.nmh";
 
 bool Util::install(Browser browser)
 {
@@ -58,7 +61,7 @@ bool Util::install(Browser browser)
 
     // Generate the JSON for the manifest file
     QJsonObject object = extraJson(browser);
-    object.insert("name", extensionId(browser));
+    object.insert("name", ExtensionId);
     object.insert("description", "NitroShare");
     object.insert("path", nmhPath);
     object.insert("type", "stdio");
@@ -74,7 +77,7 @@ bool Util::install(Browser browser)
 
     // Create the manifest file and write its contents
     QString manifestFilename = QDir(parentPath).absoluteFilePath(
-        QString("%1.json").arg(extensionId(browser))
+        QString("%1.json").arg(ExtensionId)
     );
     if (!FileUtil::createFile(manifestFilename, QJsonDocument(object).toJson())) {
         return false;
@@ -89,16 +92,6 @@ bool Util::install(Browser browser)
 #endif
 
     return true;
-}
-
-QString Util::extensionId(Browser browser)
-{
-    switch (browser) {
-    case Chrome:
-        return "net.nitroshare.chrome";
-    case Firefox:
-        return "net.nitroshare.firefox";
-    }
 }
 
 QString Util::manifestPath(Browser browser)
@@ -124,21 +117,33 @@ QString Util::manifestPath(Browser browser)
 
 #elif defined(Q_OS_MACX)
 
+    QString path;
+
     switch (browser) {
     case Chrome:
-        return "Library/Application Support/Google/Chrome/NativeMessagingHosts";
+        path = "Library/Application Support/Google/Chrome/NativeMessagingHosts";
+        break;
     case Firefox:
-        return "Library/Application Support/Mozilla/NativeMessagingHosts";
+        path = "Library/Application Support/Mozilla/NativeMessagingHosts";
+        break;
     }
+
+    return QDir::home().absoluteFilePath(path);
 
 #elif defined(Q_OS_LINUX)
 
+    QString path;
+
     switch (browser) {
     case Chrome:
-        return ".config/google-chrome/NativeMessagingHosts";
+        path = ".config/google-chrome/NativeMessagingHosts";
+        break;
     case Firefox:
-        return ".mozilla/native-messaging-hosts";
+        path = ".mozilla/native-messaging-hosts";
+        break;
     }
+
+    return QDir::home().absoluteFilePath(path);
 
 #else
     // Other platforms are not currently supported by the plugin
@@ -150,13 +155,15 @@ QJsonObject Util::extraJson(Browser browser)
 {
     switch (browser) {
     case Chrome:
-        return QJsonObject{
-            { "allowed_origins", "chrome-extension://cljjpoinofmbdnbnpebolibochlfenag/" }
-        };
+        return QJsonObject{{
+            "allowed_origins",
+            QJsonArray{"chrome-extension://cljjpoinofmbdnbnpebolibochlfenag/"}
+        }};
     case Firefox:
-        return QJsonObject{
-            { "allowed_extensions", "nitroshare-firefox@nitroshare.net" }
-        };
+        return QJsonObject{{
+            "allowed_extensions",
+            QJsonArray{"nitroshare-firefox@nitroshare.net"}
+        }};
     }
 }
 

@@ -41,7 +41,6 @@ public:
 
 private:
 
-    static QString extensionId(Browser browser);
     static QString manifestPath(Browser browser);
     static QJsonObject extraJson(Browser browser);
 
