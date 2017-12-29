@@ -1,6 +1,8 @@
 configure_file(filesystemui.json.in "${CMAKE_CURRENT_BINARY_DIR}/filesystemui.json")
 
 set(SRC
+    acceptfilesdialog.h
+    acceptfilesdialog.cpp
     filesystemuiplugin.h
     filesystemuiplugin.cpp
     senditemsuiaction.h
