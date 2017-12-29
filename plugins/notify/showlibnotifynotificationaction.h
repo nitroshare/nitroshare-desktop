@@ -33,6 +33,9 @@ class ShowLibnotifyNotificationAction : public Action
 
 public:
 
+    ShowLibnotifyNotificationAction();
+    virtual ~ShowLibnotifyNotificationAction();
+
     virtual QString name() const;
 
 public slots:

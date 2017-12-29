@@ -26,6 +26,16 @@
 
 #include "showlibnotifynotificationaction.h"
 
+ShowLibnotifyNotificationAction::ShowLibnotifyNotificationAction()
+{
+    notify_init("nitroshare");
+}
+
+ShowLibnotifyNotificationAction::~ShowLibnotifyNotificationAction()
+{
+    notify_uninit();
+}
+
 QString ShowLibnotifyNotificationAction::name() const
 {
     return "showlibnotifynotification";
