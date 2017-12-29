@@ -22,6 +22,7 @@
  * IN THE SOFTWARE.
  */
 
+#include <QFrame>
 #include <QHBoxLayout>
 #include <QHeaderView>
 #include <QItemSelectionModel>
@@ -33,6 +34,7 @@
 #include <nitroshare/application.h>
 #include <nitroshare/plugin.h>
 #include <nitroshare/pluginmodel.h>
+#include <nitroshare/settingsregistry.h>
 
 #include "plugindialog.h"
 
@@ -42,7 +44,8 @@ PluginDialog::PluginDialog(Application *application)
     : mApplication(application),
       mTableView(new QTableView),
       mLoadButton(new QPushButton(tr("Load"))),
-      mUnloadButton(new QPushButton(tr("Unload")))
+      mUnloadButton(new QPushButton(tr("Unload"))),
+      mBlacklistButton(new QPushButton(tr("Blacklist")))
 {
     setWindowTitle(tr("Plugins"));
     resize(800, 300);
@@ -64,9 +67,18 @@ PluginDialog::PluginDialog(Application *application)
     mUnloadButton->setEnabled(false);
     connect(mUnloadButton, &QPushButton::clicked, this, &PluginDialog::onUnload);
 
+    mBlacklistButton->setEnabled(false);
+    connect(mBlacklistButton, &QPushButton::clicked, this, &PluginDialog::onBlacklist);
+
+    QFrame *frame = new QFrame;
+    frame->setFrameShape(QFrame::HLine);
+    frame->setFrameShadow(QFrame::Sunken);
+
     QVBoxLayout *vboxLayout = new QVBoxLayout;
     vboxLayout->addWidget(mLoadButton);
     vboxLayout->addWidget(mUnloadButton);
+    vboxLayout->addWidget(frame);
+    vboxLayout->addWidget(mBlacklistButton);
     vboxLayout->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Minimum, QSizePolicy::Expanding));
 
     QHBoxLayout *hboxLayout = new QHBoxLayout;
@@ -81,6 +93,7 @@ void PluginDialog::onSelectionChanged()
 
     mLoadButton->setEnabled(plugin && !plugin->isLoaded());
     mUnloadButton->setEnabled(plugin && plugin->isLoaded());
+    mBlacklistButton->setEnabled(plugin);
 }
 
 void PluginDialog::onLoad()
@@ -113,6 +126,36 @@ void PluginDialog::onUnload()
     if (plugin->name() != ThisPlugin) {
         mTableView->selectionModel()->clear();
     }
+}
+
+void PluginDialog::onBlacklist()
+{
+    int response = QMessageBox::warning(
+        this,
+        tr("Warning"),
+        tr("Blacklisting this plugin will prevent it from from loading the next time NitroShare starts. Are you sure you want to blacklist this plugin?"),
+        QMessageBox::Yes | QMessageBox::No
+    );
+    if (response == QMessageBox::No) {
+        return;
+    }
+
+    // Retrieve the current list
+    QStringList blacklist = mApplication->settingsRegistry()->value(
+        Application::PluginBlacklistSettingName
+    ).toStringList();
+
+    // Add the plugin to the list if it is not already present
+    Plugin *plugin = currentPlugin();
+    if (!blacklist.contains(plugin->name())) {
+        blacklist.append(plugin->name());
+    }
+
+    // Store the new list
+    mApplication->settingsRegistry()->setValue(
+        Application::PluginBlacklistSettingName,
+        blacklist
+    );
 }
 
 Plugin *PluginDialog::currentPlugin() const

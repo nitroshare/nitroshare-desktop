@@ -48,6 +48,7 @@ private slots:
 
     void onLoad();
     void onUnload();
+    void onBlacklist();
 
 private:
 
@@ -60,6 +61,7 @@ private:
 
     QPushButton *mLoadButton;
     QPushButton *mUnloadButton;
+    QPushButton *mBlacklistButton;
 };
 
 #endif // PLUGINDIALOG_H
