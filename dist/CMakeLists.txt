@@ -37,8 +37,13 @@ if(APPLE)
 endif()
 
 if(LINUX AND BUILD_UI)
-    # Copy the application icons to the correct location
+    # Copy the application icons
     install(DIRECTORY icons
         DESTINATION share
+    )
+
+    # Copy the .desktop file
+    install(FILES nitroshare.desktop
+        DESTINATION share/applications
     )
 endif()

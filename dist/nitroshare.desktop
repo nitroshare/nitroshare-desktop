@@ -8,6 +8,6 @@ Comment=Network File Transfer Application
 Comment[fr]=Application de transfert de fichier
 Comment[pl]=Program do przesyłania plików
 Icon=nitroshare
-Exec=nitroshare
+Exec=nitroshare-ui
 Categories=Network;FileTransfer;
 Keywords=network;transfer;
