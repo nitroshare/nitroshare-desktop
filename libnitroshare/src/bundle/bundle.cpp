@@ -55,7 +55,7 @@ qint64 Bundle::totalSize() const
     return d->totalSize;
 }
 
-int Bundle::rowCount(const QModelIndex &parent) const
+int Bundle::rowCount(const QModelIndex &) const
 {
     return d->items.count();
 }

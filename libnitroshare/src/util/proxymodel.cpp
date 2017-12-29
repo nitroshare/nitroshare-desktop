@@ -44,7 +44,7 @@ void ProxyModel::setSourceModel(QAbstractItemModel *sourceModel)
     });
 }
 
-QModelIndex ProxyModel::index(int row, int column, const QModelIndex &parent) const
+QModelIndex ProxyModel::index(int row, int column, const QModelIndex &) const
 {
     return createIndex(row, column);
 }

@@ -68,6 +68,8 @@ QVariant TransferProxyModel::data(const QModelIndex &proxyIndex, int role) const
                 return QColor(Qt::darkRed);
             case Transfer::Succeeded:
                 return QColor(Qt::darkGreen);
+            default:
+                break;
             }
         }
     }

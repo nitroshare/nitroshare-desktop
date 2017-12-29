@@ -30,7 +30,7 @@ void ShareboxPlugin::initialize(Application *application)
     mWidget = new ShareboxWidget(application);
 }
 
-void ShareboxPlugin::cleanup(Application *application)
+void ShareboxPlugin::cleanup(Application *)
 {
     delete mWidget;
 }
