@@ -64,7 +64,7 @@ public:
 
     /**
      * @brief Add the specified plugin to the model
-     * @param pointer to Plugin
+     * @param plugin pointer to Plugin
      * @return true if the plugin was successfully added
      *
      * Note that the model assumes ownership of the plugin and will delete it
