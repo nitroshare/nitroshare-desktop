@@ -22,10 +22,20 @@
  * IN THE SOFTWARE.
  */
 
+#include <QTabWidget>
+#include <QVBoxLayout>
+
+#include "actionswidget.h"
 #include "devwindow.h"
 
 DevWindow::DevWindow(Application *application)
-    : mApplication(application)
 {
     setWindowTitle(tr("Developer Tools"));
+
+    QTabWidget *tabWidget = new QTabWidget;
+    tabWidget->addTab(new ActionsWidget(application), tr("Actions"));
+
+    QVBoxLayout *vboxLayout = new QVBoxLayout;
+    vboxLayout->addWidget(tabWidget);
+    setLayout(vboxLayout);
 }

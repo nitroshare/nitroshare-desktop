@@ -22,20 +22,41 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef DEVWINDOW_H
-#define DEVWINDOW_H
+#ifndef ACTIONSWIDGET_H
+#define ACTIONSWIDGET_H
 
-#include <QDialog>
+#include <QComboBox>
+#include <QLabel>
+#include <QPushButton>
+#include <QTextEdit>
+#include <QWidget>
 
+class Action;
 class Application;
 
-class DevWindow : public QDialog
+class ActionsWidget : public QWidget
 {
     Q_OBJECT
 
 public:
 
-    explicit DevWindow(Application *application);
+    explicit ActionsWidget(Application *application);
+
+private slots:
+
+    void onActionAdded(Action *action);
+    void onActionRemoved(Action *action);
+    void onInvoke();
+
+private:
+
+    Application *mApplication;
+
+    QComboBox *mActions;
+    QLabel *mDescription;
+    QTextEdit *mParams;
+    QPushButton *mInvoke;
+    QTextEdit *mReturn;
 };
 
-#endif // DEVWINDOW_H
+#endif // ACTIONSWIDGET_H
