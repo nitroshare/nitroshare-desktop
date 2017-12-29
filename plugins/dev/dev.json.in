@@ -1,0 +1,10 @@
+{
+    "Name": "dev",
+    "Title": "Developer Tools",
+    "Vendor": "Nathan Osman",
+    "Version": "${PROJECT_VERSION}",
+    "Description": "Tools for plugin development",
+    "Dependencies": [
+        "ui"
+    ]
+}
