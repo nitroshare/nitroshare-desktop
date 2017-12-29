@@ -30,6 +30,9 @@ option(BUILD_CLIENT "Build the NitroShare client app" ON)
 if(Qt5Widgets_FOUND)
     option(BUILD_UI "Build the NitroShare UI app" ON)
 endif()
+if(WIN32)
+    option(BUILD_NITROSHELL "Build shell extension for Windows Explorer" ON)
+endif()
 
 option(ENABLE_TLS "Enable support for TLS" ON)
 
@@ -134,4 +137,8 @@ endif()
 
 if(BUILD_UI)
     add_subdirectory(ui)
+endif()
+
+if(WIN32 AND BUILD_NITROSHELL)
+    add_subdirectory(shell)
 endif()
