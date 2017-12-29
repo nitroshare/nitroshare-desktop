@@ -58,6 +58,7 @@ public:
 
     Category pluginCategory;
     Setting pluginDirectories;
+    Setting pluginBlacklist;
 
     QSettings *settings;
 

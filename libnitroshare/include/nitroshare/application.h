@@ -110,6 +110,11 @@ public:
     static const QString PluginDirectoriesSettingName;
 
     /**
+     * @brief Setting name for plugin blacklist
+     */
+    static const QString PluginBlacklistSettingName;
+
+    /**
      * @brief Create a new application object
      * @param settings pointer to QSettings
      * @param parent QObject

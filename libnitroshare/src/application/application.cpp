@@ -45,6 +45,7 @@ const QString Application::DeviceNameSettingName = "DeviceName";
 
 const QString Application::PluginCategoryName = "plugin";
 const QString Application::PluginDirectoriesSettingName = "PluginDirectories";
+const QString Application::PluginBlacklistSettingName = "PluginBlacklist";
 
 ApplicationPrivate::ApplicationPrivate(Application *application, QSettings *existingSettings)
     : QObject(application),
@@ -78,6 +79,13 @@ ApplicationPrivate::ApplicationPrivate(Application *application, QSettings *exis
           { Setting::CategoryKey, Application::PluginCategoryName },
           { Setting::DefaultValueKey, QStringList() }
       }),
+      pluginBlacklist({
+          { Setting::TypeKey, Setting::StringList },
+          { Setting::NameKey, Application::PluginBlacklistSettingName },
+          { Setting::TitleKey, tr("Plugin blacklist") },
+          { Setting::CategoryKey, Application::PluginCategoryName },
+          { Setting::DefaultValueKey, QStringList() }
+      }),
       settings(existingSettings ? existingSettings : new QSettings(this)),
       actionRegistry(application),
       pluginModel(application),
@@ -90,6 +98,7 @@ ApplicationPrivate::ApplicationPrivate(Application *application, QSettings *exis
 
     settingsRegistry.addCategory(&pluginCategory);
     settingsRegistry.addSetting(&pluginDirectories);
+    settingsRegistry.addSetting(&pluginBlacklist);
 
     connect(&transportServerRegistry, &TransportServerRegistry::transportReceived, [&](Transport *transport) {
         transferModel.add(new Transfer(q, transport));
@@ -102,6 +111,7 @@ ApplicationPrivate::~ApplicationPrivate()
     settingsRegistry.removeSetting(&deviceName);
     settingsRegistry.removeCategory(&deviceCategory);
 
+    settingsRegistry.removeSetting(&pluginBlacklist);
     settingsRegistry.removeSetting(&pluginDirectories);
     settingsRegistry.removeCategory(&pluginCategory);
 }
@@ -143,8 +153,12 @@ void Application::addCliOptions(QCommandLineParser *parser)
 
 void Application::processCliOptions(QCommandLineParser *parser)
 {
-    // Blacklist the plugins that were specified
+    // Blacklist the plugins that were specified on the command line
+    // and in the relevant setting
     pluginModel()->addToBlacklist(parser->values(PluginBlacklist));
+    pluginModel()->addToBlacklist(
+        settingsRegistry()->value(PluginBlacklistSettingName).toStringList()
+    );
 
     // Load plugins from the following directories:
     //  - the default plugin directory relative to the executable
