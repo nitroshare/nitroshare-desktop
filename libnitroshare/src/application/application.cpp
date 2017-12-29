@@ -153,12 +153,8 @@ void Application::addCliOptions(QCommandLineParser *parser)
 
 void Application::processCliOptions(QCommandLineParser *parser)
 {
-    // Blacklist the plugins that were specified on the command line
-    // and in the relevant setting
+    // Blacklist the plugins that were specified
     pluginModel()->addToBlacklist(parser->values(PluginBlacklist));
-    pluginModel()->addToBlacklist(
-        settingsRegistry()->value(PluginBlacklistSettingName).toStringList()
-    );
 
     // Load plugins from the following directories:
     //  - the default plugin directory relative to the executable

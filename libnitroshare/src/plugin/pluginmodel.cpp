@@ -31,6 +31,7 @@
 #include <nitroshare/message.h>
 #include <nitroshare/plugin.h>
 #include <nitroshare/pluginmodel.h>
+#include <nitroshare/settingsregistry.h>
 
 #include "plugin_p.h"
 #include "pluginmodel_p.h"
@@ -131,7 +132,10 @@ bool PluginModel::load(Plugin *plugin)
     if (!plugin->d->initialized) {
 
         // Refuse to initialize blacklisted plugins
-        if (d->blacklist.contains(plugin->name())) {
+        QStringList blacklist = d->application->settingsRegistry()->value(
+            Application::PluginBlacklistSettingName
+        ).toStringList();
+        if (blacklist.contains(plugin->name()) || d->blacklist.contains(plugin->name())) {
             return false;
         }
 
