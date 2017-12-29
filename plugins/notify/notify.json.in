@@ -1,0 +1,8 @@
+{
+    "Name": "notify",
+    "Title": "libnotify",
+    "Vendor": "Nathan Osman",
+    "Version": "${PROJECT_VERSION}",
+    "Description": "Show notifications with libnotify",
+    "Dependencies": []
+}

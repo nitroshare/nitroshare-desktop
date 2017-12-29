@@ -28,3 +28,7 @@ endif()
 if(BUILD_MDNS)
     add_subdirectory(mdns)
 endif()
+
+if(LINUX AND libnotify_FOUND)
+    add_subdirectory(notify)
+endif()
