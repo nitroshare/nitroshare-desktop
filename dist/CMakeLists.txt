@@ -35,3 +35,10 @@ if(APPLE)
         COMMENT "Building disk image..."
     )
 endif()
+
+if(LINUX AND BUILD_UI)
+    # Copy the application icons to the correct location
+    install(DIRECTORY icons
+        DESTINATION share
+    )
+endif()
