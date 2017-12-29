@@ -25,6 +25,7 @@
 #ifndef ACTIONSWIDGET_H
 #define ACTIONSWIDGET_H
 
+#include <QCheckBox>
 #include <QComboBox>
 #include <QLabel>
 #include <QPushButton>
@@ -44,6 +45,7 @@ public:
 
 private slots:
 
+    void onCurrentIndexChanged(int index);
     void onActionAdded(Action *action);
     void onActionRemoved(Action *action);
     void onInvoke();
@@ -54,6 +56,8 @@ private:
 
     QComboBox *mActions;
     QLabel *mDescription;
+    QCheckBox *mApi;
+    QCheckBox *mMenu;
     QTextEdit *mParams;
     QPushButton *mInvoke;
     QTextEdit *mReturn;

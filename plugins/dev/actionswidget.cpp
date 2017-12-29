@@ -40,6 +40,8 @@ ActionsWidget::ActionsWidget(Application *application)
     : mApplication(application),
       mActions(new QComboBox),
       mDescription(new QLabel),
+      mApi(new QCheckBox(tr("Expose in API"))),
+      mMenu(new QCheckBox(tr("Show in menu"))),
       mParams(new QTextEdit("{\n    \n}")),
       mInvoke(new QPushButton(tr("Invoke"))),
       mReturn(new QTextEdit)
@@ -53,6 +55,8 @@ ActionsWidget::ActionsWidget(Application *application)
     QFrame *frame = new QFrame;
     frame->setFrameShape(QFrame::HLine);
     frame->setFrameShadow(QFrame::Sunken);
+
+    connect(mActions, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &ActionsWidget::onCurrentIndexChanged);
 
     // Add the existing actions
     foreach (Action *action, mApplication->actionRegistry()->actions()) {
@@ -80,12 +84,30 @@ ActionsWidget::ActionsWidget(Application *application)
     vboxLayout->addWidget(mActions);
     vboxLayout->addWidget(new QLabel(tr("Description:")));
     vboxLayout->addWidget(mDescription);
+    vboxLayout->addWidget(mApi);
+    vboxLayout->addWidget(mMenu);
     vboxLayout->addWidget(new QLabel(tr("Parameters:")));
     vboxLayout->addWidget(mParams);
     vboxLayout->addWidget(mInvoke);
     vboxLayout->addWidget(new QLabel(tr("Return value:")));
     vboxLayout->addWidget(mReturn);
     setLayout(vboxLayout);
+}
+
+void ActionsWidget::onCurrentIndexChanged(int index)
+{
+    if (index == -1) {
+        return;
+    }
+
+    // Retrieve the currently selected action
+    Action *action = mActions->currentData().value<Action*>();
+
+    // Update the UI with the action's information
+    QString description = action->property("description").toString();
+    mDescription->setText(description.isNull() ? tr("[no description]") : description);
+    mApi->setChecked(action->property("api").toBool());
+    mMenu->setChecked(action->property("menu").toBool());
 }
 
 void ActionsWidget::onActionAdded(Action *action)
