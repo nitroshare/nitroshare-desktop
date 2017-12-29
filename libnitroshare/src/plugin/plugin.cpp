@@ -89,5 +89,5 @@ QString Plugin::description() const
 
 bool Plugin::isLoaded() const
 {
-    return d->loader.isLoaded();
+    return d->initialized;
 }

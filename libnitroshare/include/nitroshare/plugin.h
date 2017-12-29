@@ -85,6 +85,9 @@ public:
 
     /**
      * @brief Determine if the plugin was loaded
+     *
+     * This method returns true if the plugin was loaded and initialized. It
+     * will return false if the plugin was loaded but not initialied.
      */
     bool isLoaded() const;
 
