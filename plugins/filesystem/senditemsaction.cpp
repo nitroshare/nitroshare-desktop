@@ -34,33 +34,33 @@
 #include <nitroshare/transfermodel.h>
 
 #include "file.h"
-#include "sendfilesaction.h"
+#include "senditemsaction.h"
 
 // TODO: make this a configurable setting
 
 const int BlockSize = 65536;
 
-SendFilesAction::SendFilesAction(Application *application)
+SendItemsAction::SendItemsAction(Application *application)
     : mApplication(application)
 {
 }
 
-QString SendFilesAction::name() const
+QString SendItemsAction::name() const
 {
-    return "sendfiles";
+    return "senditems";
 }
 
-bool SendFilesAction::api() const
+bool SendItemsAction::api() const
 {
     return true;
 }
 
-QString SendFilesAction::title() const
+QString SendItemsAction::title() const
 {
-    return tr("send files to device");
+    return tr("send items to device");
 }
 
-QString SendFilesAction::description() const
+QString SendItemsAction::description() const
 {
     return tr(
         "Send a list of files or directories to the specified device. "
@@ -74,7 +74,7 @@ QString SendFilesAction::description() const
     );
 }
 
-QVariant SendFilesAction::invoke(const QVariantMap &params)
+QVariant SendItemsAction::invoke(const QVariantMap &params)
 {
     // Attempt to find the device
     Device *device = mApplication->deviceModel()->findDevice(
@@ -96,7 +96,7 @@ QVariant SendFilesAction::invoke(const QVariantMap &params)
     return true;
 }
 
-Bundle *SendFilesAction::createBundle(const QStringList &items)
+Bundle *SendItemsAction::createBundle(const QStringList &items)
 {
     Bundle *bundle = new Bundle;
 

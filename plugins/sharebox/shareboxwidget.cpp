@@ -234,8 +234,8 @@ void ShareboxWidget::sendItems(QStringList items)
         return;
     }
 
-    // Invoke the send files action to initiate the transfer
-    mApplication->actionRegistry()->find("sendfiles")->invoke({
+    // Invoke the senditems action to initiate the transfer
+    mApplication->actionRegistry()->find("senditems")->invoke({
         { "device", deviceRet.toMap().value("device") },
         { "enumerator", deviceRet.toMap().value("enumerator") },
         { "items", items }

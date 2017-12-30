@@ -22,8 +22,8 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef SENDFILESACTION_H
-#define SENDFILESACTION_H
+#ifndef SENDITEMSACTION_H
+#define SENDITEMSACTION_H
 
 #include <nitroshare/action.h>
 
@@ -33,7 +33,7 @@ class Bundle;
 /**
  * @brief Send a list of files or directories to another device
  */
-class SendFilesAction : public Action
+class SendItemsAction : public Action
 {
     Q_OBJECT
     Q_PROPERTY(bool api READ api)
@@ -42,7 +42,7 @@ class SendFilesAction : public Action
 
 public:
 
-    explicit SendFilesAction(Application *application);
+    explicit SendItemsAction(Application *application);
 
     virtual QString name() const;
 
@@ -61,4 +61,4 @@ private:
     Application *mApplication;
 };
 
-#endif // SENDFILESACTION_H
+#endif // SENDITEMSACTION_H

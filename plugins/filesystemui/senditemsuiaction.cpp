@@ -69,8 +69,8 @@ QVariant SendItemsUiAction::invoke(const QVariantMap &params)
         return false;
     }
 
-    // Invoke the send files action to initiate the transfer
-    return mApplication->actionRegistry()->find("sendfiles")->invoke({
+    // Invoke the senditems action to initiate the transfer
+    return mApplication->actionRegistry()->find("senditems")->invoke({
         { "device", deviceRet.toMap().value("device").toString() },
         { "enumerator", deviceRet.toMap().value("enumerator").toString() },
         { "items", items },

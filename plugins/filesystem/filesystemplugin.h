@@ -28,7 +28,7 @@
 #include <nitroshare/iplugin.h>
 
 class FileHandler;
-class SendFilesAction;
+class SendItemsAction;
 
 class Q_DECL_EXPORT FilesystemPlugin : public IPlugin
 {
@@ -43,7 +43,7 @@ public:
 private:
 
     FileHandler *mFileHandler;
-    SendFilesAction *mSendFilesAction;
+    SendItemsAction *mAction;
 };
 
 #endif // FILESYSTEMPLUGIN_H
