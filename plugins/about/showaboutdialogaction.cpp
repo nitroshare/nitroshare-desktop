@@ -31,7 +31,7 @@ ShowAboutDialogAction::ShowAboutDialogAction(Application *application)
 
 QString ShowAboutDialogAction::name() const
 {
-    return "about";
+    return "showaboutdialog";
 }
 
 bool ShowAboutDialogAction::menu() const
