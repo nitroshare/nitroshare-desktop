@@ -58,10 +58,11 @@ ActionsWidget::ActionsWidget(Application *application)
 
     connect(mActions, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &ActionsWidget::onCurrentIndexChanged);
 
-    // Add the existing actions
+    // Add existing actions and sort
     foreach (Action *action, mApplication->actionRegistry()->actions()) {
         mActions->addItem(action->name(), QVariant::fromValue(action));
     }
+    mActions->model()->sort(0);
 
     // Monitor for new actions being added / removed
     connect(mApplication->actionRegistry(), &ActionRegistry::actionAdded, this, &ActionsWidget::onActionAdded);
@@ -114,6 +115,7 @@ void ActionsWidget::onCurrentIndexChanged(int index)
 void ActionsWidget::onActionAdded(Action *action)
 {
     mActions->addItem(action->name(), QVariant::fromValue(action));
+    mActions->model()->sort(0);
 }
 
 void ActionsWidget::onActionRemoved(Action *action)
