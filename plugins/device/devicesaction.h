@@ -29,15 +29,21 @@
 
 class Application;
 
+/**
+ * @brief Retrieve a list of devices
+ */
 class DevicesAction : public Action
 {
     Q_OBJECT
+    Q_PROPERTY(QString description READ description)
 
 public:
 
     explicit DevicesAction(Application *application);
 
     virtual QString name() const;
+
+    QString description() const;
 
 public slots:
 

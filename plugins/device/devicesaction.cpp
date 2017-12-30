@@ -39,6 +39,15 @@ QString DevicesAction::name() const
     return "devices";
 }
 
+QString DevicesAction::description() const
+{
+    return tr(
+        "Retrieve a list of devices currently available for transfer. "
+        "This action takes no parameters and returns an array of devices.\n\n"
+        "Each device object consists of the properties present in the device."
+    );
+}
+
 QVariant DevicesAction::invoke(const QVariantMap &)
 {
     QVariantList devices;
