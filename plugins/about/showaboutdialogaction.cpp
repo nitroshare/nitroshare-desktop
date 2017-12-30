@@ -22,29 +22,34 @@
  * IN THE SOFTWARE.
  */
 
-#include "aboutaction.h"
+#include "showaboutdialogaction.h"
 
-AboutAction::AboutAction(Application *application)
+ShowAboutDialogAction::ShowAboutDialogAction(Application *application)
     : mDialog(application)
 {
 }
 
-QString AboutAction::name() const
+QString ShowAboutDialogAction::name() const
 {
     return "about";
 }
 
-bool AboutAction::menu() const
+bool ShowAboutDialogAction::menu() const
 {
     return true;
 }
 
-QString AboutAction::label() const
+QString ShowAboutDialogAction::label() const
 {
     return tr("About...");
 }
 
-QVariant AboutAction::invoke(const QVariantMap &)
+QString ShowAboutDialogAction::description() const
+{
+    return tr("Display the about dialog onscreen");
+}
+
+QVariant ShowAboutDialogAction::invoke(const QVariantMap &)
 {
     mDialog.show();
     return true;

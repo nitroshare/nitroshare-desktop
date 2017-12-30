@@ -22,8 +22,8 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef ABOUTACTION_H
-#define ABOUTACTION_H
+#ifndef SHOWABOUTDIALOGACTION_H
+#define SHOWABOUTDIALOGACTION_H
 
 #include <nitroshare/action.h>
 
@@ -31,20 +31,25 @@
 
 class Application;
 
-class AboutAction : public Action
+/**
+ * @brief Show the About dialog
+ */
+class ShowAboutDialogAction : public Action
 {
     Q_OBJECT
     Q_PROPERTY(bool menu READ menu)
     Q_PROPERTY(QString label READ label)
+    Q_PROPERTY(QString description READ description)
 
 public:
 
-    explicit AboutAction(Application *application);
+    explicit ShowAboutDialogAction(Application *application);
 
     virtual QString name() const;
 
     bool menu() const;
     QString label() const;
+    QString description() const;
 
 public slots:
 
@@ -55,4 +60,4 @@ private:
     AboutDialog mDialog;
 };
 
-#endif // ABOUTACTION_H
+#endif // SHOWABOUTDIALOGACTION_H

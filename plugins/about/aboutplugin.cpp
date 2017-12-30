@@ -25,12 +25,12 @@
 #include <nitroshare/actionregistry.h>
 #include <nitroshare/application.h>
 
-#include "aboutaction.h"
 #include "aboutplugin.h"
+#include "showaboutdialogaction.h"
 
 void AboutPlugin::initialize(Application *application)
 {
-    mAction = new AboutAction(application);
+    mAction = new ShowAboutDialogAction(application);
     application->actionRegistry()->add(mAction);
 }
 

@@ -27,7 +27,7 @@
 
 #include <nitroshare/iplugin.h>
 
-class AboutAction;
+class ShowAboutDialogAction;
 
 class Q_DECL_EXPORT AboutPlugin : public IPlugin
 {
@@ -41,7 +41,7 @@ public:
 
 private:
 
-    AboutAction *mAction;
+    ShowAboutDialogAction *mAction;
 };
 
 #endif // ABOUTPLUGIN_H
