@@ -69,6 +69,7 @@ ActionsWidget::ActionsWidget(Application *application)
 
     // Make the text for the label stand out
     mDescription->setEnabled(false);
+    mDescription->setWordWrap(true);
 
     // Only plain text is supported
     mParams->setAcceptRichText(false);
