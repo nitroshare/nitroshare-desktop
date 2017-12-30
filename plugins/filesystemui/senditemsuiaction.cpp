@@ -22,23 +22,20 @@
  * IN THE SOFTWARE.
  */
 
-#include <QFileDialog>
-
 #include <nitroshare/action.h>
 #include <nitroshare/actionregistry.h>
 #include <nitroshare/application.h>
 
 #include "senditemsuiaction.h"
 
-SendItemsUiAction::SendItemsUiAction(Application *application, Type type)
-    : mApplication(application),
-      mType(type)
+SendItemsUiAction::SendItemsUiAction(Application *application)
+    : mApplication(application)
 {
 }
 
 QString SendItemsUiAction::name() const
 {
-    return mType == SendFiles ? "sendfilesui" : "senddirectoryui";
+    return "senditemsui";
 }
 
 bool SendItemsUiAction::api() const
@@ -46,49 +43,24 @@ bool SendItemsUiAction::api() const
     return true;
 }
 
-QString SendItemsUiAction::title() const
-{
-    return mType == SendFiles ?
-        tr("select files and send them to a device") :
-        tr("select directory and send it to a device");
-}
-
 QString SendItemsUiAction::description() const
 {
     return tr(
-        "Show a dialog for selecting items and send them to a device. "
-        "A device selection dialog is shown after items are selected. "
-        "This action takes no parameters and returns a boolean set to true if "
-        "a transfer was created."
+        "Select a device and send the specified items to it. "
+        "This action expects a single parameter:\n"
+        "\n"
+        "- \"items\" (array of strings) absolute paths of items to send"
+        "\n"
+        "The return value will be a boolean indicating success."
     );
 }
 
-bool SendItemsUiAction::menu() const
+QVariant SendItemsUiAction::invoke(const QVariantMap &params)
 {
-    return true;
-}
-
-QString SendItemsUiAction::label() const
-{
-    return mType == SendFiles ? tr("Send files...") : tr("Send directory...");
-}
-
-QVariant SendItemsUiAction::invoke(const QVariantMap &)
-{
-    QStringList items;
-
-    // Show the appropriate dialog
-    if (mType == SendFiles) {
-        items = QFileDialog::getOpenFileNames(nullptr, tr("Select Files"));
-        if (!items.count()) {
-            return false;
-        }
-    } else {
-        QString item = QFileDialog::getExistingDirectory(nullptr, tr("Select Directory"));
-        if (item.isNull()) {
-            return false;
-        }
-        items = QStringList{ item };
+    // Ensure a list of items was provided
+    QStringList items = params.value("items").toStringList();
+    if (!items.size()) {
+        return false;
     }
 
     // Invoke the device selection dialog to select a device

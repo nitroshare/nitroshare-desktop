@@ -22,38 +22,58 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef SENDITEMSUIACTION_H
-#define SENDITEMSUIACTION_H
+#include <QFileDialog>
 
 #include <nitroshare/action.h>
+#include <nitroshare/actionregistry.h>
+#include <nitroshare/application.h>
 
-class Application;
+#include "sendfilesuiaction.h"
 
-/**
- * @brief Select a device and send items to it
- */
-class SendItemsUiAction : public Action
+SendFilesUiAction::SendFilesUiAction(Application *application)
+    : mApplication(application)
 {
-    Q_OBJECT
-    Q_PROPERTY(bool api READ api)
-    Q_PROPERTY(QString description READ description)
+}
 
-public:
+QString SendFilesUiAction::name() const
+{
+    return "sendfilesui";
+}
 
-    explicit SendItemsUiAction(Application *application);
+bool SendFilesUiAction::api() const
+{
+    return true;
+}
 
-    virtual QString name() const;
+bool SendFilesUiAction::menu() const
+{
+    return true;
+}
 
-    bool api() const;
-    QString description() const;
+QString SendFilesUiAction::label() const
+{
+    return tr("Send files...");
+}
 
-public slots:
+QString SendFilesUiAction::description() const
+{
+    return tr(
+        "Select files and a device to send them to and initiate a transfer. "
+        "This action takes no parameters and returns a boolean set to true if "
+        "a transfer was created."
+    );
+}
 
-    virtual QVariant invoke(const QVariantMap &params = QVariantMap());
+QVariant SendFilesUiAction::invoke(const QVariantMap &)
+{
+    // Show the file selection dialog
+    QStringList files = QFileDialog::getOpenFileNames(nullptr, tr("Select Files"));
+    if (!files.count()) {
+        return false;
+    }
 
-private:
-
-    Application *mApplication;
-};
-
-#endif // SENDFILESUIACTION_H
+    // Use the senditemsui action to prompt for a device and send the files
+    return mApplication->actionRegistry()->find("senditemsui")->invoke({
+        { "items", files }
+    });
+}

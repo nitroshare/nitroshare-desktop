@@ -22,32 +22,59 @@
  * IN THE SOFTWARE.
  */
 
+#include <QFileDialog>
+
+#include <nitroshare/action.h>
 #include <nitroshare/actionregistry.h>
 #include <nitroshare/application.h>
 
-#include "filesystemuiplugin.h"
 #include "senddirectoryuiaction.h"
-#include "sendfilesuiaction.h"
-#include "senditemsuiaction.h"
 
-void FilesystemUiPlugin::initialize(Application *application)
+SendDirectoryUiAction::SendDirectoryUiAction(Application *application)
+    : mApplication(application)
 {
-    mSendDirectoryUiAction = new SendDirectoryUiAction(application);
-    mSendFilesUiAction = new SendFilesUiAction(application);
-    mSendItemsUiAction = new SendItemsUiAction(application);
-
-    application->actionRegistry()->add(mSendDirectoryUiAction);
-    application->actionRegistry()->add(mSendFilesUiAction);
-    application->actionRegistry()->add(mSendItemsUiAction);
 }
 
-void FilesystemUiPlugin::cleanup(Application *application)
+QString SendDirectoryUiAction::name() const
 {
-    application->actionRegistry()->remove(mSendItemsUiAction);
-    application->actionRegistry()->remove(mSendFilesUiAction);
-    application->actionRegistry()->remove(mSendDirectoryUiAction);
+    return "senddirectoryui";
+}
 
-    delete mSendItemsUiAction;
-    delete mSendFilesUiAction;
-    delete mSendDirectoryUiAction;
+bool SendDirectoryUiAction::api() const
+{
+    return true;
+}
+
+bool SendDirectoryUiAction::menu() const
+{
+    return true;
+}
+
+QString SendDirectoryUiAction::label() const
+{
+    return tr("Send directory...");
+}
+
+QString SendDirectoryUiAction::description() const
+{
+    return tr(
+        "Select a directory and a device to send it to and initiate a transfer. "
+        "This action takes no parameters and returns a boolean set to true if "
+        "a transfer was created."
+    );
+}
+
+QVariant SendDirectoryUiAction::invoke(const QVariantMap &)
+{
+    // Show the directory selection dialog
+    QString item = QFileDialog::getExistingDirectory(nullptr, tr("Select Directory"));
+    if (item.isNull()) {
+        return false;
+    }
+
+    // Use the senditemsui action to prompt for a device and send the directory
+    // It is safe to assume the action exists since this plugin provides it
+    return mApplication->actionRegistry()->find("senditemsui")->invoke({
+        { "items", QStringList{ item } }
+    });
 }

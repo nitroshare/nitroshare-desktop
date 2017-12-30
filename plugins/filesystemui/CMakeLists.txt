@@ -5,6 +5,10 @@ set(SRC
     acceptfilesdialog.cpp
     filesystemuiplugin.h
     filesystemuiplugin.cpp
+    senddirectoryuiaction.h
+    senddirectoryuiaction.cpp
+    sendfilesuiaction.h
+    sendfilesuiaction.cpp
     senditemsuiaction.h
     senditemsuiaction.cpp
 )

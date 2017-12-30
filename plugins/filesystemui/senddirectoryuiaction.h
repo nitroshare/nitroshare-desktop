@@ -22,29 +22,33 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef SENDITEMSUIACTION_H
-#define SENDITEMSUIACTION_H
+#ifndef SENDDIRECTORYUIACTION_H
+#define SENDDIRECTORYUIACTION_H
 
 #include <nitroshare/action.h>
 
 class Application;
 
 /**
- * @brief Select a device and send items to it
+ * @brief Select a directory to send
  */
-class SendItemsUiAction : public Action
+class SendDirectoryUiAction : public Action
 {
     Q_OBJECT
     Q_PROPERTY(bool api READ api)
+    Q_PROPERTY(bool menu READ menu)
+    Q_PROPERTY(QString label READ label)
     Q_PROPERTY(QString description READ description)
 
 public:
 
-    explicit SendItemsUiAction(Application *application);
+    explicit SendDirectoryUiAction(Application *application);
 
     virtual QString name() const;
 
     bool api() const;
+    bool menu() const;
+    QString label() const;
     QString description() const;
 
 public slots:
@@ -56,4 +60,4 @@ private:
     Application *mApplication;
 };
 
-#endif // SENDFILESUIACTION_H
+#endif // SENDDIRECTORYUIACTION_H
