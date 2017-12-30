@@ -22,14 +22,13 @@
  * IN THE SOFTWARE.
  **/
 
-#include <string>
-
 #include <strsafe.h>
 #include <windows.h>
 #include <shellapi.h>
 
+#include <nitroshare/apiutil.h>
+
 #include "contextmenu.h"
-#include "nitroshare.h"
 
 ContextMenu::ContextMenu()
     : mRefCount(1)
@@ -100,7 +99,7 @@ STDMETHODIMP ContextMenu::Initialize(PCIDLIST_ABSOLUTE pidlFolder, IDataObject *
         if (!DragQueryFileW(hDrop, i, filename, MAX_PATH)) {
             hResult = E_FAIL;
         }
-        mFilenames.push_back(std::wstring(filename));
+        mFilenames.append(QString::fromWCharArray(filename));
     }
 
     // Free the memory
@@ -144,7 +143,11 @@ STDMETHODIMP ContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO pici)
     }
 
     // Attempt to send the items
-    if (!sendItems(mPort, mToken, mFilenames)) {
+    QVariantMap params{
+        { "items", mFilenames }
+    };
+    QVariant ret;
+    if (!ApiUtil::sendRequest("senditemsui", params, ret, nullptr)) {
         MessageBox(NULL, TEXT("Unable to send the selected items."), TEXT("Error"), MB_ICONERROR);
         return E_FAIL;
     }
@@ -162,7 +165,8 @@ STDMETHODIMP ContextMenu::QueryContextMenu(HMENU hmenu, UINT indexMenu, UINT idC
     TCHAR caption[2048];
 
     // Set the flags and caption according to the current status
-    if (!findNitroShare(mPort, mToken)) {
+    QVariant ret;
+    if (!ApiUtil::sendRequest("version", QVariantMap(), ret, nullptr)) {
         uMenuFlags |= MF_GRAYED;
         StringCchCopy(caption, sizeof(caption), TEXT("NitroShare is not running"));
     } else if (mFilenames.size() == 1) {
