@@ -23,7 +23,7 @@ VS_VERSION_INFO VERSIONINFO
             VALUE "FileDescription",  PROJECT_DESCRIPTION "\0"
             VALUE "FileVersion",      PROJECT_VERSION "\0"
             VALUE "InternalName",     PROJECT_NAME "\0"
-            VALUE "LegalCopyright",   "Copyright (c) 2017 " PROJECT_AUTHOR "\0"
+            VALUE "LegalCopyright",   "Copyright (c) 2018 " PROJECT_AUTHOR "\0"
             VALUE "OriginalFilename", PROJECT_NAME ".exe\0"
             VALUE "ProductName",      PROJECT_NAME "\0"
             VALUE "ProductVersion",   PROJECT_VERSION "\0"

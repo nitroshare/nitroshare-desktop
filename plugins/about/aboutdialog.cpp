@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Nathan Osman
+ * Copyright (c) 2018 Nathan Osman
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
@@ -52,7 +52,7 @@ AboutDialog::AboutDialog(Application *application)
 
     QLabel *subtitleLabel = new QLabel(tr("Cross-platform network file transfer application"));
     QLabel *versionLabel = new QLabel(tr("Version: %1").arg(application->version()));
-    QLabel *copyrightLabel = new QLabel(tr("Copyright (c) 2017 Nathan Osman"));
+    QLabel *copyrightLabel = new QLabel(tr("Copyright (c) 2018 Nathan Osman"));
 
     QVBoxLayout *infoLayout = new QVBoxLayout;
     infoLayout->addWidget(titleLabel);
