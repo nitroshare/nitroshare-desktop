@@ -52,6 +52,7 @@ class NITROSHARE_EXPORT Transfer : public QObject
     Q_PROPERTY(Direction direction READ direction)
     Q_PROPERTY(State state READ state NOTIFY stateChanged)
     Q_PROPERTY(int progress READ progress NOTIFY progressChanged)
+    Q_PROPERTY(qint64 speed READ speed NOTIFY speedChanged)
     Q_PROPERTY(QString deviceName READ deviceName NOTIFY deviceNameChanged)
     Q_PROPERTY(QString error READ error NOTIFY errorChanged)
     Q_PROPERTY(bool isFinished READ isFinished)
@@ -123,6 +124,12 @@ public:
     int progress() const;
 
     /**
+     * @brief Retrieve the speed of the transfer
+     * @return speed in bytes per second
+     */
+    qint64 speed() const;
+
+    /**
      * @brief Retrieve the name of the remote peer
      * @return device name
      */
@@ -153,6 +160,12 @@ Q_SIGNALS:
      * @param progress new progress
      */
     void progressChanged(int progress);
+
+    /**
+     * @brief Indicate that the transfer speed has changed
+     * @param speed bytes per second
+     */
+    void speedChanged(qint64 speed);
 
     /**
      * @brief Indicate that the name of the remote peer has changed

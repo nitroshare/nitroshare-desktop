@@ -24,6 +24,7 @@
 
 #include <cstring>
 
+#include <QDateTime>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonParseError>
@@ -48,6 +49,9 @@
 
 const QString MessageTag = "transfer";
 
+// Interval for calculating transfer speed
+const qint64 SpeedInterval = 1000;
+
 TransferPrivate::TransferPrivate(Transfer *transfer,
                                  Application *application,
                                  Device *device,
@@ -69,8 +73,13 @@ TransferPrivate::TransferPrivate(Transfer *transfer,
       mBytesTotal(bundle ? bundle->totalSize() : 0),
       mCurrentItem(nullptr),
       mCurrentItemBytesTransferred(0),
-      mCurrentItemBytesTotal(0)
+      mCurrentItemBytesTotal(0),
+      mSpeed(0),
+      mLastInterval(QDateTime::currentMSecsSinceEpoch()),
+      mLastIntervalBytesTransferred(0)
 {
+    connect(&mSpeedTimer, &QTimer::timeout, this, &TransferPrivate::onTimeout);
+
     if (mDirection == Transfer::Send) {
 
         // Use the device to attempt to create a transport
@@ -83,6 +92,8 @@ TransferPrivate::TransferPrivate(Transfer *transfer,
 
         // Ensure the bundle is freed when the transfer is destroyed
         mBundle->setParent(this);
+    } else {
+        mSpeedTimer.start(SpeedInterval);
     }
 
     // Transport should always be valid at this point - ensure it is freed
@@ -145,6 +156,7 @@ void TransferPrivate::sendItemContent()
     // Increment the number of bytes written to the socket
     mBytesTransferred += data.length();
     mCurrentItemBytesTransferred += data.length();
+    mLastIntervalBytesTransferred += data.length();
 
     updateProgress();
 
@@ -249,6 +261,7 @@ void TransferPrivate::processItemContent(Packet *packet)
     // Add the number of bytes to the global & current item totals
     mBytesTransferred += packet->content().size();
     mCurrentItemBytesTransferred += packet->content().size();
+    mLastIntervalBytesTransferred += packet->content().size();
 
     updateProgress();
 
@@ -297,6 +310,9 @@ void TransferPrivate::setSuccess(bool send)
 
     emit q->stateChanged(mState = Transfer::Succeeded);
 
+    // Stop the speed timer
+    mSpeedTimer.stop();
+
     // Both peers should be aware that the transfer succeeded at this point
     mTransport->close();
 }
@@ -317,6 +333,9 @@ void TransferPrivate::setError(const QString &message, bool send)
     emit q->errorChanged(mError = message);
     emit q->stateChanged(mState = Transfer::Failed);
 
+    // Stop the speed timer
+    mSpeedTimer.stop();
+
     // An error on either end necessitates the transport be closed
     if (mTransport) {
         mTransport->close();
@@ -330,6 +349,9 @@ void TransferPrivate::onConnected()
 {
     emit q->stateChanged(mState = Transfer::InProgress);
     sendTransferHeader();
+
+    // Start the speed timer
+    mSpeedTimer.start(SpeedInterval);
 }
 
 void TransferPrivate::onPacketReceived(Packet *packet)
@@ -398,6 +420,26 @@ void TransferPrivate::onError(const QString &message)
     setError(message, true);
 }
 
+void TransferPrivate::onTimeout()
+{
+    auto curMs = QDateTime::currentMSecsSinceEpoch();
+
+    // Use the time that has elapsed since the last interval to check the speed
+    auto newSpeed = static_cast<qint64>(
+        static_cast<double>(mLastIntervalBytesTransferred) /
+        static_cast<double>(curMs - mLastInterval)
+    );
+
+    // If the speed differs from the previous value, emit a signal
+    if (newSpeed != mSpeed) {
+        emit q->speedChanged(mSpeed = newSpeed);
+    }
+
+    // Reset the calculation variables
+    mLastInterval = curMs;
+    mLastIntervalBytesTransferred = 0;
+}
+
 Transfer::Transfer(Application *application, Device *device, Bundle *bundle, QObject *parent)
     : QObject(parent),
       d(new TransferPrivate(this, application, device, nullptr, bundle))
@@ -423,6 +465,11 @@ Transfer::State Transfer::state() const
 int Transfer::progress() const
 {
     return d->mProgress;
+}
+
+qint64 Transfer::speed() const
+{
+    return d->mSpeed;
 }
 
 QString Transfer::deviceName() const

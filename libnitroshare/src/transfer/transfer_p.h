@@ -26,6 +26,7 @@
 #define LIBNITROSHARE_TRANSFER_P_H
 
 #include <QObject>
+#include <QTimer>
 
 #include <nitroshare/transfer.h>
 
@@ -91,12 +92,18 @@ public:
     qint64 mCurrentItemBytesTransferred;
     qint64 mCurrentItemBytesTotal;
 
+    qint64 mSpeed;
+    QTimer mSpeedTimer;
+    qint64 mLastInterval;
+    qint64 mLastIntervalBytesTransferred;
+
 public Q_SLOTS:
 
     void onConnected();
     void onPacketReceived(Packet *packet);
     void onPacketSent();
     void onError(const QString &message);
+    void onTimeout();
 };
 
 #endif // LIBNITROSHARE_TRANSFER_P_H
