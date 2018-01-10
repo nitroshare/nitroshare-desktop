@@ -427,7 +427,7 @@ void TransferPrivate::onTimeout()
     // Use the time that has elapsed since the last interval to check the speed
     auto newSpeed = static_cast<qint64>(
         static_cast<double>(mLastIntervalBytesTransferred) /
-        static_cast<double>(curMs - mLastInterval)
+        (static_cast<double>(curMs - mLastInterval) / 1000)
     );
 
     // If the speed differs from the previous value, emit a signal
