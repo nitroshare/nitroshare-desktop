@@ -472,6 +472,11 @@ qint64 Transfer::speed() const
     return d->mSpeed;
 }
 
+qint64 Transfer::bytesRemaining() const
+{
+    return d->mBytesTotal - d->mBytesTransferred;
+}
+
 QString Transfer::deviceName() const
 {
     return d->mDeviceName;

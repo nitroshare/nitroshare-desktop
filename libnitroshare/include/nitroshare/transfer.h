@@ -53,6 +53,7 @@ class NITROSHARE_EXPORT Transfer : public QObject
     Q_PROPERTY(State state READ state NOTIFY stateChanged)
     Q_PROPERTY(int progress READ progress NOTIFY progressChanged)
     Q_PROPERTY(qint64 speed READ speed NOTIFY speedChanged)
+    Q_PROPERTY(qint64 bytesRemaining READ bytesRemaining)
     Q_PROPERTY(QString deviceName READ deviceName NOTIFY deviceNameChanged)
     Q_PROPERTY(QString error READ error NOTIFY errorChanged)
     Q_PROPERTY(bool isFinished READ isFinished)
@@ -128,6 +129,16 @@ public:
      * @return speed in bytes per second
      */
     qint64 speed() const;
+
+    /**
+     * @brief Retrieve the number of bytes remaining to be transferred
+     * @return remaining bytes
+     *
+     * In order to prevent unnecessary processing during transfer, there is no
+     * signal for indicating changes to this property. Instead, the
+     * progressChanged() and speedChanged() signal should be used.
+     */
+    qint64 bytesRemaining() const;
 
     /**
      * @brief Retrieve the name of the remote peer
