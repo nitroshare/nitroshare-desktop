@@ -48,6 +48,8 @@ QVariant TransferProxyModel::data(const QModelIndex &proxyIndex, int role) const
             return transfer->deviceName();
         case ProgressColumn:
             return QString("%1%").arg(transfer->progress());
+        case SpeedColumn:
+            return formatSpeed(transfer->speed());
         case StatusColumn:
             switch (transfer->state()) {
             case Transfer::Connecting:
@@ -87,8 +89,28 @@ QVariant TransferProxyModel::headerData(int section, Qt::Orientation orientation
         return tr("Device");
     case ProgressColumn:
         return tr("Progress");
+    case SpeedColumn:
+        return tr("Speed");
     case StatusColumn:
         return tr("Status");
     }
     return QVariant();
+}
+
+QString TransferProxyModel::formatSpeed(qint64 speed) const
+{
+    double unitSpeed = static_cast<double>(speed);
+    QStringList units{ "B", "KB", "MB", "GB" };
+    QStringList::const_iterator i;
+
+    // Loop until the speed is less than 1000 of a unit (or no more units)
+    for (i = units.constBegin(); i != units.constEnd(); ++i) {
+        if (unitSpeed < 1e3) {
+            break;
+        }
+        unitSpeed /= 1e3;
+    }
+
+    // Return the formatted speed
+    return tr("%1 %2/s").arg(unitSpeed, 0, 'f', 1).arg(*i);
 }

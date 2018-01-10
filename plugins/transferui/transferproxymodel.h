@@ -36,6 +36,7 @@ public:
     enum {
         DeviceColumn,
         ProgressColumn,
+        SpeedColumn,
         StatusColumn,
         ColumnCount
     };
@@ -43,6 +44,10 @@ public:
     virtual int columnCount(const QModelIndex &parent = QModelIndex()) const;
     virtual QVariant data(const QModelIndex &proxyIndex, int role) const;
     virtual QVariant headerData(int section, Qt::Orientation orientation, int role) const;
+
+private:
+
+    QString formatSpeed(qint64 speed) const;
 };
 
 #endif // TRANSFERPROXYMODEL_H
