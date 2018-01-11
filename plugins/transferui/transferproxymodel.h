@@ -37,6 +37,7 @@ public:
         DeviceColumn,
         ProgressColumn,
         SpeedColumn,
+        TimeRemainingColumn,
         StatusColumn,
         ColumnCount
     };
@@ -48,6 +49,7 @@ public:
 private:
 
     QString formatSpeed(qint64 speed) const;
+    QString formatTimeRemaining(qint64 speed, qint64 bytesRemaining) const;
 };
 
 #endif // TRANSFERPROXYMODEL_H

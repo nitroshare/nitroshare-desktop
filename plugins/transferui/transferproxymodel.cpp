@@ -50,6 +50,8 @@ QVariant TransferProxyModel::data(const QModelIndex &proxyIndex, int role) const
             return QString("%1%").arg(transfer->progress());
         case SpeedColumn:
             return formatSpeed(transfer->speed());
+        case TimeRemainingColumn:
+            return formatTimeRemaining(transfer->speed(), transfer->bytesRemaining());
         case StatusColumn:
             switch (transfer->state()) {
             case Transfer::Connecting:
@@ -74,6 +76,15 @@ QVariant TransferProxyModel::data(const QModelIndex &proxyIndex, int role) const
                 break;
             }
         }
+        break;
+    case Qt::TextAlignmentRole:
+        switch (proxyIndex.column()) {
+        case ProgressColumn:
+        case SpeedColumn:
+        case TimeRemainingColumn:
+            return Qt::AlignRight + Qt::AlignVCenter;
+        }
+        break;
     }
 
     return sourceData(proxyIndex, role);
@@ -91,6 +102,8 @@ QVariant TransferProxyModel::headerData(int section, Qt::Orientation orientation
         return tr("Progress");
     case SpeedColumn:
         return tr("Speed");
+    case TimeRemainingColumn:
+        return tr("Time Remaining");
     case StatusColumn:
         return tr("Status");
     }
@@ -113,4 +126,27 @@ QString TransferProxyModel::formatSpeed(qint64 speed) const
 
     // Return the formatted speed
     return tr("%1 %2/s").arg(unitSpeed, 0, 'f', 1).arg(*i);
+}
+
+QString TransferProxyModel::formatTimeRemaining(qint64 speed, qint64 bytesRemaining) const
+{
+    // If the speed is unknown, avoid dividing by zero
+    if (!speed) {
+        return tr("unknown");
+    }
+
+    qint64 secondsRemaining = static_cast<qint64>(
+        static_cast<double>(bytesRemaining) / static_cast<double>(speed)
+    );
+
+    // Calculate the number of hours, minutes, and seconds remaining
+    qint64 hoursRemaining = secondsRemaining / 3600;
+    qint64 minutesRemaining = secondsRemaining / 60 - hoursRemaining * 60;
+    secondsRemaining -= hoursRemaining * 3600 + minutesRemaining * 60;
+
+    // Return the formatted duration
+    return tr("%1:%2:%3")
+        .arg(hoursRemaining, 2, 10, QChar('0'))
+        .arg(minutesRemaining, 2, 10, QChar('0'))
+        .arg(secondsRemaining, 2, 10, QChar('0'));
 }
