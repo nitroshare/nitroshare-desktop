@@ -103,7 +103,7 @@ void TestTransfer::testSending()
 
     // Ensure progress reached 100%
     QVERIFY(progressChangedSpy.count());
-    QCOMPARE(progressChangedSpy.last().at(0), 100);
+    QCOMPARE(progressChangedSpy.last().at(0), QVariant(100));
     QCOMPARE(transfer.progress(), 100);
 
     // Ensure the transfer header was sent correctly
@@ -159,7 +159,7 @@ void TestTransfer::testReceiving()
     transport->sendData(Packet::Json, QJsonDocument(transferHeader).toJson());
 
     QCOMPARE(deviceNameChangedSpy.count(), 1);
-    QCOMPARE(deviceNameChangedSpy.at(0).at(0), MockDevice::Name);
+    QCOMPARE(deviceNameChangedSpy.at(0).at(0), QVariant(MockDevice::Name));
     QCOMPARE(transfer.deviceName(), MockDevice::Name);
 
     // Send the item header to the transport
@@ -178,7 +178,7 @@ void TestTransfer::testReceiving()
 
     // Ensure progress reached 100%
     QVERIFY(progressChangedSpy.count() > 0);
-    QCOMPARE(progressChangedSpy.last().at(0), 100);
+    QCOMPARE(progressChangedSpy.last().at(0), QVariant(100));
     QCOMPARE(transfer.progress(), 100);
 
     // Ensure the transfer succeeded
@@ -216,7 +216,7 @@ void TestTransfer::testAbort()
     QCOMPARE(stateChangedSpy.count(), 1);
     QCOMPARE(stateChangedSpy.at(0).at(0), QVariant::fromValue(Transfer::Failed));
     QCOMPARE(errorChangedSpy.count(), 1);
-    QCOMPARE(errorChangedSpy.at(0).at(0), ErrorMessage);
+    QCOMPARE(errorChangedSpy.at(0).at(0), QVariant(ErrorMessage));
 
     // Confirm the transfer status changed
     QCOMPARE(transfer.state(), Transfer::Failed);
