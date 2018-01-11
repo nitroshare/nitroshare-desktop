@@ -11,6 +11,8 @@ set(SRC
     src/action/actionregistry.cpp
     src/application/application_p.h
     src/application/application.cpp
+    src/application/versionaction.h
+    src/application/versionaction.cpp
     src/bundle/bundle_p.h
     src/bundle/bundle.cpp
     src/bundle/item.cpp

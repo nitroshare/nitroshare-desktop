@@ -39,6 +39,8 @@
 #include <nitroshare/transfermodel.h>
 #include <nitroshare/transportserverregistry.h>
 
+#include "versionaction.h"
+
 class ApplicationPrivate : public QObject
 {
     Q_OBJECT
@@ -59,6 +61,8 @@ public:
     Category pluginCategory;
     Setting pluginDirectories;
     Setting pluginBlacklist;
+
+    VersionAction versionAction;
 
     QSettings *settings;
 
