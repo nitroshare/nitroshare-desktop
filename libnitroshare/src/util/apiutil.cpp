@@ -160,3 +160,9 @@ bool ApiUtil::sendRequest(const QString &action,
 
     return succeeded;
 }
+
+bool ApiUtil::isRunning()
+{
+    QVariant returnVal;
+    return sendRequest("version", QVariantMap(), returnVal);
+}

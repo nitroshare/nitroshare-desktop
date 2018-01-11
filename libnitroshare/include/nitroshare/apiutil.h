@@ -53,6 +53,12 @@ public:
                             const QVariantMap &params,
                             QVariant &returnVal,
                             QString *error = nullptr);
+
+    /**
+     * @brief Determine if an existing instance of NitroShare is running
+     * @return true if NitroShare is already running
+     */
+    static bool isRunning();
 };
 
 #endif // LIBNITROSHARE_APIUTIL_H
