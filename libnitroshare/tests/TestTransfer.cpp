@@ -69,20 +69,20 @@ void TestTransfer::initTestCase()
 void TestTransfer::testSending()
 {
     MockDevice device;
-    Bundle bundle;
-    bundle.add(new MockItem);
-    Transfer *transfer = new Transfer(mApplication.application(), &device, &bundle);
+    Bundle *bundle = new Bundle;
+    bundle->add(new MockItem);
+    Transfer transfer(mApplication.application(), &device, bundle);
 
     // The device saves a copy of the transport so that it can be retrieved
     MockTransport *transport = device.transport();
 
-    QCOMPARE(transfer->direction(), Transfer::Send);
-    QCOMPARE(transfer->state(), Transfer::Connecting);
+    QCOMPARE(transfer.direction(), Transfer::Send);
+    QCOMPARE(transfer.state(), Transfer::Connecting);
 
     // Have the transport complete the connection
     transport->emitConnected();
 
-    QCOMPARE(transfer->state(), Transfer::InProgress);
+    QCOMPARE(transfer.state(), Transfer::InProgress);
 
     // The first two packets should be JSON data (the transfer & item headers)
     // and the third will be the payload
@@ -112,22 +112,22 @@ void TestTransfer::testSending()
     QCOMPARE(packets.at(2).first, Packet::Binary);
     QCOMPARE(packets.at(2).second, MockItem::Data);
 
-    QCOMPARE(transfer->state(), Transfer::InProgress);
+    QCOMPARE(transfer.state(), Transfer::InProgress);
 
     // Send the success packet
     transport->sendData(Packet::Success);
 
-    QCOMPARE(transfer->state(), Transfer::Succeeded);
+    QCOMPARE(transfer.state(), Transfer::Succeeded);
     QVERIFY(transport->isClosed());
 }
 
 void TestTransfer::testReceiving()
 {
-    MockTransport transport;
-    Transfer *transfer = new Transfer(mApplication.application(), &transport);
+    MockTransport *transport = new MockTransport;
+    Transfer transfer(mApplication.application(), transport);
 
-    QCOMPARE(transfer->direction(), Transfer::Receive);
-    QCOMPARE(transfer->state(), Transfer::InProgress);
+    QCOMPARE(transfer.direction(), Transfer::Receive);
+    QCOMPARE(transfer.state(), Transfer::InProgress);
 
     // Send the transfer header to the transport
     QJsonObject transferHeader{
@@ -135,9 +135,9 @@ void TestTransfer::testReceiving()
         { "size", QString::number(MockItem::Data.size()) },
         { "count", QString::number(1) }
     };
-    transport.sendData(Packet::Json, QJsonDocument(transferHeader).toJson());
+    transport->sendData(Packet::Json, QJsonDocument(transferHeader).toJson());
 
-    QCOMPARE(transfer->deviceName(), MockDevice::Name);
+    QCOMPARE(transfer.deviceName(), MockDevice::Name);
 
     // Send the item header to the transport followed by the data for the item
     QJsonObject itemHeader{
@@ -145,21 +145,21 @@ void TestTransfer::testReceiving()
         { "type", MockItem::Type },
         { "size", QString::number(MockItem::Data.size()) }
     };
-    transport.sendData(Packet::Json, QJsonDocument(itemHeader).toJson());
-    transport.sendData(Packet::Binary, MockItem::Data);
+    transport->sendData(Packet::Json, QJsonDocument(itemHeader).toJson());
+    transport->sendData(Packet::Binary, MockItem::Data);
 
-    QTRY_COMPARE(transfer->state(), Transfer::Succeeded);
+    QTRY_COMPARE(transfer.state(), Transfer::Succeeded);
 
     // Ensure a success packet was sent and the transport closed
-    QCOMPARE(transport.packets().count(), 1);
-    QCOMPARE(transport.packets().at(0).first, Packet::Success);
-    QVERIFY(transport.isClosed());
+    QCOMPARE(transport->packets().count(), 1);
+    QCOMPARE(transport->packets().at(0).first, Packet::Success);
+    QVERIFY(transport->isClosed());
 }
 
 void TestTransfer::testAbort()
 {
-    MockTransport transport;
-    Transfer *transfer = new Transfer(mApplication.application(), &transport);
+    MockTransport *transport = new MockTransport;
+    Transfer transfer(mApplication.application(), transport);
 
     // Send a header, though it will be ignored
     QJsonObject transferHeader{
@@ -167,14 +167,14 @@ void TestTransfer::testAbort()
         { "size", QString::number(1) },
         { "count", QString::number(1) }
     };
-    transport.sendData(Packet::Json, QJsonDocument(transferHeader).toJson());
+    transport->sendData(Packet::Json, QJsonDocument(transferHeader).toJson());
 
-    // Abort the transfer by having the transport emit an error
-    emit transport.error(ErrorMessage);
+    // Abort the transfer
+    emit transport->error(ErrorMessage);
 
     // Confirm the transfer status is set to Failed
-    QCOMPARE(transfer->state(), Transfer::Failed);
-    QCOMPARE(transfer->error(), ErrorMessage);
+    QCOMPARE(transfer.state(), Transfer::Failed);
+    QCOMPARE(transfer.error(), ErrorMessage);
 }
 
 QTEST_MAIN(TestTransfer)
