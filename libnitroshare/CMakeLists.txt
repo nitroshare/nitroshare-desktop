@@ -7,30 +7,49 @@ file(GLOB HEADERS include/nitroshare/*.h)
 set(HEADERS "${HEADERS}" "${CMAKE_CURRENT_BINARY_DIR}/nitroshare/config.h")
 
 set(SRC
+    src/action/actionregistry_p.h
     src/action/actionregistry.cpp
+    src/application/application_p.h
     src/application/application.cpp
+    src/bundle/bundle_p.h
     src/bundle/bundle.cpp
     src/bundle/item.cpp
+    src/device/device_p.h
     src/device/device.cpp
     src/device/deviceenumerator.cpp
+    src/device/devicemodel_p.h
     src/device/devicemodel.cpp
+    src/handler/handlerregistry_p.h
     src/handler/handlerregistry.cpp
+    src/log/logger_p.h
     src/log/logger.cpp
+    src/log/message_p.h
     src/log/message.cpp
+    src/log/stderrwriter_p.h
     src/log/stderrwriter.cpp
+    src/plugin/plugin_p.h
     src/plugin/plugin.cpp
+    src/plugin/pluginmodel_p.h
     src/plugin/pluginmodel.cpp
+    src/settings/category_p.h
     src/settings/category.cpp
+    src/settings/setting_p.h
     src/settings/setting.cpp
+    src/settings/settingsregistry_p.h
     src/settings/settingsregistry.cpp
+    src/transfer/packet_p.h
     src/transfer/packet.cpp
+    src/transfer/transfer_p.h
     src/transfer/transfer.cpp
+    src/transfer/transfermodel_p.h
     src/transfer/transfermodel.cpp
+    src/transport/transportserverregistry_p.h
     src/transport/transportserverregistry.cpp
     src/util/apiutil.cpp
     src/util/fileutil.cpp
     src/util/jsonutil.cpp
     src/util/proxymodel.cpp
+    src/util/signalnotifier_p.h
     src/util/signalnotifier.cpp
 )
 
