@@ -46,13 +46,11 @@ QStringList PluginPrivate::arrayToList(const QJsonArray &array)
 
 bool PluginPrivate::load()
 {
-    if (!loader.isLoaded()) {
-        if (!loader.load()) {
-            return false;
-        }
-        metadata = loader.metaData().value("MetaData").toObject();
-        dependencies = arrayToList(metadata.value("Dependencies").toArray());
+    if (!loader.isLoaded() && !loader.load()) {
+        return false;
     }
+    metadata = loader.metaData().value("MetaData").toObject();
+    dependencies = arrayToList(metadata.value("Dependencies").toArray());
     return true;
 }
 
