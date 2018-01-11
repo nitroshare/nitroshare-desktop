@@ -22,9 +22,12 @@
  * IN THE SOFTWARE.
  */
 
+#include <iostream>
+
 #include <QCommandLineParser>
 #include <QCoreApplication>
 
+#include <nitroshare/apiutil.h>
 #include <nitroshare/application.h>
 #include <nitroshare/logger.h>
 #include <nitroshare/message.h>
@@ -36,6 +39,15 @@ int main(int argc, char **argv)
     QCoreApplication app(argc, argv);
     app.setApplicationName("NitroShare");
     app.setOrganizationName("NitroShare");
+
+    // Ensure another instance isn't already running
+    if (ApiUtil::isRunning()) {
+        QString errorMessage = QObject::tr(
+            "NitroShare is already running. This instance will now terminate."
+        );
+        std::cerr << errorMessage.toUtf8().constData() << std::endl;
+        return 1;
+    }
 
     QCommandLineParser parser;
 

@@ -24,7 +24,9 @@
 
 #include <QApplication>
 #include <QCommandLineParser>
+#include <QMessageBox>
 
+#include <nitroshare/apiutil.h>
 #include <nitroshare/application.h>
 
 int main(int argc, char **argv)
@@ -33,6 +35,16 @@ int main(int argc, char **argv)
     app.setApplicationName("NitroShare");
     app.setOrganizationName("NitroShare");
     app.setQuitOnLastWindowClosed(false);
+
+    // Ensure another instance isn't already running
+    if (ApiUtil::isRunning()) {
+        QMessageBox::critical(
+            nullptr,
+            QObject::tr("Warning"),
+            QObject::tr("NitroShare is already running. This instance will now terminate.")
+        );
+        return 1;
+    }
 
     QCommandLineParser parser;
 
