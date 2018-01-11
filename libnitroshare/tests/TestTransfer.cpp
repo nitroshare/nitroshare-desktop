@@ -39,6 +39,8 @@
 #include "mock/mocktransport.h"
 #include "mock/mocktransportserver.h"
 
+const QString ErrorMessage = "test";
+
 class TestTransfer : public QObject
 {
     Q_OBJECT
@@ -49,6 +51,7 @@ private slots:
 
     void testSending();
     void testReceiving();
+    void testAbort();
 
 private:
 
@@ -151,6 +154,27 @@ void TestTransfer::testReceiving()
     QCOMPARE(transport.packets().count(), 1);
     QCOMPARE(transport.packets().at(0).first, Packet::Success);
     QVERIFY(transport.isClosed());
+}
+
+void TestTransfer::testAbort()
+{
+    MockTransport transport;
+    Transfer *transfer = new Transfer(mApplication.application(), &transport);
+
+    // Send a header, though it will be ignored
+    QJsonObject transferHeader{
+        { "name", MockDevice::Name },
+        { "size", QString::number(1) },
+        { "count", QString::number(1) }
+    };
+    transport.sendData(Packet::Json, QJsonDocument(transferHeader).toJson());
+
+    // Abort the transfer by having the transport emit an error
+    emit transport.error(ErrorMessage);
+
+    // Confirm the transfer status is set to Failed
+    QCOMPARE(transfer->state(), Transfer::Failed);
+    QCOMPARE(transfer->error(), ErrorMessage);
 }
 
 QTEST_MAIN(TestTransfer)
