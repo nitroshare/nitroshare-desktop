@@ -24,6 +24,7 @@
 
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QSignalSpy>
 #include <QTest>
 
 #include <nitroshare/application.h>
@@ -38,6 +39,8 @@
 #include "mock/mockitem.h"
 #include "mock/mocktransport.h"
 #include "mock/mocktransportserver.h"
+
+Q_DECLARE_METATYPE(Transfer::State)
 
 const QString ErrorMessage = "test";
 
@@ -62,6 +65,8 @@ private:
 
 void TestTransfer::initTestCase()
 {
+    qRegisterMetaType<Transfer::State>("State");
+
     mApplication.application()->handlerRegistry()->add(&mHandler);
     mApplication.application()->transportServerRegistry()->add(&mTransportServer);
 }
@@ -79,16 +84,27 @@ void TestTransfer::testSending()
     QCOMPARE(transfer.direction(), Transfer::Send);
     QCOMPARE(transfer.state(), Transfer::Connecting);
 
+    QSignalSpy stateChangedSpy(&transfer, &Transfer::stateChanged);
+
     // Have the transport complete the connection
     transport->emitConnected();
 
+    QCOMPARE(stateChangedSpy.count(), 1);
+    QCOMPARE(stateChangedSpy.at(0).at(0), QVariant::fromValue(Transfer::InProgress));
     QCOMPARE(transfer.state(), Transfer::InProgress);
+
+    QSignalSpy progressChangedSpy(&transfer, &Transfer::progressChanged);
 
     // The first two packets should be JSON data (the transfer & item headers)
     // and the third will be the payload
     QTRY_COMPARE(transport->packets().count(), 3);
 
     const MockTransport::PacketList &packets = transport->packets();
+
+    // Ensure progress reached 100%
+    QVERIFY(progressChangedSpy.count());
+    QCOMPARE(progressChangedSpy.last().at(0), 100);
+    QCOMPARE(transfer.progress(), 100);
 
     // Ensure the transfer header was sent correctly
     QCOMPARE(packets.at(0).first, Packet::Json);
@@ -117,7 +133,10 @@ void TestTransfer::testSending()
     // Send the success packet
     transport->sendData(Packet::Success);
 
+    QCOMPARE(stateChangedSpy.count(), 2);
+    QCOMPARE(stateChangedSpy.at(1).at(0), QVariant::fromValue(Transfer::Succeeded));
     QCOMPARE(transfer.state(), Transfer::Succeeded);
+
     QVERIFY(transport->isClosed());
 }
 
@@ -129,6 +148,8 @@ void TestTransfer::testReceiving()
     QCOMPARE(transfer.direction(), Transfer::Receive);
     QCOMPARE(transfer.state(), Transfer::InProgress);
 
+    QSignalSpy deviceNameChangedSpy(&transfer, &Transfer::deviceNameChanged);
+
     // Send the transfer header to the transport
     QJsonObject transferHeader{
         { "name", MockDevice::Name },
@@ -137,18 +158,33 @@ void TestTransfer::testReceiving()
     };
     transport->sendData(Packet::Json, QJsonDocument(transferHeader).toJson());
 
+    QCOMPARE(deviceNameChangedSpy.count(), 1);
+    QCOMPARE(deviceNameChangedSpy.at(0).at(0), MockDevice::Name);
     QCOMPARE(transfer.deviceName(), MockDevice::Name);
 
-    // Send the item header to the transport followed by the data for the item
+    // Send the item header to the transport
     QJsonObject itemHeader{
         { "name", MockItem::Name },
         { "type", MockItem::Type },
         { "size", QString::number(MockItem::Data.size()) }
     };
     transport->sendData(Packet::Json, QJsonDocument(itemHeader).toJson());
+
+    QSignalSpy progressChangedSpy(&transfer, &Transfer::progressChanged);
+    QSignalSpy stateChangedSpy(&transfer, &Transfer::stateChanged);
+
+    // Send item data
     transport->sendData(Packet::Binary, MockItem::Data);
 
-    QTRY_COMPARE(transfer.state(), Transfer::Succeeded);
+    // Ensure progress reached 100%
+    QVERIFY(progressChangedSpy.count() > 0);
+    QCOMPARE(progressChangedSpy.last().at(0), 100);
+    QCOMPARE(transfer.progress(), 100);
+
+    // Ensure the transfer succeeded
+    QTRY_COMPARE(stateChangedSpy.count(), 1);
+    QCOMPARE(stateChangedSpy.at(0).at(0), QVariant::fromValue(Transfer::Succeeded));
+    QCOMPARE(transfer.state(), Transfer::Succeeded);
 
     // Ensure a success packet was sent and the transport closed
     QCOMPARE(transport->packets().count(), 1);
@@ -169,10 +205,20 @@ void TestTransfer::testAbort()
     };
     transport->sendData(Packet::Json, QJsonDocument(transferHeader).toJson());
 
+    // Watch for the error signal
+    QSignalSpy stateChangedSpy(&transfer, &Transfer::stateChanged);
+    QSignalSpy errorChangedSpy(&transfer, &Transfer::errorChanged);
+
     // Abort the transfer
     emit transport->error(ErrorMessage);
 
-    // Confirm the transfer status is set to Failed
+    // Confirm the correct signals were emitted
+    QCOMPARE(stateChangedSpy.count(), 1);
+    QCOMPARE(stateChangedSpy.at(0).at(0), QVariant::fromValue(Transfer::Failed));
+    QCOMPARE(errorChangedSpy.count(), 1);
+    QCOMPARE(errorChangedSpy.at(0).at(0), ErrorMessage);
+
+    // Confirm the transfer status changed
     QCOMPARE(transfer.state(), Transfer::Failed);
     QCOMPARE(transfer.error(), ErrorMessage);
 }
