@@ -112,9 +112,18 @@ int DeviceModel::rowCount(const QModelIndex &) const
 
 QVariant DeviceModel::data(const QModelIndex &index, int role) const
 {
-    if (!index.isValid() || index.row() < 0 ||
-            index.row() >= d->devices.count() || role != Qt::UserRole) {
+    if (!index.isValid() || index.row() < 0 || index.row() >= d->devices.count()) {
         return QVariant();
     }
-    return QVariant::fromValue(d->devices.at(index.row()));
+
+    Device *device = d->devices.at(index.row());
+
+    switch (role) {
+    case Qt::DisplayRole:
+        return device->name();
+    case Qt::UserRole:
+        return QVariant::fromValue(device);
+    default:
+        return QVariant();
+    }
 }
