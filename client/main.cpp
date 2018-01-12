@@ -105,7 +105,7 @@ int main(int argc, char **argv)
 
     // Display the result
     QByteArray result = JsonUtil::jsonValueToByteArray(QJsonValue::fromVariant(returnVal));
-    std::cout << result.constData();
+    std::cout << result.constData() << std::endl;
 
     return 0;
 }

@@ -48,13 +48,13 @@ QByteArray JsonUtil::jsonValueToByteArray(const QJsonValue &value)
 {
     switch (value.type()) {
     case QJsonValue::Array:
-        return QJsonDocument(value.toArray()).toJson();
+        return QJsonDocument(value.toArray()).toJson().trimmed();
     case QJsonValue::Object:
-        return QJsonDocument(value.toObject()).toJson();
+        return QJsonDocument(value.toObject()).toJson().trimmed();
     default:
     {
         QByteArray json = QJsonDocument(QJsonArray{value}).toJson().trimmed();
-        return json.mid(1, json.length() - 2).trimmed() + "\n";
+        return json.mid(1, json.length() - 2).trimmed();
     }
     }
 }
