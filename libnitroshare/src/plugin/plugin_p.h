@@ -48,6 +48,8 @@ public:
     QPluginLoader loader;
     QJsonObject metadata;
     QStringList dependencies;
+
+    bool loaded;
     bool initialized;
 
     QList<Plugin*> children;

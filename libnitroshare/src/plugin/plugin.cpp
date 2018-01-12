@@ -31,6 +31,7 @@
 PluginPrivate::PluginPrivate(QObject *parent, const QString &filename)
     : QObject(parent),
       loader(filename),
+      loaded(false),
       initialized(false)
 {
 }
@@ -46,11 +47,29 @@ QStringList PluginPrivate::arrayToList(const QJsonArray &array)
 
 bool PluginPrivate::load()
 {
-    if (!loader.isLoaded() && !loader.load()) {
-        return false;
+    if (!loaded) {
+
+        // QPluginLoader::isLoaded() will return true if another Plugin instance
+        // has already loaded the physical plugin - since plugins cannot be
+        // initialized twice (and it makes no sense for them to even be loaded
+        // twice), if loaded is false and isLoaded() returns true, assume this
+        // has occurred and return false to abort the plugin loading
+        if (loader.isLoaded()) {
+            return false;
+        }
+
+        // The physical plugin is not loaded; attempt to load it
+        if (!loader.load()) {
+            return false;
+        }
+
+        // Load the metadata from the plugin
+        metadata = loader.metaData().value("MetaData").toObject();
+        dependencies = arrayToList(metadata.value("Dependencies").toArray());
+
+        // Remember that QPluginLoader::load() was called
+        loaded = true;
     }
-    metadata = loader.metaData().value("MetaData").toObject();
-    dependencies = arrayToList(metadata.value("Dependencies").toArray());
     return true;
 }
 

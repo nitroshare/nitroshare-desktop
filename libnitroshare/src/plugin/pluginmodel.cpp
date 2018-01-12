@@ -204,7 +204,7 @@ bool PluginModel::unload(Plugin *plugin)
             }
         }
     }
-    if (plugin->d->loader.isLoaded()) {
+    if (plugin->d->loaded) {
         return plugin->d->loader.unload();
     }
     return true;
