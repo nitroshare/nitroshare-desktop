@@ -3,6 +3,8 @@ configure_file(dev.json.in "${CMAKE_CURRENT_BINARY_DIR}/dev.json")
 set(SRC
     actionswidget.h
     actionswidget.cpp
+    deviceswidget.h
+    deviceswidget.cpp
     devplugin.h
     devplugin.cpp
     devwindow.h

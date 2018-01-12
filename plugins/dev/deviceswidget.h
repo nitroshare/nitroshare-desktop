@@ -22,22 +22,31 @@
  * IN THE SOFTWARE.
  */
 
-#include <QTabWidget>
-#include <QVBoxLayout>
+#ifndef DEVICESWIDGET_H
+#define DEVICESWIDGET_H
 
-#include "actionswidget.h"
-#include "deviceswidget.h"
-#include "devwindow.h"
+#include <QListView>
+#include <QTableWidget>
+#include <QWidget>
 
-DevWindow::DevWindow(Application *application)
+class Application;
+
+class DevicesWidget : public QWidget
 {
-    setWindowTitle(tr("Developer Tools"));
+    Q_OBJECT
 
-    QTabWidget *tabWidget = new QTabWidget;
-    tabWidget->addTab(new ActionsWidget(application), tr("Actions"));
-    tabWidget->addTab(new DevicesWidget(application), tr("Devices"));
+public:
 
-    QVBoxLayout *vboxLayout = new QVBoxLayout;
-    vboxLayout->addWidget(tabWidget);
-    setLayout(vboxLayout);
-}
+    explicit DevicesWidget(Application *application);
+
+private slots:
+
+    void onSelectionChanged();
+
+private:
+
+    QListView *mListView;
+    QTableWidget *mTableWidget;
+};
+
+#endif // DEVICESWIDGET_H
