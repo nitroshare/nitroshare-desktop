@@ -25,10 +25,12 @@
 #include <iostream>
 
 #include <QCoreApplication>
+#include <QJsonValue>
 #include <QObject>
 #include <QVariantMap>
 
 #include <nitroshare/apiutil.h>
+#include <nitroshare/jsonutil.h>
 
 /**
  * @brief Print usage information
@@ -96,9 +98,14 @@ int main(int argc, char **argv)
     // Send the request
     QVariant returnVal;
     if (!ApiUtil::sendRequest(action, params, returnVal, &error)) {
-        std::cerr << "Error: " << error.toUtf8().constData() << std::endl;
+        std::cerr << "Unable to communicate with NitroShare: "
+                  << error.toUtf8().constData() << std::endl;
         return 1;
     }
+
+    // Display the result
+    QByteArray result = JsonUtil::jsonValueToByteArray(QJsonValue::fromVariant(returnVal));
+    std::cout << result.constData();
 
     return 0;
 }
