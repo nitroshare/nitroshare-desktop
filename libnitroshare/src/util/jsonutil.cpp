@@ -46,9 +46,15 @@ QJsonObject JsonUtil::objectToJson(QObject *object)
 
 QByteArray JsonUtil::jsonValueToByteArray(const QJsonValue &value)
 {
-    // Begin by creating an array with a single item
-    QByteArray json = QJsonDocument(QJsonArray{value}).toJson().trimmed();
-
-    // Strip the initial '[' and ']'
-    return json.mid(1, json.length() - 2).trimmed();
+    switch (value.type()) {
+    case QJsonValue::Array:
+        return QJsonDocument(value.toArray()).toJson();
+    case QJsonValue::Object:
+        return QJsonDocument(value.toObject()).toJson();
+    default:
+    {
+        QByteArray json = QJsonDocument(QJsonArray{value}).toJson().trimmed();
+        return json.mid(1, json.length() - 2).trimmed() + "\n";
+    }
+    }
 }
