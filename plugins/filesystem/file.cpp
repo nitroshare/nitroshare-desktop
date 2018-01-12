@@ -159,7 +159,7 @@ void File::write(const QByteArray &data)
 void unixTimestampMsToFiletime(qint64 timestampMs, LPFILETIME pft)
 {
     // Convert from MS to 100-nanosecond intervals
-    quint64 ll = timestampMs * 10000;
+    quint64 ll = timestampMs * 10000 + 116444736000000000;
 
     // Assign to members of FILETIME struct
     pft->dwLowDateTime = (DWORD)ll;
