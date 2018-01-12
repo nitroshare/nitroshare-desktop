@@ -26,6 +26,7 @@
 #define LIBNITROSHARE_JSONUTIL_H
 
 #include <QJsonObject>
+#include <QJsonValue>
 #include <QObject>
 
 #include <nitroshare/config.h>
@@ -46,6 +47,13 @@ public:
      * strings to prevent data loss.
      */
     static QJsonObject objectToJson(QObject *object);
+
+    /**
+     * @brief Convert the provided JSON value to a byte array
+     * @param value JSON value
+     * @return byte array
+     */
+    static QByteArray jsonValueToByteArray(const QJsonValue &value);
 };
 
 #endif // LIBNITROSHARE_JSONUTIL_H

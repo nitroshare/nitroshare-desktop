@@ -22,7 +22,8 @@
  * IN THE SOFTWARE.
  */
 
-#include <QJsonValue>
+#include <QJsonArray>
+#include <QJsonDocument>
 #include <QMetaObject>
 #include <QMetaProperty>
 
@@ -41,4 +42,13 @@ QJsonObject JsonUtil::objectToJson(QObject *object)
         jsonObject.insert(name, QJsonValue::fromVariant(value));
     }
     return jsonObject;
+}
+
+QByteArray JsonUtil::jsonValueToByteArray(const QJsonValue &value)
+{
+    // Begin by creating an array with a single item
+    QByteArray json = QJsonDocument(QJsonArray{value}).toJson().trimmed();
+
+    // Strip the initial '[' and ']'
+    return json.mid(1, json.length() - 2).trimmed();
 }

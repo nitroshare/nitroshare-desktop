@@ -23,6 +23,7 @@
  */
 
 #include <QJsonObject>
+#include <QJsonValue>
 #include <QTest>
 
 #include <nitroshare/jsonutil.h>
@@ -57,6 +58,8 @@ class TestJsonUtil : public QObject
 private slots:
 
     void testObjectToJson();
+    void testJsonValueToByteArray_data();
+    void testJsonValueToByteArray();
 };
 
 void TestJsonUtil::testObjectToJson()
@@ -68,6 +71,25 @@ void TestJsonUtil::testObjectToJson()
         { "child", ChildValue }
     };
     QCOMPARE(object, referenceObject);
+}
+
+void TestJsonUtil::testJsonValueToByteArray_data()
+{
+    QTest::addColumn<QJsonValue>("value");
+    QTest::addColumn<QByteArray>("result");
+
+    QTest::newRow("null") << QJsonValue() << QByteArray("null");
+    QTest::newRow("number") << QJsonValue(1) << QByteArray("1");
+    QTest::newRow("bool") << QJsonValue(false) << QByteArray("false");
+    QTest::newRow("string") << QJsonValue("abc") << QByteArray("\"abc\"");
+}
+
+void TestJsonUtil::testJsonValueToByteArray()
+{
+    QFETCH(QJsonValue, value);
+    QFETCH(QByteArray, result);
+
+    QCOMPARE(JsonUtil::jsonValueToByteArray(value), result);
 }
 
 QTEST_MAIN(TestJsonUtil)
