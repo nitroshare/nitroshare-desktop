@@ -141,8 +141,8 @@ void BroadcastEnumerator::onExpiryTimeout()
     // Remove any devices that have expired
     for (auto i = mDevices.begin(); i != mDevices.end();) {
         if ((*i)->isExpired(curMs, timeoutMs)) {
-            mDevices.erase(i);
             emit deviceRemoved(*i);
+            mDevices.erase(i);
             delete *i;
         } else {
             ++i;
