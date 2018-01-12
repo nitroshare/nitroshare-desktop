@@ -28,6 +28,7 @@
 #include <nitroshare/iplugin.h>
 
 class ApiServer;
+class QuitAction;
 
 class Q_DECL_EXPORT ApiPlugin : public IPlugin
 {
@@ -42,6 +43,7 @@ public:
 private:
 
     ApiServer *mServer;
+    QuitAction *mAction;
 };
 
 #endif // APIPLUGIN_H

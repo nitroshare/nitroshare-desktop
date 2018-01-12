@@ -22,25 +22,27 @@
  * IN THE SOFTWARE.
  */
 
-#include <nitroshare/actionregistry.h>
-#include <nitroshare/application.h>
+#ifndef QUITACTION_H
+#define QUITACTION_H
 
-#include "apiplugin.h"
-#include "apiserver.h"
-#include "quitaction.h"
+#include <nitroshare/action.h>
 
-void ApiPlugin::initialize(Application *application)
+class QuitAction : public Action
 {
-    mServer = new ApiServer(application);
-    mAction = new QuitAction;
+    Q_OBJECT
+    Q_PROPERTY(bool api READ api)
+    Q_PROPERTY(QString description READ description)
 
-    application->actionRegistry()->add(mAction);
-}
+public:
 
-void ApiPlugin::cleanup(Application *application)
-{
-    application->actionRegistry()->remove(mAction);
+    virtual QString name() const;
 
-    delete mAction;
-    delete mServer;
-}
+    bool api() const;
+    QString description() const;
+
+public slots:
+
+    virtual QVariant invoke(const QVariantMap &params = QVariantMap());
+};
+
+#endif // QUITACTION_H

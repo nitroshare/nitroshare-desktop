@@ -22,25 +22,30 @@
  * IN THE SOFTWARE.
  */
 
-#include <nitroshare/actionregistry.h>
-#include <nitroshare/application.h>
+#include <QCoreApplication>
 
-#include "apiplugin.h"
-#include "apiserver.h"
 #include "quitaction.h"
 
-void ApiPlugin::initialize(Application *application)
+QString QuitAction::name() const
 {
-    mServer = new ApiServer(application);
-    mAction = new QuitAction;
-
-    application->actionRegistry()->add(mAction);
+    return "quit";
 }
 
-void ApiPlugin::cleanup(Application *application)
+bool QuitAction::api() const
 {
-    application->actionRegistry()->remove(mAction);
+    return true;
+}
 
-    delete mAction;
-    delete mServer;
+QString QuitAction::description() const
+{
+    return tr(
+        "Immediately quit the application."
+        "This action takes no parameters and does not return a result."
+    );
+}
+
+QVariant QuitAction::invoke(const QVariantMap &)
+{
+    QCoreApplication::quit();
+    return QVariant();
 }

@@ -7,6 +7,8 @@ set(SRC
     apiplugin.cpp
     apiserver.h
     apiserver.cpp
+    quitaction.h
+    quitaction.cpp
     resource.qrc
 )
 
