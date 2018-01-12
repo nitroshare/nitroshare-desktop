@@ -29,6 +29,7 @@
 
 class ApiServer;
 class QuitAction;
+class VersionAction;
 
 class Q_DECL_EXPORT ApiPlugin : public IPlugin
 {
@@ -43,7 +44,9 @@ public:
 private:
 
     ApiServer *mServer;
-    QuitAction *mAction;
+
+    QuitAction *mQuitAction;
+    VersionAction *mVersionAction;
 };
 
 #endif // APIPLUGIN_H

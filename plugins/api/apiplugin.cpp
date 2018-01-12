@@ -28,19 +28,26 @@
 #include "apiplugin.h"
 #include "apiserver.h"
 #include "quitaction.h"
+#include "versionaction.h"
 
 void ApiPlugin::initialize(Application *application)
 {
     mServer = new ApiServer(application);
-    mAction = new QuitAction;
 
-    application->actionRegistry()->add(mAction);
+    mQuitAction = new QuitAction;
+    mVersionAction = new VersionAction;
+
+    application->actionRegistry()->add(mQuitAction);
+    application->actionRegistry()->add(mVersionAction);
 }
 
 void ApiPlugin::cleanup(Application *application)
 {
-    application->actionRegistry()->remove(mAction);
+    application->actionRegistry()->remove(mQuitAction);
+    application->actionRegistry()->remove(mVersionAction);
 
-    delete mAction;
+    delete mQuitAction;
+    delete mVersionAction;
+
     delete mServer;
 }

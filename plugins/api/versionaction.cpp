@@ -22,27 +22,34 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef LIBNITROSHARE_VERSIONACTION_H
-#define LIBNITROSHARE_VERSIONACTION_H
+#include <QVariantMap>
 
-#include <nitroshare/action.h>
+#include <nitroshare/config.h>
 
-class VersionAction : public Action
+#include "versionaction.h"
+
+QString VersionAction::name() const
 {
-    Q_OBJECT
-    Q_PROPERTY(bool api READ api)
-    Q_PROPERTY(QString description READ description)
+    return "version";
+}
 
-public:
+bool VersionAction::api() const
+{
+    return true;
+}
 
-    virtual QString name() const;
+QString VersionAction::description() const
+{
+    return tr(
+        "Retrieve the version of the NitroShare library."
+        "This action takes no parameters and returns an object containing the "
+        "version of the NitroShare shared library."
+    );
+}
 
-    bool api() const;
-    QString description() const;
-
-public Q_SLOTS:
-
-    virtual QVariant invoke(const QVariantMap &params = QVariantMap());
-};
-
-#endif // LIBNITROSHARE_VERSIONACTION_H
+QVariant VersionAction::invoke(const QVariantMap &)
+{
+    return QVariantMap{
+        { "version", NITROSHARE_VERSION }
+    };
+}

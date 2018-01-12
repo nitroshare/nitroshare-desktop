@@ -10,6 +10,8 @@ set(SRC
     quitaction.h
     quitaction.cpp
     resource.qrc
+    versionaction.h
+    versionaction.cpp
 )
 
 add_library(api MODULE ${SRC})

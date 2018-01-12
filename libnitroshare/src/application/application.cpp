@@ -100,8 +100,6 @@ ApplicationPrivate::ApplicationPrivate(Application *application, QSettings *exis
     settingsRegistry.addSetting(&pluginDirectories);
     settingsRegistry.addSetting(&pluginBlacklist);
 
-    actionRegistry.add(&versionAction);
-
     connect(&transportServerRegistry, &TransportServerRegistry::transportReceived, [&](Transport *transport) {
         transferModel.add(new Transfer(q, transport));
     });
@@ -116,8 +114,6 @@ ApplicationPrivate::~ApplicationPrivate()
     settingsRegistry.removeSetting(&pluginBlacklist);
     settingsRegistry.removeSetting(&pluginDirectories);
     settingsRegistry.removeCategory(&pluginCategory);
-
-    actionRegistry.remove(&versionAction);
 }
 
 QString ApplicationPrivate::defaultPluginDirectory() const
