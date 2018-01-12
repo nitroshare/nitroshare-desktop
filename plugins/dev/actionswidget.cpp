@@ -23,16 +23,17 @@
  */
 
 #include <QFrame>
-#include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonParseError>
+#include <QJsonValue>
 #include <QMessageBox>
 #include <QVBoxLayout>
 
 #include <nitroshare/action.h>
 #include <nitroshare/actionregistry.h>
 #include <nitroshare/application.h>
+#include <nitroshare/jsonutil.h>
 
 #include "actionswidget.h"
 
@@ -137,27 +138,8 @@ void ActionsWidget::onInvoke()
     QVariantMap params = document.object().toVariantMap();
     QVariant ret = mActions->currentData().value<Action*>()->invoke(params);
 
-    // Attempt to convert the return value to a string if possible
-    if (ret.canConvert(QVariant::String)) {
-        ret.convert(QVariant::String);
-    }
-
-    // Display the return value in the best way possible
-    switch (ret.type()) {
-    case QVariant::String:
-        mReturn->setPlainText(ret.toString());
-        break;
-    case QVariant::List:
-        mReturn->setPlainText(
-            QJsonDocument(QJsonArray::fromVariantList(ret.toList())).toJson()
-        );
-        break;
-    case QVariant::Map:
-        mReturn->setPlainText(
-            QJsonDocument(QJsonObject::fromVariantMap(ret.toMap())).toJson()
-        );
-        break;
-    default:
-        break;
-    }
+    // Display the return value as JSON
+    mReturn->setPlainText(
+        JsonUtil::jsonValueToByteArray(QJsonValue::fromVariant(ret))
+    );
 }
