@@ -22,33 +22,35 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef APIPLUGIN_H
-#define APIPLUGIN_H
+#ifndef ACTIONSACTION_H
+#define ACTIONSACTION_H
 
-#include <nitroshare/iplugin.h>
+#include <nitroshare/action.h>
 
-class ActionsAction;
-class ApiServer;
-class QuitAction;
-class VersionAction;
+class Application;
 
-class Q_DECL_EXPORT ApiPlugin : public IPlugin
+class ActionsAction : public Action
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID Plugin_iid FILE "api.json")
+    Q_PROPERTY(bool api READ api)
+    Q_PROPERTY(QString description READ description)
 
 public:
 
-    virtual void initialize(Application *application);
-    virtual void cleanup(Application *application);
+    explicit ActionsAction(Application *application);
+
+    virtual QString name() const;
+
+    bool api() const;
+    QString description() const;
+
+public slots:
+
+    virtual QVariant invoke(const QVariantMap &params = QVariantMap());
 
 private:
 
-    ApiServer *mServer;
-
-    ActionsAction *mActionsAction;
-    QuitAction *mQuitAction;
-    VersionAction *mVersionAction;
+    Application *mApplication;
 };
 
-#endif // APIPLUGIN_H
+#endif // ACTIONSACTION_H

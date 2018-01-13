@@ -25,6 +25,7 @@
 #include <nitroshare/actionregistry.h>
 #include <nitroshare/application.h>
 
+#include "actionsaction.h"
 #include "apiplugin.h"
 #include "apiserver.h"
 #include "quitaction.h"
@@ -34,18 +35,22 @@ void ApiPlugin::initialize(Application *application)
 {
     mServer = new ApiServer(application);
 
+    mActionsAction = new ActionsAction(application);
     mQuitAction = new QuitAction;
     mVersionAction = new VersionAction;
 
+    application->actionRegistry()->add(mActionsAction);
     application->actionRegistry()->add(mQuitAction);
     application->actionRegistry()->add(mVersionAction);
 }
 
 void ApiPlugin::cleanup(Application *application)
 {
+    application->actionRegistry()->remove(mActionsAction);
     application->actionRegistry()->remove(mQuitAction);
     application->actionRegistry()->remove(mVersionAction);
 
+    delete mActionsAction;
     delete mQuitAction;
     delete mVersionAction;
 
