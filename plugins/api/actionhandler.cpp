@@ -31,6 +31,7 @@
 #include <nitroshare/action.h>
 #include <nitroshare/actionregistry.h>
 #include <nitroshare/application.h>
+#include <nitroshare/jsonutil.h>
 
 #include <qhttpengine/socket.h>
 
@@ -67,9 +68,16 @@ void ActionHandler::process(QHttpEngine::Socket *socket, const QString &path)
         }
         params = document.object().toVariantMap();
 
-        // Invoke the action, convert the response to JSON, and write it out
-        socket->writeJson(QJsonDocument(QJsonObject{
-            { "return", QJsonValue::fromVariant(action->invoke(params)) }
-        }));
+        // Convert the response to JSON
+        QByteArray json = JsonUtil::jsonValueToByteArray(
+            QJsonValue::fromVariant(action->invoke(params))
+        );
+
+        // Write the response to the socket
+        socket->setStatusCode(QHttpEngine::Socket::OK);
+        socket->setHeader("Content-Length", QByteArray::number(json.length()));
+        socket->setHeader("Content-Type", "application/json");
+        socket->write(json);
+        socket->close();
     });
 }
