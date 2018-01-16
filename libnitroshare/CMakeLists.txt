@@ -49,6 +49,7 @@ set(SRC
     src/util/fileutil.cpp
     src/util/jsonutil.cpp
     src/util/proxymodel.cpp
+    src/util/qtutil.cpp
     src/util/signalnotifier_p.h
     src/util/signalnotifier.cpp
 )
