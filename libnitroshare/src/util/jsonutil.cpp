@@ -24,22 +24,20 @@
 
 #include <QJsonArray>
 #include <QJsonDocument>
-#include <QMetaObject>
-#include <QMetaProperty>
+#include <QVariant>
 
 #include <nitroshare/jsonutil.h>
+#include <nitroshare/qtutil.h>
 
 QJsonObject JsonUtil::objectToJson(QObject *object)
 {
     QJsonObject jsonObject;
-    for (int i = 1; i < object->metaObject()->propertyCount(); ++i) {
-        auto property = object->metaObject()->property(i);
-        auto name = property.name();
-        auto value = object->property(name);
-        if (property.type() == QVariant::LongLong) {
-            value = QString::number(value.toLongLong());
+    auto properties = QtUtil::properties(object);
+    for (auto i = properties.begin(); i != properties.end(); ++i) {
+        if (i.value().type() == QVariant::LongLong) {
+            i.value().setValue(QString::number(i.value().toLongLong()));
         }
-        jsonObject.insert(name, QJsonValue::fromVariant(value));
+        jsonObject.insert(i.key(), QJsonValue::fromVariant(i.value()));
     }
     return jsonObject;
 }
