@@ -51,6 +51,16 @@ public:
     QString child() const { return ChildValue; }
 };
 
+class LongLong : public QObject
+{
+    Q_OBJECT
+    Q_PROPERTY(qint64 value READ value)
+
+public:
+
+    qint64 value() const { return 0; }
+};
+
 class TestJsonUtil : public QObject
 {
     Q_OBJECT
@@ -58,6 +68,7 @@ class TestJsonUtil : public QObject
 private slots:
 
     void testObjectToJson();
+    void testLongLongConversion();
     void testJsonValueToByteArray_data();
     void testJsonValueToByteArray();
 };
@@ -69,6 +80,16 @@ void TestJsonUtil::testObjectToJson()
     QJsonObject referenceObject{
         { "parent", ParentValue },
         { "child", ChildValue }
+    };
+    QCOMPARE(object, referenceObject);
+}
+
+void TestJsonUtil::testLongLongConversion()
+{
+    LongLong longLong;
+    QJsonObject object = JsonUtil::objectToJson(&longLong);
+    QJsonObject referenceObject{
+        { "value", "0" }
     };
     QCOMPARE(object, referenceObject);
 }
