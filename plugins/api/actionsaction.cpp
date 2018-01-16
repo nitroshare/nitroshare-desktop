@@ -22,14 +22,13 @@
  * IN THE SOFTWARE.
  */
 
-#include <QMetaObject>
-#include <QMetaProperty>
 #include <QVariantList>
 
 #include <nitroshare/action.h>
 #include <nitroshare/actionregistry.h>
 #include <nitroshare/application.h>
 #include <nitroshare/config.h>
+#include <nitroshare/qtutil.h>
 
 #include "actionsaction.h"
 
@@ -60,21 +59,9 @@ QString ActionsAction::description() const
 
 QVariant ActionsAction::invoke(const QVariantMap &)
 {
-    // Create a list of the metadata for each action
     QVariantList actions;
     foreach (auto &action, mApplication->actionRegistry()->actions()) {
-
-        // For each action, create a QVariantMap of its metadata
-        QVariantMap properties;
-        for (int i = 1; i < action->metaObject()->propertyCount(); ++i) {
-            auto property = action->metaObject()->property(i);
-            auto name = property.name();
-            properties.insert(name, action->property(name));
-        }
-
-        // Add to the list
-        actions.append(properties);
+        actions.append(QtUtil::properties(action));
     }
-
     return actions;
 }
