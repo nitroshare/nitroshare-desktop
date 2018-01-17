@@ -69,8 +69,8 @@ private slots:
 
     void testObjectToJson();
     void testLongLongConversion();
-    void testJsonValueToByteArray_data();
-    void testJsonValueToByteArray();
+    void testJsonConversion_data();
+    void testJsonConversion();
 };
 
 void TestJsonUtil::testObjectToJson()
@@ -94,10 +94,10 @@ void TestJsonUtil::testLongLongConversion()
     QCOMPARE(object, referenceObject);
 }
 
-void TestJsonUtil::testJsonValueToByteArray_data()
+void TestJsonUtil::testJsonConversion_data()
 {
     QTest::addColumn<QJsonValue>("value");
-    QTest::addColumn<QByteArray>("result");
+    QTest::addColumn<QByteArray>("data");
 
     QTest::newRow("null") << QJsonValue() << QByteArray("null");
     QTest::newRow("number") << QJsonValue(1) << QByteArray("1");
@@ -105,12 +105,13 @@ void TestJsonUtil::testJsonValueToByteArray_data()
     QTest::newRow("string") << QJsonValue("abc") << QByteArray("\"abc\"");
 }
 
-void TestJsonUtil::testJsonValueToByteArray()
+void TestJsonUtil::testJsonConversion()
 {
     QFETCH(QJsonValue, value);
-    QFETCH(QByteArray, result);
+    QFETCH(QByteArray, data);
 
-    QCOMPARE(JsonUtil::jsonValueToByteArray(value), result);
+    QCOMPARE(JsonUtil::jsonValueToByteArray(value), data);
+    QCOMPARE(JsonUtil::byteArrayToJsonValue(data), value);
 }
 
 QTEST_MAIN(TestJsonUtil)

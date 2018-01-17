@@ -56,3 +56,8 @@ QByteArray JsonUtil::jsonValueToByteArray(const QJsonValue &value)
     }
     }
 }
+
+QJsonValue JsonUtil::byteArrayToJsonValue(const QByteArray &data)
+{
+    return QJsonDocument::fromJson("[" + data + "]").array().at(0);
+}

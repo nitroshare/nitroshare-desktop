@@ -54,6 +54,13 @@ public:
      * @return byte array
      */
     static QByteArray jsonValueToByteArray(const QJsonValue &value);
+
+    /**
+     * @brief Convert a byte array to its equivalent JSON value
+     * @param data byte array
+     * @return JSON value
+     */
+    static QJsonValue byteArrayToJsonValue(const QByteArray &data);
 };
 
 #endif // LIBNITROSHARE_JSONUTIL_H
