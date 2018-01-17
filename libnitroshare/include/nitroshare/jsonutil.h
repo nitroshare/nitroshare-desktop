@@ -26,6 +26,7 @@
 #define LIBNITROSHARE_JSONUTIL_H
 
 #include <QJsonObject>
+#include <QJsonParseError>
 #include <QJsonValue>
 #include <QObject>
 
@@ -58,9 +59,10 @@ public:
     /**
      * @brief Convert a byte array to its equivalent JSON value
      * @param data byte array
+     * @param parseError pointer to QJsonParseError
      * @return JSON value
      */
-    static QJsonValue byteArrayToJsonValue(const QByteArray &data);
+    static QJsonValue byteArrayToJsonValue(const QByteArray &data, QJsonParseError *parseError = nullptr);
 };
 
 #endif // LIBNITROSHARE_JSONUTIL_H
