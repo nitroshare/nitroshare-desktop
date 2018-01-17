@@ -35,6 +35,7 @@
 #include <QObject>
 
 #include <nitroshare/apiutil.h>
+#include <nitroshare/jsonutil.h>
 
 bool findNitroShare(quint16 &port, QString &token, QString *error)
 {
@@ -124,7 +125,7 @@ bool ApiUtil::sendRequest(const QString &action,
 
         // Attempt to parse the response as JSON
         QJsonParseError jsonError;
-        QJsonDocument document = QJsonDocument::fromJson(reply->readAll(), &jsonError);
+        QJsonValue value = JsonUtil::byteArrayToJsonValue(reply->readAll(), &jsonError);
         if (jsonError.error != QJsonParseError::NoError) {
             if (error) {
                 *error = jsonError.errorString();
@@ -132,23 +133,7 @@ bool ApiUtil::sendRequest(const QString &action,
             return;
         }
 
-        // Verify and extract the information
-        if (!document.isObject()) {
-            if (error) {
-                *error = QObject::tr("object expected");
-            }
-            return;
-        }
-        QJsonObject object = document.object();
-        if (!object.contains("return")) {
-            if (error) {
-                *error = QObject::tr("\"return\" required");
-            }
-            return;
-        }
-
-        // Fill in the return value
-        returnVal = object.value("return").toVariant();
+        returnVal = value.toVariant();
         succeeded = true;
     });
 
