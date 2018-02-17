@@ -598,7 +598,7 @@ Usa l&apos;icona nell&apos;area di notifica per selezionare i files che vuoi tra
     <message>
         <location line="+7"/>
         <source>Dismiss</source>
-        <translation>cHIUDI</translation>
+        <translation>Chiudi</translation>
     </message>
 </context>
 <context>
