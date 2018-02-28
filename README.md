@@ -10,7 +10,7 @@ A cross-platform network file transfer application designed to make transferring
 
 ### Features
 
-* Runs on Windows / Mac OS X / Linux
+* Runs on Windows / macOS / Linux
 * Automatic discovery of devices on the local network
 * Simple and intuitive user interface
 * Incredibly fast transfer speeds
