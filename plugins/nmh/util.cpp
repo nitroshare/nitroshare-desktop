@@ -164,6 +164,8 @@ QJsonObject Util::extraJson(Browser browser)
             "allowed_extensions",
             QJsonArray{"nitroshare-firefox@nitroshare.net"}
         }};
+    default:
+        return QJsonObject();
     }
 }
 

@@ -151,7 +151,7 @@ SettingsDialog::Tab &SettingsDialog::getTab(Setting *setting)
 
     // Create the new tab and register it
     mTabWidget->addTab(widget, title);
-    mTabs.append({ name, widget, layout });
+    mTabs.append({ name, widget, layout, {} });
 
     // Return a reference to the new tab
     return mTabs[mTabs.count() - 1];
