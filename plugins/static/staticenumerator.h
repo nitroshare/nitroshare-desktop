@@ -22,26 +22,36 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef STATICPLUGIN_H
-#define STATICPLUGIN_H
+#ifndef STATICENUMERATOR_H
+#define STATICENUMERATOR_H
 
-#include <nitroshare/iplugin.h>
+#include <nitroshare/category.h>
+#include <nitroshare/deviceenumerator.h>
+#include <nitroshare/setting.h>
 
-class StaticEnumerator;
+class Application;
 
-class StaticPlugin : public IPlugin
+class StaticEnumerator : public DeviceEnumerator
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID Plugin_iid FILE "static.json")
 
 public:
 
-    virtual void initialize(Application *application);
-    virtual void cleanup(Application *application);
+    explicit StaticEnumerator(Application *application);
+    virtual ~StaticEnumerator();
+
+    virtual QString name() const;
+
+private slots:
+
+    void onSettingsChanged(const QStringList &keys);
 
 private:
 
-    StaticEnumerator *mEnumerator;
+    Application *mApplication;
+
+    Category mStaticCategory;
+    Setting mStaticDevices;
 };
 
-#endif // STATICPLUGIN_H
+#endif // STATICENUMERATOR_H

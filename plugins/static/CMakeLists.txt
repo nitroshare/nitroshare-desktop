@@ -1,6 +1,10 @@
 configure_file(static.json.in "${CMAKE_CURRENT_BINARY_DIR}/static.json")
 
 set(SRC
+    staticdevice.h
+    staticdevice.cpp
+    staticenumerator.h
+    staticenumerator.cpp
     staticplugin.h
     staticplugin.cpp
 )

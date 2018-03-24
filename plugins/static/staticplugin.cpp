@@ -22,14 +22,20 @@
  * IN THE SOFTWARE.
  */
 
+#include <nitroshare/application.h>
+#include <nitroshare/devicemodel.h>
+
+#include "staticenumerator.h"
 #include "staticplugin.h"
 
 void StaticPlugin::initialize(Application *application)
 {
-    // TODO
+    mEnumerator = new StaticEnumerator(application);
+    application->deviceModel()->addDeviceEnumerator(mEnumerator);
 }
 
 void StaticPlugin::cleanup(Application *application)
 {
-    // TODO
+    application->deviceModel()->removeDeviceEnumerator(mEnumerator);
+    delete mEnumerator;
 }

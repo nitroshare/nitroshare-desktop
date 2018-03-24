@@ -4,5 +4,7 @@
     "Vendor": "Nathan Osman",
     "Version": "${PROJECT_VERSION}",
     "Description": "Enable transfers with devices via static IP address",
-    "Dependencies": []
+    "Dependencies": [
+        "lan"
+    ]
 }

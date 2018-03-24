@@ -22,26 +22,32 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef STATICPLUGIN_H
-#define STATICPLUGIN_H
+#ifndef STATICDEVICE_H
+#define STATICDEVICE_H
 
-#include <nitroshare/iplugin.h>
+#include <nitroshare/device.h>
 
-class StaticEnumerator;
-
-class StaticPlugin : public IPlugin
+class StaticDevice : public Device
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID Plugin_iid FILE "static.json")
+    Q_PROPERTY(QStringList addresses READ addresses)
+    Q_PROPERTY(quint16 port READ port)
 
 public:
 
-    virtual void initialize(Application *application);
-    virtual void cleanup(Application *application);
+    explicit StaticDevice(const QString &address, quint16 port);
+
+    virtual QString uuid() const;
+    virtual QString name() const;
+    virtual QString transportName() const;
+
+    QStringList addresses() const;
+    quint16 port() const;
 
 private:
 
-    StaticEnumerator *mEnumerator;
+    QString mAddress;
+    quint16 mPort;
 };
 
-#endif // STATICPLUGIN_H
+#endif // STATICDEVICE_H
