@@ -4,5 +4,7 @@
     "Vendor": "Nathan Osman",
     "Version": "${PROJECT_VERSION}",
     "Description": "Use IPv4 broadcast for discovering peers",
-    "Dependencies": []
+    "Dependencies": [
+        "lan"
+    ]
 }
