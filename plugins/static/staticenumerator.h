@@ -25,11 +25,15 @@
 #ifndef STATICENUMERATOR_H
 #define STATICENUMERATOR_H
 
+#include <QMap>
+
 #include <nitroshare/category.h>
 #include <nitroshare/deviceenumerator.h>
 #include <nitroshare/setting.h>
 
 class Application;
+
+class StaticDevice;
 
 class StaticEnumerator : public DeviceEnumerator
 {
@@ -52,6 +56,8 @@ private:
 
     Category mStaticCategory;
     Setting mStaticDevices;
+
+    QMap<QString, StaticDevice*> mDevices;
 };
 
 #endif // STATICENUMERATOR_H

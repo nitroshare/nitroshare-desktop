@@ -24,20 +24,27 @@
 
 #include "staticdevice.h"
 
-StaticDevice::StaticDevice(const QString &address, quint16 port)
-    : mAddress(address),
-      mPort(port)
+StaticDevice::StaticDevice(const QString &address)
 {
+    int index = address.indexOf(':');
+    if (index == -1) {
+        mAddress = address;
+        mPort = 40818;
+    } else {
+        mAddress = address.left(index);
+        mPort = address.mid(index + 1).toInt();
+    }
+    mName = QString("%1:%2").arg(mAddress).arg(mPort);
 }
 
 QString StaticDevice::uuid() const
 {
-    return mAddress;
+    return mName;
 }
 
 QString StaticDevice::name() const
 {
-    return mAddress;
+    return tr("%1 [static]").arg(mName);
 }
 
 QString StaticDevice::transportName() const

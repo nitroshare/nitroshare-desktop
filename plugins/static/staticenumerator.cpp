@@ -22,9 +22,13 @@
  * IN THE SOFTWARE.
  */
 
+#include <QSet>
+#include <QTimer>
+
 #include <nitroshare/application.h>
 #include <nitroshare/settingsregistry.h>
 
+#include "staticdevice.h"
 #include "staticenumerator.h"
 
 const QString StaticCategoryName = "static";
@@ -47,12 +51,19 @@ StaticEnumerator::StaticEnumerator(Application *application)
     mApplication->settingsRegistry()->addSetting(&mStaticDevices);
 
     connect(mApplication->settingsRegistry(), &SettingsRegistry::settingsChanged, this, &StaticEnumerator::onSettingsChanged);
+
+    // Load the initial settings
+    QTimer::singleShot(0, [this]() {
+        onSettingsChanged({StaticDevicesName});
+    });
 }
 
 StaticEnumerator::~StaticEnumerator()
 {
     mApplication->settingsRegistry()->removeSetting(&mStaticDevices);
     mApplication->settingsRegistry()->removeCategory(&mStaticCategory);
+
+    qDeleteAll(mDevices);
 }
 
 QString StaticEnumerator::name() const
@@ -63,7 +74,36 @@ QString StaticEnumerator::name() const
 void StaticEnumerator::onSettingsChanged(const QStringList &keys)
 {
     if (keys.contains(StaticDevicesName)) {
+        auto addresses = mApplication->settingsRegistry()->value(StaticDevicesName).toStringList().toSet();
 
-        // TODO: update devices based on setting
+        // Remove existing addresses not present in the new list
+        for (auto i = mDevices.begin(); i != mDevices.end();) {
+            if (!addresses.contains(i.key())) {
+                Device *device = i.value();
+
+                // Indicate that a device was removed
+                emit deviceRemoved(device);
+
+                // Remove the device from the map and destroy it
+                i = mDevices.erase(i);
+                delete device;
+
+            } else {
+                ++i;
+            }
+        }
+
+        // Add the new addresses
+        foreach (auto address, addresses) {
+            if (!mDevices.contains(address)) {
+
+                // Create a new device instance and add it to the map
+                StaticDevice *device = new StaticDevice(address);
+                mDevices.insert(address, device);
+
+                // Indicate that a device was added
+                emit deviceAdded(device);
+            }
+        }
     }
 }

@@ -35,7 +35,7 @@ class StaticDevice : public Device
 
 public:
 
-    explicit StaticDevice(const QString &address, quint16 port);
+    explicit StaticDevice(const QString &address);
 
     virtual QString uuid() const;
     virtual QString name() const;
@@ -45,6 +45,8 @@ public:
     quint16 port() const;
 
 private:
+
+    QString mName;
 
     QString mAddress;
     quint16 mPort;

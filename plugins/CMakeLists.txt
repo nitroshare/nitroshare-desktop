@@ -4,6 +4,7 @@ add_subdirectory(device)
 add_subdirectory(filesystem)
 add_subdirectory(lan)
 add_subdirectory(nmh)
+add_subdirectory(static)
 add_subdirectory(url)
 
 if(Qt5Widgets_FOUND)
