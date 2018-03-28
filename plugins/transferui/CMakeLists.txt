@@ -28,6 +28,10 @@ set_target_properties(transferui PROPERTIES
 target_include_directories(transferui PUBLIC "${CMAKE_CURRENT_BINARY_DIR}")
 target_link_libraries(transferui Qt5::Widgets nitroshare)
 
+if(APPLE)
+    target_link_libraries(transferui "-framework ApplicationServices")
+endif()
+
 install(TARGETS transferui
     DESTINATION "${INSTALL_PLUGIN_PATH}"
 )
