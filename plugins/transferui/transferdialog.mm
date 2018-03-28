@@ -22,54 +22,15 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef TRANSFERDIALOG_H
-#define TRANSFERDIALOG_H
+#import "ApplicationServices/ApplicationServices.h"
+#import "Foundation/Foundation.h"
 
-#include <QDialog>
-#include <QPushButton>
-#include <QTableView>
+#import "transferdialog.h"
 
-#include "transferproxymodel.h"
-
-class Application;
-
-class TransferDialog : public QDialog
+void TransferDialog::setForeground(bool foreground)
 {
-    Q_OBJECT
-
-public:
-
-    explicit TransferDialog(Application *application);
-
-protected:
-
-    virtual void showEvent(QShowEvent *event);
-    virtual void hideEvent(QHideEvent *event);
-
-private slots:
-
-    void updateButtons();
-
-    void onStop();
-    void onDismiss();
-    void onDismissAll();
-    void onOpenReceivedFiles();
-
-private:
-
-    QModelIndex currentIndex() const;
-
-#ifdef Q_OS_MAC
-    void setForeground(bool foreground);
-#endif
-
-    Application *mApplication;
-
-    QTableView *mTableView;
-    TransferProxyModel mModel;
-
-    QPushButton *mStopButton;
-    QPushButton *mDismissButton;
-};
-
-#endif // TRANSFERDIALOG_H
+    ProcessSerialNumber psn = { 0, kCurrentProcess };
+    TransformProcessType(&psn, foreground ?
+        kProcessTransformToForegroundApplication :
+        kProcessTransformToUIElementApplication);
+}

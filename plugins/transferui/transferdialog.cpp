@@ -93,6 +93,20 @@ TransferDialog::TransferDialog(Application *application)
     updateButtons();
 }
 
+void TransferDialog::showEvent(QShowEvent *)
+{
+#ifdef Q_OS_MACX
+    setForeground(true);
+#endif
+}
+
+void TransferDialog::hideEvent(QHideEvent *)
+{
+#ifdef Q_OS_MACX
+    setForeground(false);
+#endif
+}
+
 void TransferDialog::updateButtons()
 {
     QModelIndex index = currentIndex();

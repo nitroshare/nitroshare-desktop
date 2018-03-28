@@ -11,6 +11,10 @@ set(SRC
     transferuiplugin.cpp
 )
 
+if(APPLE)
+    set(SRC ${SRC} transferdialog.mm)
+endif()
+
 add_library(transferui MODULE ${SRC})
 
 set_target_properties(transferui PROPERTIES
