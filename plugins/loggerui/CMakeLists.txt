@@ -1,12 +1,12 @@
 configure_file(loggerui.json.in "${CMAKE_CURRENT_BINARY_DIR}/loggerui.json")
 
 set(SRC
-    logaction.h
-    logaction.cpp
     logdialog.h
     logdialog.cpp
     loggeruiplugin.h
     loggeruiplugin.cpp
+    showlogdialogaction.h
+    showlogdialogaction.cpp
 )
 
 add_library(loggerui MODULE ${SRC})

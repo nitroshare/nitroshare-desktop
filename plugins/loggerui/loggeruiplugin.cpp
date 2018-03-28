@@ -25,17 +25,17 @@
 #include <nitroshare/application.h>
 #include <nitroshare/actionregistry.h>
 
-#include "logaction.h"
+#include "showlogdialogaction.h"
 #include "loggeruiplugin.h"
 
 void LoggerUiPlugin::initialize(Application *application)
 {
-    mLogAction = new LogAction(application);
-    application->actionRegistry()->add(mLogAction);
+    mAction = new ShowLogDialogAction(application);
+    application->actionRegistry()->add(mAction);
 }
 
 void LoggerUiPlugin::cleanup(Application *application)
 {
-    application->actionRegistry()->remove(mLogAction);
-    delete mLogAction;
+    application->actionRegistry()->remove(mAction);
+    delete mAction;
 }

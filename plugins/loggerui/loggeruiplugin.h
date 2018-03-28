@@ -27,7 +27,7 @@
 
 #include <nitroshare/iplugin.h>
 
-class LogAction;
+class ShowLogDialogAction;
 
 class Q_DECL_EXPORT LoggerUiPlugin : public IPlugin
 {
@@ -41,7 +41,7 @@ public:
 
 private:
 
-    LogAction *mLogAction;
+    ShowLogDialogAction *mAction;
 };
 
 #endif // LOGGERUIPLUGIN_H

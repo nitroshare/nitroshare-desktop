@@ -22,37 +22,30 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef LOGACTION_H
-#define LOGACTION_H
+#include "showlogdialogaction.h"
 
-#include <nitroshare/action.h>
-
-#include "logdialog.h"
-
-class Application;
-
-class LogAction : public Action
+ShowLogDialogAction::ShowLogDialogAction(Application *application)
+    : mDialog(application)
 {
-    Q_OBJECT
-    Q_PROPERTY(bool menu READ menu)
-    Q_PROPERTY(QString label READ label)
+}
 
-public:
+QString ShowLogDialogAction::name() const
+{
+    return "showlogdialog";
+}
 
-    explicit LogAction(Application *application);
+bool ShowLogDialogAction::menu() const
+{
+    return true;
+}
 
-    virtual QString name() const;
+QString ShowLogDialogAction::label() const
+{
+    return tr("View Log");
+}
 
-    bool menu() const;
-    QString label() const;
-
-public slots:
-
-    virtual QVariant invoke(const QVariantMap &params = QVariantMap());
-
-private:
-
-    LogDialog mDialog;
-};
-
-#endif // LOGACTION_H
+QVariant ShowLogDialogAction::invoke(const QVariantMap &)
+{
+    mDialog.show();
+    return true;
+}
