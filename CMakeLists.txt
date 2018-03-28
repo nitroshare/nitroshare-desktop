@@ -112,14 +112,6 @@ if(WIN32)
     endif()
 endif()
 
-# Enable libnotify support if GTK and libnotify are present
-if(LINUX)
-    find_package(PkgConfig)
-    if(PKG_CONFIG_FOUND)
-        pkg_check_modules(libnotify gtk+-2.0 libnotify)
-    endif()
-endif()
-
 # Ensure that binaries are built with the RPATH set correctly
 set(CMAKE_MACOSX_RPATH ON)
 
