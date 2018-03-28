@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <file>static/index.html</file>
+        <file>static/css/style.css</file>
+        <file>static/js/jquery.min.js</file>
+        <file>static/js/chat.js</file>
+    </qresource>
+</RCC>

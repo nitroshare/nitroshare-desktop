@@ -1,0 +1,34 @@
+#titlearea {
+    margin: 10px 0;
+}
+#projectalign {
+    padding-left: 0 !important;
+}
+.fragment {
+    padding: 4px !important;
+}
+@media (min-width: 992px) {
+    #top, .header, .contents, .footer {
+        margin: auto !important;
+        max-width: 900px;
+    }
+    #titlearea {
+        border-bottom: none;
+    }
+    #main-nav, #navrow1 {
+        border-radius: 4px 4px 0 0;
+        border-top: 1px solid #c4cfe5;
+        position: relative;
+    }
+    #main-nav, #navrow1, .header, .nav-path, .contents {
+        border-left: 1px solid #c4cfe5;
+        border-right: 1px solid #c4cfe5;
+        box-sizing: border-box;
+    }
+    .contents {
+        padding: 14px;
+    }
+    hr.footer {
+        border-top: 1px solid #c4cfe5;
+    }
+}

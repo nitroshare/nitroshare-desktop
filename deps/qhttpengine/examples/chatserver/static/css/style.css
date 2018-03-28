@@ -1,0 +1,53 @@
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+}
+
+body {
+    background-color: #dec;
+    margin: 0;
+}
+
+#input {
+    height: 60px;
+    width: 100%;
+}
+
+.footer {
+    background-color: #ac9;
+    box-shadow: 0 0 5px #333;
+    padding: 10px;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+
+.footer textarea {
+    background-color: #dec;
+    border: none;
+    border-radius: 4px;
+    padding: 4px;
+}
+
+.container {
+    padding: 10px;
+}
+
+.message {
+    background-color: #efd;
+    border-radius: 4px;
+    font-size: 10pt;
+    margin-bottom: 4px;
+    padding: 8px 16px;
+}
+
+.message.system {
+    color: #777;
+}
+
+.spacer {
+    height: 80px;
+}

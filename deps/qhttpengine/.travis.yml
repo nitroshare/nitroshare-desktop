@@ -1,0 +1,21 @@
+sudo: required
+dist: trusty
+
+language: c++
+
+compiler:
+  - clang
+  - gcc
+
+install:
+  - sudo add-apt-repository -y ppa:beineri/opt-qt592-trusty
+  - sudo apt-get update -qq
+  - sudo apt-get install -qq cmake qt59base
+
+before_script:
+  - export PATH=$PATH:/opt/qt59/bin
+
+script:
+  - cmake -DBUILD_TESTS=on .
+  - make
+  - ctest
