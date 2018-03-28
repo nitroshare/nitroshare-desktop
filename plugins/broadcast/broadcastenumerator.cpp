@@ -107,18 +107,6 @@ QString BroadcastEnumerator::name() const
 
 void BroadcastEnumerator::onBroadcastTimeout()
 {
-    // Build a list of all IPv4 broadcast addresses
-    QSet<QHostAddress> addresses;
-    foreach (QNetworkInterface interface, QNetworkInterface::allInterfaces()) {
-        if (interface.flags() & QNetworkInterface::CanBroadcast) {
-            foreach (QNetworkAddressEntry entry, interface.addressEntries()) {
-                if (!entry.broadcast().isNull()) {
-                    addresses.insert(entry.broadcast());
-                }
-            }
-        }
-    }
-
     // Build the packet that will be broadcast
     QJsonObject object{
         { "uuid", mApplication->deviceUuid() },
@@ -128,8 +116,14 @@ void BroadcastEnumerator::onBroadcastTimeout()
     QByteArray data = QJsonDocument(object).toJson(QJsonDocument::Compact);
 
     // Broadcast the packet
-    foreach (QHostAddress address, addresses) {
-        mSocket.writeDatagram(data, address, mSocket.localPort());
+    foreach (QNetworkInterface interface, QNetworkInterface::allInterfaces()) {
+        if (interface.flags() & QNetworkInterface::CanBroadcast) {
+            foreach (QNetworkAddressEntry entry, interface.addressEntries()) {
+                if (!entry.broadcast().isNull()) {
+                    mSocket.writeDatagram(data, entry.broadcast(), mSocket.localPort());
+                }
+            }
+        }
     }
 }
 
