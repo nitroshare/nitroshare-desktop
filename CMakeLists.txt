@@ -81,6 +81,14 @@ if(BUILD_TESTS)
     find_package(Qt5Test 5.4 REQUIRED)
 endif()
 
+# Disable BUILD_DOC when using the builtin dependencies
+function(add_subdirectory_disable_doc dir)
+    set(_old_BUILD_DOC ${BUILD_DOC})
+    set(BUILD_DOC OFF)
+    add_subdirectory(dir)
+    set(BUILD_DOC ${_old_BUILD_DOC})
+endfunction()
+
 # Attempt to find QHttpEngine on the system; use bundled version if missing
 option(BUILD_API "Build local API plugin" ON)
 if(BUILD_API)
@@ -89,7 +97,7 @@ if(BUILD_API)
         message(STATUS "Found QHttpEngine ${qhttpengine_VERSION}")
     else()
         message(STATUS "QHttpEngine 1.0.0+ not found - using bundled version")
-        add_subdirectory(deps/qhttpengine)
+        add_subdirectory_disable_doc(deps/qhttpengine)
     endif()
 endif()
 
@@ -101,7 +109,7 @@ if(BUILD_MDNS)
         message(STATUS "Found QMdnsEngine ${qmdnsengine_VERSION}")
     else()
         message(STATUS "QMdnsEngine not found - using bundled version")
-        add_subdirectory(deps/qmdnsengine)
+        add_subdirectory_disable_doc(deps/qmdnsengine)
     endif()
 endif()
 
