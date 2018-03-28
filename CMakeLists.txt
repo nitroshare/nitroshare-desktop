@@ -84,7 +84,7 @@ endif()
 # Attempt to find QHttpEngine on the system; use bundled version if missing
 option(BUILD_API "Build local API plugin" ON)
 if(BUILD_API)
-    find_package(qhttpengine 1.2.0 QUIET)
+    find_package(qhttpengine 1.0.0 QUIET)
     if(qhttpengine_FOUND)
         message(STATUS "Found QHttpEngine ${qhttpengine_VERSION}")
     else()
