@@ -40,7 +40,7 @@ Wizard::Wizard(Application *application)
     setWindowTitle(tr("Setup Wizard"));
 
     // Adjust the wizard to a reasonable size
-    resize(540, 400);
+    resize(400, 300);
 
     addPage(new IntroPage);
     addPage(new DevicePage(application->deviceName()));
