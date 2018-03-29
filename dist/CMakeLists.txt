@@ -1,6 +1,16 @@
-# Prepare the InnoSetup configuration script
 if(WIN32)
+    # Prepare the InnoSetup configuration script
     configure_file(setup.iss.in "${CMAKE_CURRENT_BINARY_DIR}/setup.iss")
+
+    # The MSVC 2015 runtime requires CMake 3.6+
+    if((MSVC_VERSION VERSION_EQUAL 1900 OR MSVC_VERSION VERSION_GREATER 1900)
+            AND CMAKE_VERSION VERSION_LESS "3.6")
+        message(WARNING "MSVC 2015+ runtime requires CMake 3.6+")
+    endif()
+
+    # Ensure the C/C++ runtime is installed
+    set(CMAKE_INSTALL_UCRT_LIBRARIES TRUE)
+    include(InstallRequiredSystemLibraries)
 endif()
 
 if(APPLE)

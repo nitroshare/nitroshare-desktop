@@ -26,12 +26,6 @@ install(TARGETS mdns
     DESTINATION "${INSTALL_PLUGIN_PATH}"
 )
 
-# Copy the QMdnsEngine library to the runtime and install directories
-if(WIN32)
-    include(SharedLibrary)
-    copy_lib_win(qmdnsengine mdns)
-endif()
-
 if(APPLE)
     include(SharedLibrary)
     copy_lib_mac(qmdnsengine mdns)

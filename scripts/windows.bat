@@ -14,6 +14,7 @@ nmake install || exit /b
 rem Run windeployqt on nitroshare-ui
 windeployqt ^
     --verbose 0 ^
+    --no-compiler-runtime ^
     --no-angle ^
     --no-opengl-sw ^
     out/bin/nitroshare-ui.exe || exit /b
@@ -33,5 +34,5 @@ if not exist %iscc% (
 rem Build the installer
 %iscc% ^
     /Q ^
-    /DPREFIX=out ^
+    /DPREFIX="%cd%\out" ^
     dist/setup.iss || exit /b
