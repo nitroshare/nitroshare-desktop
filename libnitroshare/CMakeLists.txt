@@ -78,7 +78,7 @@ install(TARGETS nitroshare
     RUNTIME       DESTINATION "${INSTALL_BIN_PATH}"
     LIBRARY       DESTINATION "${INSTALL_LIB_PATH}"
     ARCHIVE       DESTINATION "${INSTALL_LIB_PATH}"
-    PUBLIC_HEADER DESTINATION include/nitroshare
+    PUBLIC_HEADER DESTINATION "${INSTALL_INCLUDE_PATH}/nitroshare"
 )
 
 install(EXPORT nitroshare-export

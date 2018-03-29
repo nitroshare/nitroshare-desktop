@@ -39,6 +39,7 @@ option(ENABLE_TLS "Enable support for TLS" ON)
 # Allow file installation directories to be customized
 set(INSTALL_BIN_PATH bin CACHE STRING "Application installation directory")
 set(INSTALL_LIB_PATH lib CACHE STRING "Shared library installation directory")
+set(INSTALL_INCLUDE_PATH include CACHE STRING "Header installation directory")
 set(INSTALL_PLUGIN_PATH "${INSTALL_LIB_PATH}/nitroshare/plugins" CACHE STRING "Plugin installation directory")
 
 set(OUTPUT_PREFIX "${CMAKE_BINARY_DIR}/out")
