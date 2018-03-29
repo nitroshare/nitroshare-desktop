@@ -73,6 +73,17 @@ target_include_directories(nitroshare PUBLIC
 
 target_link_libraries(nitroshare Qt5::Network)
 
+# Copy the include files to the out directory after building
+foreach(inc ${HEADERS})
+    get_filename_component(filename "${inc}" NAME)
+    add_custom_command(TARGET nitroshare POST_BUILD
+        COMMAND "${CMAKE_COMMAND}" -E
+            copy_if_different
+                \"${inc}\"
+                \"${OUTPUT_PREFIX}/${INSTALL_INCLUDE_PATH}/nitroshare/${filename}\"
+    )
+endforeach()
+
 install(TARGETS nitroshare
     EXPORT        nitroshare-export
     RUNTIME       DESTINATION "${INSTALL_BIN_PATH}"
