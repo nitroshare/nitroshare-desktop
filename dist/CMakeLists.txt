@@ -1,15 +1,6 @@
-if(WIN32 AND INNOSETUP_EXECUTABLE)
-    # Prepare the InnoSetup configuration script
+# Prepare the InnoSetup configuration script
+if(WIN32)
     configure_file(setup.iss.in "${CMAKE_CURRENT_BINARY_DIR}/setup.iss")
-
-    # Add the target for building the .exe
-    add_custom_target(exe
-        COMMAND "${INNOSETUP_EXECUTABLE}"
-            /Q
-            /DTARGET_FILE_NAME="$<TARGET_FILE_NAME:nitroshare-ui>"
-            \"${CMAKE_CURRENT_BINARY_DIR}/setup.iss\"
-        COMMENT "Building installer..."
-    )
 endif()
 
 if(APPLE)

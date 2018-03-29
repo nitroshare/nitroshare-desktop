@@ -15,17 +15,6 @@ install(TARGETS nitroshare-client
     DESTINATION "${INSTALL_BIN_PATH}"
 )
 
-if(WIN32)
-    # Run windeployqt on the binary
-    include(DeployQt)
-    windeployqt(nitroshare-client)
-
-    # If the exe target exists, add the binary as a dependency
-    if(INNOSETUP_EXECUTABLE)
-        add_dependencies(exe nitroshare-client)
-    endif()
-endif()
-
 if(APPLE)
     include(DeployQt)
     macdeployqt(nitroshare-client)

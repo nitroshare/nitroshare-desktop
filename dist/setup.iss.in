@@ -36,15 +36,15 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "${OUTPUT_PREFIX}\*"; Excludes: "*.manifest"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#PREFIX}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
-Name: "{group}\${PROJECT_NAME}"; Filename: "{app}\${INSTALL_BIN_PATH}\{#TARGET_FILE_NAME}"
+Name: "{group}\${PROJECT_NAME}"; Filename: "{app}\${INSTALL_BIN_PATH}\nitroshare-ui.exe"
 Name: "{group}\{cm:UninstallProgram,${PROJECT_NAME}}"; Filename: "{uninstallexe}"
-Name: "{commondesktop}\${PROJECT_NAME}"; Filename: "{app}\${INSTALL_BIN_PATH}\{#TARGET_FILE_NAME}"; Tasks: desktopicon
+Name: "{commondesktop}\${PROJECT_NAME}"; Filename: "{app}\${INSTALL_BIN_PATH}\nitroshare-ui.exe"; Tasks: desktopicon
 
 [Run]
-Filename: "{app}\${INSTALL_BIN_PATH}\{#TARGET_FILE_NAME}"; Description: "{cm:LaunchProgram,${PROJECT_NAME}}"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\${INSTALL_BIN_PATH}\nitroshare-ui.exe"; Description: "{cm:LaunchProgram,${PROJECT_NAME}}"; Flags: nowait postinstall skipifsilent
 
 [Code]
 
@@ -66,7 +66,7 @@ begin
       FirewallProfile := FirewallManager.LocalPolicy.CurrentProfile;
       FirewallObject := CreateOleObject('HNetCfg.FwAuthorizedApplication');
       FirewallObject.Name := '${PROJECT_NAME}';
-      FirewallObject.ProcessImageFileName := ExpandConstant('{app}\${INSTALL_BIN_PATH}\{#TARGET_FILE_NAME}');
+      FirewallObject.ProcessImageFileName := ExpandConstant('{app}\${INSTALL_BIN_PATH}\nitroshare-ui.exe');
       FirewallProfile.AuthorizedApplications.Add(FirewallObject);
     except
     end;
@@ -84,7 +84,7 @@ begin
         SuppressibleMsgBox('Unable to unregister shell extension.', mbError, MB_OK, MB_OK);
       FirewallManager := CreateOleObject('HNetCfg.FwMgr');
       FirewallProfile := FirewallManager.LocalPolicy.CurrentProfile;
-      FireWallProfile.AuthorizedApplications.Remove(ExpandConstant('{app}\${INSTALL_BIN_PATH}\{#TARGET_FILE_NAME}'));
+      FireWallProfile.AuthorizedApplications.Remove(ExpandConstant('{app}\${INSTALL_BIN_PATH}\nitroshare-ui.exe'));
     except
     end;
 end;

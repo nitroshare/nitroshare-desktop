@@ -108,13 +108,6 @@ if(BUILD_MDNS)
     add_dependency(qmdnsengine QMdnsEngine 0.1.0)
 endif()
 
-if(WIN32)
-    find_package(InnoSetup QUIET)
-    if(NOT INNOSETUP_EXECUTABLE)
-        message(WARNING "InnoSetup not found - exe target disabled")
-    endif()
-endif()
-
 # Enable libnotify support if GTK and libnotify are present
 if(LINUX)
     find_package(PkgConfig)
