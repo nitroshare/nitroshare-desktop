@@ -210,8 +210,8 @@ Description: &quot;%2&quot;</source>
     </message>
     <message>
         <location line="-149"/>
-        <source>Папка:</source>
-        <translation>Verzeichnis:</translation>
+        <source>Directory:</source>
+        <translation>Директория:</translation>
     </message>
     <message>
         <location line="+26"/>
