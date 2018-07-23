@@ -241,7 +241,7 @@ Description: &quot;%2&quot;</source>
     <message>
         <location line="+8"/>
         <source>Security</source>
-        <translation>Безопастность</translation>
+        <translation>Безопасность</translation>
     </message>
     <message>
         <location line="+6"/>
