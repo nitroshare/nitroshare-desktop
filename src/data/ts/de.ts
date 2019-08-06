@@ -11,7 +11,7 @@
     <message>
         <location line="+88"/>
         <source>Credits</source>
-        <translation>Verdienste</translation>
+        <translation>Mitwirkende</translation>
     </message>
     <message>
         <location line="+13"/>
@@ -36,7 +36,7 @@
         <source>Unable to open %1
 
 Description: &quot;%2&quot;</source>
-        <translation>%1 kann nicht geäffnet werden
+        <translation>%1 kann nicht geöffnet werden
 
 Beschreibung: &quot;%2&quot;</translation>
     </message>
@@ -86,12 +86,12 @@ Beschreibung: &quot;%2&quot;</translation>
     <message>
         <location line="+8"/>
         <source>%1 has joined.</source>
-        <translation>%1 ist beigetreten</translation>
+        <translation>%1 ist beigetreten.</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>%1 has left.</source>
-        <translation>%1 ist gegangen</translation>
+        <translation>%1 ist gegangen.</translation>
     </message>
     <message>
         <location line="+16"/>
@@ -155,7 +155,7 @@ Beschreibung: &quot;%2&quot;</translation>
     <message>
         <location line="+0"/>
         <source>Some versions of Gnome do not support AppIndicators. This prevents NitroShare from displaying an indicator in the notification area. Please ensure you have this extension installed before continuing:&lt;br&gt;&lt;br&gt;&lt;a href=&apos;%1&apos;&gt;%1&lt;/a&gt;</source>
-        <translation>Einige Gnome Versionen untersützen keine AppIndicatoren. Dies hindert NitroShare daran, Hinweise im Benachrichtigungsbereich anzuzeigen. Bitte stellen Sie sicher, dass die benötigten Erweiterungen installiert wurden:&lt;br&gt;&lt;br&gt;&lt;a href=&apos;%1&apos;&gt;%1&lt;/a&gt;</translation>
+        <translation>Einige Gnome Versionen untersützen keine AppIndikatoren. Dies hindert NitroShare daran, Hinweise im Benachrichtigungsbereich anzuzeigen. Bitte stellen Sie sicher, dass die benötigten Erweiterungen installiert wurden:&lt;br&gt;&lt;br&gt;&lt;a href=&apos;%1&apos;&gt;%1&lt;/a&gt;</translation>
     </message>
     <message>
         <location filename="../../util/platform.cpp" line="+147"/>
@@ -385,7 +385,7 @@ Beschreibung: &quot;%2&quot;</translation>
 To transfer files, use the menu item in your system tray. After selecting the files you want to transfer, simply select the device you want to transfer them to and they will be instantly transferred.</source>
         <translation>NitroShare ist eine Anwendung, die es einfach macht, Dateien von einem Gerät zu einem anderen zu übertragen.
 
-Um Dateien zu übertragen, wird der Menüeintrag in der Kontrollleiste verwendet. Nach der Auswahl der zu übertragenden Dateien wird einfach das Gerät ausgewählt, an das die Dateien übertragen werden sollen und der Datentransfer wird sofort gestartert.</translation>
+Um Dateien zu übertragen, wird der Menüeintrag in der Kontrollleiste verwendet. Nach der Auswahl der zu übertragenden Dateien wird einfach das Gerät ausgewählt, an das die Dateien übertragen werden sollen und der Datentransfer wird sofort gestartet.</translation>
     </message>
 </context>
 <context>
@@ -478,7 +478,7 @@ Um Dateien zu übertragen, wird der Menüeintrag in der Kontrollleiste verwendet
     <message>
         <location filename="../../transfer/transferreceiver.cpp" line="+38"/>
         <source>[Unknown]</source>
-        <translation>[unbekannt]</translation>
+        <translation>[Unbekannt]</translation>
     </message>
     <message>
         <location line="+26"/>
@@ -612,7 +612,7 @@ Um Dateien zu übertragen, wird der Menüeintrag in der Kontrollleiste verwendet
     <message>
         <location line="+46"/>
         <source>NitroShare Notification</source>
-        <translation>NitroSharre Benachrichtigung</translation>
+        <translation>NitroShare Benachrichtigung</translation>
     </message>
 </context>
 </TS>
