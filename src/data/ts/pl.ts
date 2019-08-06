@@ -264,7 +264,7 @@ Description: &quot;%2&quot;</source>
     <message>
         <location line="+21"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Warning&lt;/span&gt;: If enabled, all other clients must share a common certificate authority (CA) and have TLS enabled.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Warning&lt;/span&gt;: Jeśli wlączone, wszystkie inne klienty muszą mieć ustawiony ten sam certyfikat CA oraz włączony TLS.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Uwaga&lt;/span&gt;: Jeśli włączone, wszystkie inne klienty muszą mieć ustawiony ten sam certyfikat CA oraz włączony TLS.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -285,7 +285,7 @@ Description: &quot;%2&quot;</source>
     <message>
         <location line="-10"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Warning:&lt;/span&gt; Changing the settings below may cause NitroShare to stop functioning or use excessive bandwidth. Proceed with caution.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Ostrzeżenie:&lt;/span&gt; Zmiana poniższych ustawień może skutkować zaprzestaniem działania NitroShare lub zużyciem dużego pasma. Zachowaj ostrożność.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Uwaga:&lt;/span&gt; Zmiana poniższych ustawień może skutkować zaprzestaniem działania NitroShare lub zużyciem dużego pasma. Zachowaj ostrożność.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location line="+39"/>
