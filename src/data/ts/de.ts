@@ -91,7 +91,7 @@ Beschreibung: &quot;%2&quot;</translation>
     <message>
         <location line="+10"/>
         <source>%1 has left.</source>
-        <translation>%1 ist gegangen</translation>
+        <translation>%1 hat sich abgemeldet.</translation>
     </message>
     <message>
         <location line="+16"/>
