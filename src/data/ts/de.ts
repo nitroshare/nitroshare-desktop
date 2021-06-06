@@ -612,7 +612,7 @@ Um Dateien zu übertragen, wird der Menüeintrag in der Kontrollleiste verwendet
     <message>
         <location line="+46"/>
         <source>NitroShare Notification</source>
-        <translation>NitroSharre Benachrichtigung</translation>
+        <translation>NitroShare Benachrichtigung</translation>
     </message>
 </context>
 </TS>
