@@ -1,4 +1,4 @@
-> **Warning:** the master branch is very unstable at the moment. If you want stable builds, please visit the releases page or checkout the 0.3.4 branch.
+> **Update (2025-07-12)**: NitroShare development has been on hold for the last few years due to personal reasons. Development is slowly resuming with the rewrite of the essential parts of the transfer protocol in [nitroshare/nitroshare2](https://github.com/nitroshare/nitroshare2). There are no plans to continue work on the C++ codebase at this time, though the spinoff projects [QHttpEngine](https://github.com/nitroshare/qhttpengine) and [QMdnsEngine](https://github.com/nitroshare/qmdnsengine) will continue to receive updates. Once the nitroshare2 codebase is stable, a desktop client for major platforms will be introduced. Stay tuned for more updates!
 
 ## NitroShare
 
